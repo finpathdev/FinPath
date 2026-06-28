@@ -446,7 +446,9 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
   </div>
 </div>
 {% raw %}
+{% raw %}
 <script>
+
 const FK='d8pn5n1r01qujv4j5d70d8pn5n1r01qujv4j5d7g';
 const SBU='https://ivhhfhemcecwqadrjmwq.supabase.co';
 const SBK='sb_publishable_KoWYv1Ro5D4I83XxWmJFOg_DCB2ldw6';
@@ -481,8 +483,8 @@ const AI_ADVISOR={
   TSLA:{action:'Watch and wait',cls:'act-watch',text:"Tesla has been volatile. Hold your position but avoid adding without a catalyst. Suggestion: wait for the next earnings report and FSD progress before making a move."},
   DEFAULT:{action:'Hold position',cls:'act-hold',text:"Your position looks reasonable based on general market conditions. Suggestion: continue holding, monitor quarterly earnings, and ensure this position is appropriately sized in your portfolio."}
 };
-</script>
-<script>
+
+
 
 const LESSONS=[
 {name:"What Schools Never Teach You About Money",desc:"The financial rules schools skip but the wealthy live by",cat:"Hidden Financial Knowledge",plan:"free",icon:"💰",content:`Schools spend years teaching algebra but not a single class on how money works. The wealthy know rules most people never learn.
@@ -975,49 +977,8 @@ const MOVES=[
 const STRIPE_PK = 'pk_test_51Tj5y5RvClN8iCWybxyhrisHJbJHGZHSpUSwMQVotLF1LkxawfyHoGN8qXpJVkhIqUZQkcxAGC2on2pw2Da1lQBS00z29vNVlo';
 const STRIPE_PRICE = 'price_1TjBU0RvClN8iCWy4olxCqfL'; // Replace with your price_ ID
 
-// ── SUPABASE ──
-const SBU = 'https://ivhhfhemcecwqadrjmwq.supabase.co';
-const SBK = 'sb_publishable_KoWYv1Ro5D4I83XxWmJFOg_DCB2ldw6';
-const SBH = {'Content-Type':'application/json','apikey':SBK,'Authorization':'Bearer '+SBK};
 
-// ── FINNHUB ──
-const FK = 'd8pn5n1r01qujv4j5d70d8pn5n1r01qujv4j5d7g';
 
-// ── USER ──
-const EP = new URLSearchParams(window.location.search);
-const EM = EP.get('user');
-let UID = EM || localStorage.getItem('fp_uid') || (()=>{const id='u_'+Math.random().toString(36).slice(2);localStorage.setItem('fp_uid',id);return id;})();
-if(EM) localStorage.setItem('fp_uid', EM);
-let IS_GOLD = localStorage.getItem('fp_gold') === 'true';
-
-let portfolio=[], selectedStock=null, pChart=null, dChart=null, priceCache={}, stTimeout=null;
-
-const COMPANIES={AAPL:'Apple Inc',MSFT:'Microsoft Corp',GOOGL:'Alphabet Inc',AMZN:'Amazon',NVDA:'NVIDIA Corp',META:'Meta Platforms',TSLA:'Tesla Inc','BRK.B':'Berkshire Hathaway',JPM:'JPMorgan Chase',V:'Visa Inc',JNJ:'Johnson & Johnson',UNH:'UnitedHealth',XOM:'Exxon Mobil',KO:'Coca-Cola',DAL:'Delta Air Lines',OXY:'Occidental Petroleum',UBER:'Uber Technologies',BN:'Brookfield Corp',AXP:'American Express',SHOP:'Shopify'};
-const POP = Object.keys(COMPANIES).slice(0,14);
-
-const AI_INSIGHT={
-  AAPL:"Apple is Warren Buffett's biggest holding since 2016. Strong brand, loyal customers, and growing services revenue. One of the safest long-term bets in the market.",
-  MSFT:"Bill Ackman just bought $2 billion of Microsoft during a sell-off betting on Azure cloud and AI Copilot. Rock-solid fundamentals.",
-  GOOGL:"Buffett tripled his Google position this quarter. Ad revenue recovering, Cloud gaining share, Gemini AI is a real competitor.",
-  AMZN:"Both Ackman and Tepper are heavily buying Amazon. AWS dominates cloud and retail profitability improves every quarter.",
-  NVDA:"The AI chip king. Every major AI company depends on their GPUs. Massive growth but high valuation.",
-  META:"Ackman holds Meta as a dominant AI advertising platform. Ad business printing money and AI investments paying off.",
-  TSLA:"Higher risk play. EV lead being challenged but energy storage and autonomous driving could be huge.",
-  DEFAULT:"A solid company in its sector. Check recent earnings and sector news before adding. Diversification is your best protection."
-};
-
-const AI_ADVISOR={
-  AAPL:{action:'Hold',cls:'act-hold',text:"Apple is rock solid. Buffett has held it for years. The services business adds growing recurring revenue on top of hardware. If you are down short-term do not panic — this is a multi-year play. Suggestion: hold and consider adding on any significant dip."},
-  MSFT:{action:'Consider adding',cls:'act-buy',text:"Microsoft has strong AI and cloud tailwinds with Azure growing 30%+ year over year. Copilot integration is just getting started. Suggestion: if this is less than 20% of your portfolio, adding on dips makes sense long term."},
-  GOOGL:{action:'Strong opportunity',cls:'act-buy',text:"Buffett tripled his Google position this quarter. Search dominates, YouTube grows, Cloud gains share fast. Suggestion: a position in GOOGL looks attractive at current levels."},
-  AMZN:{action:'Hold — let it run',cls:'act-hold',text:"Tepper nearly doubled Amazon. AWS growth plus improving retail profitability is powerful. Suggestion: hold and avoid trimming — next earnings reports could be major catalysts."},
-  NVDA:{action:'Hold — monitor size',cls:'act-watch',text:"You are riding the AI wave. If NVDA has grown beyond 20-25% of your portfolio consider trimming a small portion to rebalance. Suggestion: keep your core position but manage concentration risk."},
-  TSLA:{action:'Watch and wait',cls:'act-watch',text:"Tesla has been volatile. Hold your position but avoid adding without a catalyst. Suggestion: wait for the next earnings report before making a move."},
-  KO:{action:'Hold — income stock',cls:'act-hold',text:"Coca-Cola is a Buffett favourite held since 1988. Consistent dividends and defensive in any market. Suggestion: hold for income and stability. Great ballast in a volatile portfolio."},
-  JPM:{action:'Hold — strong bank',cls:'act-hold',text:"JPMorgan is the gold standard of banking. Strong earnings and excellent management. Suggestion: hold as a financial sector anchor. Consider adding on any broad market pullback."},
-  META:{action:'Hold — AI upside',cls:'act-hold',text:"Meta's ad business is printing money and AI investments are paying off. Suggestion: hold your position — the next 12 months could see significant earnings growth from AI advertising."},
-  DEFAULT:{action:'Hold position',cls:'act-hold',text:"Your position looks reasonable. Suggestion: continue holding, monitor quarterly earnings, and ensure this position is appropriately sized in your overall portfolio."}
-};
 
 // ── HELPERS ──
 function getActionBadge(a){
@@ -1483,6 +1444,9 @@ function agreeToTerms(){
 // ── INIT ──
 checkPaymentReturn();
 renderLessons();
+
 </script>
+{% endraw %}
+
 {% endraw %}
 </body></html>
