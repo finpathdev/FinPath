@@ -445,6 +445,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
     <button class="remove-btn" onclick="removeStock()">Remove from portfolio</button>
   </div>
 </div>
+{% raw %}
 <script>
 const FK='d8pn5n1r01qujv4j5d70d8pn5n1r01qujv4j5d7g';
 const SBU='https://ivhhfhemcecwqadrjmwq.supabase.co';
@@ -1134,7 +1135,7 @@ async function openGoldPayment(){
     const result = await stripe.redirectToCheckout({
       lineItems:[{price: STRIPE_PRICE, quantity:1}],
       mode:'subscription',
-      successUrl: window.location.origin+window.location.pathname+'?gold=success&session_id={CHECKOUT_SESSION_ID}',
+      successUrl: window.location.origin+window.location.pathname+'?gold=success',
       cancelUrl: window.location.href,
       customerEmail: EM || undefined
     });
@@ -1483,4 +1484,5 @@ function agreeToTerms(){
 checkPaymentReturn();
 renderLessons();
 </script>
+{% endraw %}
 </body></html>
