@@ -2279,9 +2279,9 @@ renderLessons();
 <style>
 .bg-lines{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden;display:none}
 .bg-lines.visible{display:block}
-.bg-line{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,0.055)}
+.bg-line{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,0.04)}
 .bg-line::after{content:'';position:absolute;top:0;height:1px;width:200px;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.22) 50%,transparent 100%);animation:lightMove linear infinite}
-@keyframes lightMove{from{left:-200px}to{left:calc(100vw + 200px)}}
+@keyframes lightMove{from{transform:translateX(-100%)}to{transform:translateX(calc(100vw + 240px))}}
 </style>
 <div class="bg-lines" id="bgLinesDiv"></div>
 <script>
@@ -2303,7 +2303,7 @@ renderLessons();
     line.style.setProperty('--spd', spd + 's');
     // Set animation on the ::after via inline style trick - use a span instead
     var light = document.createElement('span');
-    light.style.cssText = 'position:absolute;top:0;height:1px;width:200px;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.22) 50%,transparent 100%);animation:lightMove '+spd+'s '+delay+'s linear infinite;left:-200px';
+    light.style.cssText = 'position:absolute;top:0;height:1px;width:240px;background:linear-gradient(90deg,transparent 0%,transparent 20%,rgba(255,255,255,0.18) 50%,transparent 80%,transparent 100%);animation:lightMove '+spd+'s '+delay+'s linear infinite;left:-240px';
     line.appendChild(light);
     container.appendChild(line);
   }
