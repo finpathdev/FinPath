@@ -851,7 +851,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
   </div>
 </div>
 {% raw %}
-{% raw %}
 <script>
 
 const FK='d8pn5n1r01qujv4j5d70d8pn5n1r01qujv4j5d7g';
@@ -2259,7 +2258,6 @@ renderLessons();
 
 </script>
 
-{% endraw %}
 
 
 <script>
@@ -2267,92 +2265,102 @@ renderLessons();
 </script>
 
 
-<!-- ANIMATED BACKGROUND LINES - non-home pages only -->
-<canvas id="fixedBgLines" style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:0;display:none"></canvas>
+{% endraw %}
+
+<!-- ANIMATED BACKGROUND LINES -->
+<canvas id="fixedBgLines" style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:0;display:none;opacity:1"></canvas>
 <script>
 (function(){
-  const canvas = document.getElementById('fixedBgLines');
+  var canvas = document.getElementById('fixedBgLines');
   if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let W = 0, H = 0, lines = [], rafId = null;
+  var ctx = canvas.getContext('2d');
+  var W=0, H=0, lines=[];
 
   function resize(){
     W = canvas.width = window.innerWidth;
     H = canvas.height = window.innerHeight;
-    buildLines();
-  }
-
-  function buildLines(){
-    lines = [];
-    const spacing = 44;
-    const count = Math.ceil(H / spacing) + 2;
-    for(let i = 0; i <= count; i++){
+    lines=[];
+    var spacing=44;
+    var count=Math.ceil(H/spacing)+2;
+    for(var i=0;i<=count;i++){
       lines.push({
-        y: i * spacing,
-        lightX: Math.random() * W * 2 - W * 0.5,
-        speed: 0.3 + Math.random() * 0.4,
-        lightW: 140 + Math.random() * 140
+        y:i*spacing,
+        lightX:Math.random()*W,
+        speed:0.3+Math.random()*0.5,
+        lightW:120+Math.random()*160
       });
     }
   }
 
   function draw(){
-    ctx.clearRect(0, 0, W, H);
-    lines.forEach(line => {
-      line.lightX += line.speed;
-      if(line.lightX - line.lightW > W) line.lightX = -line.lightW * 1.5;
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<lines.length;i++){
+      var line=lines[i];
+      line.lightX+=line.speed;
+      if(line.lightX-line.lightW>W) line.lightX=-line.lightW;
 
-      // Base line
       ctx.beginPath();
-      ctx.moveTo(0, line.y);
-      ctx.lineTo(W, line.y);
-      ctx.strokeStyle = 'rgba(255,255,255,0.055)';
-      ctx.lineWidth = 0.5;
+      ctx.moveTo(0,line.y);
+      ctx.lineTo(W,line.y);
+      ctx.strokeStyle='rgba(255,255,255,0.06)';
+      ctx.lineWidth=0.5;
       ctx.stroke();
 
-      // Traveling light
-      const lx = line.lightX;
-      const lw = line.lightW;
-      if(lx + lw < 0 || lx - lw > W) return;
-      const grad = ctx.createLinearGradient(lx - lw, line.y, lx + lw, line.y);
-      grad.addColorStop(0,    'rgba(255,255,255,0)');
-      grad.addColorStop(0.35, 'rgba(255,255,255,0)');
-      grad.addColorStop(0.5,  'rgba(255,255,255,0.16)');
-      grad.addColorStop(0.65, 'rgba(255,255,255,0)');
-      grad.addColorStop(1,    'rgba(255,255,255,0)');
+      var lx=line.lightX, lw=line.lightW;
+      if(lx+lw<0||lx-lw>W){continue;}
+      var grad=ctx.createLinearGradient(lx-lw,line.y,lx+lw,line.y);
+      grad.addColorStop(0,'rgba(255,255,255,0)');
+      grad.addColorStop(0.4,'rgba(255,255,255,0)');
+      grad.addColorStop(0.5,'rgba(255,255,255,0.2)');
+      grad.addColorStop(0.6,'rgba(255,255,255,0)');
+      grad.addColorStop(1,'rgba(255,255,255,0)');
       ctx.beginPath();
-      ctx.moveTo(Math.max(0, lx - lw), line.y);
-      ctx.lineTo(Math.min(W, lx + lw), line.y);
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 0.8;
+      ctx.moveTo(Math.max(0,lx-lw),line.y);
+      ctx.lineTo(Math.min(W,lx+lw),line.y);
+      ctx.strokeStyle=grad;
+      ctx.lineWidth=1;
       ctx.stroke();
-    });
-    rafId = requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  }
+
+  function checkVisibility(){
+    var home=document.getElementById('page-home');
+    var isHome=home&&home.classList.contains('active');
+    canvas.style.display=isHome?'none':'block';
   }
 
   resize();
-  window.addEventListener('resize', ()=>{ resize(); });
+  window.addEventListener('resize',resize);
+  draw();
 
-  // Show/hide based on current page
-  const HOME = 'page-home';
-  function updateVisibility(){
-    const homePage = document.getElementById(HOME);
-    const homeActive = homePage && homePage.classList.contains('active');
-    canvas.style.display = homeActive ? 'none' : 'block';
+  // Check visibility every time showPage is called
+  var _orig=null;
+  function hookShowPage(){
+    if(window.showPage&&window.showPage!==hooked){
+      _orig=window.showPage;
+      window.showPage=hooked;
+    }
+  }
+  function hooked(p){
+    if(_orig) _orig(p);
+    setTimeout(checkVisibility,50);
   }
 
-  // Patch showPage to update visibility
-  const origShowPage = window.showPage;
-  window.showPage = function(p){
-    if(origShowPage) origShowPage(p);
-    updateVisibility();
-  };
+  // Poll until showPage exists then hook it
+  var hookInterval=setInterval(function(){
+    if(window.showPage){
+      hookShowPage();
+      clearInterval(hookInterval);
+    }
+  },100);
 
-  // Initial check
-  setTimeout(updateVisibility, 100);
-  draw();
+  // Initial check after page loads
+  window.addEventListener('load',function(){
+    checkVisibility();
+    hookShowPage();
+  });
+  setTimeout(checkVisibility,500);
 })();
 </script>
-
-{% endraw %}
 </body></html>
