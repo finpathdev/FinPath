@@ -209,6 +209,361 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
       </div>
     </div>
   </section>
+
+<!-- 3D INTERACTIVE SECTION -->
+<div id="interactive-3d" style="padding:60px 5% 20px;max-width:1200px;margin:0 auto;text-align:center">
+  <div style="font-size:11px;font-weight:600;color:#22c55e;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">Live market pulse</div>
+  <h2 style="font-size:clamp(22px,3vw,36px);font-weight:800;letter-spacing:-1px;margin-bottom:8px">The market never sleeps</h2>
+  <p style="font-size:15px;color:#888;margin-bottom:32px">Rotate the globe to explore where the world's money flows</p>
+  <div style="position:relative;width:100%;height:480px;background:#000;border-radius:20px;overflow:hidden;border:1px solid #1a1a1a">
+    <canvas id="globeCanvas" style="width:100%;height:100%;display:block"></canvas>
+    <!-- Floating ticker cards -->
+    <div id="ticker-cards" style="position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none"></div>
+    <!-- Instructions -->
+    <div style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:12px;color:#555;background:rgba(0,0,0,.6);padding:6px 14px;border-radius:20px;white-space:nowrap">Drag to rotate · Scroll to zoom</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const canvas = document.getElementById('globeCanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  
+  function resize(){
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Globe state
+  let rotX = 0.3, rotY = 0, rotZ = 0;
+  let dragging = false, lastX = 0, lastY = 0;
+  let autoRotate = true;
+  let zoom = 1;
+
+  // Market cities with live-ish data
+  const cities = [
+    {name:'New York',lat:40.7,lng:-74,ticker:'NYSE',color:'#22c55e',val:'+1.24%'},
+    {name:'London',lat:51.5,lng:-0.1,ticker:'LSE',color:'#4ade80',val:'+0.87%'},
+    {name:'Tokyo',lat:35.7,lng:139.7,ticker:'TSE',color:'#22c55e',val:'-0.34%'},
+    {name:'Shanghai',lat:31.2,lng:121.5,ticker:'SSE',color:'#f87171',val:'-1.12%'},
+    {name:'Frankfurt',lat:50.1,lng:8.7,ticker:'FSE',color:'#4ade80',val:'+0.56%'},
+    {name:'Sydney',lat:-33.9,lng:151.2,ticker:'ASX',color:'#22c55e',val:'+0.93%'},
+    {name:'Mumbai',lat:19.1,lng:72.9,ticker:'BSE',color:'#4ade80',val:'+1.45%'},
+    {name:'Toronto',lat:43.7,lng:-79.4,ticker:'TSX',color:'#22c55e',val:'+0.71%'},
+    {name:'Dubai',lat:25.2,lng:55.3,ticker:'DFM',color:'#fbbf24',val:'+0.23%'},
+    {name:'Singapore',lat:1.3,lng:103.8,ticker:'SGX',color:'#22c55e',val:'+0.61%'},
+    {name:'São Paulo',lat:-23.5,lng:-46.6,ticker:'B3',color:'#f87171',val:'-0.88%'},
+    {name:'Seoul',lat:37.6,lng:126.9,ticker:'KRX',color:'#4ade80',val:'+0.42%'},
+  ];
+
+  // Lat/lng to 3D point
+  function latLngTo3D(lat, lng, r){
+    const phi = (90 - lat) * Math.PI / 180;
+    const theta = (lng + 180) * Math.PI / 180;
+    return {
+      x: -r * Math.sin(phi) * Math.cos(theta),
+      y: r * Math.cos(phi),
+      z: r * Math.sin(phi) * Math.sin(theta)
+    };
+  }
+
+  // Rotate point
+  function rotatePoint(p, rx, ry){
+    // Rotate around Y
+    let x = p.x * Math.cos(ry) - p.z * Math.sin(ry);
+    let z = p.x * Math.sin(ry) + p.z * Math.cos(ry);
+    let y = p.y;
+    // Rotate around X
+    let y2 = y * Math.cos(rx) - z * Math.sin(rx);
+    let z2 = y * Math.sin(rx) + z * Math.cos(rx);
+    return {x, y:y2, z:z2};
+  }
+
+  // Generate globe points (lat/lng grid)
+  const gridPoints = [];
+  for(let lat = -80; lat <= 80; lat += 15){
+    for(let lng = -180; lng <= 180; lng += 10){
+      gridPoints.push(latLngTo3D(lat, lng, 1));
+    }
+  }
+
+  // Generate continent outline points (simplified)
+  const continentPts = [];
+  // North America outline (simplified)
+  const naPoints = [[70,-140],[60,-140],[50,-130],[45,-125],[35,-120],[25,-110],[20,-105],[15,-90],[10,-85],[15,-80],[20,-75],[25,-80],[30,-81],[35,-76],[40,-74],[45,-65],[50,-56],[55,-60],[60,-65],[65,-68],[70,-80],[70,-100],[70,-120],[70,-140]];
+  naPoints.forEach(([la,lo])=>continentPts.push({pts:latLngTo3D(la,lo,1.001),group:'na'}));
+  // Europe (simplified)
+  const euPoints = [[71,28],[65,14],[55,8],[44,8],[36,5],[36,28],[42,28],[48,38],[52,32],[60,30],[71,28]];
+  euPoints.forEach(([la,lo])=>continentPts.push({pts:latLngTo3D(la,lo,1.001),group:'eu'}));
+
+  // Flowing connection lines between cities
+  const connections = [
+    [0,1],[0,7],[1,4],[2,9],[3,9],[5,9],[6,9],[0,2],[1,3]
+  ];
+
+  let frame = 0;
+  let hoveredCity = null;
+
+  function project(p, cx, cy, R, z_offset=0){
+    const scale = R * zoom / (2 - p.z * 0.3);
+    return {
+      sx: cx + p.x * scale,
+      sy: cy - p.y * scale,
+      visible: p.z > -0.2,
+      scale,
+      depth: p.z
+    };
+  }
+
+  function drawGlobe(){
+    const W = canvas.width, H = canvas.height;
+    const cx = W/2, cy = H/2;
+    const R = Math.min(W, H) * 0.38;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Background gradient
+    const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, R*1.5);
+    bgGrad.addColorStop(0, '#0a0a0a');
+    bgGrad.addColorStop(1, '#000000');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, W, H);
+
+    // Stars
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    for(let i=0;i<80;i++){
+      const sx = (i*137.5)%W;
+      const sy = (i*97.3)%H;
+      const dist = Math.sqrt((sx-cx)**2+(sy-cy)**2);
+      if(dist > R*1.1){
+        ctx.beginPath();
+        ctx.arc(sx, sy, 0.6, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+
+    // Globe glow
+    const glowGrad = ctx.createRadialGradient(cx-R*0.3, cy-R*0.3, 0, cx, cy, R*1.1);
+    glowGrad.addColorStop(0, 'rgba(34,197,94,0.08)');
+    glowGrad.addColorStop(0.5, 'rgba(34,197,94,0.04)');
+    glowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = glowGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, R*1.1, 0, Math.PI*2);
+    ctx.fill();
+
+    // Globe base circle
+    const globeGrad = ctx.createRadialGradient(cx-R*0.2, cy-R*0.2, R*0.1, cx, cy, R);
+    globeGrad.addColorStop(0, '#0d1a0d');
+    globeGrad.addColorStop(0.5, '#071307');
+    globeGrad.addColorStop(1, '#020802');
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI*2);
+    ctx.fillStyle = globeGrad;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(34,197,94,0.2)';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
+
+    // Latitude/longitude grid lines
+    ctx.strokeStyle = 'rgba(34,197,94,0.08)';
+    ctx.lineWidth = 0.5;
+    
+    // Draw lat lines
+    for(let lat=-75;lat<=75;lat+=15){
+      ctx.beginPath();
+      let first = true;
+      for(let lng=-180;lng<=180;lng+=5){
+        const p3 = latLngTo3D(lat, lng, 1);
+        const pr = rotatePoint(p3, rotX, rotY);
+        if(pr.z < 0) continue;
+        const proj = project(pr, cx, cy, R);
+        if(first){ctx.moveTo(proj.sx, proj.sy); first=false;}
+        else ctx.lineTo(proj.sx, proj.sy);
+      }
+      ctx.stroke();
+    }
+    
+    // Draw lng lines
+    for(let lng=-180;lng<=180;lng+=30){
+      ctx.beginPath();
+      let first = true;
+      for(let lat=-90;lat<=90;lat+=5){
+        const p3 = latLngTo3D(lat, lng, 1);
+        const pr = rotatePoint(p3, rotX, rotY);
+        if(pr.z < 0) continue;
+        const proj = project(pr, cx, cy, R);
+        if(first){ctx.moveTo(proj.sx, proj.sy); first=false;}
+        else ctx.lineTo(proj.sx, proj.sy);
+      }
+      ctx.stroke();
+    }
+
+    // Draw connection arcs between cities
+    connections.forEach(([ai, bi]) => {
+      const aPos = latLngTo3D(cities[ai].lat, cities[ai].lng, 1.02);
+      const bPos = latLngTo3D(cities[bi].lat, cities[bi].lng, 1.02);
+      const ar = rotatePoint(aPos, rotX, rotY);
+      const br = rotatePoint(bPos, rotX, rotY);
+      if(ar.z < 0 || br.z < 0) return;
+      const ap = project(ar, cx, cy, R);
+      const bp = project(br, cx, cy, R);
+      
+      // Animated dash
+      const progress = ((frame * 0.8) % 100) / 100;
+      const grad = ctx.createLinearGradient(ap.sx, ap.sy, bp.sx, bp.sy);
+      grad.addColorStop(Math.max(0, progress - 0.3), 'rgba(34,197,94,0)');
+      grad.addColorStop(progress, 'rgba(34,197,94,0.8)');
+      grad.addColorStop(Math.min(1, progress + 0.1), 'rgba(34,197,94,0)');
+      
+      ctx.beginPath();
+      ctx.moveTo(ap.sx, ap.sy);
+      // Arc via midpoint elevated
+      const midX = (ap.sx + bp.sx) / 2;
+      const midY = (ap.sy + bp.sy) / 2 - Math.sqrt((bp.sx-ap.sx)**2+(bp.sy-ap.sy)**2)*0.15;
+      ctx.quadraticCurveTo(midX, midY, bp.sx, bp.sy);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+
+    // Draw city dots
+    cities.forEach((city, idx) => {
+      const p3 = latLngTo3D(city.lat, city.lng, 1.02);
+      const pr = rotatePoint(p3, rotX, rotY);
+      if(pr.z < 0.1) return;
+      const proj = project(pr, cx, cy, R);
+      
+      const isHovered = hoveredCity === idx;
+      const pulse = Math.sin(frame * 0.05 + idx * 0.8) * 0.5 + 0.5;
+      
+      // Pulse ring
+      ctx.beginPath();
+      ctx.arc(proj.sx, proj.sy, (isHovered ? 10 : 6) + pulse * 4, 0, Math.PI*2);
+      ctx.strokeStyle = city.color + '40';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      
+      // Dot
+      ctx.beginPath();
+      ctx.arc(proj.sx, proj.sy, isHovered ? 5 : 3.5, 0, Math.PI*2);
+      ctx.fillStyle = city.color;
+      ctx.fill();
+      
+      // Label on hover or always for large screens
+      if(isHovered || W > 600){
+        ctx.font = `${isHovered?600:500} ${isHovered?13:11}px -apple-system,sans-serif`;
+        ctx.fillStyle = isHovered ? '#fff' : 'rgba(255,255,255,0.7)';
+        const labelX = proj.sx + 8;
+        const labelY = proj.sy - 6;
+        
+        if(isHovered){
+          // Background pill
+          const tw = ctx.measureText(city.name).width + ctx.measureText(city.val).width + 24;
+          ctx.fillStyle = 'rgba(0,0,0,0.85)';
+          ctx.beginPath();
+          ctx.roundRect(labelX - 4, labelY - 13, tw, 32, 6);
+          ctx.fill();
+          ctx.fillStyle = '#fff';
+          ctx.fillText(city.name, labelX, labelY);
+          ctx.fillStyle = city.val.startsWith('+') ? '#4ade80' : '#f87171';
+          ctx.fillText(city.val, labelX, labelY + 14);
+        } else if(W > 600) {
+          ctx.fillText(city.ticker, labelX, labelY + 4);
+        }
+      }
+    });
+
+    // Atmosphere rim
+    const rimGrad = ctx.createRadialGradient(cx, cy, R*0.85, cx, cy, R*1.05);
+    rimGrad.addColorStop(0, 'rgba(34,197,94,0)');
+    rimGrad.addColorStop(0.7, 'rgba(34,197,94,0.04)');
+    rimGrad.addColorStop(1, 'rgba(34,197,94,0.12)');
+    ctx.beginPath();
+    ctx.arc(cx, cy, R*1.05, 0, Math.PI*2);
+    ctx.fillStyle = rimGrad;
+    ctx.fill();
+
+    // Clip to circle
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI*2);
+    ctx.clip();
+    // Specular highlight
+    const specGrad = ctx.createRadialGradient(cx-R*0.35, cy-R*0.35, 0, cx-R*0.2, cy-R*0.2, R*0.5);
+    specGrad.addColorStop(0, 'rgba(255,255,255,0.04)');
+    specGrad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = specGrad;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+
+    frame++;
+    if(autoRotate && !dragging) rotY += 0.003;
+  }
+
+  function loop(){ drawGlobe(); requestAnimationFrame(loop); }
+  loop();
+
+  // Mouse interaction
+  canvas.addEventListener('mousedown', e=>{
+    dragging=true; autoRotate=false;
+    lastX=e.clientX; lastY=e.clientY;
+  });
+  window.addEventListener('mouseup', ()=>{
+    dragging=false;
+    setTimeout(()=>autoRotate=true, 3000);
+  });
+  window.addEventListener('mousemove', e=>{
+    if(dragging){
+      rotY += (e.clientX-lastX)*0.005;
+      rotX += (e.clientY-lastY)*0.005;
+      rotX = Math.max(-1.2, Math.min(1.2, rotX));
+      lastX=e.clientX; lastY=e.clientY;
+    }
+    // Check hover
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (canvas.width/rect.width);
+    const my = (e.clientY - rect.top) * (canvas.height/rect.height);
+    const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2;
+    const R=Math.min(W,H)*0.38;
+    hoveredCity = null;
+    cities.forEach((city,idx)=>{
+      const p3=latLngTo3D(city.lat,city.lng,1.02);
+      const pr=rotatePoint(p3,rotX,rotY);
+      if(pr.z<0.1) return;
+      const proj=project(pr,cx,cy,R);
+      if(Math.hypot(proj.sx-mx,proj.sy-my)<12) hoveredCity=idx;
+    });
+    canvas.style.cursor = hoveredCity!==null ? 'pointer' : 'grab';
+  });
+
+  // Touch
+  let lastTouchX=0, lastTouchY=0;
+  canvas.addEventListener('touchstart', e=>{
+    dragging=true; autoRotate=false;
+    lastTouchX=e.touches[0].clientX; lastTouchY=e.touches[0].clientY;
+  },{passive:true});
+  canvas.addEventListener('touchmove', e=>{
+    if(!dragging) return;
+    rotY+=(e.touches[0].clientX-lastTouchX)*0.005;
+    rotX+=(e.touches[0].clientY-lastTouchY)*0.005;
+    rotX=Math.max(-1.2,Math.min(1.2,rotX));
+    lastTouchX=e.touches[0].clientX; lastTouchY=e.touches[0].clientY;
+  },{passive:true});
+  canvas.addEventListener('touchend',()=>{dragging=false;setTimeout(()=>autoRotate=true,3000);});
+
+  // Scroll to zoom
+  canvas.addEventListener('wheel', e=>{
+    e.preventDefault();
+    zoom = Math.max(0.6, Math.min(2, zoom - e.deltaY*0.001));
+  },{passive:false});
+})();
+</script>
+
   <section class="features">
     <div class="section-tag">Everything you need</div>
     <h2 class="section-title">Built for people who are serious about money</h2>
@@ -459,6 +814,9 @@ const EM=EP.get('user');
 let UID=EM||localStorage.getItem('fp_uid')||(()=>{const id='u_'+Math.random().toString(36).slice(2);localStorage.setItem('fp_uid',id);return id;})();
 if(EM)localStorage.setItem('fp_uid',EM);
 let IS_GOLD = localStorage.getItem('fp_gold') === 'true';
+
+function fmt(n){return '$'+parseFloat(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
 let portfolio=[],selectedStock=null,pChart=null,dChart=null,priceCache={},stTimeout=null;
 
 const COMPANIES={AAPL:'Apple Inc',MSFT:'Microsoft Corp',GOOGL:'Alphabet Inc',AMZN:'Amazon',NVDA:'NVIDIA Corp',META:'Meta Platforms',TSLA:'Tesla Inc','BRK.B':'Berkshire Hathaway',JPM:'JPMorgan Chase',V:'Visa Inc',JNJ:'Johnson & Johnson',UNH:'UnitedHealth',XOM:'Exxon Mobil',KO:'Coca-Cola',DAL:'Delta Air Lines',OXY:'Occidental Petroleum',UBER:'Uber Technologies',BN:'Brookfield Corp',AXP:'American Express',SHOP:'Shopify'};
@@ -1492,14 +1850,14 @@ async function renderPortfolio(){
 
   const pnl=totalVal-totalInvested;
   const retPct=totalInvested>0?(pnl/totalInvested*100):0;
-  document.getElementById('totalValue').textContent='$'+totalVal.toFixed(2);
+  document.getElementById('totalValue').textContent=fmt(totalVal);
   const db=document.getElementById('dailyBadge');
   db.textContent=(totalDayChg>=0?'+$':'-$')+Math.abs(totalDayChg).toFixed(2)+' today';
   db.className='daily-badge '+(totalDayChg>=0?'daily-up':'daily-down');
-  document.getElementById('pInvested').textContent='$'+totalInvested.toFixed(2);
-  document.getElementById('pCurrent').textContent='$'+totalVal.toFixed(2);
+  document.getElementById('pInvested').textContent=fmt(totalInvested);
+  document.getElementById('pCurrent').textContent=fmt(totalVal);
   const pe=document.getElementById('pPnl');
-  pe.textContent=(pnl>=0?'+$':'-$')+Math.abs(pnl).toFixed(2);
+  pe.textContent=(pnl>=0?'+':'-')+fmt(Math.abs(pnl));
   pe.className='p-val '+(pnl>=0?'up':'down');
   const re=document.getElementById('pReturn');
   re.textContent=(retPct>=0?'+':'')+retPct.toFixed(2)+'%';
@@ -1631,13 +1989,13 @@ async function openDetail(ticker){
     const val=q.c*selectedStock.shares;
     const pnl=(q.c-selectedStock.buyPrice)*selectedStock.shares;
     const pnlPct=selectedStock.buyPrice>0?((q.c-selectedStock.buyPrice)/selectedStock.buyPrice*100):0;
-    document.getElementById('dPrice').textContent='$'+q.c.toFixed(2);
+    document.getElementById('dPrice').textContent=fmt(q.c);
     const te=document.getElementById('dToday');
     te.textContent=(q.dp>=0?'+':'')+q.dp.toFixed(2)+'%';
     te.className='d-mval '+(q.dp>=0?'up':'down');
-    document.getElementById('dVal').textContent='$'+val.toFixed(2);
+    document.getElementById('dVal').textContent=fmt(val);
     const pe=document.getElementById('dPnl');
-    pe.textContent=(pnl>=0?'+$':'-$')+Math.abs(pnl).toFixed(2)+' ('+pnlPct.toFixed(2)+'%)';
+    pe.textContent=(pnl>=0?'+':'-')+fmt(Math.abs(pnl))+' ('+pnlPct.toFixed(2)+'%)';
     pe.className='d-mval '+(pnl>=0?'up':'down');
   }
   renderDetailChart(ticker,1);
