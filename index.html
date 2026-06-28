@@ -7,6 +7,7 @@
 <title>FinPath — The Financial Playbook Schools Skipped</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--black:#000;--surface:#0f0f0f;--surface2:#1a1a1a;--surface3:#222;--green:#22c55e;--green-dark:#16a34a;--green-deeper:#052e16;--green-dim:#15803d;--text:#fff;--muted:#888;--muted2:#555;--border:#222;--gold:#f59e0b;}
@@ -174,6 +175,49 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
 </style>
 </style></head><body>
 
+
+<!-- LOGIN MODAL -->
+<div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#0f0f0f;border:1px solid #222;border-radius:20px;width:100%;max-width:420px;padding:40px;position:relative">
+    <button onclick="closeLogin()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:#888;font-size:22px;cursor:pointer;line-height:1">×</button>
+    
+    <!-- Logo -->
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="font-size:28px;font-weight:800;color:#22c55e;letter-spacing:-1px">Fin<span style="color:#fff">Path</span></div>
+      <div style="font-size:13px;color:#888;margin-top:4px">The financial playbook schools skipped</div>
+    </div>
+
+    <!-- State: enter email -->
+    <div id="loginStep1">
+      <div style="font-size:18px;font-weight:700;margin-bottom:6px;text-align:center">Sign in or create account</div>
+      <div style="font-size:13px;color:#888;margin-bottom:24px;text-align:center">We will send a magic link to your email — no password needed</div>
+      <input id="loginEmail" type="email" placeholder="Enter your email address" style="width:100%;background:#1a1a1a;border:1px solid #333;border-radius:10px;padding:14px;color:#fff;font-size:15px;outline:none;margin-bottom:12px" onkeydown="if(event.key==='Enter')sendMagicLink()">
+      <button onclick="sendMagicLink()" id="loginBtn" style="width:100%;background:#15803d;border:none;border-radius:10px;padding:14px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:background .15s">Continue with email</button>
+      <div id="loginError" style="color:#f87171;font-size:13px;margin-top:10px;text-align:center;display:none"></div>
+    </div>
+
+    <!-- State: email sent -->
+    <div id="loginStep2" style="display:none;text-align:center">
+      <div style="font-size:40px;margin-bottom:16px">📬</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:8px">Check your inbox</div>
+      <div style="font-size:14px;color:#888;line-height:1.6;margin-bottom:20px">We sent a magic link to <span id="sentEmail" style="color:#22c55e;font-weight:600"></span>.<br>Click the link in the email to sign in instantly.</div>
+      <div style="font-size:12px;color:#555">No email? Check your spam folder or <button onclick="showStep1()" style="background:none;border:none;color:#22c55e;cursor:pointer;font-size:12px;text-decoration:underline">try again</button></div>
+    </div>
+
+    <div style="margin-top:20px;padding-top:20px;border-top:1px solid #222;text-align:center;font-size:12px;color:#555">
+      By continuing you agree to our <a onclick="showPage('legal');closeLogin()" style="color:#22c55e;cursor:pointer;text-decoration:none">Terms & Legal Disclaimers</a>
+    </div>
+  </div>
+</div>
+
+<!-- USER MENU (shown when logged in) -->
+<div id="userMenu" style="display:none;position:fixed;top:74px;right:5%;background:#0f0f0f;border:1px solid #222;border-radius:12px;padding:8px;z-index:400;min-width:200px;box-shadow:0 8px 32px rgba(0,0,0,.5)">
+  <div id="userEmailDisplay" style="padding:10px 12px;font-size:13px;color:#888;border-bottom:1px solid #222;margin-bottom:4px"></div>
+  <div id="goldStatusMenu" style="padding:8px 12px;font-size:13px"></div>
+  <button onclick="showPage('portfolio');closeUserMenu()" style="width:100%;background:none;border:none;color:#fff;text-align:left;padding:10px 12px;cursor:pointer;font-size:14px;border-radius:8px" onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background='none'">📈 My Portfolio</button>
+  <button onclick="signOut()" style="width:100%;background:none;border:none;color:#f87171;text-align:left;padding:10px 12px;cursor:pointer;font-size:14px;border-radius:8px" onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background='none'">Sign out</button>
+</div>
+
 <nav>
   <div class="nav-inner">
     <div class="logo" onclick="showPage('home')">Fin<span>Path</span></div>
@@ -184,7 +228,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
       <a onclick="showPage('portfolio')">Portfolio</a>
       <a onclick="showPage('legal')">Legal</a>
     </div>
-    <button class="nav-cta" onclick="showPage('lessons')">Get Started Free</button>
+    <button class="nav-cta" id="navAuthBtn" onclick="handleAuthClick()">Get Started Free</button>
     <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -205,7 +249,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
       <h1>Learn how money <span>actually</span> works</h1>
       <p>Track your portfolio with live prices, follow what billionaires are buying, and get AI-powered buy/hold/sell suggestions — all in one place.</p>
       <div class="hero-btns">
-        <button class="btn-primary" onclick="showPage('lessons')">Start Learning Free</button>
+        <button class="btn-primary" onclick="handleAuthClick()">Get Started Free</button>
         <button class="btn-secondary" onclick="showPage('portfolio')">Open Portfolio Tracker</button>
       </div>
       <div class="stats-row">
@@ -610,7 +654,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
           <li class="no">AI buy/hold/sell suggestions</li>
           <li class="no">Hourly portfolio breakdown</li>
         </ul>
-        <button class="price-btn outline" onclick="showPage('lessons')">Get started free</button>
+        <button class="price-btn outline" onclick="handleAuthClick()">Get started free</button>
       </div>
       <div class="price-card featured">
         <div class="price-name">FinPath Gold ✦</div>
@@ -2033,7 +2077,183 @@ function agreeToTerms(){
   showPage('home');
 }
 
+
+// ── SUPABASE AUTH ──
+const supabaseClient = supabase.createClient(SBU, SBK);
+let currentUser = null;
+
+async function initAuth(){
+  // Check for magic link callback
+  const { data: { session }, error } = await supabaseClient.auth.getSession();
+  if(session && session.user){
+    currentUser = session.user;
+    onUserLoggedIn(session.user);
+  }
+
+  // Listen for auth changes
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    if(event === 'SIGNED_IN' && session){
+      currentUser = session.user;
+      onUserLoggedIn(session.user);
+      closeLogin();
+      // Check if returning from magic link
+      if(event === 'SIGNED_IN'){
+        const params = new URLSearchParams(window.location.search);
+        if(params.get('gold') === 'success'){
+          IS_GOLD = true;
+          localStorage.setItem('fp_gold','true');
+          showSuccessBanner();
+          window.history.replaceState({},document.title,window.location.pathname);
+        }
+      }
+    } else if(event === 'SIGNED_OUT'){
+      currentUser = null;
+      onUserSignedOut();
+    }
+  });
+}
+
+function onUserLoggedIn(user){
+  // Update UID to use actual user ID
+  UID = user.id;
+  // Update nav button
+  const btn = document.getElementById('navAuthBtn');
+  if(btn){
+    const name = user.email.split('@')[0];
+    btn.textContent = name.charAt(0).toUpperCase() + name.slice(1);
+    btn.style.background = '#052e16';
+    btn.style.border = '1px solid #15803d';
+  }
+  // Check gold status from DB
+  checkGoldStatus(user.id);
+}
+
+function onUserSignedOut(){
+  UID = localStorage.getItem('fp_uid') || 'anon';
+  IS_GOLD = false;
+  localStorage.removeItem('fp_gold');
+  const btn = document.getElementById('navAuthBtn');
+  if(btn){
+    btn.textContent = 'Get Started Free';
+    btn.style.background = '';
+    btn.style.border = '';
+  }
+  document.getElementById('userMenu').style.display = 'none';
+}
+
+async function checkGoldStatus(userId){
+  try {
+    const { data } = await supabaseClient
+      .from('gold_users')
+      .select('active')
+      .eq('user_id', userId)
+      .single();
+    if(data && data.active){
+      IS_GOLD = true;
+      localStorage.setItem('fp_gold','true');
+    }
+  } catch(e){
+    // Table might not exist yet, use localStorage
+    IS_GOLD = localStorage.getItem('fp_gold') === 'true';
+  }
+  updateGoldMenuStatus();
+}
+
+function updateGoldMenuStatus(){
+  const el = document.getElementById('goldStatusMenu');
+  if(!el) return;
+  if(IS_GOLD){
+    el.innerHTML = '<span style="color:#f59e0b;font-weight:600">✦ Gold Member</span>';
+  } else {
+    el.innerHTML = '<button onclick="openGoldPayment();closeUserMenu()" style="background:linear-gradient(135deg,#15803d,#052e16);border:none;border-radius:8px;padding:8px 14px;color:#4ade80;font-size:13px;font-weight:600;cursor:pointer;width:100%">Upgrade to Gold ✦</button>';
+  }
+}
+
+function handleAuthClick(){
+  if(currentUser){
+    // Show user menu
+    const menu = document.getElementById('userMenu');
+    if(menu.style.display === 'flex'){
+      closeUserMenu();
+    } else {
+      document.getElementById('userEmailDisplay').textContent = currentUser.email;
+      updateGoldMenuStatus();
+      menu.style.display = 'block';
+    }
+  } else {
+    openLogin();
+  }
+}
+
+function closeUserMenu(){
+  document.getElementById('userMenu').style.display = 'none';
+}
+
+// Close user menu when clicking outside
+document.addEventListener('click', e => {
+  const menu = document.getElementById('userMenu');
+  const btn = document.getElementById('navAuthBtn');
+  if(menu && !menu.contains(e.target) && e.target !== btn){
+    closeUserMenu();
+  }
+});
+
+function openLogin(){
+  showStep1();
+  document.getElementById('loginModal').style.display = 'flex';
+  setTimeout(()=>document.getElementById('loginEmail').focus(), 100);
+}
+
+function closeLogin(){
+  document.getElementById('loginModal').style.display = 'none';
+}
+
+function showStep1(){
+  document.getElementById('loginStep1').style.display = 'block';
+  document.getElementById('loginStep2').style.display = 'none';
+  document.getElementById('loginError').style.display = 'none';
+  document.getElementById('loginEmail').value = '';
+}
+
+async function sendMagicLink(){
+  const email = document.getElementById('loginEmail').value.trim();
+  if(!email || !email.includes('@')){
+    const err = document.getElementById('loginError');
+    err.textContent = 'Please enter a valid email address';
+    err.style.display = 'block';
+    return;
+  }
+  const btn = document.getElementById('loginBtn');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  try {
+    const { error } = await supabaseClient.auth.signInWithOtp({
+      email: email,
+      options: {
+        emailRedirectTo: 'https://finpathdev.github.io/FinPath/'
+      }
+    });
+    if(error) throw error;
+    document.getElementById('sentEmail').textContent = email;
+    document.getElementById('loginStep1').style.display = 'none';
+    document.getElementById('loginStep2').style.display = 'block';
+  } catch(e){
+    const err = document.getElementById('loginError');
+    err.textContent = e.message || 'Something went wrong. Please try again.';
+    err.style.display = 'block';
+    btn.textContent = 'Continue with email';
+    btn.disabled = false;
+  }
+}
+
+async function signOut(){
+  await supabaseClient.auth.signOut();
+  closeUserMenu();
+}
+
 // ── INIT ──
+initAuth();
 checkPaymentReturn();
 renderLessons();
 // Init background lines on non-home pages
