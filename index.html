@@ -696,6 +696,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
     <h1 id="detailTitle" style="font-size:clamp(24px,4vw,40px);font-weight:800;letter-spacing:-1px;margin-bottom:24px;line-height:1.2"></h1>
     <div id="detailBody"></div>
   </div>
+
+<div style="text-align:center;padding:20px;font-size:12px;color:#333;border-top:1px solid #1a1a1a;position:relative;z-index:2">Built by <span style="color:#22c55e;font-weight:600">Siddharth Moosani</span> · © 2026 FinPath</div>
 </div>
 
 <!-- GOLD -->
@@ -706,6 +708,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
     <p style="font-size:16px;color:var(--muted);max-width:500px;margin:0 auto">See what the world's greatest investors are buying and selling this quarter — and exactly why.</p>
   </div>
   <div id="goldContent"></div>
+
+<div style="text-align:center;padding:20px;font-size:12px;color:#333;border-top:1px solid #1a1a1a;position:relative;z-index:2">Built by <span style="color:#22c55e;font-weight:600">Siddharth Moosani</span> · © 2026 FinPath</div>
 </div>
 
 <!-- PORTFOLIO -->
@@ -756,6 +760,8 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
       <div id="aiRecs"><div class="empty">Add stocks and click above to get personalised suggestions.</div></div>
     </div>
   </div>
+
+<div style="text-align:center;padding:20px;font-size:12px;color:#333;border-top:1px solid #1a1a1a;position:relative;z-index:2">Built by <span style="color:#22c55e;font-weight:600">Siddharth Moosani</span> · © 2026 FinPath</div>
 </div>
 
 <!-- LEGAL -->
@@ -2267,100 +2273,63 @@ renderLessons();
 
 {% endraw %}
 
-<!-- ANIMATED BACKGROUND LINES -->
-<canvas id="fixedBgLines" style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:0;display:none;opacity:1"></canvas>
+<div style="text-align:center;padding:20px;font-size:12px;color:#333;border-top:1px solid #1a1a1a;position:relative;z-index:2">Built by <span style="color:#22c55e;font-weight:600">Siddharth Moosani</span> · © 2026 FinPath</div>
+
+<!-- ANIMATED BACKGROUND LINES - Pure CSS -->
+<style>
+.bg-lines{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;display:none}
+.bg-lines.visible{display:block}
+.bg-line{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,0.055)}
+.bg-line::after{content:'';position:absolute;top:0;height:1px;width:200px;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.22) 50%,transparent 100%);animation:lightMove linear infinite}
+@keyframes lightMove{from{left:-200px}to{left:calc(100vw + 200px)}}
+</style>
+<div class="bg-lines" id="bgLinesDiv"></div>
 <script>
 (function(){
-  var canvas = document.getElementById('fixedBgLines');
-  if(!canvas) return;
-  var ctx = canvas.getContext('2d');
-  var W=0, H=0, lines=[];
+  var container = document.getElementById('bgLinesDiv');
+  if(!container) return;
 
-  function resize(){
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-    lines=[];
-    var spacing=44;
-    var count=Math.ceil(H/spacing)+2;
-    for(var i=0;i<=count;i++){
-      lines.push({
-        y:i*spacing,
-        lightX:Math.random()*W,
-        speed:0.3+Math.random()*0.5,
-        lightW:120+Math.random()*160
-      });
-    }
+  // Build lines
+  var lineCount = Math.ceil(window.innerHeight / 44) + 2;
+  var speeds = [18,22,16,26,20,24,18,28,22,16,24,20,26,18,22,28,20,16,24,22,18,26,20,28,16,22,24,18,26,20];
+  var delays = [0,-3,-7,-1,-5,-9,-2,-6,-10,-4,-8,-1,-5,-3,-7,-9,-2,-6,-4,-8,-10,-3,-7,-1,-5,-9,-2,-6,-4,-8];
+
+  for(var i=0; i<lineCount; i++){
+    var line = document.createElement('div');
+    line.className = 'bg-line';
+    line.style.top = (i * 44) + 'px';
+    var spd = speeds[i % speeds.length];
+    var delay = delays[i % delays.length];
+    line.style.setProperty('--spd', spd + 's');
+    // Set animation on the ::after via inline style trick - use a span instead
+    var light = document.createElement('span');
+    light.style.cssText = 'position:absolute;top:0;height:1px;width:200px;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.22) 50%,transparent 100%);animation:lightMove '+spd+'s '+delay+'s linear infinite;left:-200px';
+    line.appendChild(light);
+    container.appendChild(line);
   }
 
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-    for(var i=0;i<lines.length;i++){
-      var line=lines[i];
-      line.lightX+=line.speed;
-      if(line.lightX-line.lightW>W) line.lightX=-line.lightW;
-
-      ctx.beginPath();
-      ctx.moveTo(0,line.y);
-      ctx.lineTo(W,line.y);
-      ctx.strokeStyle='rgba(255,255,255,0.06)';
-      ctx.lineWidth=0.5;
-      ctx.stroke();
-
-      var lx=line.lightX, lw=line.lightW;
-      if(lx+lw<0||lx-lw>W){continue;}
-      var grad=ctx.createLinearGradient(lx-lw,line.y,lx+lw,line.y);
-      grad.addColorStop(0,'rgba(255,255,255,0)');
-      grad.addColorStop(0.4,'rgba(255,255,255,0)');
-      grad.addColorStop(0.5,'rgba(255,255,255,0.2)');
-      grad.addColorStop(0.6,'rgba(255,255,255,0)');
-      grad.addColorStop(1,'rgba(255,255,255,0)');
-      ctx.beginPath();
-      ctx.moveTo(Math.max(0,lx-lw),line.y);
-      ctx.lineTo(Math.min(W,lx+lw),line.y);
-      ctx.strokeStyle=grad;
-      ctx.lineWidth=1;
-      ctx.stroke();
-    }
-    requestAnimationFrame(draw);
+  // Show/hide based on page
+  function update(){
+    var home = document.getElementById('page-home');
+    var isHome = home && home.classList.contains('active');
+    container.className = isHome ? 'bg-lines' : 'bg-lines visible';
   }
 
-  function checkVisibility(){
-    var home=document.getElementById('page-home');
-    var isHome=home&&home.classList.contains('active');
-    canvas.style.display=isHome?'none':'block';
-  }
-
-  resize();
-  window.addEventListener('resize',resize);
-  draw();
-
-  // Check visibility every time showPage is called
-  var _orig=null;
-  function hookShowPage(){
-    if(window.showPage&&window.showPage!==hooked){
-      _orig=window.showPage;
-      window.showPage=hooked;
-    }
-  }
-  function hooked(p){
-    if(_orig) _orig(p);
-    setTimeout(checkVisibility,50);
-  }
-
-  // Poll until showPage exists then hook it
-  var hookInterval=setInterval(function(){
+  // Hook into showPage
+  function tryHook(){
     if(window.showPage){
-      hookShowPage();
-      clearInterval(hookInterval);
+      var orig = window.showPage;
+      window.showPage = function(p){
+        orig(p);
+        setTimeout(update, 30);
+      };
+      update();
+    } else {
+      setTimeout(tryHook, 100);
     }
-  },100);
-
-  // Initial check after page loads
-  window.addEventListener('load',function(){
-    checkVisibility();
-    hookShowPage();
-  });
-  setTimeout(checkVisibility,500);
+  }
+  tryHook();
+  window.addEventListener('load', update);
 })();
 </script>
 </body></html>
