@@ -23,7 +23,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(0,0,0,0.9);b
 .mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;background:#0f0f0f;border-bottom:1px solid var(--border);padding:20px 5%;z-index:99;flex-direction:column;gap:16px}
 .mobile-menu.open{display:flex}
 .mobile-menu a{color:var(--muted);font-size:15px;cursor:pointer;padding:8px 0;border-bottom:1px solid var(--border);text-decoration:none}
-.page{display:none;padding-top:64px;min-height:100vh}.page.active{display:block}
+.page{display:none;padding-top:64px;min-height:100vh;position:relative;z-index:1}.page.active{display:block}
 .hero{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 5%;position:relative;overflow:hidden}
 .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(34,197,94,.12) 0%,transparent 60%);pointer-events:none}
 .hero-tag{display:inline-block;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:20px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--green);margin-bottom:24px;letter-spacing:.05em;text-transform:uppercase}
@@ -168,6 +168,83 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
 @media(max-width:900px){.nav-links{display:none}.hamburger{display:flex}.port-top-grid{grid-template-columns:1fr}.profit-grid{grid-template-columns:1fr 1fr}.d-metrics{grid-template-columns:1fr 1fr}.stats-row{grid-template-columns:1fr}}
 @media(max-width:500px){.profit-grid{grid-template-columns:1fr}.d-metrics{grid-template-columns:1fr 1fr}}
 </style></head><body>
+
+<!-- ANIMATED BACKGROUND -->
+<canvas id="bgLines" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.35"></canvas>
+<script>
+(function(){
+  const c = document.getElementById('bgLines');
+  if(!c) return;
+  const ctx = c.getContext('2d');
+  let W, H, lines = [];
+
+  function resize(){
+    W = c.width = window.innerWidth;
+    H = c.height = window.innerHeight;
+    buildLines();
+  }
+
+  function buildLines(){
+    lines = [];
+    // Horizontal lines spaced evenly
+    const spacing = 48;
+    const count = Math.ceil(H / spacing) + 1;
+    for(let i = 0; i < count; i++){
+      lines.push({
+        y: i * spacing,
+        // Each line has a light traveler at a different position and speed
+        lightX: Math.random() * W,
+        speed: 0.4 + Math.random() * 0.5,
+        // Light width varies slightly
+        lightW: 120 + Math.random() * 180
+      });
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+
+    lines.forEach(line => {
+      // Move light traveler
+      line.lightX += line.speed;
+      if(line.lightX - line.lightW > W) line.lightX = -line.lightW;
+
+      // Draw base line — very subtle white
+      ctx.beginPath();
+      ctx.moveTo(0, line.y);
+      ctx.lineTo(W, line.y);
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+
+      // Draw traveling light — soft gradient, no pulse
+      const grad = ctx.createLinearGradient(
+        line.lightX - line.lightW, line.y,
+        line.lightX + line.lightW, line.y
+      );
+      grad.addColorStop(0,   'rgba(255,255,255,0)');
+      grad.addColorStop(0.3, 'rgba(255,255,255,0.0)');
+      grad.addColorStop(0.5, 'rgba(255,255,255,0.18)');
+      grad.addColorStop(0.7, 'rgba(255,255,255,0.0)');
+      grad.addColorStop(1,   'rgba(255,255,255,0)');
+
+      ctx.beginPath();
+      ctx.moveTo(line.lightX - line.lightW, line.y);
+      ctx.lineTo(line.lightX + line.lightW, line.y);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  draw();
+})();
+</script>
+
 <nav>
   <div class="nav-inner">
     <div class="logo" onclick="showPage('home')">Fin<span>Path</span></div>
@@ -204,7 +281,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
       </div>
       <div class="stats-row">
         <div class="stat"><div class="stat-num">34</div><div class="stat-label">Expert lessons</div></div>
-        <div class="stat"><div class="stat-num">19</div><div class="stat-label">Investor moves tracked</div></div>
+        <div class="stat"><div class="stat-num">19+</div><div class="stat-label">Investor moves tracked</div></div>
         <div class="stat"><div class="stat-num">3</div><div class="stat-label">Billionaires followed</div></div>
       </div>
     </div>
