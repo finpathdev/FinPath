@@ -170,8 +170,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
 @media(max-width:500px){.profit-grid{grid-template-columns:1fr}.d-metrics{grid-template-columns:1fr 1fr}}
 
 <style>
-.page-bg-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:1}
-.page>*:not(.page-bg-canvas){position:relative;z-index:1}
+
 </style>
 </style></head><body>
 
@@ -687,7 +686,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
 
 <!-- LESSONS -->
 <div id="page-lessons" class="page">
-  <canvas id="bg-lessons" class="page-bg-canvas"></canvas>
   <div id="lessons-list-view">
     <div class="page-header"><h1>Lessons</h1><p>Everything schools never taught you about money.</p></div>
     <div class="lessons-grid" id="lessonsGrid"></div>
@@ -702,7 +700,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
 
 <!-- GOLD -->
 <div id="page-gold" class="page">
-  <canvas id="bg-gold" class="page-bg-canvas"></canvas>
   <div class="gold-hero">
     <div class="gold-badge">✦ Gold Plan</div>
     <h1 style="font-size:clamp(28px,4vw,56px);font-weight:800;letter-spacing:-1.5px;margin-bottom:12px">Investor Moves</h1>
@@ -713,7 +710,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
 
 <!-- PORTFOLIO -->
 <div id="page-portfolio" class="page">
-  <canvas id="bg-portfolio" class="page-bg-canvas"></canvas>
   <div class="portfolio-wrap">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
       <div><h1 style="font-size:28px;font-weight:800;letter-spacing:-.5px">Your Portfolio</h1><p style="font-size:14px;color:var(--muted);margin-top:4px"><span class="live-dot"></span> Live prices · AI suggestions · Profit tracking</p></div>
@@ -764,7 +760,6 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
 
 <!-- LEGAL -->
 <div id="page-legal" class="page">
-  <canvas id="bg-legal" class="page-bg-canvas"></canvas>
   <div class="legal-wrap">
     <h1>Legal Disclaimers &amp; Terms of Use</h1>
     <div class="legal-updated">Last updated: June 2026</div>
@@ -2256,105 +2251,34 @@ async function signOut(){
 initAuth();
 checkPaymentReturn();
 renderLessons();
-// Init background lines on non-home pages
-['lessons','gold','portfolio','legal'].forEach(p => initBgLines('bg-'+p));
+
 
 </script>
 
 <script>
-function initBgLines(canvasId){
-  const c = document.getElementById(canvasId);
-  if(!c) return;
-  const ctx = c.getContext('2d');
-  let W, H, lines = [], running = false, rafId = null;
 
-  function resize(){
-    const parent = c.parentElement;
-    W = c.width = parent.offsetWidth || window.innerWidth;
-    H = c.height = Math.max(parent.scrollHeight, window.innerHeight);
-    buildLines();
-  }
-
-  function buildLines(){
-    lines = [];
-    const spacing = 44;
-    const count = Math.ceil(H / spacing) + 2;
-    for(let i = 0; i < count; i++){
-      lines.push({
-        y: i * spacing + 22,
-        lightX: Math.random() * W,
-        speed: 0.35 + Math.random() * 0.45,
-        lightW: 130 + Math.random() * 160
-      });
-    }
-  }
-
-  function draw(){
-    ctx.clearRect(0, 0, W, H);
-    lines.forEach(line => {
-      line.lightX += line.speed;
-      if(line.lightX - line.lightW > W) line.lightX = -line.lightW;
-
-      ctx.beginPath();
-      ctx.moveTo(0, line.y);
-      ctx.lineTo(W, line.y);
-      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-      ctx.lineWidth = 0.5;
-      ctx.stroke();
-
-      const grad = ctx.createLinearGradient(
-        line.lightX - line.lightW, line.y,
-        line.lightX + line.lightW, line.y
-      );
-      grad.addColorStop(0,   'rgba(255,255,255,0)');
-      grad.addColorStop(0.4, 'rgba(255,255,255,0)');
-      grad.addColorStop(0.5, 'rgba(255,255,255,0.15)');
-      grad.addColorStop(0.6, 'rgba(255,255,255,0)');
-      grad.addColorStop(1,   'rgba(255,255,255,0)');
-
-      ctx.beginPath();
-      ctx.moveTo(Math.max(0, line.lightX - line.lightW), line.y);
-      ctx.lineTo(Math.min(W, line.lightX + line.lightW), line.y);
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
-    });
-    rafId = requestAnimationFrame(draw);
-  }
-
-  // Only run when page is visible
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if(e.isIntersecting && !running){
-        running = true;
-        resize();
-        draw();
-      } else if(!e.isIntersecting && running){
-        running = false;
-        if(rafId) cancelAnimationFrame(rafId);
-      }
-    });
-  }, {threshold: 0.01});
-  observer.observe(c.parentElement);
-
-  window.addEventListener('resize', ()=>{ if(running) resize(); });
-}
 </script>
 
 {% endraw %}
 
 
 <script>
-function initBgLines(canvasId){
-  const c = document.getElementById(canvasId);
-  if(!c) return;
-  const ctx = c.getContext('2d');
-  let W, H, lines = [], running = false, rafId = null;
+
+</script>
+
+
+<!-- ANIMATED BACKGROUND LINES - non-home pages only -->
+<canvas id="fixedBgLines" style="position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:0;display:none"></canvas>
+<script>
+(function(){
+  const canvas = document.getElementById('fixedBgLines');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W = 0, H = 0, lines = [], rafId = null;
 
   function resize(){
-    const parent = c.parentElement;
-    W = c.width = parent.offsetWidth || window.innerWidth;
-    H = c.height = Math.max(parent.scrollHeight, window.innerHeight);
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
     buildLines();
   }
 
@@ -2362,12 +2286,12 @@ function initBgLines(canvasId){
     lines = [];
     const spacing = 44;
     const count = Math.ceil(H / spacing) + 2;
-    for(let i = 0; i < count; i++){
+    for(let i = 0; i <= count; i++){
       lines.push({
-        y: i * spacing + 22,
-        lightX: Math.random() * W,
-        speed: 0.35 + Math.random() * 0.45,
-        lightW: 130 + Math.random() * 160
+        y: i * spacing,
+        lightX: Math.random() * W * 2 - W * 0.5,
+        speed: 0.3 + Math.random() * 0.4,
+        lightW: 140 + Math.random() * 140
       });
     }
   }
@@ -2376,28 +2300,29 @@ function initBgLines(canvasId){
     ctx.clearRect(0, 0, W, H);
     lines.forEach(line => {
       line.lightX += line.speed;
-      if(line.lightX - line.lightW > W) line.lightX = -line.lightW;
+      if(line.lightX - line.lightW > W) line.lightX = -line.lightW * 1.5;
 
+      // Base line
       ctx.beginPath();
       ctx.moveTo(0, line.y);
       ctx.lineTo(W, line.y);
-      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.055)';
       ctx.lineWidth = 0.5;
       ctx.stroke();
 
-      const grad = ctx.createLinearGradient(
-        line.lightX - line.lightW, line.y,
-        line.lightX + line.lightW, line.y
-      );
-      grad.addColorStop(0,   'rgba(255,255,255,0)');
-      grad.addColorStop(0.4, 'rgba(255,255,255,0)');
-      grad.addColorStop(0.5, 'rgba(255,255,255,0.15)');
-      grad.addColorStop(0.6, 'rgba(255,255,255,0)');
-      grad.addColorStop(1,   'rgba(255,255,255,0)');
-
+      // Traveling light
+      const lx = line.lightX;
+      const lw = line.lightW;
+      if(lx + lw < 0 || lx - lw > W) return;
+      const grad = ctx.createLinearGradient(lx - lw, line.y, lx + lw, line.y);
+      grad.addColorStop(0,    'rgba(255,255,255,0)');
+      grad.addColorStop(0.35, 'rgba(255,255,255,0)');
+      grad.addColorStop(0.5,  'rgba(255,255,255,0.16)');
+      grad.addColorStop(0.65, 'rgba(255,255,255,0)');
+      grad.addColorStop(1,    'rgba(255,255,255,0)');
       ctx.beginPath();
-      ctx.moveTo(Math.max(0, line.lightX - line.lightW), line.y);
-      ctx.lineTo(Math.min(W, line.lightX + line.lightW), line.y);
+      ctx.moveTo(Math.max(0, lx - lw), line.y);
+      ctx.lineTo(Math.min(W, lx + lw), line.y);
       ctx.strokeStyle = grad;
       ctx.lineWidth = 0.8;
       ctx.stroke();
@@ -2405,23 +2330,28 @@ function initBgLines(canvasId){
     rafId = requestAnimationFrame(draw);
   }
 
-  // Only run when page is visible
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if(e.isIntersecting && !running){
-        running = true;
-        resize();
-        draw();
-      } else if(!e.isIntersecting && running){
-        running = false;
-        if(rafId) cancelAnimationFrame(rafId);
-      }
-    });
-  }, {threshold: 0.01});
-  observer.observe(c.parentElement);
+  resize();
+  window.addEventListener('resize', ()=>{ resize(); });
 
-  window.addEventListener('resize', ()=>{ if(running) resize(); });
-}
+  // Show/hide based on current page
+  const HOME = 'page-home';
+  function updateVisibility(){
+    const homePage = document.getElementById(HOME);
+    const homeActive = homePage && homePage.classList.contains('active');
+    canvas.style.display = homeActive ? 'none' : 'block';
+  }
+
+  // Patch showPage to update visibility
+  const origShowPage = window.showPage;
+  window.showPage = function(p){
+    if(origShowPage) origShowPage(p);
+    updateVisibility();
+  };
+
+  // Initial check
+  setTimeout(updateVisibility, 100);
+  draw();
+})();
 </script>
 
 {% endraw %}
