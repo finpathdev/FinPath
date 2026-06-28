@@ -1317,7 +1317,10 @@ function filterMoves(f,btn){
 
 // ── STRIPE PAYMENT ──
 function openGoldPayment(){
-  window.location.href = 'https://buy.stripe.com/test_14A00lbnN0Gp9dd8s1g3600';
+  const confirmed = confirm('You are about to be redirected to our secure payment page powered by Stripe.\n\nFinPath Gold — $4.99/month\n\nClick OK to continue to checkout, or Cancel to go back.');
+  if(confirmed){
+    window.open('https://buy.stripe.com/test_14A00lbnN0Gp9dd8s1g3600', '_blank');
+  }
 }
 
 // Check for successful payment return
