@@ -202,7 +202,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
         <button class="btn-secondary" onclick="showPage('portfolio')">Open Portfolio Tracker</button>
       </div>
       <div class="stats-row">
-        <div class="stat"><div class="stat-num">25</div><div class="stat-label">Expert lessons</div></div>
+        <div class="stat"><div class="stat-num">34</div><div class="stat-label">Expert lessons</div></div>
         <div class="stat"><div class="stat-num">19</div><div class="stat-label">Investor moves tracked</div></div>
         <div class="stat"><div class="stat-num">3</div><div class="stat-label">Billionaires followed</div></div>
       </div>
@@ -240,7 +240,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
         <div class="price-amount">$0<span>/mo</span></div>
         <div class="price-period">Free forever</div>
         <ul class="price-features">
-          <li>10 free lessons with full content</li>
+          <li>20 free lessons with full content</li>
           <li>Live portfolio tracker</li>
           <li>Basic profit and loss tracking</li>
           <li class="no">Investor Moves (Buffett, Ackman, Tepper)</li>
@@ -255,7 +255,7 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:60px
         <div class="price-amount">$4.99<span>/mo</span></div>
         <div class="price-period">or $39.99/year — save 33%</div>
         <ul class="price-features">
-          <li>All 25 lessons including 15 Gold-only</li>
+          <li>All 34 lessons including 14 Gold-only</li>
           <li>Live portfolio tracker</li>
           <li>Full profit tracking with hourly breakdown</li>
           <li>Investor Moves — Buffett, Ackman, Tepper</li>
@@ -457,7 +457,7 @@ const EP=new URLSearchParams(window.location.search);
 const EM=EP.get('user');
 let UID=EM||localStorage.getItem('fp_uid')||(()=>{const id='u_'+Math.random().toString(36).slice(2);localStorage.setItem('fp_uid',id);return id;})();
 if(EM)localStorage.setItem('fp_uid',EM);
-let IS_GOLD=true; // Set to true for demo; in production check subscription
+let IS_GOLD = localStorage.getItem('fp_gold') === 'true';
 let portfolio=[],selectedStock=null,pChart=null,dChart=null,priceCache={},stTimeout=null;
 
 const COMPANIES={AAPL:'Apple Inc',MSFT:'Microsoft Corp',GOOGL:'Alphabet Inc',AMZN:'Amazon',NVDA:'NVIDIA Corp',META:'Meta Platforms',TSLA:'Tesla Inc','BRK.B':'Berkshire Hathaway',JPM:'JPMorgan Chase',V:'Visa Inc',JNJ:'Johnson & Johnson',UNH:'UnitedHealth',XOM:'Exxon Mobil',KO:'Coca-Cola',DAL:'Delta Air Lines',OXY:'Occidental Petroleum',UBER:'Uber Technologies',BN:'Brookfield Corp',AXP:'American Express',SHOP:'Shopify'};
@@ -949,6 +949,264 @@ Write a personal investment policy statement including your goals, time horizon,
 
 STEP 6 - REVIEW ANNUALLY NOT DAILY:
 Checking daily causes emotional decisions. Review once per year. Rebalance if allocations drifted more than 5%. Otherwise do nothing.`}
+,
+{name:"How Inflation Works and How to Beat It",desc:"Why your money loses value every year and exactly what to do about it",cat:"Hidden Financial Knowledge",plan:"free",icon:"📉",content:`Inflation is the silent tax that nobody votes for. It is the reason $100 in 2000 only buys about $55 worth of goods today.
+
+WHAT INFLATION ACTUALLY IS:
+Inflation is the rate at which prices rise over time. When the government prints more money, each dollar in circulation becomes worth slightly less. The purchasing power of your savings quietly erodes every single year.
+
+At 3% annual inflation:
+- $10,000 today is worth $8,600 in 5 years
+- $10,000 today is worth $7,400 in 10 years
+- $10,000 today is worth $5,500 in 20 years
+
+Keeping money in cash is not safe. It is a guaranteed slow loss.
+
+HOW TO BEAT INFLATION:
+1. Stocks: the S&P 500 has averaged about 10% per year historically — well above any inflation rate
+2. Real estate: property values and rents tend to rise with inflation
+3. Treasury Inflation-Protected Securities (TIPS): government bonds that adjust with inflation
+4. Series I Savings Bonds: currently paying 4-5% and adjust automatically with CPI
+5. Commodities: gold and oil tend to rise during inflationary periods
+
+THE MINIMUM GOAL:
+Your money must grow faster than inflation or you are getting poorer every year even if your bank balance stays the same. A 5% HYSA right now beats 3% inflation. A stock portfolio at 8-10% beats it significantly.
+
+The enemy is not market volatility. The enemy is doing nothing while inflation quietly destroys your purchasing power.`},
+
+{name:"How to Set Financial Goals That Actually Work",desc:"The goal-setting system that turns financial dreams into a specific plan",cat:"Saving & Budgeting",plan:"free",icon:"🎯",content:`Most people have vague financial goals like save more money or get rich. These never work because there is no plan attached to them.
+
+THE SMART FINANCIAL GOAL FRAMEWORK:
+Every financial goal needs to be:
+- Specific: not save money but save $10,000 emergency fund
+- Measurable: you can track exactly how close you are
+- Achievable: realistic given your current income
+- Relevant: tied to something you actually care about
+- Time-bound: has a specific deadline
+
+EXAMPLES OF REAL GOALS:
+Vague: I want to invest more
+SMART: I will invest $300 per month in VOO starting September 1 and reach $10,000 by December 2026
+
+Vague: I want to pay off debt
+SMART: I will pay $500 extra per month on my $6,000 credit card balance and be debt-free by March 2026
+
+THE THREE-GOAL SYSTEM:
+At any given time have exactly three financial goals:
+1. A short-term goal (under 1 year): build emergency fund, pay off one debt
+2. A medium-term goal (1-5 years): house down payment, car fund, invest $25,000
+3. A long-term goal (5+ years): retirement, financial freedom, $1 million invested
+
+Write them down. Put them somewhere you see daily. Review progress monthly.
+
+THE MOTIVATION TRICK:
+Calculate the weekly or daily number. A $10,000 goal in 12 months is $833 per month but more importantly it is $192 per week or $27 per day. Seeing the daily number makes the goal feel real and trackable.`},
+
+{name:"How to Choose Your First Credit Card",desc:"The right card at the right time can save you thousands — here is how to pick",cat:"Hidden Financial Knowledge",plan:"free",icon:"💳",content:`Your first credit card is one of the most important financial tools you will ever use. Used right it builds your credit score, earns you rewards, and costs you nothing. Used wrong it can trap you in debt for years.
+
+WHAT TO LOOK FOR:
+No annual fee: your first card should be completely free to hold. There are excellent no-fee cards that build credit just as fast as fee cards.
+
+Low interest rate: you should never carry a balance, but if you ever do, a lower rate limits damage.
+
+Rewards that match your spending: if you spend mostly on food and transport, get a card that rewards those categories. Cash back is the simplest and most flexible reward.
+
+No foreign transaction fees: especially important if you travel or shop on international websites.
+
+BEST FIRST CARDS (no annual fee):
+- Chase Freedom Unlimited: 1.5% cash back on everything
+- Discover it Student: 5% rotating categories, matches first year rewards
+- Capital One Quicksilver: 1.5% unlimited cash back, no foreign fees
+
+THE GOLDEN RULES:
+1. Use it for one or two small recurring purchases (streaming, groceries)
+2. Pay the full balance every single month before the due date
+3. Never use more than 30% of your credit limit
+4. Set up autopay for at least the minimum as a safety net
+5. Check your statement monthly for any fraudulent charges
+
+One well-managed credit card used for 12 months will build a solid credit foundation that benefits you for life.`},
+
+{name:"Understanding Your Paycheck: Where Does the Money Go?",desc:"Breaking down every deduction so you know exactly what you are actually earning",cat:"Hidden Financial Knowledge",plan:"free",icon:"💼",content:`Most people look at their paycheck and feel confused or cheated. Here is exactly where every dollar goes and what you can do about it.
+
+GROSS VS NET:
+Your gross salary is what your employer pays. Your net (take-home) pay is what you actually receive. The difference goes to taxes and benefits. For most people the difference is 20-35%.
+
+THE DEDUCTIONS EXPLAINED:
+
+Federal Income Tax: withheld based on your W-4 form and tax bracket. This is an estimate — you settle up in April when you file your return.
+
+State Income Tax: varies by state. Nine states have no income tax at all including Texas, Florida, and Nevada.
+
+Social Security (6.2%): goes to the Social Security fund. Your employer pays another 6.2% on top.
+
+Medicare (1.45%): funds Medicare health coverage for seniors. Employer also matches this.
+
+401k contribution: if you have elected to contribute to your workplace retirement plan, this comes out pre-tax reducing your taxable income.
+
+Health insurance premium: your portion of employer-sponsored health coverage.
+
+HOW TO INCREASE YOUR TAKE-HOME:
+1. Increase your 401k contribution (counterintuitive — reduces taxable income so the net reduction in take-home is smaller than the contribution)
+2. Contribute to an FSA for medical or dependent care expenses (pre-tax)
+3. Check your W-4 — if you consistently get a large tax refund you are overpaying all year. Adjust withholding to get that money monthly instead.
+
+Your paycheck is the starting point. Understanding every line means you can optimize every line.`},
+
+{name:"Renting vs Buying a Home: The Real Math",desc:"The honest financial comparison most people never do before making the biggest purchase of their life",cat:"Assets & Liabilities",plan:"free",icon:"🏡",content:`Everyone says buying is always better than renting. The reality is more nuanced and depends entirely on your specific numbers.
+
+THE CASE FOR BUYING:
+- You build equity with each mortgage payment
+- Property values tend to appreciate over time
+- Fixed mortgage payment (unlike rent which rises)
+- Tax deductions on mortgage interest
+- Freedom to renovate and customize
+- Forced savings mechanism
+
+THE CASE FOR RENTING:
+- No maintenance costs or unexpected repair bills
+- Geographic flexibility to move for opportunities
+- Down payment and closing costs kept invested can grow significantly
+- No property tax, HOA fees, or insurance at homeowner rates
+- In expensive markets rent can be substantially cheaper than buying
+
+THE BREAK-EVEN CALCULATION:
+The key question is: how long until buying becomes cheaper than renting?
+
+Example: $400,000 home with 20% down ($80,000)
+Monthly mortgage: ~$2,000 at 6.5%
+Plus property tax: $400/month
+Plus insurance: $150/month
+Plus maintenance (1% annually): $333/month
+Total monthly cost of ownership: ~$2,883
+
+If renting equivalent home costs $2,200/month, buying costs $683 more per month.
+But you build equity of ~$800/month in early years.
+Break-even: roughly 4-5 years.
+
+WHEN BUYING MAKES SENSE: you plan to stay 5+ years, have 20% down, stable income, and local prices are reasonable relative to rents.
+
+WHEN RENTING MAKES SENSE: you might move within 5 years, the local price-to-rent ratio is very high, or your down payment would generate better returns invested elsewhere.`},
+
+{name:"How to Negotiate Your Salary (And Why Most People Never Do)",desc:"The conversation that can add hundreds of thousands to your lifetime earnings",cat:"Hidden Financial Knowledge",plan:"free",icon:"🤝",content:`Studies consistently show that people who negotiate their starting salary earn significantly more over their careers than those who accept the first offer. Yet most people never negotiate because they are afraid.
+
+THE NUMBERS THAT MATTER:
+A $5,000 higher starting salary, assuming 3% annual raises, results in over $200,000 more in lifetime earnings. The 10-minute conversation that gets you that raise is the highest-paid conversation of your life.
+
+BEFORE THE NEGOTIATION:
+Research the market rate for your role, location, and experience level. Use Glassdoor, Levels.fyi (for tech), LinkedIn Salary, and Bureau of Labor Statistics data. Know your number before you walk in.
+
+THE NEGOTIATION SCRIPT:
+After receiving an offer: "Thank you so much — I am really excited about this opportunity. Based on my research into market rates and the value I bring, I was hoping we could get closer to [your number]. Is there flexibility there?"
+
+Then stop talking. Silence is your friend. Let them respond.
+
+IF THEY SAY NO:
+"I understand. Are there other aspects of the compensation package we could look at — signing bonus, additional PTO, remote work flexibility, or an earlier review date?"
+
+SALARY IS NOT THE ONLY LEVER:
+- Signing bonus (one-time, cheaper for employer)
+- Extra PTO days
+- Remote work days
+- Earlier performance review (6 months vs 12)
+- Professional development budget
+- Equity or stock options
+
+WHAT WILL NOT HAPPEN:
+The offer will not be rescinded because you negotiated professionally. Employers expect negotiation. A respectful ask is never a reason to pull an offer.`},
+
+{name:"The Psychology of Money: Why Smart People Make Bad Financial Decisions",desc:"Understanding the mental traps that cost people thousands every year",cat:"Hidden Financial Knowledge",plan:"free",icon:"🧠",content:`Financial success is 80% behaviour and 20% knowledge. You can understand every financial concept perfectly and still make terrible decisions because of how your brain works.
+
+THE BIGGEST MENTAL TRAPS:
+
+LOSS AVERSION:
+We feel the pain of losing $100 roughly twice as strongly as the pleasure of gaining $100. This causes investors to sell during market crashes to avoid further pain — locking in losses permanently.
+
+PRESENT BIAS:
+We dramatically overvalue things we can have right now versus things we get in the future. This is why people choose $100 today over $150 in a year even though $150 in a year is a 50% return in 12 months.
+
+ANCHORING:
+We fixate on the first number we see. If a stock was $200 and is now $120, we think of it as cheap even if $120 is still overvalued. Or we think a sale price is good without checking what the item normally costs.
+
+THE SUNK COST FALLACY:
+We continue bad investments because we have already spent money on them. "I have lost $5,000 on this stock so I will hold until it comes back." The $5,000 is gone regardless — the only question is what the stock will do from today.
+
+LIFESTYLE INFLATION:
+Every time income rises, spending rises to match it. A raise that should go to savings instead goes to a better apartment, nicer car, more restaurants. The gap between income and spending never grows.
+
+THE FIX:
+Automate good financial behaviour so it requires zero willpower. Automatic savings transfers, automatic investment contributions, automatic bill payments. Make the right choice the effortless choice.`},
+
+{name:"How to Read a Financial News Article Without Being Misled",desc:"The media is not trying to help you invest well — here is how to filter the noise",cat:"Hidden Financial Knowledge",plan:"free",icon:"📰",content:`Financial media is designed to generate clicks and keep you engaged, not to make you a better investor. Understanding how it works protects your money.
+
+THE MEDIA BUSINESS MODEL:
+News outlets make money from attention. Fear and excitement generate more clicks than calm and boring. This is why every market movement becomes a crisis or a gold rush in headlines. The actual message: ignore most of it.
+
+RED FLAGS IN FINANCIAL ARTICLES:
+"This stock will double in 2026" — nobody knows this
+"Experts predict market crash" — experts predict crashes constantly, most never happen
+"Why you should buy gold/bitcoin/X right now" — timing articles are almost always wrong
+"Warren Buffett's secret stock pick" — clickbait; his holdings are public quarterly
+"Market rally signals end of bear market" — pattern recognition on random data
+
+HOW TO FILTER CORRECTLY:
+1. Ask: is this news or is this opinion? News is a company reporting earnings. Opinion is someone predicting what that means.
+2. Check the author's track record. Financial journalists are not portfolio managers.
+3. Look for the incentive. Is this outlet sponsored by or affiliated with what they are recommending?
+4. Separate short-term noise from long-term signals. A one-day market movement is noise. A multi-year trend in earnings growth is a signal.
+
+WHAT ACTUALLY MATTERS IN FINANCIAL NEWS:
+- Federal Reserve interest rate decisions
+- Quarterly earnings reports (revenue growth, margins, guidance)
+- Major regulatory changes affecting whole industries
+- Macro data: unemployment, inflation, GDP growth
+
+Everything else is mostly noise. Successful long-term investors ignore most financial media entirely.`},
+
+{name:"Building Credit From Zero: A Step by Step Guide",desc:"How to go from no credit history to an excellent score in 12 months",cat:"Hidden Financial Knowledge",plan:"free",icon:"📈",content:`Starting with no credit history is frustrating because you need credit to build credit. Here is the exact path to break that cycle.
+
+THE PROBLEM:
+Most lenders want to see credit history before extending credit. But you cannot have credit history without being extended credit first. This is the catch-22 every young person faces.
+
+STEP 1 - SECURED CREDIT CARD (Month 1):
+A secured card requires a deposit (usually $200-500) that becomes your credit limit. The deposit is fully refundable when you close the account or upgrade. Apply for one from a major bank (Discover, Capital One, or your existing bank).
+
+STEP 2 - SET UP ONE RECURRING CHARGE (Month 1):
+Put exactly one small recurring charge on the card. A streaming subscription ($10-15/month) is perfect. Nothing else.
+
+STEP 3 - PAY IN FULL EVERY MONTH (Ongoing):
+Set up autopay for the full statement balance. Never miss a payment. Never carry a balance. The interest rate on a secured card is high — never let it matter.
+
+STEP 4 - BECOME AN AUTHORIZED USER (Month 2-3):
+Ask a parent or trusted family member with good credit to add you as an authorized user on their oldest card. You do not need to use the card. Their positive history gets added to your report immediately.
+
+STEP 5 - CREDIT BUILDER LOAN (Optional, Month 3):
+Some banks and credit unions offer credit builder loans specifically designed for people with no history. You make monthly payments and receive the money at the end. It builds payment history while saving money.
+
+STEP 6 - MONITOR AND WAIT (Month 6-12):
+Check your credit score monthly through a free service like Credit Karma. You should see your score appear and climb steadily. By month 12 with perfect payment history you should be in the 680-720 range.`},
+
+{name:"How to Avoid the 5 Most Expensive Money Mistakes People Make in Their 20s",desc:"The financial errors that cost people decades of wealth building",cat:"Saving & Budgeting",plan:"free",icon:"⚠️",content:`The financial decisions you make in your 20s compound — for better or worse — for decades. These are the five mistakes that cost the most.
+
+MISTAKE 1 - NOT STARTING TO INVEST (Most Expensive):
+Every year you delay investing costs you more than a year. Due to compounding, money invested at 22 is worth roughly 4x more at 65 than money invested at 35. The most expensive thing you will ever do is wait.
+Fix: Open a Roth IRA today. Start with $50/month. Increase it every time you get a raise.
+
+MISTAKE 2 - CARRYING CREDIT CARD DEBT:
+A $3,000 credit card balance at 22% interest costs $660 per year in interest while doing zero for you. Meanwhile that $3,000 invested at 8% grows to $67,000 by retirement.
+Fix: Pay off every card in full every month. This is non-negotiable.
+
+MISTAKE 3 - LIFESTYLE INFLATION:
+Getting a $10,000 raise and immediately spending $10,000 more. Your lifestyle expands to meet your income and the gap never grows.
+Fix: Every time income increases, automatically increase savings by 50% of the raise before you can get used to the extra money.
+
+MISTAKE 4 - IGNORING THE 401K MATCH:
+Not contributing enough to get the full employer match is leaving part of your salary on the table. A 4% match on a $50,000 salary is $2,000 per year of free money.
+Fix: Always contribute at least enough to get the full employer match immediately.
+
+MISTAKE 5 - BUYING TOO MUCH CAR:
+A car that costs more than 15% of your gross annual income is a wealth destroyer. A $40,000 car on a $50,000 salary means 80% of your annual income tied up in a depreciating asset.
+Fix: Buy reliable used. The best car for wealth building is a paid-off Honda.`}
 ];
 
 const MOVES=[
@@ -1306,30 +1564,38 @@ function renderAlerts(quotes){
 }
 
 function runAI(){
+  const recsEl = document.getElementById('aiRecs');
   if(!IS_GOLD){
-    document.getElementById('aiRecs').innerHTML=`
-      <div class="gold-lock" style="text-align:center;padding:32px">
-        <div style="font-size:28px;margin-bottom:8px">👑</div>
-        <h3 style="font-size:18px;font-weight:700;margin-bottom:6px">Gold Plan Required</h3>
-        <p style="font-size:14px;color:var(--muted);margin-bottom:16px">Upgrade to get personalised AI suggestions for every stock.</p>
-        <button class="price-btn" style="width:auto;padding:10px 24px" onclick="openGoldPayment()">Upgrade to Gold</button>
-      </div>`;
+    recsEl.innerHTML='<div style="background:linear-gradient(135deg,rgba(5,46,22,.6),var(--surface));border:1px solid var(--green-dim);border-radius:16px;padding:40px;text-align:center"><div style="font-size:32px;margin-bottom:12px">👑</div><div style="font-size:18px;font-weight:700;margin-bottom:8px">Gold Plan Required</div><p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6">Upgrade to FinPath Gold to unlock personalised AI suggestions with detailed reasoning for every stock in your portfolio.</p><button onclick="openGoldPayment()" style="background:var(--green-dim);border:none;border-radius:10px;padding:12px 28px;color:#fff;font-size:14px;font-weight:600;cursor:pointer">Upgrade to Gold — $4.99/mo</button></div>';
     return;
   }
-  if(portfolio.length===0){document.getElementById('aiRecs').innerHTML='<div class="empty">Add stocks first.</div>';return;}
-  const instructions=document.getElementById('aiInstruction').value.trim();
-  document.getElementById('aiRecs').innerHTML='<div class="loading"><div class="spinner"></div>Analysing your portfolio...</div>';
+  if(portfolio.length===0){
+    recsEl.innerHTML='<div class="empty">Add stocks to your portfolio first, then come back for AI suggestions.</div>';
+    return;
+  }
+  const instructions = document.getElementById('aiInstruction') ? document.getElementById('aiInstruction').value.trim() : '';
+  recsEl.innerHTML='<div class="loading"><div class="spinner"></div>Analysing your portfolio...</div>';
   setTimeout(()=>{
-    document.getElementById('aiRecs').innerHTML=portfolio.map(h=>{
-      const adv=AI_ADVISOR[h.ticker]||AI_ADVISOR.DEFAULT;
-      let text=adv.text;
-      if(instructions) text+=' Note: based on your instruction ("'+instructions.slice(0,50)+(instructions.length>50?'...':'')+'"): this suggestion takes your preferences into account.';
+    const html = portfolio.map(h=>{
+      const adv = AI_ADVISOR[h.ticker] || AI_ADVISOR.DEFAULT;
+      const q = priceCache[h.ticker];
+      const price = q ? q.c : h.buyPrice;
+      const pnl = h.buyPrice > 0 ? ((price - h.buyPrice)/h.buyPrice*100) : 0;
+      const pnlText = pnl >= 0 ? '+'+pnl.toFixed(1)+'% gain' : pnl.toFixed(1)+'% loss';
+      let text = adv.text;
+      if(instructions) text += ' Taking into account your instruction: "'+instructions.slice(0,80)+'" — suggestion adjusted accordingly.';
       return '<div class="ai-rec">'+
-        '<div class="ai-rec-head"><div class="ai-rec-ticker">'+h.ticker+' <span style="font-size:13px;color:var(--muted);font-weight:400">'+(COMPANIES[h.ticker]||'')+'</span></div>'+
-        '<span class="ai-action-badge '+adv.cls+'">'+adv.action+'</span></div>'+
-        '<div class="ai-rec-text">'+text+'</div></div>';
+        '<div class="ai-rec-head">'+
+          '<div><div class="ai-rec-ticker">'+h.ticker+'</div>'+
+          '<div style="font-size:12px;color:var(--muted);margin-top:2px">'+(COMPANIES[h.ticker]||'')+' · '+h.shares+' shares · '+pnlText+'</div></div>'+
+          '<span class="ai-action-badge '+adv.cls+'">'+adv.action+'</span>'+
+        '</div>'+
+        '<div class="ai-rec-text" style="margin-top:10px">'+text+'</div>'+
+        '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--muted2)">For educational purposes only. Not financial advice. Always do your own research.</div>'+
+        '</div>';
     }).join('');
-  },1000);
+    recsEl.innerHTML = html;
+  },1200);
 }
 
 async function renderPortfolioChart(days){
