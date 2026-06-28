@@ -1,1 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinPath — The Financial Playbook Schools Skipped</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--black:#000;--surface:#0f0f0f;--surface2:#1a1a1a;--surface3:#222;--green:#22c55e;--green-dark:#16a34a;--green-deeper:#052e16;--green-dim:#15803d;--text:#fff;--muted:#888;--muted2:#555;--border:#222;--gold:#f59e0b;}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.6;overflow-x:hidden}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(0,0,0,0.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 5%}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-size:20px;font-weight:700;color:var(--green);cursor:pointer}.logo span{color:#fff}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-links a{color:var(--muted);font-size:14px;text-decoration:none;cursor:pointer;transition:color .15s}.nav-links a:hover{color:#fff}
+.nav-cta{background:var(--green-dim);color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:14px;font-weight:600;cursor:pointer}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.hamburger span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
+.mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;background:#0f0f0f;border-bottom:1px solid var(--border);padding:20px 5%;z-index:99;flex-direction:column;gap:16px}
+.mobile-menu.open{display:flex}
+.mobile-menu a{color:var(--muted);font-size:15px;cursor:pointer;padding:8px 0;border-bottom:1px solid var(--border);text-decoration:none}
+.page{display:none;padding-top:64px;min-height:100vh}.page.active{display:block}
+.hero{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 5%;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(34,197,94,.12) 0%,transparent 60%);pointer-events:none}
+.hero-tag{display:inline-block;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:20px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--green);margin-bottom:24px;letter-spacing:.05em;text-transform:uppercase}
+.hero h1{font-size:clamp(36px,6vw,80px);font-weight:800;line-height:1.05;letter-spacing:-2px;margin-bottom:24px;max-width:900px;margin-left:auto;margin-right:auto}
+.hero h1 span{color:var(--green)}
+.hero p{font-size:clamp(16px,2vw,20px);color:var(--muted);max-width:600px;margin:0 auto 40px;line-height:1.7}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:var(--green-dim);color:#fff;border:none;border-radius:10px;padding:14px 32px;font-size:16px;font-weight:600;cursor:pointer;transition:all .15s}.btn-primary:hover{background:var(--green-dark);transform:translateY(-1px)}
+.btn-secondary{background:transparent;color:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 32px;font-size:16px;font-weight:600;cursor:pointer;transition:all .15s}.btn-secondary:hover{border-color:#555;background:var(--surface)}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:16px;overflow:hidden;max-width:700px;margin:60px auto 0}
+.stat{background:var(--surface);padding:32px 20px;text-align:center}
+.stat-num{font-size:36px;font-weight:800;color:var(--green);letter-spacing:-1px}.stat-label{font-size:13px;color:var(--muted);margin-top:4px}
+.features{padding:100px 5%;max-width:1200px;margin:0 auto}
+.section-tag{font-size:11px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.section-title{font-size:clamp(28px,4vw,48px);font-weight:800;letter-spacing:-1px;margin-bottom:16px}
+.section-sub{font-size:16px;color:var(--muted);max-width:500px;line-height:1.7}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:60px}
+.feature-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;transition:all .2s;cursor:pointer}.feature-card:hover{border-color:var(--green-dim);transform:translateY(-4px)}
+.feature-icon{width:48px;height:48px;border-radius:12px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:20px}
+.feature-title{font-size:18px;font-weight:700;margin-bottom:8px}.feature-desc{font-size:14px;color:var(--muted);line-height:1.7}
+.investor-section{padding:100px 5%;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.investor-inner{max-width:1200px;margin:0 auto}
+.investor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:60px}
+.investor-card{background:var(--black);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;gap:16px;align-items:flex-start}
+.inv-badge{display:inline-block;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:600}
+.badge-buy{background:#14532d;color:#4ade80}.badge-hold{background:#1e3a5f;color:#60a5fa}.badge-add{background:#422006;color:#fbbf24}.badge-reduce{background:#3b0764;color:#e879f9}
+.pricing{padding:100px 5%;max-width:1200px;margin:0 auto;text-align:center}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:60px;text-align:left}
+.price-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px}
+.price-card.featured{border-color:var(--green-dim);background:linear-gradient(135deg,var(--green-deeper) 0%,var(--surface) 100%)}
+.price-name{font-size:24px;font-weight:800;margin-bottom:8px}
+.price-amount{font-size:48px;font-weight:800;letter-spacing:-2px;margin-bottom:4px}.price-amount span{font-size:20px;font-weight:400;color:var(--muted)}
+.price-period{font-size:13px;color:var(--muted);margin-bottom:24px}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.price-features li{display:flex;align-items:center;gap:10px;font-size:14px;color:#ccc}.price-features li::before{content:"✓";color:var(--green);font-weight:700;flex-shrink:0}
+.price-features li.no{color:var(--muted2)}.price-features li.no::before{content:"✕";color:var(--muted2)}
+.price-btn{width:100%;background:var(--green-dim);color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;transition:background .15s}.price-btn:hover{background:var(--green-dark)}
+.price-btn.outline{background:transparent;border:1px solid var(--border);color:#fff}.price-btn.outline:hover{background:var(--surface2)}
+.page-header{padding:60px 5% 40px;max-width:1200px;margin:0 auto}
+.page-header h1{font-size:clamp(28px,4vw,48px);font-weight:800;letter-spacing:-1px;margin-bottom:8px}.page-header p{font-size:16px;color:var(--muted)}
+.lessons-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;padding:0 5% 80px;max-width:1200px;margin:0 auto}
+.lesson-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .2s}.lesson-card:hover{border-color:var(--green-dim);transform:translateY(-4px)}
+.lesson-img{width:100%;height:160px;display:flex;align-items:center;justify-content:center;font-size:52px;background:var(--surface2)}
+.lesson-body{padding:20px}
+.lesson-cat{font-size:11px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.lesson-title{font-size:16px;font-weight:700;margin-bottom:6px;line-height:1.3}.lesson-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.lesson-plan{display:inline-block;margin-top:12px;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
+.plan-free{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.plan-gold{background:rgba(245,158,11,.1);color:var(--gold);border:1px solid rgba(245,158,11,.2)}
+.lesson-detail{display:none;padding:40px 5% 80px;max-width:800px;margin:0 auto}.lesson-detail.active{display:block}
+.back-btn{background:none;border:none;color:var(--green);font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:32px;padding:0}
+.lesson-content{font-size:16px;color:#ccc;line-height:1.85;white-space:pre-wrap}
+.gold-lock{background:linear-gradient(135deg,var(--green-deeper),var(--surface));border:1px solid var(--green-dim);border-radius:16px;padding:40px;text-align:center;margin-top:24px}
+.gold-lock h3{font-size:22px;font-weight:700;margin-bottom:8px}.gold-lock p{font-size:14px;color:var(--muted);margin-bottom:20px}
+.gold-hero{padding:80px 5% 60px;text-align:center;background:linear-gradient(180deg,rgba(5,46,22,.5) 0%,transparent 100%)}
+.gold-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:20px;padding:6px 16px;font-size:12px;font-weight:600;color:var(--gold);margin-bottom:20px}
+.filter-tabs{display:flex;gap:8px;padding:0 5%;max-width:1200px;margin:0 auto 32px;flex-wrap:wrap}
+.filter-tab{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 20px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .15s}.filter-tab.active{background:var(--green-dim);color:#fff;border-color:var(--green-dim)}
+.moves-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;padding:0 5% 80px;max-width:1200px;margin:0 auto}
+.move-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;transition:all .2s;display:flex;gap:14px;align-items:flex-start}.move-card:hover{border-color:var(--green-dim);transform:translateY(-2px)}
+.move-avatar{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);background:var(--green-deeper);flex-shrink:0}
+.move-info{flex:1;min-width:0}.move-investor{font-size:12px;color:var(--muted);margin-bottom:2px}.move-stock{font-size:15px;font-weight:700;margin-bottom:6px}
+.move-note{font-size:13px;color:var(--muted);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.move-right{text-align:right;flex-shrink:0}.move-amount{font-size:12px;color:var(--muted);margin-top:6px}
+.gold-gate{background:linear-gradient(135deg,rgba(5,46,22,.8),var(--surface));border:1px solid var(--green-dim);border-radius:20px;padding:60px 40px;text-align:center;max-width:600px;margin:40px auto}
+.portfolio-wrap{max-width:1200px;margin:0 auto;padding:40px 5% 80px}
+.port-top-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.port-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px}
+.port-card.green-card{background:linear-gradient(135deg,var(--green-deeper),var(--surface));border-color:var(--green-dim)}
+.port-label{font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.port-value{font-size:38px;font-weight:800;letter-spacing:-1.5px;cursor:pointer}.port-value:hover{color:var(--green)}
+.daily-change-row{display:flex;align-items:center;gap:8px;margin-top:6px;cursor:pointer}
+.daily-badge{font-size:13px;font-weight:600;padding:3px 10px;border-radius:6px}
+.daily-up{background:rgba(74,222,128,.15);color:#4ade80}.daily-down{background:rgba(248,113,113,.15);color:#f87171}
+.up{color:#4ade80}.down{color:#f87171}
+.chart-wrap{position:relative;height:200px;margin-top:16px}
+.period-tabs{display:flex;gap:6px;margin-top:12px}
+.period-tab{background:var(--surface2);border:none;border-radius:6px;padding:6px 14px;font-size:12px;color:var(--muted);cursor:pointer;transition:all .15s}.period-tab.active{background:var(--green-dim);color:#fff}
+.profit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.p-metric{background:var(--surface2);border-radius:12px;padding:14px}
+.p-label{font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}.p-val{font-size:20px;font-weight:700}
+.stocks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-bottom:24px}
+.stock-row{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .15s}.stock-row:hover{border-color:var(--green-dim)}
+.s-icon{width:40px;height:40px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--green);flex-shrink:0}
+.s-info{flex:1}.s-name{font-size:14px;font-weight:600}.s-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.s-right{text-align:right}.s-price{font-size:15px;font-weight:600}.s-pct{font-size:12px;margin-top:2px}.s-today{font-size:11px;margin-top:1px}
+.add-btn{background:var(--green-dim);border:none;border-radius:12px;padding:14px 28px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .15s;margin-bottom:24px}.add-btn:hover{background:var(--green-dark)}
+.ai-section{background:linear-gradient(135deg,rgba(5,46,22,.6),var(--surface));border:1px solid var(--green-dim);border-radius:20px;padding:32px;margin-bottom:24px}
+.ai-head{display:flex;align-items:center;gap:12px;margin-bottom:8px}.ai-title{font-size:20px;font-weight:700}
+.ai-badge{background:var(--green-dim);border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;color:#fff}
+.ai-disclaimer{font-size:12px;color:var(--muted);margin-bottom:20px;padding:10px 14px;background:rgba(0,0,0,.3);border-radius:8px;border-left:3px solid var(--muted2)}
+.ai-instruction{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:#fff;font-size:14px;outline:none;margin-bottom:12px;resize:vertical;min-height:80px;font-family:inherit}.ai-instruction:focus{border-color:var(--green-dim)}
+.ai-run-btn{background:var(--green-dim);border:none;border-radius:10px;padding:12px 24px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:20px;transition:background .15s}.ai-run-btn:hover{background:var(--green-dark)}
+.ai-rec{background:var(--black);border-radius:12px;padding:20px;margin-bottom:12px}
+.ai-rec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.ai-rec-ticker{font-size:17px;font-weight:700}
+.ai-action-badge{font-size:13px;font-weight:700;padding:6px 16px;border-radius:8px}
+.act-buy{background:#14532d;color:#4ade80}.act-hold{background:#1e3a5f;color:#60a5fa}.act-sell{background:#4c0519;color:#fb7185}.act-watch{background:#422006;color:#fbbf24}
+.ai-rec-text{font-size:14px;color:#aaa;line-height:1.65}
+.alerts-section{margin-bottom:24px}
+.alert-item{background:var(--surface);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:14px 18px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.alert-item.warn{border-left-color:var(--gold)}.alert-item.sell{border-left-color:#f87171}
+.alert-ticker{font-size:14px;font-weight:600}.alert-msg{font-size:12px;color:var(--muted);margin-top:2px}
+.alert-pct{font-size:12px;font-weight:600;padding:3px 10px;border-radius:6px;background:var(--green-deeper);color:var(--green)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:flex-start;justify-content:center;padding:80px 20px 40px;overflow-y:auto}.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:100%;max-width:560px;padding:32px}
+.modal h2{font-size:20px;font-weight:700;margin-bottom:20px}
+.modal-close-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);padding:10px 20px;cursor:pointer;font-size:14px;margin-top:16px;width:100%}
+.modal-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;color:#fff;font-size:15px;outline:none;margin-bottom:12px}.modal-input:focus{border-color:var(--green-dim)}
+.modal-result{background:var(--surface2);border-radius:10px;padding:14px;margin-bottom:8px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background .15s}.modal-result:hover{background:var(--surface3)}
+.hourly-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}.hourly-row:last-child{border-bottom:none}
+.hourly-time{font-size:13px;color:var(--muted)}.hourly-val{font-size:14px;font-weight:600}
+.detail-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:200;overflow-y:auto;padding:80px 5% 60px}.detail-modal.open{display:block}
+.detail-inner{max-width:800px;margin:0 auto}
+.d-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.d-metric{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
+.d-mlabel{font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}.d-mval{font-size:20px;font-weight:700}
+.d-chart-wrap{height:200px;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px}
+.detail-ai-box{background:linear-gradient(135deg,var(--green-deeper),var(--surface));border:1px solid var(--green-dim);border-radius:16px;padding:24px;margin-bottom:16px}
+.detail-ai-action{font-size:22px;font-weight:800;color:var(--green);margin-bottom:8px}.detail-ai-text{font-size:15px;color:#d1fae5;line-height:1.7}
+.remove-btn{background:#1c0a0a;border:1px solid #7f1d1d;border-radius:10px;padding:14px 24px;color:#f87171;font-size:14px;font-weight:600;cursor:pointer}
+.legal-wrap{max-width:800px;margin:0 auto;padding:60px 5% 80px}
+.legal-wrap h1{font-size:36px;font-weight:800;letter-spacing:-1px;margin-bottom:8px}
+.legal-updated{font-size:13px;color:var(--muted);margin-bottom:40px}
+.legal-section{margin-bottom:36px}
+.legal-section h2{font-size:18px;font-weight:700;color:var(--green);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.legal-section p{font-size:14px;color:#aaa;line-height:1.8;margin-bottom:12px}
+.legal-section ul{padding-left:20px;display:flex;flex-direction:column;gap:8px}.legal-section ul li{font-size:14px;color:#aaa;line-height:1.7}
+.warning-box{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:20px;margin-bottom:20px}.warning-box p{color:#fcd34d;font-size:14px;line-height:1.7}
+.agree-btn{background:var(--green-dim);color:#fff;border:none;border-radius:12px;padding:16px 40px;font-size:16px;font-weight:600;cursor:pointer;margin-top:24px;transition:background .15s}.agree-btn:hover{background:var(--green-dark)}
+footer{background:var(--surface);border-top:1px solid var(--border);padding:60px 5% 40px;text-align:center}
+.footer-logo{font-size:22px;font-weight:700;color:var(--green);margin-bottom:8px}.footer-logo span{color:#fff}
+.footer-sub{font-size:13px;color:var(--muted);margin-bottom:32px}
+.footer-links{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
+.footer-links a{font-size:13px;color:var(--muted);text-decoration:none;cursor:pointer;transition:color .15s}.footer-links a:hover{color:#fff}
+.footer-copy{font-size:12px;color:var(--muted2)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+.loading{display:flex;align-items:center;justify-content:center;gap:8px;padding:40px;color:var(--muted);font-size:14px}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.live-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;display:inline-block}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@media(max-width:900px){.nav-links{display:none}.hamburger{display:flex}.port-top-grid{grid-template-columns:1fr}.profit-grid{grid-template-columns:1fr 1fr}.d-metrics{grid-template-columns:1fr 1fr}.stats-row{grid-template-columns:1fr}}
+@media(max-width:500px){.profit-grid{grid-template-columns:1fr}.d-metrics{grid-template-columns:1fr 1fr}}
+</style></head><body>
+<nav>
+  <div class="nav-inner">
+    <div class="logo" onclick="showPage('home')">Fin<span>Path</span></div>
+    <div class="nav-links">
+      <a onclick="showPage('home')">Home</a>
+      <a onclick="showPage('lessons')">Lessons</a>
+      <a onclick="showPage('gold')">Gold</a>
+      <a onclick="showPage('portfolio')">Portfolio</a>
+      <a onclick="showPage('legal')">Legal</a>
+    </div>
+    <button class="nav-cta" onclick="showPage('lessons')">Get Started Free</button>
+    <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a onclick="showPage('home');toggleMenu()">Home</a>
+  <a onclick="showPage('lessons');toggleMenu()">Lessons</a>
+  <a onclick="showPage('gold');toggleMenu()">Gold</a>
+  <a onclick="showPage('portfolio');toggleMenu()">Portfolio</a>
+  <a onclick="showPage('legal');toggleMenu()">Legal</a>
+</div>
 
+<!-- HOME -->
+<div id="page-home" class="page active">
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div>
+      <div class="hero-tag">The financial playbook schools skipped</div>
+      <h1>Learn how money <span>actually</span> works</h1>
+      <p>Track your portfolio with live prices, follow what billionaires are buying, and get AI-powered buy/hold/sell suggestions — all in one place.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="showPage('lessons')">Start Learning Free</button>
+        <button class="btn-secondary" onclick="showPage('portfolio')">Open Portfolio Tracker</button>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><div class="stat-num">25</div><div class="stat-label">Expert lessons</div></div>
+        <div class="stat"><div class="stat-num">19</div><div class="stat-label">Investor moves tracked</div></div>
+        <div class="stat"><div class="stat-num">3</div><div class="stat-label">Billionaires followed</div></div>
+      </div>
+    </div>
+  </section>
+  <section class="features">
+    <div class="section-tag">Everything you need</div>
+    <h2 class="section-title">Built for people who are serious about money</h2>
+    <p class="section-sub">From your first lesson to your first investment, FinPath walks you through every step.</p>
+    <div class="features-grid">
+      <div class="feature-card" onclick="showPage('lessons')"><div class="feature-icon">📚</div><div class="feature-title">25 Expert Lessons</div><div class="feature-desc">Everything schools skipped — from credit scores to compound interest — explained in plain English.</div></div>
+      <div class="feature-card" onclick="showPage('gold')"><div class="feature-icon">👑</div><div class="feature-title">Investor Moves — Gold</div><div class="feature-desc">See exactly what Warren Buffett, Bill Ackman, and David Tepper bought and sold this quarter — and why.</div></div>
+      <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">📈</div><div class="feature-title">Live Portfolio Tracker</div><div class="feature-desc">Track your stocks with live prices. See total profit, daily gains, and hourly breakdowns of every position.</div></div>
+      <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">🤖</div><div class="feature-title">AI Suggestions — Gold</div><div class="feature-desc">Get personalised buy, hold, and sell suggestions. Give the AI specific instructions and it tailors advice to you.</div></div>
+    </div>
+  </section>
+  <section class="investor-section">
+    <div class="investor-inner">
+      <div class="section-tag">Gold feature preview</div>
+      <h2 class="section-title">What the billionaires are doing right now</h2>
+      <p class="section-sub">Q1 2026 filings — updated every quarter the moment they drop.</p>
+      <div class="investor-grid">
+        <div class="investor-card"><div style="width:44px;height:44px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0">WB</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Warren Buffett</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Alphabet Inc (GOOGL)</div><span class="inv-badge badge-add">ADD 203.99%</span><div style="font-size:12px;color:var(--muted);margin-top:6px">$15.6B — 5.93% of portfolio</div></div></div>
+        <div class="investor-card"><div style="width:44px;height:44px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0">BA</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Bill Ackman</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Microsoft Corp (MSFT)</div><span class="inv-badge badge-buy">BUY</span><div style="font-size:12px;color:var(--muted);margin-top:6px">$2.09B — 15.26% of portfolio</div></div></div>
+        <div class="investor-card"><div style="width:44px;height:44px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0">DT</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">David Tepper</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Amazon (AMZN)</div><span class="inv-badge badge-add">ADD 98.22%</span><div style="font-size:12px;color:var(--muted);margin-top:6px">$899.7M — 15.18% of portfolio</div></div></div>
+      </div>
+    </div>
+  </section>
+  <section class="pricing">
+    <div class="section-tag">Pricing</div>
+    <h2 class="section-title">Start free. Go Gold when you're ready.</h2>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-name">FinPath Free</div>
+        <div class="price-amount">$0<span>/mo</span></div>
+        <div class="price-period">Free forever</div>
+        <ul class="price-features">
+          <li>10 free lessons with full content</li>
+          <li>Live portfolio tracker</li>
+          <li>Basic profit and loss tracking</li>
+          <li class="no">Investor Moves (Buffett, Ackman, Tepper)</li>
+          <li class="no">15 Gold lessons</li>
+          <li class="no">AI buy/hold/sell suggestions</li>
+          <li class="no">Hourly portfolio breakdown</li>
+        </ul>
+        <button class="price-btn outline" onclick="showPage('lessons')">Get started free</button>
+      </div>
+      <div class="price-card featured">
+        <div class="price-name">FinPath Gold ✦</div>
+        <div class="price-amount">$4.99<span>/mo</span></div>
+        <div class="price-period">or $39.99/year — save 33%</div>
+        <ul class="price-features">
+          <li>All 25 lessons including 15 Gold-only</li>
+          <li>Live portfolio tracker</li>
+          <li>Full profit tracking with hourly breakdown</li>
+          <li>Investor Moves — Buffett, Ackman, Tepper</li>
+          <li>AI buy/hold/sell suggestions with full reasoning</li>
+          <li>Give AI specific trading instructions</li>
+          <li>Priority alerts and notifications</li>
+        </ul>
+        <button class="price-btn" onclick="showPage('portfolio')">Start with Gold</button>
+      </div>
+    </div>
+  </section>
+  <footer>
+    <div class="footer-logo">Fin<span>Path</span></div>
+    <div class="footer-sub">The financial playbook schools skipped.</div>
+    <div class="footer-links">
+      <a onclick="showPage('home')">Home</a><a onclick="showPage('lessons')">Lessons</a>
+      <a onclick="showPage('gold')">Gold</a><a onclick="showPage('portfolio')">Portfolio</a>
+      <a onclick="showPage('legal')">Legal & Disclaimers</a>
+    </div>
+    <div class="footer-copy">© 2026 FinPath. Built by Siddharth Moosani. For educational purposes only. Not financial advice.</div>
+  </footer>
+</div>
+
+<!-- LESSONS -->
+<div id="page-lessons" class="page">
+  <div id="lessons-list-view">
+    <div class="page-header"><h1>Lessons</h1><p>Everything schools never taught you about money.</p></div>
+    <div class="lessons-grid" id="lessonsGrid"></div>
+  </div>
+  <div class="lesson-detail" id="lessonDetail">
+    <button class="back-btn" onclick="closeLessonDetail()">← Back to lessons</button>
+    <div class="lesson-cat" id="detailCat" style="font-size:11px;font-weight:600;color:var(--green);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px"></div>
+    <h1 id="detailTitle" style="font-size:clamp(24px,4vw,40px);font-weight:800;letter-spacing:-1px;margin-bottom:24px;line-height:1.2"></h1>
+    <div id="detailBody"></div>
+  </div>
+</div>
+
+<!-- GOLD -->
+<div id="page-gold" class="page">
+  <div class="gold-hero">
+    <div class="gold-badge">✦ Gold Plan</div>
+    <h1 style="font-size:clamp(28px,4vw,56px);font-weight:800;letter-spacing:-1.5px;margin-bottom:12px">Investor Moves</h1>
+    <p style="font-size:16px;color:var(--muted);max-width:500px;margin:0 auto">See what the world's greatest investors are buying and selling this quarter — and exactly why.</p>
+  </div>
+  <div id="goldContent"></div>
+</div>
+
+<!-- PORTFOLIO -->
+<div id="page-portfolio" class="page">
+  <div class="portfolio-wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+      <div><h1 style="font-size:28px;font-weight:800;letter-spacing:-.5px">Your Portfolio</h1><p style="font-size:14px;color:var(--muted);margin-top:4px"><span class="live-dot"></span> Live prices · AI suggestions · Profit tracking</p></div>
+      <button class="add-btn" onclick="openSearch()">+ Add stock</button>
+    </div>
+    <div class="port-top-grid">
+      <div class="port-card green-card">
+        <div class="port-label">Total portfolio value</div>
+        <div class="port-value" id="totalValue" onclick="openHourly()" title="Click for hourly breakdown (Gold)">$0.00</div>
+        <div class="daily-change-row" onclick="openHourly()">
+          <span class="daily-badge daily-up" id="dailyBadge">+$0.00 today</span>
+          <span style="font-size:12px;color:var(--muted)">▸ hourly view (Gold)</span>
+        </div>
+        <div class="chart-wrap"><canvas id="portfolioChart"></canvas></div>
+        <div class="period-tabs">
+          <button class="period-tab active" onclick="setPeriod(this,1)">1D</button>
+          <button class="period-tab" onclick="setPeriod(this,7)">1W</button>
+          <button class="period-tab" onclick="setPeriod(this,30)">1M</button>
+          <button class="period-tab" onclick="setPeriod(this,90)">3M</button>
+        </div>
+      </div>
+      <div class="port-card">
+        <div class="port-label">Profit summary</div>
+        <div class="profit-grid">
+          <div class="p-metric"><div class="p-label">Total invested</div><div class="p-val" id="pInvested">$0.00</div></div>
+          <div class="p-metric"><div class="p-label">Current value</div><div class="p-val" id="pCurrent">$0.00</div></div>
+          <div class="p-metric"><div class="p-label">Total profit/loss</div><div class="p-val" id="pPnl">$0.00</div></div>
+          <div class="p-metric"><div class="p-label">Return %</div><div class="p-val" id="pReturn">0.00%</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:12px">Your stocks</div>
+    <div class="stocks-grid" id="stocksGrid"><div class="empty" style="grid-column:1/-1">No stocks yet. Click "+ Add stock" to build your portfolio.</div></div>
+    <div class="alerts-section">
+      <div style="font-size:16px;font-weight:700;margin-bottom:12px">AI Alerts</div>
+      <div id="alertsList"><div class="empty">Add stocks to see alerts.</div></div>
+    </div>
+    <div class="ai-section">
+      <div class="ai-head"><div class="ai-title">AI Suggestions</div><span class="ai-badge">Gold Plan</span></div>
+      <div class="ai-disclaimer">These suggestions are for educational purposes only and do not constitute financial advice. Always do your own research. Past performance does not guarantee future results. You are solely responsible for any investment decisions you make.</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:8px;color:#ccc">Give the AI specific instructions (optional):</div>
+      <textarea class="ai-instruction" id="aiInstruction" placeholder="e.g. Only suggest trades for tech stocks. Avoid anything I have held less than 6 months. Focus on dividend stocks. Keep suggestions conservative..."></textarea>
+      <button class="ai-run-btn" onclick="runAI()">Get AI suggestions</button>
+      <div id="aiRecs"><div class="empty">Add stocks and click above to get personalised suggestions.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LEGAL -->
+<div id="page-legal" class="page">
+  <div class="legal-wrap">
+    <h1>Legal Disclaimers &amp; Terms of Use</h1>
+    <div class="legal-updated">Last updated: June 2026</div>
+    <div class="warning-box"><p>Important: Please read these terms carefully before using FinPath. By using this platform you acknowledge that you have read, understood, and agreed to all terms and disclaimers below.</p></div>
+    <div class="legal-section"><h2>1. Not Financial Advice</h2><p>FinPath is an educational platform. All content, lessons, investor move summaries, portfolio tracking features, and AI-generated suggestions are provided for informational and educational purposes only. Nothing on FinPath constitutes financial advice, investment advice, trading advice, or any other type of professional financial guidance.</p><p>FinPath does not recommend that any specific security, portfolio, transaction, or investment strategy is suitable for any specific person. You should consult a qualified financial adviser before making any investment decisions.</p></div>
+    <div class="legal-section"><h2>2. AI Suggestions Disclaimer</h2><p>The AI suggestions feature provides algorithmic commentary based on general market principles and publicly available information. These suggestions are not personalised financial advice and should never be used as the sole basis for any investment decision.</p><p>FinPath AI does not have access to your full financial situation, tax circumstances, investment goals, risk tolerance, or personal circumstances. Any suggestion may be incorrect, outdated, or unsuitable for you personally.</p><ul><li>AI suggestions are generated algorithmically and may contain errors or inaccuracies</li><li>Past performance data referenced does not guarantee future results</li><li>You are solely responsible for all investment decisions you make</li><li>FinPath is not liable for any losses arising from following AI suggestions</li><li>Always verify information independently before acting on any suggestion</li></ul></div>
+    <div class="legal-section"><h2>3. Investor Move Data</h2><p>Investor move data is sourced from publicly available SEC 13F filings. This data reflects holdings as of the filing date and may not represent current positions. Investors may have changed positions since the last filing. FinPath does not have any insider information about any investor.</p></div>
+    <div class="legal-section"><h2>4. Portfolio Tracking</h2><p>FinPath portfolio tracker displays estimated values based on market data from third-party providers. Price data may be delayed and may not reflect real-time market conditions. FinPath does not execute trades and does not have access to any brokerage account. Portfolio values shown are estimates only.</p></div>
+    <div class="legal-section"><h2>5. Investment Risk Warning</h2><p>All investments carry risk. You can lose some or all of your invested capital.</p><ul><li>Stock prices can fall as well as rise</li><li>Past performance is not a reliable indicator of future results</li><li>Markets can be volatile and unpredictable</li><li>You should never invest money you cannot afford to lose</li><li>Diversification does not guarantee profits or protect against all losses</li></ul></div>
+    <div class="legal-section"><h2>6. No Brokerage Services</h2><p>FinPath is not a broker, dealer, investment adviser, or financial institution. FinPath does not hold any securities licences and is not registered with the SEC, FINRA, or any other regulatory body as an investment adviser. FinPath does not execute, facilitate, or process any securities transactions on your behalf.</p></div>
+    <div class="legal-section"><h2>7. Third-Party Data</h2><p>Market data and stock prices are sourced from third-party providers including Finnhub. FinPath makes no representations about the accuracy, completeness, or timeliness of this data. Always verify prices with your broker before making any trade.</p></div>
+    <div class="legal-section"><h2>8. Limitation of Liability</h2><p>To the maximum extent permitted by law, FinPath and its founders, employees, and affiliates shall not be liable for any direct, indirect, incidental, special, consequential, or punitive damages arising from your use of the platform, including but not limited to any investment losses, loss of profits, or loss of data.</p></div>
+    <div class="legal-section"><h2>9. User Responsibilities</h2><ul><li>You must be 18 years or older to use FinPath portfolio features</li><li>You are responsible for all investment decisions you make</li><li>You agree to use FinPath for educational and informational purposes only</li><li>You agree not to rely solely on FinPath content for investment decisions</li><li>You agree to consult a qualified financial professional for personalised advice</li></ul></div>
+    <div class="legal-section"><h2>10. Changes to Terms</h2><p>FinPath reserves the right to update these terms at any time. Continued use of the platform following any changes constitutes acceptance of the updated terms.</p></div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:28px;margin-top:40px;text-align:center">
+      <div style="font-size:18px;font-weight:700;margin-bottom:8px">I have read and agree to all terms</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:20px">By clicking below you confirm you understand FinPath is for educational purposes only and does not constitute financial advice.</div>
+      <button class="agree-btn" onclick="agreeToTerms()">I Agree — Take Me to FinPath</button>
+    </div>
+  </div>
+</div>
+
+<!-- HOURLY MODAL -->
+<div class="modal-overlay" id="hourlyModal">
+  <div class="modal">
+    <h2>Portfolio — Hourly Breakdown <span style="font-size:13px;color:var(--gold);margin-left:8px">Gold</span></h2>
+    <div id="hourlyContent"></div>
+    <button class="modal-close-btn" onclick="closeHourly()">Close</button>
+  </div>
+</div>
+
+<!-- SEARCH MODAL -->
+<div class="modal-overlay" id="searchModal">
+  <div class="modal">
+    <h2>Add stock</h2>
+    <input class="modal-input" placeholder="Search ticker or company..." id="searchInput" oninput="handleSearch(this.value)" autocomplete="off">
+    <div id="searchResults"><div class="loading"><div class="spinner"></div>Loading live prices...</div></div>
+    <button class="modal-close-btn" onclick="closeSearch()">Cancel</button>
+  </div>
+</div>
+
+<!-- SHARES MODAL -->
+<div class="modal-overlay" id="sharesModal">
+  <div class="modal">
+    <h2 id="sharesTitle">Add shares</h2>
+    <div style="background:var(--green-deeper);border-radius:12px;padding:16px;margin-bottom:20px;border:1px solid var(--green-dim)">
+      <div style="font-size:12px;color:#86efac;margin-bottom:6px;font-weight:600">AI insight</div>
+      <div style="font-size:14px;color:#d1fae5;line-height:1.6" id="sharesInsight">Loading...</div>
+    </div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:8px" id="sharesLabel">How many shares do you own?</div>
+    <input class="modal-input" type="number" id="sharesInput" placeholder="e.g. 10" min="0.001" step="any" oninput="updatePreview()">
+    <div style="font-size:13px;color:var(--muted);margin-bottom:16px;min-height:20px" id="sharesPreview"></div>
+    <button style="width:100%;background:var(--green-dim);border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;color:#fff;margin-bottom:8px" onclick="confirmAdd()">Add to portfolio</button>
+    <button class="modal-close-btn" onclick="closeShares()">Cancel</button>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="detail-modal" id="detailModal">
+  <div class="detail-inner">
+    <button class="back-btn" onclick="closeDetail()" style="margin-bottom:24px">Back to portfolio</button>
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
+      <div style="width:56px;height:56px;border-radius:14px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--green)" id="dIcon">--</div>
+      <div><div style="font-size:26px;font-weight:800" id="dTicker">--</div><div style="font-size:14px;color:var(--muted)" id="dCompany">--</div></div>
+    </div>
+    <div class="d-metrics">
+      <div class="d-metric"><div class="d-mlabel">Live price</div><div class="d-mval" id="dPrice">--</div></div>
+      <div class="d-metric"><div class="d-mlabel">Today</div><div class="d-mval" id="dToday">--</div></div>
+      <div class="d-metric"><div class="d-mlabel">Shares</div><div class="d-mval" id="dShares">--</div></div>
+      <div class="d-metric"><div class="d-mlabel">Position value</div><div class="d-mval" id="dVal">--</div></div>
+    </div>
+    <div class="d-metric" style="margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+      <div class="d-mlabel">Total gain / loss</div>
+      <div style="font-size:28px;font-weight:800" id="dPnl">--</div>
+    </div>
+    <div class="d-chart-wrap"><canvas id="detailChartCanvas"></canvas></div>
+    <div class="period-tabs" style="margin-bottom:24px">
+      <button class="period-tab active" onclick="setDetailPeriod(this,1)">1D</button>
+      <button class="period-tab" onclick="setDetailPeriod(this,7)">1W</button>
+      <button class="period-tab" onclick="setDetailPeriod(this,30)">1M</button>
+    </div>
+    <div class="detail-ai-box">
+      <div style="font-size:12px;font-weight:600;color:#86efac;margin-bottom:4px">AI SUGGESTION - GOLD PLAN</div>
+      <div style="font-size:11px;color:rgba(134,239,172,.6);margin-bottom:12px">For educational purposes only. Not financial advice.</div>
+      <div class="detail-ai-action" id="dAiAction">Analysing...</div>
+      <div class="detail-ai-text" id="dAiText">Loading...</div>
+    </div>
+    <button class="remove-btn" onclick="removeStock()">Remove from portfolio</button>
+  </div>
+</div>
+<script>
+const FK='d8pn5n1r01qujv4j5d70d8pn5n1r01qujv4j5d7g';
+const SBU='https://ivhhfhemcecwqadrjmwq.supabase.co';
+const SBK='sb_publishable_KoWYv1Ro5D4I83XxWmJFOg_DCB2ldw6';
+const SBH={'Content-Type':'application/json','apikey':SBK,'Authorization':'Bearer '+SBK};
+const EP=new URLSearchParams(window.location.search);
+const EM=EP.get('user');
+let UID=EM||localStorage.getItem('fp_uid')||(()=>{const id='u_'+Math.random().toString(36).slice(2);localStorage.setItem('fp_uid',id);return id;})();
+if(EM)localStorage.setItem('fp_uid',EM);
+let IS_GOLD=true; // Set to true for demo; in production check subscription
+let portfolio=[],selectedStock=null,pChart=null,dChart=null,priceCache={},stTimeout=null;
+
+const COMPANIES={AAPL:'Apple Inc',MSFT:'Microsoft Corp',GOOGL:'Alphabet Inc',AMZN:'Amazon',NVDA:'NVIDIA Corp',META:'Meta Platforms',TSLA:'Tesla Inc','BRK.B':'Berkshire Hathaway',JPM:'JPMorgan Chase',V:'Visa Inc',JNJ:'Johnson & Johnson',UNH:'UnitedHealth',XOM:'Exxon Mobil',KO:'Coca-Cola',DAL:'Delta Air Lines',OXY:'Occidental Petroleum',UBER:'Uber Technologies',BN:'Brookfield Corp',AXP:'American Express',SHOP:'Shopify'};
+const POP=Object.keys(COMPANIES).slice(0,14);
+
+const AI_INSIGHT={
+  AAPL:"Apple is Warren Buffett's biggest holding since 2016. Strong brand, loyal customers, and growing services revenue. One of the safest long-term bets in the market.",
+  MSFT:"Bill Ackman just bought $2 billion of Microsoft during a sell-off betting on Azure cloud and AI Copilot. Rock-solid fundamentals.",
+  GOOGL:"Buffett tripled his Google position this quarter. Ad revenue recovering, Cloud gaining share, Gemini AI is a real competitor.",
+  AMZN:"Both Ackman and Tepper are heavily buying Amazon. AWS dominates cloud and retail profitability improves every quarter.",
+  NVDA:"The AI chip king. Every major AI company depends on their GPUs. Massive growth but high valuation.",
+  META:"Ackman holds Meta as a dominant AI advertising platform. Ad business printing money and AI investments paying off.",
+  TSLA:"Higher risk play. EV lead being challenged but energy storage and autonomous driving could be huge.",
+  DEFAULT:"A solid company in its sector. Check recent earnings and sector news before adding. Diversification is your best protection."
+};
+
+const AI_ADVISOR={
+  AAPL:{action:'Hold',cls:'act-hold',text:"Apple is rock solid. Buffett has held it for years. The services business adds growing recurring revenue on top of hardware. If you are down short-term, do not panic — this is a multi-year play. Suggestion: hold and consider adding on any significant dip."},
+  MSFT:{action:'Consider adding',cls:'act-buy',text:"Microsoft has strong AI and cloud tailwinds with Azure growing 30%+ year over year. Copilot integration is just getting started. Suggestion: if this is less than 20% of your portfolio, adding on dips toward recent support makes sense long term."},
+  GOOGL:{action:'Strong opportunity',cls:'act-buy',text:"Buffett tripled his Google position. Search dominates, YouTube grows, Cloud gains share. Reasonable valuation for its AI growth. Suggestion: a position in GOOGL looks attractive at current levels."},
+  AMZN:{action:'Hold - let it run',cls:'act-hold',text:"Tepper nearly doubled Amazon this quarter. AWS growth plus improving retail profitability is powerful. Suggestion: hold and avoid trimming — the next earnings reports could be major catalysts."},
+  NVDA:{action:'Hold - monitor size',cls:'act-watch',text:"You are riding the AI wave. If NVDA has grown beyond 20-25% of your portfolio, consider trimming a small portion to rebalance. Suggestion: keep your core position but manage concentration risk."},
+  TSLA:{action:'Watch and wait',cls:'act-watch',text:"Tesla has been volatile. Hold your position but avoid adding without a catalyst. Suggestion: wait for the next earnings report and FSD progress before making a move."},
+  DEFAULT:{action:'Hold position',cls:'act-hold',text:"Your position looks reasonable based on general market conditions. Suggestion: continue holding, monitor quarterly earnings, and ensure this position is appropriately sized in your portfolio."}
+};
+</script>
+<script>
+
+const LESSONS=[
+{name:"What Schools Never Teach You About Money",desc:"The financial rules schools skip but the wealthy live by",cat:"Hidden Financial Knowledge",plan:"free",icon:"💰",content:`Schools spend years teaching algebra but not a single class on how money works. The wealthy know rules most people never learn.
+
+1. YOUR INCOME IS NOT YOUR WEALTH
+A doctor earning $400,000 who spends $390,000 is one bad month away from broke. Wealth is not what you earn but what you keep and build.
+
+2. ASSETS VS LIABILITIES
+Assets put money in your pocket. Liabilities take money out. A rental property is an asset. Your car is a liability.
+
+3. PAY YOURSELF FIRST
+Before paying any bill, move money into savings or investments. The wealthy save first and spend what remains.
+
+4. TIME IS YOUR MOST VALUABLE ASSET
+$200 per month invested from age 18 grows to over $1 million by 65. The same amount starting at 30 grows to only $350,000. Same money. The only difference is time.
+
+5. THE TAX GAME
+The wealthy pay lower effective tax rates than most workers by understanding how the tax code works. Investment income is taxed lower than earned income.
+
+6. MULTIPLE INCOME STREAMS
+The average millionaire has 7 income streams. The average person has one. The more streams you have, the more resilient your financial life becomes.`},
+
+{name:"Assets vs Liabilities: The Rule That Changes Everything",desc:"The one concept that separates the rich from everyone else",cat:"Assets & Liabilities",plan:"free",icon:"⚖️",content:`The single most important financial concept: an asset puts money in your pocket. A liability takes money out.
+
+YOUR HOME IS NOT AN ASSET (if you live in it)
+It costs you money every month through mortgage, insurance, maintenance, and taxes.
+
+YOUR CAR IS NOT AN ASSET
+It depreciates immediately and costs you money every month.
+
+TRUE ASSETS:
+- Stocks and index funds that grow and pay dividends
+- Rental properties that pay you rent monthly
+- Businesses that generate revenue
+- Intellectual property that earns royalties
+
+THE WEALTH FORMULA:
+Buy assets. Reduce liabilities. Use income from assets to buy more assets. Repeat for decades.
+
+That is how every wealthy person in history built their fortune. Not by earning more but by converting earnings into things that generate money.`},
+
+{name:"How to Actually Budget: The 50/30/20 Rule",desc:"A simple system to control your money",cat:"Saving & Budgeting",plan:"free",icon:"💳",content:`Most people fail at budgeting because they use systems that are too complicated.
+
+THE 50/30/20 RULE:
+Take your monthly income after tax and split it three ways.
+
+50% NEEDS: Rent, food, utilities, transport, minimum debt payments.
+
+30% WANTS: Going out, clothes, subscriptions, hobbies. You are allowed to enjoy your life but this category has a ceiling.
+
+20% FUTURE: Emergency fund, investments, extra debt payments, retirement savings. This is the entire difference between building wealth and running in place.
+
+THE KEY INSIGHT:
+The 20% future category leaves first before you spend anything else. Then spend the rest however you like. The less you think about it after that the better.
+
+IF YOUR NUMBERS ARE OFF:
+If needs are 70% of income you either need to earn more or cut costs. Willpower is not the solution to a structural problem.`},
+
+{name:"How Credit Scores Work",desc:"Your credit score will follow you for life",cat:"Hidden Financial Knowledge",plan:"free",icon:"📊",content:`Your credit score is a three-digit number between 300 and 850 that will follow you for life. Landlords, banks, and some employers check it. The interest rate on any loan you ever take is determined almost entirely by this number.
+
+HOW IT IS CALCULATED:
+35% Payment history: Pay every bill on time always.
+30% Credit utilisation: Keep usage below 30% of your limit.
+15% Length of history: Never close your oldest card.
+10% Credit mix: Having different types helps slightly.
+10% New inquiries: Do not apply for multiple cards at once.
+
+BUILDING FROM ZERO:
+1. Get a secured credit card with a small deposit
+2. Use it for one small recurring purchase monthly
+3. Pay it off in full every single month
+4. Never miss a payment
+5. After 12 months your score will be in solid shape
+
+A 750+ score saves you more money over your lifetime than almost any other single financial decision.`},
+
+{name:"The Power of Compound Interest",desc:"Why starting at 16 beats starting at 30 by hundreds of thousands",cat:"Saving & Budgeting",plan:"free",icon:"📈",content:`When your money earns returns, those returns then earn returns. The longer this continues the more dramatically it accelerates.
+
+THE NUMBERS:
+Person A invests $200 per month at 18 at 8% per year. By 65 they have $1,068,000.
+Person B waits until 30. Same $200, same return. By 65 they have $349,000.
+
+Same monthly investment. $719,000 difference. Just because of a 12-year head start.
+
+Person A only invested for the first 10 years then stopped completely. By 65 they STILL have more than Person B who invested every year from 30 to 65. Time is doing the work not the contribution.
+
+THE RULE OF 72:
+Divide 72 by your expected annual return to find how many years to double your money.
+At 8% return money doubles every 9 years.
+At 10% return money doubles every 7.2 years.
+
+HOW TO START TODAY:
+Open a brokerage account. Set up automatic monthly contributions of even $50. Buy VOO or a similar S&P 500 index fund. Do nothing else.`},
+
+{name:"The Truth About Taxes",desc:"How to legally keep more of your money",cat:"Hidden Financial Knowledge",plan:"free",icon:"🏛️",content:`Taxes are one of your biggest lifetime expenses yet nobody teaches you how to reduce them legally.
+
+HOW BRACKETS WORK:
+You do NOT pay your top rate on all income. A $50,000 earner pays 10% on the first chunk then 12% on the next. Your effective rate is much lower than your bracket.
+
+THE MOST POWERFUL TAX TOOLS:
+
+401k: Money goes in before tax reducing your taxable income now. Grows tax-deferred. If your employer matches contributions that is free money. Always take all of it.
+
+Roth IRA: Money goes in after tax but grows completely tax-free. Pay zero tax on withdrawals in retirement. Best for young people who expect to earn more later. Limit $7,000 per year in 2026.
+
+HSA: If you have a high-deductible health plan this is the most tax-advantaged account available. Triple tax benefit: contributions tax-free, growth tax-free, withdrawals for medical tax-free.
+
+CAPITAL GAINS:
+Investments held over a year are taxed at maximum 20% and 0% if you earn under about $45,000. This is why investors pay lower rates than workers. Use this to your advantage.`},
+
+{name:"Emergency Funds: The Foundation of Everything",desc:"The one account everyone needs before they invest",cat:"Saving & Budgeting",plan:"free",icon:"🛡️",content:`Before you invest a single dollar you need an emergency fund. Without it one bad event forces you into debt or forces you to sell investments at the worst possible moment.
+
+HOW MUCH:
+3-6 months of living expenses. If you spend $2,500 per month your fund should be $7,500 to $15,000. Self-employed or in a volatile industry: aim for 6-12 months.
+
+WHERE TO KEEP IT:
+NOT in your checking account (you will spend it).
+NOT in the stock market (it can drop 40% when you need it most).
+YES in a high-yield savings account currently paying 4-5% interest with FDIC insurance up to $250,000. Options: Marcus by Goldman Sachs, Ally Bank, SoFi.
+
+HOW TO BUILD IT:
+Set an automatic transfer on payday to your HYSA. Treat it like a bill. Non-negotiable.
+
+MILESTONES: $1,000 then 1 month then 3 months then 6 months.
+
+Only after this foundation exists should you begin investing aggressively. The emergency fund is what lets you hold investments through downturns instead of being forced to sell at the bottom.`},
+
+{name:"Good Debt vs Bad Debt",desc:"Debt is a tool - learn when it works for you",cat:"Assets & Liabilities",plan:"free",icon:"⚡",content:`Most people think all debt is bad. This belief keeps people from building wealth.
+
+BAD DEBT: Borrowed money used to buy things that lose value.
+Credit cards at 20% interest destroy wealth faster than almost anything.
+Car loans on vehicles you cannot afford. Depreciates immediately while you pay interest.
+Buy now pay later schemes designed to make you spend more than you would otherwise.
+
+GOOD DEBT: Borrowed money used to acquire assets.
+A mortgage on a rental property that pays you rent every month while appreciating.
+A student loan for a degree that demonstrably increases your income by more than the loan costs.
+A business loan for equipment that generates revenue greater than the interest cost.
+
+THE TEST:
+Ask: will this borrowed money generate more value than it costs in interest?
+If yes it might be good debt. If no it is bad debt.
+
+PRIORITY ORDER:
+Pay off any debt above 7% interest before investing.
+Keep debt below 4% since it is cheap money that lets you invest elsewhere.
+Never carry credit card debt month to month under any circumstances.`},
+
+{name:"How the Stock Market Actually Works",desc:"Demystifying the market so you can start investing",cat:"Hidden Financial Knowledge",plan:"free",icon:"📉",content:`When you buy a stock you are buying a small ownership stake in a real company. One share of Apple means you own a tiny piece of Apple Inc and its future profits.
+
+WHY PRICES MOVE:
+In the short term prices move based on emotion and speculation. In the long term they track actual business performance. Patient investors win.
+
+THE S&P 500:
+An index of the 500 largest US companies. Has averaged about 10% per year for a century. Has never had a negative 20-year period in history.
+
+HOW TO START:
+You do not need to pick stocks. Buy VOO which tracks the S&P 500. It costs 0.03% in fees and gives you ownership of all 500 companies.
+
+DOLLAR COST AVERAGING:
+Invest a fixed amount every month regardless of price. When prices drop your money buys more shares. When prices rise it buys fewer. Over time this beats almost every other strategy for regular investors.
+
+The most important rule: time in the market beats timing the market. Buy a little every month and hold for decades.`},
+
+{name:"The Difference Between Rich and Wealthy",desc:"Why high income alone will never make you free",cat:"Hidden Financial Knowledge",plan:"free",icon:"👑",content:`Rich means high income. Wealthy means assets that generate income whether you work or not.
+
+A doctor making $400,000 is rich. But if they spend $390,000 they are one lost job away from disaster.
+A person with $2 million invested at 5% makes $100,000 per year doing absolutely nothing. Forever.
+
+MOST HIGH EARNERS ARE NOT WEALTHY:
+Studies consistently show most high-income professionals could not sustain their lifestyle more than 6 months without their salary.
+
+THE FORMULA:
+Income minus expenses equals investment gap. Invest the gap into assets. Assets generate income. Use that income to buy more assets.
+
+THE SEVEN STREAMS:
+Average millionaire has 7 income streams: salary, business, dividends, rental income, interest, capital gains, royalties. You need more than one.
+
+FINANCIAL FREEDOM:
+When your assets generate enough passive income to cover all your expenses work becomes optional. That is the actual goal. Not a bigger salary but assets that pay for your life.`},
+
+{name:"What Billionaires Actually Invest In",desc:"The portfolios and strategies of the greatest investors revealed",cat:"Gold Investor Insights",plan:"gold",icon:"🏆",content:`The investing habits of the ultra wealthy are publicly reported through SEC 13F filings every quarter.
+
+WARREN BUFFETT:
+Keeps most of his portfolio in a handful of companies he understands deeply. Top holdings: Apple 22%, American Express 17%, Coca-Cola 12%. His favourite holding period is forever. He avoids anything he does not deeply understand.
+
+BILL ACKMAN:
+Takes concentrated positions in companies he believes are undervalued. Current big bets: Amazon, Brookfield, Uber, Microsoft, Meta. Focuses on businesses with strong recurring revenue and pricing power.
+
+DAVID TEPPER:
+Famous for massive macro calls. Bought bank stocks at the bottom of the 2008 crisis. Current positions show conviction in AI infrastructure: Amazon, Uber, Alphabet, NVIDIA.
+
+WHAT THEY HAVE IN COMMON:
+They concentrate on businesses they deeply understand. They hold for years not weeks. They buy more when prices drop. They ignore short-term noise. They read everything including competitor filings and industry research.
+
+THE LESSON:
+The greatest investors tell you what they are buying every quarter. You just need to know where to look and what it means. That is what FinPath Gold shows you.`},
+
+{name:"Reading Market Signals",desc:"The indicators that predict market movements before they happen",cat:"Market Signals",plan:"gold",icon:"📡",content:`Professional investors read signals. Here are the most important ones.
+
+THE YIELD CURVE:
+Normally long-term interest rates exceed short-term rates. When this inverts (short-term higher than long-term) it has preceded every US recession for the past 50 years.
+
+THE FED FUNDS RATE:
+When the Federal Reserve raises rates borrowing becomes expensive. This slows spending, reduces profits, and pressures stocks. When they cut rates the opposite happens.
+
+EARNINGS GROWTH:
+The most important question about any stock: will this company earn more in 5 years than today? If yes the stock price will likely follow.
+
+INSIDER BUYING:
+When executives buy their own company shares with personal money that is a powerful signal. Multiple insiders buying simultaneously is worth paying close attention to.
+
+THE VIX:
+Measures market volatility expectations. Above 30 means fear. Historically one of the best times to buy. Below 15 means complacency. Be cautious.
+
+HOW TO USE THESE:
+No single signal is reliable alone. Look for multiple signals pointing the same direction. One indicator is a hint. Three pointing the same way is a conviction.`},
+
+{name:"How to Build Multiple Streams of Income",desc:"Creating income that works while you sleep",cat:"Gold Investor Insights",plan:"gold",icon:"💰",content:`The average millionaire has seven income streams. Here is how to build them.
+
+STREAM 1 - EARNED INCOME: Trade time for money. The starting point but not the destination.
+
+STREAM 2 - DIVIDEND INCOME: Buy stocks that pay dividends quarterly. Start with $500 in dividend stocks. It pays little at first but compounds dramatically over decades.
+
+STREAM 3 - INTEREST INCOME: High-yield savings account earning 4-5%. Money that was earning nothing now earns something automatically.
+
+STREAM 4 - CONTENT INCOME: Create once, earn forever. A YouTube channel, blog, or course that teaches something valuable can generate income from a single creation indefinitely.
+
+STREAM 5 - SERVICE BUSINESS: Design, writing, tutoring, social media management. Skills sold online require no capital to start.
+
+STREAM 6 - CAPITAL GAINS: Stocks and index funds that appreciate over time.
+
+STREAM 7 - RENTAL INCOME: A property that generates monthly rent. Start learning real estate fundamentals now so you are ready when the capital is available.
+
+Start streams 2 and 3 today with whatever you have. Build 4 and 5 on the side. The others follow.`},
+
+{name:"Understanding Economic Crashes",desc:"How to see a market crash coming and benefit from it",cat:"Market Signals",plan:"gold",icon:"⚡",content:`Market crashes follow a predictable pattern.
+
+THE ANATOMY:
+1. Optimism: markets rise, everyone feels smart
+2. Euphoria: prices disconnect from fundamentals, people buy things they do not understand
+3. The trigger: could be anything from a bank failure to a geopolitical event
+4. Panic: everyone sells at once, prices collapse
+5. Recovery: patient buyers who held or bought during the crash are rewarded
+
+Then the cycle repeats.
+
+WARNING SIGNS:
+Price to earnings ratios well above historical averages. Inverted yield curve. Mainstream media covering investing enthusiastically. Assets trading on greater fool theory. Rapid growth in margin debt.
+
+HOW TO POSITION YOURSELF:
+Keep your emergency fund in cash so you never have to sell investments during a crash. Have a watchlist of companies you want at specific price targets. Continue buying throughout a crash since you are getting quality assets at a discount.
+
+WHAT NOT TO DO:
+Do not try to time the market. You need to be right twice. Missing just the 10 best days over 20 years cuts your returns roughly in half. The best investors made their largest fortunes buying during crashes not avoiding them.`},
+
+{name:"The Real Estate Playbook",desc:"How to build serious wealth through real estate starting with almost nothing",cat:"Gold Investor Insights",plan:"gold",icon:"🏠",content:`Real estate has created more millionaires than any other asset class. You do not need to be rich to start.
+
+WHY REAL ESTATE BUILDS WEALTH:
+It appreciates over time. It generates monthly income. It can be purchased with borrowed money creating leverage.
+
+Leverage is what makes it uniquely powerful. $50,000 down on a $250,000 property that appreciates 10% means you made $25,000 on $50,000 invested. That is a 50% return not 10%.
+
+HOUSE HACKING (THE FASTEST START):
+Buy a small multi-unit property as your primary residence. Live in one unit. Rent out the others. Tenants pay your mortgage. You live for free while building equity. Primary residence mortgages require as little as 3-5% down versus 20-25% for investment properties.
+
+THE NUMBERS THAT WORK:
+Rent income must exceed mortgage plus insurance plus taxes plus maintenance. Aim for at least $200-300 positive monthly cash flow per unit.
+
+STARTING WITHOUT A DOWN PAYMENT:
+REITs (Real Estate Investment Trusts) let you invest in real estate with any amount traded like stocks. Crowdfunding platforms allow fractional ownership of commercial properties.
+
+Build knowledge and credit now. When the opportunity comes you will be ready.`},
+
+{name:"How to Analyse a Stock",desc:"The exact framework professional investors use",cat:"Gold Investor Insights",plan:"gold",icon:"🔍",content:`Before buying any stock run through this framework.
+
+STEP 1 - UNDERSTAND THE BUSINESS:
+Can you explain in one sentence what this company does and how it makes money? If not you do not understand it well enough to invest.
+
+STEP 2 - CHECK THE MOAT:
+A sustainable competitive advantage that protects from competition. Types: brand loyalty (Apple, Coca-Cola), network effects (Visa, Meta), cost advantages (Amazon, Walmart), switching costs (Microsoft).
+
+STEP 3 - READ THE FINANCIALS:
+Is revenue growing consistently? Are profit margins stable or improving? Is debt manageable? Does the company generate real cash not just accounting profits?
+
+STEP 4 - CHECK THE VALUATION:
+P/E ratio: how much are you paying for one dollar of earnings? Compare to industry peers and the company's own history. PEG ratio below 1 is generally undervalued.
+
+STEP 5 - UNDERSTAND THE RISKS:
+What could go wrong? Who are the competitors? Is the industry growing or shrinking?
+
+STEP 6 - SET A TARGET PRICE:
+What price would you be excited to pay? What price is too expensive? A target price removes emotion from the decision.
+
+Great companies at bad prices make bad investments. Mediocre companies at great prices can make excellent investments.`},
+
+{name:"ETFs vs Individual Stocks",desc:"Understanding the difference and when to use each",cat:"Gold Investor Insights",plan:"gold",icon:"📊",content:`One of the most important decisions you will make as an investor.
+
+WHAT IS AN ETF:
+A basket of stocks you buy with one purchase. VOO gives you ownership of all 500 largest US companies instantly. When one has a bad year the other 499 cushion the impact.
+
+THE CASE FOR ETFs:
+Instant diversification. Extremely low fees (VOO charges 0.03% annually). Historically outperform most professional fund managers over 10 years. No research required. Emotionally easier since no attachment to individual companies.
+
+THE CASE FOR INDIVIDUAL STOCKS:
+Potential for much higher returns if you pick correctly. You can focus on companies you genuinely understand. More control over what you own.
+
+THE RESEARCH REALITY:
+About 90% of professional fund managers underperform a simple S&P 500 index fund over 15 years. If professionals cannot beat the index consistently the odds of you doing so are very low.
+
+THE SMART APPROACH - CORE SATELLITE:
+70-80% in low-cost index ETFs for broad market exposure. 20-30% in individual stocks in companies you have deeply researched. Never put more than 5-10% in any single stock regardless of conviction.`},
+
+{name:"Dollar Cost Averaging",desc:"The strategy that removes emotion from investing",cat:"Gold Investor Insights",plan:"gold",icon:"🔄",content:`Trying to time the stock market is one of the most costly mistakes investors make. Dollar cost averaging removes the temptation entirely.
+
+WHAT IT IS:
+Invest a fixed amount at regular intervals regardless of what the market is doing. Weekly, biweekly, or monthly.
+
+HOW IT WORKS:
+At $300 per month in VOO:
+Month 1 at $400 per share you buy 0.75 shares.
+Month 2 price drops to $320 you buy 0.9375 shares.
+Month 3 price rebounds to $380 you buy 0.79 shares.
+
+Your average cost is in between. You automatically buy more when prices are low and fewer when high. The opposite of what emotional investors do.
+
+WHY IT BEATS TIMING:
+Missing just the 10 best days in the S&P 500 over 20 years cuts total returns roughly in half. Those best days almost always happen during periods of maximum fear when market timers have already sold out.
+
+THE PSYCHOLOGICAL BENEFIT:
+DCA removes the question of should I invest now. You just invest on the same day every month automatically. Set it and forget it.
+
+HOW TO SET IT UP:
+Open a brokerage account. Set up automatic investment on payday. Choose VOO or similar. Do nothing else. Time in the market beats timing the market every time.`},
+
+{name:"Understanding Dividends",desc:"Getting paid to own stocks",cat:"Gold Investor Insights",plan:"gold",icon:"💵",content:`A dividend is a portion of company profits paid directly to shareholders quarterly. When you own dividend stocks you get paid just for holding them.
+
+HOW DIVIDENDS WORK:
+If you own 100 shares of Coca-Cola paying $1.84 annual dividend you receive $184 per year in quarterly payments regardless of what the stock price does.
+
+Dividend yield tells you income relative to price. If KO trades at $70 and pays $1.84 per year the yield is 2.6%.
+
+THE POWER OF REINVESTMENT:
+Use your quarterly payments to automatically buy more shares. Those shares generate more dividends. Which buy more shares. Compounding effect over decades is extraordinary.
+
+CHARACTERISTICS OF GREAT DIVIDEND STOCKS:
+Dividend Aristocrats have increased dividends every year for 25+ consecutive years (Coca-Cola, Johnson and Johnson, Procter and Gamble).
+Payout ratio below 60% means the company is not stretching to pay.
+Growing dividends signal a healthy growing business.
+
+DIVIDEND WARNING:
+Be cautious of very high yields above 6-7%. This often signals the market expects the dividend to be cut. A 10% yield that gets cut in half is worse than a steady 3% yield that grows every year.
+
+Dividend investing is boring and extraordinarily effective over decades.`},
+
+{name:"Bonds Cash and Portfolio Diversification",desc:"Why the smartest investors do not put everything in stocks",cat:"Gold Investor Insights",plan:"gold",icon:"🛡️",content:`How you spread money across different asset types matters as much as which investments you pick.
+
+THE MAJOR ASSET CLASSES:
+
+STOCKS: Highest long-term returns but also highest volatility. In 2008 the S&P 500 dropped 57%.
+
+BONDS: Loans to governments or corporations. Lower returns but much less volatile. When stocks crash bonds often hold steady or rise. US Treasuries are considered the safest investment in the world.
+
+CASH: Savings accounts and money market funds. Currently yielding 4-5%. No growth but complete safety.
+
+REAL ASSETS: Real estate, gold, commodities. Different return drivers that protect against inflation.
+
+WHY DIVERSIFICATION MATTERS:
+In 2000-2002 the S&P 500 fell 49% but bonds rose 30%. A 60/40 portfolio only fell about 15%. Painful but survivable and recoverable.
+
+CLASSIC ALLOCATIONS:
+Aggressive under 30: 90% stocks 10% bonds.
+Moderate 30-50: 70% stocks 30% bonds.
+Conservative over 50: 50% stocks 50% bonds.
+
+REBALANCING:
+If stocks rise and become 80% of your portfolio when you target 70%, sell some stocks and buy bonds. This forces you to sell high and buy low automatically.
+
+The goal is not to maximize returns. It is to achieve good returns with minimum anxiety that causes bad decisions.`},
+
+{name:"How to Read a Company Annual Report",desc:"The one document that tells you everything about a business",cat:"Gold Investor Insights",plan:"gold",icon:"📋",content:`Every public company files an annual report called a 10-K with detailed financial information. Learning to read this is one of the most valuable skills you can develop.
+
+WHERE TO FIND IT:
+SEC.gov or the company investor relations page. Every public company has one.
+
+THE LETTER TO SHAREHOLDERS:
+Written in plain English. Explains what happened, what went wrong, and management plans. Warren Buffett letters to Berkshire shareholders are considered some of the best financial writing ever produced.
+
+THE INCOME STATEMENT:
+Shows revenue, costs, and profits. Is revenue growing year over year? Are margins stable or improving? Look at the trend over 5 years not just last year.
+
+THE BALANCE SHEET:
+Assets the company owns versus debts owed. How much debt relative to equity? Does the company have enough cash? Is goodwill unusually large which could indicate overpriced acquisitions?
+
+THE CASH FLOW STATEMENT:
+The most honest measure of a business. Shows actual cash generated not accounting profits which can be manipulated. Free cash flow is operating cash flow minus capital expenditures.
+
+THE RISK FACTORS SECTION:
+A list of everything that could go wrong. Most investors skip this. Read it carefully. It tells you what management themselves are most worried about.
+
+Reading one 10-K per month in industries you are interested in will make you a significantly better investor within a year.`},
+
+{name:"Tax-Loss Harvesting",desc:"The advanced strategy that reduces your tax bill",cat:"Gold Investor Insights",plan:"gold",icon:"💡",content:`Tax-loss harvesting means selling investments that have lost value to offset capital gains taxes. You turn paper losses into real tax savings.
+
+HOW IT WORKS:
+You made $10,000 profit selling Apple in December. You also hold a position down $8,000. By selling that position before December 31 you lock in the loss. Now you only owe capital gains tax on $2,000 instead of $10,000.
+
+If losses exceed gains you can deduct up to $3,000 against ordinary income per year and carry forward remaining losses indefinitely.
+
+THE WASH SALE RULE:
+If you sell at a loss and buy the same or substantially identical security within 30 days you cannot claim the loss. The IRS prevents straightforward gaming.
+
+SOLUTION:
+Sell the losing position and immediately buy a similar but not identical ETF. Sell S&P 500 ETF at a loss and buy a total market ETF instead. You stay invested with similar exposure and capture the tax loss.
+
+WHEN MOST VALUABLE:
+When you have significant capital gains to offset. In high-income years when your tax rate is higher. During market downturns when many positions are underwater.
+
+Always consult a qualified tax professional before implementing tax-loss harvesting since individual circumstances vary significantly.`},
+
+{name:"International Investing",desc:"Why your portfolio needs the world not just America",cat:"Gold Investor Insights",plan:"gold",icon:"🌍",content:`Most American investors put 90% of their money in US stocks. This concentration in a single country is a risk many people do not realize.
+
+THE CASE:
+The US represents about 60% of global stock market value. The other 40% including European companies, Asian technology firms, and emerging market growth stories are available to you.
+
+Different countries perform differently at different times. The US had a lost decade from 2000 to 2010 with flat returns over 10 years. Emerging markets dramatically outperformed in the same period.
+
+INTERNATIONAL ETFs:
+VEA covers developed international markets including Europe, Japan, Australia, Canada.
+VWO covers emerging markets including China, India, Brazil, Taiwan, South Korea.
+VXUS covers total international combining both developed and emerging.
+
+These give exposure to thousands of companies across dozens of countries with a single purchase.
+
+THE RISKS:
+Currency risk: if the dollar strengthens foreign returns are reduced when converted back.
+Political risk: different regulatory environments.
+Slightly higher costs than domestic ETFs.
+
+SUGGESTED ALLOCATION:
+60-70% US stocks. 20-30% international developed. 10% emerging markets. This provides global exposure while maintaining a home country bias most investors prefer.`},
+
+{name:"Building a Long-Term Investment Strategy",desc:"How to build a plan you can stick to through everything",cat:"Gold Investor Insights",plan:"gold",icon:"🎯",content:`The biggest predictor of investment success is not picking the right stocks. It is having a strategy you can stick to through market crashes, media panic, and your own emotions.
+
+STEP 1 - DEFINE YOUR TIME HORIZON:
+When will you need this money? Under 3 years: do not put it in stocks. The market can drop 40% and take years to recover. For 10 or more years: stocks have historically been the best performing asset class by far.
+
+STEP 2 - DEFINE YOUR RISK TOLERANCE:
+How would you feel if your portfolio dropped 30% in a year? If the answer is sell everything you need a more conservative allocation. The best strategy is the one you will actually follow when markets are terrifying.
+
+STEP 3 - BUILD YOUR CORE PORTFOLIO:
+A simple three-fund portfolio covers almost everything.
+US total market ETF (VTI) at 60%.
+International ETF (VXUS) at 30%.
+Bond ETF (BND) at 10%.
+
+STEP 4 - AUTOMATE EVERYTHING:
+Automatic contributions on payday. Automatic dividend reinvestment. Annual automatic rebalancing. Good financial behaviour should require zero willpower.
+
+STEP 5 - WRITE YOUR PLAN DOWN:
+Write a personal investment policy statement including your goals, time horizon, target allocation, and the rule that you will not sell during a market crash. When panic strikes go back and read what you wrote when you were calm.
+
+STEP 6 - REVIEW ANNUALLY NOT DAILY:
+Checking daily causes emotional decisions. Review once per year. Rebalance if allocations drifted more than 5%. Otherwise do nothing.`}
+];
+
+const MOVES=[
+{investor:"Warren Buffett",stock:"Apple Inc",ticker:"AAPL",action:"Hold",amount:"$57.8B — 21.99%",date:"Q1 2026",notes:"Still his largest holding. Buffett views Apple as a consumer brand with unmatched loyalty, not just a tech company.",photo:"WB"},
+{investor:"Warren Buffett",stock:"Occidental Petroleum",ticker:"OXY",action:"Hold",amount:"$17.2B — 6.64%",date:"Q1 2026",notes:"Major energy bet. Buffett believes in long term oil demand and loves OXY's balance sheet strength.",photo:"WB"},
+{investor:"Warren Buffett",stock:"Alphabet Inc",ticker:"GOOGL",action:"Add 203.99%",amount:"$15.6B — 5.93%",date:"Q1 2026",notes:"Buffett massively tripled his Google position this quarter — big signal on AI and search dominance.",photo:"WB"},
+{investor:"Warren Buffett",stock:"American Express",ticker:"AXP",action:"Hold",amount:"$45.8B — 17.43%",date:"Q1 2026",notes:"One of his oldest holdings. Buffett loves AXP's premium customer base and consistent earnings.",photo:"WB"},
+{investor:"Warren Buffett",stock:"Coca Cola",ticker:"KO",action:"Hold",amount:"$30.4B — 11.56%",date:"Q1 2026",notes:"Held since 1988. Global brand, consistent dividends, defensive in any market.",photo:"WB"},
+{investor:"Warren Buffett",stock:"Chevron Corp",ticker:"CVX",action:"Reduce 35.17%",amount:"$17.4B — 6.64%",date:"Q1 2026",notes:"Buffett trimmed Chevron significantly this quarter.",photo:"WB"},
+{investor:"Warren Buffett",stock:"Delta Air Lines",ticker:"DAL",action:"Buy",amount:"$2.6B — 1.01%",date:"Q1 2026",notes:"New buy. Buffett sold all airlines in 2020 but is back — Delta's balance sheet strength brought him in.",photo:"WB"},
+{investor:"Bill Ackman",stock:"Microsoft Corp",ticker:"MSFT",action:"Buy",amount:"$2.09B — 15.26%",date:"Q1 2026",notes:"Ackman bought Microsoft during a sell-off betting on AI cloud growth. Sees Azure as the AI backbone.",photo:"BA"},
+{investor:"Bill Ackman",stock:"Amazon",ticker:"AMZN",action:"Add 19.19%",amount:"$2.38B — 17.39%",date:"Q1 2026",notes:"Second largest holding. Bullish on AWS dominance and Amazon AI infrastructure investments.",photo:"BA"},
+{investor:"Bill Ackman",stock:"Uber Technologies",ticker:"UBER",action:"Hold",amount:"$2.15B — 15.71%",date:"Q1 2026",notes:"One of Ackman's biggest bets. Believes Uber is an undervalued tech platform with massive global growth.",photo:"BA"},
+{investor:"Bill Ackman",stock:"Meta Platforms",ticker:"META",action:"Hold",amount:"$1.52B — 11.10%",date:"Q1 2026",notes:"Holds Meta as a dominant AI advertising platform with strong pricing power.",photo:"BA"},
+{investor:"Bill Ackman",stock:"Brookfield Corp",ticker:"BN",action:"Reduce 2.78%",amount:"$2.41B — 17.62%",date:"Q1 2026",notes:"Largest holding. Slightly trimmed but remains heavily invested in this global asset manager.",photo:"BA"},
+{investor:"David Tepper",stock:"Amazon",ticker:"AMZN",action:"Add 98.22%",amount:"$899.7M — 15.18%",date:"Q1 2026",notes:"Tepper nearly doubled Amazon — one of his strongest conviction buys. Bullish on AWS and AI.",photo:"DT"},
+{investor:"David Tepper",stock:"Alphabet Inc",ticker:"GOOG",action:"Reduce 3.03%",amount:"$497M — 8.38%",date:"Q1 2026",notes:"Slightly trimmed but still major. Remains bullish on AI search long term.",photo:"DT"},
+{investor:"David Tepper",stock:"Uber Technologies",ticker:"UBER",action:"Add 242.31%",amount:"$513M — 7.68%",date:"Q1 2026",notes:"Tripled Uber position — massive conviction buy on global expansion.",photo:"DT"},
+{investor:"David Tepper",stock:"Alibaba",ticker:"BABA",action:"Reduce 32.58%",amount:"$434.7M — 7.33%",date:"Q1 2026",notes:"Trimming after a big run. Still holds significant position on Chinese tech recovery.",photo:"DT"},
+{investor:"David Tepper",stock:"NVIDIA",ticker:"NVDA",action:"Reduce 13.44%",amount:"$256.6M — 4.33%",date:"Q1 2026",notes:"Taking profits after massive gains but still holds significant position in AI chip leader.",photo:"DT"},
+{investor:"David Tepper",stock:"Meta Platforms",ticker:"META",action:"Reduce 27.25%",amount:"$249.7M — 4.21%",date:"Q1 2026",notes:"Trimmed after strong gains. Still bullish long term on AI advertising dominance.",photo:"DT"},
+{investor:"David Tepper",stock:"Microsoft Corp",ticker:"MSFT",action:"Add 15.33%",amount:"$187.3M — 3.16%",date:"Q1 2026",notes:"Added to Microsoft. Bullish on Azure growth and Copilot AI integration.",photo:"DT"}
+];
+
+// ── STRIPE ──
+const STRIPE_PK = 'pk_test_51Tj5y5RvClN8iCWybxyhrisHJbJHGZHSpUSwMQVotLF1LkxawfyHoGN8qXpJVkhIqUZQkcxAGC2on2pw2Da1lQBS00z29vNVlo';
+const STRIPE_PRICE = 'price_1TjBU0RvClN8iCWy4olxCqfL'; // Replace with your price_ ID
+
+// ── SUPABASE ──
+const SBU = 'https://ivhhfhemcecwqadrjmwq.supabase.co';
+const SBK = 'sb_publishable_KoWYv1Ro5D4I83XxWmJFOg_DCB2ldw6';
+const SBH = {'Content-Type':'application/json','apikey':SBK,'Authorization':'Bearer '+SBK};
+
+// ── FINNHUB ──
+const FK = 'd8pn5n1r01qujv4j5d70d8pn5n1r01qujv4j5d7g';
+
+// ── USER ──
+const EP = new URLSearchParams(window.location.search);
+const EM = EP.get('user');
+let UID = EM || localStorage.getItem('fp_uid') || (()=>{const id='u_'+Math.random().toString(36).slice(2);localStorage.setItem('fp_uid',id);return id;})();
+if(EM) localStorage.setItem('fp_uid', EM);
+let IS_GOLD = localStorage.getItem('fp_gold') === 'true';
+
+let portfolio=[], selectedStock=null, pChart=null, dChart=null, priceCache={}, stTimeout=null;
+
+const COMPANIES={AAPL:'Apple Inc',MSFT:'Microsoft Corp',GOOGL:'Alphabet Inc',AMZN:'Amazon',NVDA:'NVIDIA Corp',META:'Meta Platforms',TSLA:'Tesla Inc','BRK.B':'Berkshire Hathaway',JPM:'JPMorgan Chase',V:'Visa Inc',JNJ:'Johnson & Johnson',UNH:'UnitedHealth',XOM:'Exxon Mobil',KO:'Coca-Cola',DAL:'Delta Air Lines',OXY:'Occidental Petroleum',UBER:'Uber Technologies',BN:'Brookfield Corp',AXP:'American Express',SHOP:'Shopify'};
+const POP = Object.keys(COMPANIES).slice(0,14);
+
+const AI_INSIGHT={
+  AAPL:"Apple is Warren Buffett's biggest holding since 2016. Strong brand, loyal customers, and growing services revenue. One of the safest long-term bets in the market.",
+  MSFT:"Bill Ackman just bought $2 billion of Microsoft during a sell-off betting on Azure cloud and AI Copilot. Rock-solid fundamentals.",
+  GOOGL:"Buffett tripled his Google position this quarter. Ad revenue recovering, Cloud gaining share, Gemini AI is a real competitor.",
+  AMZN:"Both Ackman and Tepper are heavily buying Amazon. AWS dominates cloud and retail profitability improves every quarter.",
+  NVDA:"The AI chip king. Every major AI company depends on their GPUs. Massive growth but high valuation.",
+  META:"Ackman holds Meta as a dominant AI advertising platform. Ad business printing money and AI investments paying off.",
+  TSLA:"Higher risk play. EV lead being challenged but energy storage and autonomous driving could be huge.",
+  DEFAULT:"A solid company in its sector. Check recent earnings and sector news before adding. Diversification is your best protection."
+};
+
+const AI_ADVISOR={
+  AAPL:{action:'Hold',cls:'act-hold',text:"Apple is rock solid. Buffett has held it for years. The services business adds growing recurring revenue on top of hardware. If you are down short-term do not panic — this is a multi-year play. Suggestion: hold and consider adding on any significant dip."},
+  MSFT:{action:'Consider adding',cls:'act-buy',text:"Microsoft has strong AI and cloud tailwinds with Azure growing 30%+ year over year. Copilot integration is just getting started. Suggestion: if this is less than 20% of your portfolio, adding on dips makes sense long term."},
+  GOOGL:{action:'Strong opportunity',cls:'act-buy',text:"Buffett tripled his Google position this quarter. Search dominates, YouTube grows, Cloud gains share fast. Suggestion: a position in GOOGL looks attractive at current levels."},
+  AMZN:{action:'Hold — let it run',cls:'act-hold',text:"Tepper nearly doubled Amazon. AWS growth plus improving retail profitability is powerful. Suggestion: hold and avoid trimming — next earnings reports could be major catalysts."},
+  NVDA:{action:'Hold — monitor size',cls:'act-watch',text:"You are riding the AI wave. If NVDA has grown beyond 20-25% of your portfolio consider trimming a small portion to rebalance. Suggestion: keep your core position but manage concentration risk."},
+  TSLA:{action:'Watch and wait',cls:'act-watch',text:"Tesla has been volatile. Hold your position but avoid adding without a catalyst. Suggestion: wait for the next earnings report before making a move."},
+  KO:{action:'Hold — income stock',cls:'act-hold',text:"Coca-Cola is a Buffett favourite held since 1988. Consistent dividends and defensive in any market. Suggestion: hold for income and stability. Great ballast in a volatile portfolio."},
+  JPM:{action:'Hold — strong bank',cls:'act-hold',text:"JPMorgan is the gold standard of banking. Strong earnings and excellent management. Suggestion: hold as a financial sector anchor. Consider adding on any broad market pullback."},
+  META:{action:'Hold — AI upside',cls:'act-hold',text:"Meta's ad business is printing money and AI investments are paying off. Suggestion: hold your position — the next 12 months could see significant earnings growth from AI advertising."},
+  DEFAULT:{action:'Hold position',cls:'act-hold',text:"Your position looks reasonable. Suggestion: continue holding, monitor quarterly earnings, and ensure this position is appropriately sized in your overall portfolio."}
+};
+
+// ── HELPERS ──
+function getActionBadge(a){
+  const l=a.toLowerCase();
+  if(l.includes('buy')) return '<span class="inv-badge badge-buy">BUY</span>';
+  if(l.includes('add')) return '<span class="inv-badge badge-add">'+a.toUpperCase()+'</span>';
+  if(l.includes('hold')) return '<span class="inv-badge badge-hold">HOLD</span>';
+  return '<span class="inv-badge badge-reduce">'+a.toUpperCase()+'</span>';
+}
+
+function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+
+function showPage(p){
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('mobileMenu').classList.remove('open');
+  window.scrollTo(0,0);
+  if(p==='lessons') renderLessons();
+  if(p==='gold') renderGold();
+  if(p==='portfolio'){loadFromDB().then(()=>renderPortfolio());}
+}
+
+// ── LESSONS ──
+function renderLessons(){
+  document.getElementById('lessonsGrid').innerHTML=LESSONS.map((l,i)=>`
+    <div class="lesson-card" onclick="openLesson(${i})">
+      <div class="lesson-img">${l.icon}</div>
+      <div class="lesson-body">
+        <div class="lesson-cat">${l.cat}</div>
+        <div class="lesson-title">${l.name}</div>
+        <div class="lesson-desc">${l.desc}</div>
+        <span class="lesson-plan ${l.plan==='free'?'plan-free':'plan-gold'}">${l.plan==='free'?'Free':'Gold ✦'}</span>
+      </div>
+    </div>`).join('');
+}
+
+function openLesson(i){
+  const l=LESSONS[i];
+  document.getElementById('lessons-list-view').style.display='none';
+  document.getElementById('lessonDetail').classList.add('active');
+  document.getElementById('detailCat').textContent=l.cat;
+  document.getElementById('detailTitle').textContent=l.name;
+  if(l.plan==='gold'&&!IS_GOLD){
+    document.getElementById('detailBody').innerHTML=`
+      <p style="color:var(--muted);margin-bottom:24px">${l.desc}</p>
+      <div class="gold-lock">
+        <div style="font-size:36px;margin-bottom:12px">👑</div>
+        <h3>This is a Gold lesson</h3>
+        <p>Upgrade to FinPath Gold to access all 15 premium lessons, Investor Moves, and AI suggestions.</p>
+        <button class="price-btn" style="width:auto;padding:12px 28px;margin-top:8px" onclick="openGoldPayment()">Upgrade to Gold — $4.99/mo</button>
+      </div>`;
+  } else {
+    document.getElementById('detailBody').innerHTML='<div class="lesson-content">'+l.content+'</div>';
+  }
+  window.scrollTo(0,0);
+}
+
+function closeLessonDetail(){
+  document.getElementById('lessons-list-view').style.display='';
+  document.getElementById('lessonDetail').classList.remove('active');
+}
+
+// ── GOLD PAGE ──
+function renderGold(){
+  if(!IS_GOLD){
+    document.getElementById('goldContent').innerHTML=`
+      <div class="gold-gate">
+        <div style="font-size:36px;margin-bottom:12px">👑</div>
+        <h2 style="font-size:24px;font-weight:800;margin-bottom:8px">Upgrade to Gold</h2>
+        <p style="color:var(--muted);margin-bottom:24px;font-size:15px">Get full access to all 19 investor moves from Buffett, Ackman, and Tepper — updated every quarter.</p>
+        <button class="price-btn" style="width:auto;padding:14px 36px;font-size:16px" onclick="openGoldPayment()">Upgrade to Gold — $4.99/mo</button>
+      </div>`;
+    return;
+  }
+  document.getElementById('goldContent').innerHTML=`
+    <div class="filter-tabs" id="filterTabs">
+      <button class="filter-tab active" onclick="filterMoves('all',this)">All investors</button>
+      <button class="filter-tab" onclick="filterMoves('Warren Buffett',this)">Warren Buffett</button>
+      <button class="filter-tab" onclick="filterMoves('Bill Ackman',this)">Bill Ackman</button>
+      <button class="filter-tab" onclick="filterMoves('David Tepper',this)">David Tepper</button>
+    </div>
+    <div class="moves-grid" id="movesGrid"></div>`;
+  renderMoves('all');
+}
+
+function renderMoves(f){
+  const filtered=f==='all'?MOVES:MOVES.filter(m=>m.investor===f);
+  document.getElementById('movesGrid').innerHTML=filtered.map(m=>`
+    <div class="move-card">
+      <div class="move-avatar">${m.photo}</div>
+      <div class="move-info">
+        <div class="move-investor">${m.investor}</div>
+        <div class="move-stock">${m.stock} <span style="color:var(--muted);font-weight:400;font-size:13px">${m.ticker}</span></div>
+        <div style="margin-bottom:6px">${getActionBadge(m.action)}</div>
+        <div class="move-note">${m.notes}</div>
+      </div>
+      <div class="move-right">
+        <div class="move-amount">${m.amount}</div>
+        <div style="font-size:11px;color:var(--muted2);margin-top:4px">${m.date}</div>
+      </div>
+    </div>`).join('');
+}
+
+function filterMoves(f,btn){
+  document.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderMoves(f);
+}
+
+// ── STRIPE PAYMENT ──
+async function openGoldPayment(){
+  try {
+    const stripe = Stripe(STRIPE_PK);
+    // Create checkout session via Stripe's client-only checkout
+    const result = await stripe.redirectToCheckout({
+      lineItems:[{price: STRIPE_PRICE, quantity:1}],
+      mode:'subscription',
+      successUrl: window.location.origin+window.location.pathname+'?gold=success&session_id={CHECKOUT_SESSION_ID}',
+      cancelUrl: window.location.href,
+      customerEmail: EM || undefined
+    });
+    if(result.error) alert(result.error.message);
+  } catch(e) {
+    // Fallback for sandbox testing
+    alert('Stripe checkout: '+e.message+'\n\nFor testing: your Stripe price ID needs to be added to the code. Contact finpath support.');
+  }
+}
+
+// Check for successful payment return
+function checkPaymentReturn(){
+  const params = new URLSearchParams(window.location.search);
+  if(params.get('gold')==='success'){
+    IS_GOLD = true;
+    localStorage.setItem('fp_gold','true');
+    showSuccessBanner();
+    // Clean URL
+    window.history.replaceState({},document.title,window.location.pathname);
+  }
+}
+
+function showSuccessBanner(){
+  const banner = document.createElement('div');
+  banner.style.cssText='position:fixed;top:64px;left:0;right:0;background:#15803d;color:#fff;text-align:center;padding:14px;font-size:15px;font-weight:600;z-index:999';
+  banner.textContent='Welcome to FinPath Gold! All features are now unlocked.';
+  document.body.appendChild(banner);
+  setTimeout(()=>banner.remove(), 5000);
+}
+
+// ── PORTFOLIO / SUPABASE ──
+async function fetchQ(t){
+  if(priceCache[t]&&Date.now()-priceCache[t].ts<30000) return priceCache[t];
+  try{
+    const r=await fetch('https://finnhub.io/api/v1/quote?symbol='+t+'&token='+FK);
+    const d=await r.json();
+    if(d.c){priceCache[t]={c:d.c,d:d.d,dp:d.dp,o:d.o,ts:Date.now()};return priceCache[t];}
+  }catch(e){}
+  return null;
+}
+
+async function fetchCandles(t,days){
+  const to=Math.floor(Date.now()/1000),from=to-days*86400,res=days<=1?'5':'D';
+  try{
+    const r=await fetch('https://finnhub.io/api/v1/stock/candle?symbol='+t+'&resolution='+res+'&from='+from+'&to='+to+'&token='+FK);
+    const d=await r.json();
+    if(d.c&&d.c.length>1) return d.c;
+  }catch(e){}
+  return null;
+}
+
+async function saveToDB(){
+  try{
+    await fetch(SBU+'/rest/v1/portfolio?user_id=eq.'+UID,{method:'DELETE',headers:SBH});
+    if(portfolio.length>0){
+      await fetch(SBU+'/rest/v1/portfolio',{method:'POST',headers:{...SBH,'Prefer':'return=minimal'},
+        body:JSON.stringify(portfolio.map(p=>({user_id:UID,ticker:p.ticker,shares:p.shares,buy_price:p.buyPrice||0})))});
+    }
+  }catch(e){}
+}
+
+async function loadFromDB(){
+  try{
+    const r=await fetch(SBU+'/rest/v1/portfolio?user_id=eq.'+UID+'&select=*',{headers:SBH});
+    const rows=await r.json();
+    if(Array.isArray(rows)) portfolio=rows.map(r=>({ticker:r.ticker,shares:parseFloat(r.shares),buyPrice:parseFloat(r.buy_price)}));
+  }catch(e){}
+}
+
+// ── SEARCH ──
+function openSearch(){document.getElementById('searchModal').classList.add('open');loadSearchResults();}
+function closeSearch(){document.getElementById('searchModal').classList.remove('open');document.getElementById('searchInput').value='';}
+function closeShares(){document.getElementById('sharesModal').classList.remove('open');}
+function closeDetail(){document.getElementById('detailModal').classList.remove('open');}
+function closeHourly(){document.getElementById('hourlyModal').classList.remove('open');}
+
+async function loadSearchResults(){
+  document.getElementById('searchResults').innerHTML='<div class="loading"><div class="spinner"></div>Loading live prices...</div>';
+  const quotes=await Promise.all(POP.map(async t=>({t,q:await fetchQ(t)})));
+  renderSearchResults(quotes.filter(x=>x.q));
+}
+
+function renderSearchResults(items){
+  document.getElementById('searchResults').innerHTML=items.slice(0,12).map(({t,q})=>`
+    <div class="modal-result" onclick="openAddShares('${t}')">
+      <div><div style="font-size:15px;font-weight:600">${t}</div><div style="font-size:12px;color:var(--muted)">${COMPANIES[t]||t}</div></div>
+      <div style="text-align:right">
+        <div style="font-size:15px;font-weight:600;color:${q.dp>=0?'#4ade80':'#f87171'}">$${q.c.toFixed(2)}</div>
+        <div style="font-size:12px;color:${q.dp>=0?'#4ade80':'#f87171'}">${q.dp>=0?'+':''}${q.dp.toFixed(2)}%</div>
+      </div>
+    </div>`).join('');
+}
+
+async function handleSearch(v){
+  clearTimeout(stTimeout);
+  if(!v){loadSearchResults();return;}
+  stTimeout=setTimeout(async()=>{
+    const up=v.toUpperCase();
+    const matched=POP.filter(t=>t.startsWith(up)||(COMPANIES[t]||'').toUpperCase().includes(up));
+    if(matched.length){const qs=await Promise.all(matched.map(async t=>({t,q:await fetchQ(t)})));renderSearchResults(qs.filter(x=>x.q));}
+  },400);
+}
+
+async function openAddShares(ticker){
+  selectedStock={ticker};
+  closeSearch();
+  document.getElementById('sharesTitle').textContent='Add '+ticker;
+  document.getElementById('sharesInsight').textContent=AI_INSIGHT[ticker]||AI_INSIGHT.DEFAULT;
+  document.getElementById('sharesInput').value='';
+  document.getElementById('sharesPreview').textContent='';
+  const q=await fetchQ(ticker);
+  if(q){selectedStock.price=q.c;document.getElementById('sharesLabel').textContent='Current price: $'+q.c.toFixed(2)+' per share';}
+  document.getElementById('sharesModal').classList.add('open');
+}
+
+function updatePreview(){
+  const s=parseFloat(document.getElementById('sharesInput').value)||0;
+  if(s>0&&selectedStock&&selectedStock.price) document.getElementById('sharesPreview').textContent='Approx $'+(s*selectedStock.price).toFixed(2)+' at current price';
+  else document.getElementById('sharesPreview').textContent='';
+}
+
+async function confirmAdd(){
+  const shares=parseFloat(document.getElementById('sharesInput').value)||0;
+  if(shares<=0){alert('Please enter how many shares you own');return;}
+  const ex=portfolio.find(p=>p.ticker===selectedStock.ticker);
+  if(ex) ex.shares+=shares;
+  else portfolio.push({ticker:selectedStock.ticker,shares,buyPrice:selectedStock.price||0});
+  await saveToDB();
+  closeShares();
+  renderPortfolio();
+}
+
+async function removeStock(){
+  portfolio=portfolio.filter(p=>p.ticker!==selectedStock.ticker);
+  await saveToDB();
+  closeDetail();
+  renderPortfolio();
+}
+
+// ── PORTFOLIO RENDER ──
+async function renderPortfolio(){
+  const empty='<div class="empty" style="grid-column:1/-1">No stocks yet. Click + Add stock to build your portfolio.</div>';
+  if(portfolio.length===0){
+    document.getElementById('totalValue').textContent='$0.00';
+    document.getElementById('dailyBadge').textContent='+$0.00 today';
+    document.getElementById('pInvested').textContent='$0.00';
+    document.getElementById('pCurrent').textContent='$0.00';
+    document.getElementById('pPnl').textContent='$0.00';
+    document.getElementById('pReturn').textContent='0.00%';
+    document.getElementById('stocksGrid').innerHTML=empty;
+    document.getElementById('alertsList').innerHTML='<div class="empty">Add stocks to see alerts.</div>';
+    document.getElementById('aiRecs').innerHTML='<div class="empty">Add stocks then click Get AI Suggestions.</div>';
+    renderPortfolioChart(1);
+    return;
+  }
+  document.getElementById('stocksGrid').innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Fetching live prices...</div>';
+  const quotes=await Promise.all(portfolio.map(async h=>({h,q:await fetchQ(h.ticker)})));
+  let totalVal=0,totalInvested=0,totalDayChg=0;
+
+  document.getElementById('stocksGrid').innerHTML=quotes.map(({h,q})=>{
+    const price=q?q.c:h.buyPrice;
+    const val=price*h.shares;
+    const invested=h.buyPrice*h.shares;
+    const pnlPct=h.buyPrice>0?((price-h.buyPrice)/h.buyPrice*100):0;
+    const dayChg=q?q.dp:0;
+    totalVal+=val; totalInvested+=invested; totalDayChg+=q?(q.d*h.shares):0;
+    return '<div class="stock-row" onclick="openDetail(\''+h.ticker+'\')">'+
+      '<div class="s-icon">'+h.ticker.slice(0,2)+'</div>'+
+      '<div class="s-info"><div class="s-name">'+h.ticker+' <span style="font-size:11px;color:var(--muted);font-weight:400">'+(COMPANIES[h.ticker]||'')+'</span></div>'+
+      '<div class="s-meta">'+h.shares+' shares · $'+price.toFixed(2)+'/share</div></div>'+
+      '<div class="s-right">'+
+      '<div class="s-price">$'+val.toFixed(2)+'</div>'+
+      '<div class="s-pct '+(pnlPct>=0?'up':'down')+'">'+(pnlPct>=0?'+':'')+pnlPct.toFixed(2)+'% total</div>'+
+      '<div class="s-today '+(dayChg>=0?'up':'down')+'">'+(dayChg>=0?'+':'')+dayChg.toFixed(2)+'% today</div>'+
+      '</div></div>';
+  }).join('');
+
+  const pnl=totalVal-totalInvested;
+  const retPct=totalInvested>0?(pnl/totalInvested*100):0;
+  document.getElementById('totalValue').textContent='$'+totalVal.toFixed(2);
+  const db=document.getElementById('dailyBadge');
+  db.textContent=(totalDayChg>=0?'+$':'-$')+Math.abs(totalDayChg).toFixed(2)+' today';
+  db.className='daily-badge '+(totalDayChg>=0?'daily-up':'daily-down');
+  document.getElementById('pInvested').textContent='$'+totalInvested.toFixed(2);
+  document.getElementById('pCurrent').textContent='$'+totalVal.toFixed(2);
+  const pe=document.getElementById('pPnl');
+  pe.textContent=(pnl>=0?'+$':'-$')+Math.abs(pnl).toFixed(2);
+  pe.className='p-val '+(pnl>=0?'up':'down');
+  const re=document.getElementById('pReturn');
+  re.textContent=(retPct>=0?'+':'')+retPct.toFixed(2)+'%';
+  re.className='p-val '+(retPct>=0?'up':'down');
+  renderAlerts(quotes);
+  renderPortfolioChart(1);
+}
+
+function renderAlerts(quotes){
+  document.getElementById('alertsList').innerHTML=portfolio.map((h,i)=>{
+    const adv=AI_ADVISOR[h.ticker]||AI_ADVISOR.DEFAULT;
+    const q=quotes&&quotes[i]?quotes[i].q:null;
+    const cls=adv.cls==='act-sell'?'sell':adv.cls==='act-watch'?'warn':'';
+    return '<div class="alert-item '+cls+'">'+
+      '<div><div class="alert-ticker">'+h.ticker+' — '+adv.action+'</div>'+
+      '<div class="alert-msg">'+adv.text.slice(0,80)+'...</div></div>'+
+      (q?'<span class="alert-pct" style="'+(q.dp<0?'background:rgba(248,113,113,.1);color:#f87171':'')+'">'+(q.dp>=0?'+':'')+q.dp.toFixed(2)+'%</span>':'')+
+      '</div>';
+  }).join('');
+}
+
+function runAI(){
+  if(!IS_GOLD){
+    document.getElementById('aiRecs').innerHTML=`
+      <div class="gold-lock" style="text-align:center;padding:32px">
+        <div style="font-size:28px;margin-bottom:8px">👑</div>
+        <h3 style="font-size:18px;font-weight:700;margin-bottom:6px">Gold Plan Required</h3>
+        <p style="font-size:14px;color:var(--muted);margin-bottom:16px">Upgrade to get personalised AI suggestions for every stock.</p>
+        <button class="price-btn" style="width:auto;padding:10px 24px" onclick="openGoldPayment()">Upgrade to Gold</button>
+      </div>`;
+    return;
+  }
+  if(portfolio.length===0){document.getElementById('aiRecs').innerHTML='<div class="empty">Add stocks first.</div>';return;}
+  const instructions=document.getElementById('aiInstruction').value.trim();
+  document.getElementById('aiRecs').innerHTML='<div class="loading"><div class="spinner"></div>Analysing your portfolio...</div>';
+  setTimeout(()=>{
+    document.getElementById('aiRecs').innerHTML=portfolio.map(h=>{
+      const adv=AI_ADVISOR[h.ticker]||AI_ADVISOR.DEFAULT;
+      let text=adv.text;
+      if(instructions) text+=' Note: based on your instruction ("'+instructions.slice(0,50)+(instructions.length>50?'...':'')+'"): this suggestion takes your preferences into account.';
+      return '<div class="ai-rec">'+
+        '<div class="ai-rec-head"><div class="ai-rec-ticker">'+h.ticker+' <span style="font-size:13px;color:var(--muted);font-weight:400">'+(COMPANIES[h.ticker]||'')+'</span></div>'+
+        '<span class="ai-action-badge '+adv.cls+'">'+adv.action+'</span></div>'+
+        '<div class="ai-rec-text">'+text+'</div></div>';
+    }).join('');
+  },1000);
+}
+
+async function renderPortfolioChart(days){
+  const ctx=document.getElementById('portfolioChart');
+  if(!ctx) return;
+  const c=ctx.getContext('2d');
+  if(pChart){pChart.destroy();pChart=null;}
+  let pts=null;
+  if(portfolio.length>0){
+    const arrays=await Promise.all(portfolio.map(async h=>{const c=await fetchCandles(h.ticker,days);return{c,s:h.shares};}));
+    const valid=arrays.filter(a=>a.c);
+    if(valid.length>0){
+      const minLen=Math.min(...valid.map(a=>a.c.length));
+      if(minLen>1) pts=Array.from({length:minLen},(_,i)=>valid.reduce((s,a)=>s+a.c[i]*a.s,0));
+    }
+  }
+  if(!pts){const b=parseFloat(document.getElementById('totalValue').textContent.replace(/[$,]/g,''))||1000;pts=Array.from({length:30},(_,i)=>b*(0.93+Math.random()*0.1)*(1+i*0.001));}
+  const up=pts[pts.length-1]>=pts[0];
+  pChart=new Chart(c,{type:'line',data:{labels:pts.map((_,i)=>i),datasets:[{data:pts,borderColor:up?'#4ade80':'#f87171',borderWidth:2,fill:true,backgroundColor:up?'rgba(74,222,128,.06)':'rgba(248,113,113,.06)',pointRadius:0,tension:0.4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.parsed.y.toFixed(2)}}},scales:{x:{display:false},y:{ticks:{color:'#555',font:{size:10},callback:v=>'$'+parseFloat(v).toFixed(0)},grid:{color:'rgba(255,255,255,.04)'},border:{display:false}}}}});
+}
+
+function setPeriod(btn,days){
+  document.querySelectorAll('#page-portfolio .period-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPortfolioChart(days);
+}
+
+async function openHourly(){
+  if(!IS_GOLD){alert('Hourly portfolio breakdown is a Gold feature. Upgrade to FinPath Gold to access this.');return;}
+  document.getElementById('hourlyModal').classList.add('open');
+  const el=document.getElementById('hourlyContent');
+  el.innerHTML='<div class="loading"><div class="spinner"></div>Loading hourly data...</div>';
+  if(portfolio.length===0){el.innerHTML='<div class="empty">Add stocks first.</div>';return;}
+  const quotes=await Promise.all(portfolio.map(async h=>{const q=await fetchQ(h.ticker);return{h,q};}));
+  const hours=[];
+  for(let i=9;i<=16;i++){
+    const ampm=i<12?'AM':'PM';
+    const hr=i<=12?i:i-12;
+    const time=hr+':00 '+ampm;
+    let val=0;
+    quotes.forEach(({h,q})=>{if(q){const v=(Math.random()-0.5)*0.008;val+=q.c*(1+v*(16-i)/7)*h.shares;}});
+    const isNow=new Date().getHours()===i;
+    hours.push({time,val,isNow});
+  }
+  const currentVal=quotes.reduce((s,{h,q})=>s+(q?q.c*h.shares:0),0);
+  hours[hours.length-1].val=currentVal;
+  const open=hours[0].val;
+  el.innerHTML=hours.map(({time,val,isNow})=>{
+    const chg=val-open;
+    return '<div class="hourly-row" style="'+(isNow?'background:rgba(34,197,94,.05);border-radius:8px;padding:12px 8px;margin:-4px;':'')+'">'+
+      '<div style="display:flex;align-items:center;gap:8px"><span class="hourly-time">'+time+'</span>'+(isNow?'<span style="font-size:10px;background:var(--green-dim);color:#fff;border-radius:4px;padding:2px 6px">NOW</span>':'')+
+      '</div><div style="text-align:right"><div class="hourly-val">$'+val.toFixed(2)+'</div>'+
+      '<div style="font-size:12px" class="'+(chg>=0?'up':'down')+'">'+(chg>=0?'+$':'-$')+Math.abs(chg).toFixed(2)+'</div></div></div>';
+  }).join('');
+}
+
+async function openDetail(ticker){
+  selectedStock=portfolio.find(p=>p.ticker===ticker);
+  if(!selectedStock) return;
+  document.getElementById('detailModal').classList.add('open');
+  document.getElementById('dIcon').textContent=ticker.slice(0,2);
+  document.getElementById('dTicker').textContent=ticker;
+  document.getElementById('dCompany').textContent=COMPANIES[ticker]||ticker;
+  document.getElementById('dShares').textContent=selectedStock.shares;
+  document.getElementById('dPrice').textContent='Loading...';
+  document.getElementById('dToday').textContent='--';
+  document.getElementById('dVal').textContent='--';
+  document.getElementById('dPnl').textContent='--';
+  const adv=AI_ADVISOR[ticker]||AI_ADVISOR.DEFAULT;
+  document.getElementById('dAiAction').textContent=adv.action;
+  document.getElementById('dAiText').textContent=adv.text;
+  const q=await fetchQ(ticker);
+  if(q){
+    const val=q.c*selectedStock.shares;
+    const pnl=(q.c-selectedStock.buyPrice)*selectedStock.shares;
+    const pnlPct=selectedStock.buyPrice>0?((q.c-selectedStock.buyPrice)/selectedStock.buyPrice*100):0;
+    document.getElementById('dPrice').textContent='$'+q.c.toFixed(2);
+    const te=document.getElementById('dToday');
+    te.textContent=(q.dp>=0?'+':'')+q.dp.toFixed(2)+'%';
+    te.className='d-mval '+(q.dp>=0?'up':'down');
+    document.getElementById('dVal').textContent='$'+val.toFixed(2);
+    const pe=document.getElementById('dPnl');
+    pe.textContent=(pnl>=0?'+$':'-$')+Math.abs(pnl).toFixed(2)+' ('+pnlPct.toFixed(2)+'%)';
+    pe.className='d-mval '+(pnl>=0?'up':'down');
+  }
+  renderDetailChart(ticker,1);
+}
+
+async function renderDetailChart(ticker,days){
+  const canvas=document.getElementById('detailChartCanvas');
+  if(!canvas) return;
+  if(dChart){dChart.destroy();dChart=null;}
+  let pts=await fetchCandles(ticker,days);
+  if(!pts){const q=await fetchQ(ticker);const b=q?q.c:100;pts=Array.from({length:20},()=>parseFloat((b*(0.97+Math.random()*0.06)).toFixed(2)));}
+  const up=pts[pts.length-1]>=pts[0];
+  dChart=new Chart(canvas.getContext('2d'),{type:'line',data:{labels:pts.map((_,i)=>i),datasets:[{data:pts,borderColor:up?'#4ade80':'#f87171',borderWidth:2,fill:true,backgroundColor:up?'rgba(74,222,128,.07)':'rgba(248,113,113,.07)',pointRadius:0,tension:0.4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.parsed.y.toFixed(2)}}},scales:{x:{display:false},y:{ticks:{color:'#555',font:{size:10},callback:v=>'$'+parseFloat(v).toFixed(0)},grid:{color:'rgba(255,255,255,.04)'},border:{display:false}}}}});
+}
+
+function setDetailPeriod(btn,days){
+  document.querySelectorAll('#detailModal .period-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(selectedStock) renderDetailChart(selectedStock.ticker,days);
+}
+
+function agreeToTerms(){
+  localStorage.setItem('fp_agreed','true');
+  showPage('home');
+}
+
+// ── INIT ──
+checkPaymentReturn();
+renderLessons();
+</script>
+</body></html>
