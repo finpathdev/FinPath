@@ -16,7 +16,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(0,0,0,0.9);b
 .logo{font-size:20px;font-weight:700;color:var(--green);cursor:pointer}.logo span{color:#fff}
 .nav-links{display:flex;align-items:center;gap:28px}
 .nav-links a{color:var(--muted);font-size:14px;text-decoration:none;cursor:pointer;transition:color .15s}.nav-links a:hover{color:#fff}
-.nav-cta{background:var(--green-dim);color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:14px;font-weight:600;cursor:pointer}
+ const supabaseUrl = 'https://pxtxwgfujpxbyozvvemx.supabase.co';
+ const supabaseKey = 'sb_publishable_KoWYv1Ro5D4I83XxWmJFOg_DCB2ldw6';
+ const supabase = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
 .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
 .hamburger span{width:22px;height:2px;background:#fff;border-radius:2px;display:block}
 .mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;background:#0f0f0f;border-bottom:1px solid var(--border);padding:20px 5%;z-index:99;flex-direction:column;gap:16px}
