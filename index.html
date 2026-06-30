@@ -2277,15 +2277,12 @@ renderLessons();
 
   // Build lines
   var lineCount = Math.ceil(window.innerHeight / 44) + 2;
-  var speeds = [18,22,16,26,20,24,18,28,22,16,24,20,26,18,22,28,20,16,24,22,18,26,20,28,16,22,24,18,26,20];
-  var delays = [0,-3,-7,-1,-5,-9,-2,-6,-10,-4,-8,-1,-5,-3,-7,-9,-2,-6,-4,-8,-10,-3,-7,-1,-5,-9,-2,-6,-4,-8];
-
   for(var i=0; i<lineCount; i++){
     var line = document.createElement('div');
     line.className = 'bg-line';
     line.style.top = (i * 44) + 'px';
-    var spd = speeds[i % speeds.length];
-    var delay = delays[i % delays.length];
+    var spd = 16 + Math.random() * 18;
+    var delay = -(Math.random() * spd);
     line.style.setProperty('--spd', spd + 's');
     // Set animation on the ::after via inline style trick - use a span instead
     var light = document.createElement('span');
