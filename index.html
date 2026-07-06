@@ -8,7 +8,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>FinPath — The Financial Playbook Schools Skipped</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -335,12 +334,96 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
+
+/* ── SKELETON LOADING ── */
+.skel-row{height:74px;border-radius:16px;background:rgba(134,239,172,.05);border:1px solid var(--line);position:relative;overflow:hidden}
+.skel-row::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);animation:shimmer 1.4s infinite}
+@keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+/* ── WATCHLIST ── */
+.watch-star{background:none;border:none;color:var(--gold);font-size:17px;cursor:pointer;padding:4px 9px;line-height:1;border-radius:8px;flex-shrink:0;transition:background .15s}
+.watch-star:hover{background:var(--gold-soft)}
+.modal-result .watch-star{order:3;margin-left:6px}
+.watch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin-bottom:26px}
+.watch-row{background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:14px;padding:13px 15px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .15s;min-height:66px}
+.watch-row:hover{border-color:var(--line-strong)}
+
+/* ── ANALYTICS ── */
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:26px}
+.alloc-legend{display:flex;flex-direction:column;gap:9px;margin-top:16px}
+.alloc-item{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)}
+.alloc-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.alloc-pct{margin-left:auto;font-weight:700;color:var(--text);font-family:var(--font-display)}
+.hold-bar{height:8px;border-radius:99px;background:rgba(134,239,172,.08);overflow:hidden;margin-top:6px}
+.hold-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--green-dark),var(--green));transition:width .6s ease}
+
+/* ── NEWS FEED ── */
+.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.news-card{background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:16px;overflow:hidden;text-decoration:none;color:var(--text);display:block;transition:all .2s}
+.news-card:hover{border-color:var(--line-strong);transform:translateY(-3px)}
+.news-img{width:100%;height:130px;object-fit:cover;display:block;background:var(--panel2)}
+.news-body{padding:15px}
+.news-src{font-size:11px;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;display:flex;justify-content:space-between;gap:8px}
+.news-src time{color:var(--muted2);font-weight:500;text-transform:none;letter-spacing:0;flex-shrink:0}
+.news-title{font-size:14px;font-weight:600;line-height:1.45;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+
+/* ── THEME TOGGLE ── */
+.theme-btn{background:rgba(134,239,172,.06);border:1px solid var(--line);border-radius:999px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;margin-right:8px;transition:all .15s;flex-shrink:0}
+.theme-btn:hover{border-color:var(--line-strong)}
+
+/* ── LIGHT THEME ── */
+body.light{
+  --bg:#f2f6f1;--bg2:#e9efe8;
+  --panel:rgba(255,255,255,.78);--panel-solid:#ffffff;--panel2:#eef3ed;
+  --line:rgba(20,83,45,.15);--line-strong:rgba(20,83,45,.34);
+  --text:#0e1f13;--muted:#47604e;--muted2:#8aa08c;
+  --deep:#dcfce7;--gold-soft:rgba(180,120,7,.12);
+  --shadow-glow:0 8px 26px rgba(34,197,94,.28);
+  background-image:
+    radial-gradient(ellipse 900px 500px at 15% -5%,rgba(34,197,94,.13),transparent 60%),
+    radial-gradient(ellipse 700px 500px at 90% 15%,rgba(34,197,94,.07),transparent 55%),
+    linear-gradient(rgba(20,83,45,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(20,83,45,.05) 1px,transparent 1px);
+}
+body.light nav{background:rgba(255,255,255,.82);box-shadow:0 12px 40px rgba(20,40,25,.12)}
+body.light .tape{background:rgba(255,255,255,.72)}
+body.light footer{background:rgba(255,255,255,.6)}
+body.light .hero h1 span::after{background:rgba(34,197,94,.28)}
+body.light .bg-lines{display:none!important}
+body.light .ai-disclaimer{background:rgba(20,83,45,.06)}
+body.light .ai-rec{background:rgba(20,83,45,.05)}
+body.light .ai-rec-text{color:#41584a}
+body.light .detail-ai-text{color:#1d4028}
+body.light .lesson-content{color:#243b2b}
+body.light .legal-section p,body.light .legal-section ul li{color:#3c5344}
+body.light .warning-box p{color:#8a5a00}
+body.light .price-features li{color:#2c4434}
+body.light #loginModal>div,body.light #userMenu{background:#fff!important;border-color:rgba(20,83,45,.28)!important}
+body.light #loginModal input{background:#f2f6f1!important;color:var(--text)!important;border-color:rgba(20,83,45,.2)!important}
+body.light .t-price{color:#47604e}
+
+/* ── MOBILE-FIRST EXTRAS ── */
+@media(max-width:640px){
+  .filter-tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .filter-tabs::-webkit-scrollbar{display:none}
+  .filter-tab{flex-shrink:0}
+  .analytics-grid{grid-template-columns:1fr}
+  .hero-btns{flex-direction:column;max-width:340px;margin:0 auto}
+  .hero-btns .btn-primary,.hero-btns .btn-secondary{width:100%}
+  .tape-track{gap:34px}
+  .nav-cta{padding:9px 15px;font-size:13px;min-height:40px}
+  .modal-overlay{padding:88px 12px 30px}
+  .detail-modal{padding:88px 4% 50px}
+  .mobile-menu a{min-height:46px;display:flex;align-items:center}
+  .news-grid{grid-template-columns:1fr}
+  .watch-grid{grid-template-columns:1fr}
+}
 </style>
 </style></head><body>
 
 
 <!-- LOGIN MODAL -->
-<div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:600;align-items:center;justify-content:center;padding:20px">
+<div id="loginModal" role="dialog" aria-modal="true" aria-label="Sign in to FinPath" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:600;align-items:center;justify-content:center;padding:20px">
   <div style="background:#0b110c;border:1px solid rgba(134,239,172,.22);border-radius:24px;width:100%;max-width:420px;padding:40px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6)">
     <button onclick="closeLogin()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:#888;font-size:22px;cursor:pointer;line-height:1">×</button>
     
@@ -391,8 +474,8 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
       <a onclick="showPage('portfolio')">Portfolio</a>
       <a onclick="showPage('legal')">Legal</a>
     </div>
-    <button class="nav-cta" id="navAuthBtn" onclick="handleAuthClick()">Get Started Free</button>
-    <button class="hamburger" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle light or dark mode" title="Toggle theme">🌙</button><button class="nav-cta" id="navAuthBtn" onclick="handleAuthClick()">Get Started Free</button>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu" aria-controls="mobileMenu"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
@@ -401,6 +484,7 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
   <a onclick="showPage('gold');toggleMenu()">Gold</a>
   <a onclick="showPage('portfolio');toggleMenu()">Portfolio</a>
   <a onclick="showPage('legal');toggleMenu()">Legal</a>
+  <a onclick="toggleTheme()" role="button">🌙 / ☀️ Toggle theme</a>
 </div>
 
 <!-- HOME -->
@@ -444,13 +528,17 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
   if(!canvas) return;
   const ctx = canvas.getContext('2d');
   
+  let cssW = 0, cssH = 0, dpr = 1;
   function resize(){
     const rect = canvas.parentElement.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cssW = rect.width; cssH = rect.height;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
   resize();
-  window.addEventListener('resize', resize);
+  window.addEventListener('resize', resize, {passive:true});
 
   // Globe state
   let rotX = 0.3, rotY = 0, rotZ = 0;
@@ -534,7 +622,7 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
   }
 
   function drawGlobe(){
-    const W = canvas.width, H = canvas.height;
+    const W = cssW || canvas.width, H = cssH || canvas.height;
     const cx = W/2, cy = H/2;
     const R = Math.min(W, H) * 0.38;
 
@@ -719,8 +807,15 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
     if(autoRotate && !dragging) rotY += 0.003;
   }
 
-  function loop(){ drawGlobe(); requestAnimationFrame(loop); }
-  loop();
+  let globeVisible = true, lastFrame = 0;
+  function loop(ts){
+    if(globeVisible && ts - lastFrame > 33){ lastFrame = ts; drawGlobe(); }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(en){ globeVisible = en[0].isIntersecting; }, {threshold: 0.05}).observe(canvas);
+  }
 
   // Mouse interaction
   canvas.addEventListener('mousedown', e=>{
@@ -740,9 +835,9 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
     }
     // Check hover
     const rect = canvas.getBoundingClientRect();
-    const mx = (e.clientX - rect.left) * (canvas.width/rect.width);
-    const my = (e.clientY - rect.top) * (canvas.height/rect.height);
-    const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2;
+    const mx = (e.clientX - rect.left);
+    const my = (e.clientY - rect.top);
+    const W=cssW||canvas.width,H=cssH||canvas.height,cx=W/2,cy=H/2;
     const R=Math.min(W,H)*0.38;
     hoveredCity = null;
     cities.forEach((city,idx)=>{
@@ -783,7 +878,7 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
     <h2 class="section-title">Built for people who are serious about money</h2>
     <p class="section-sub">From your first lesson to your first investment, FinPath walks you through every step.</p>
     <div class="features-grid">
-      <div class="feature-card" onclick="showPage('lessons')"><div class="feature-icon">📚</div><div class="feature-title">25 Expert Lessons</div><div class="feature-desc">Everything schools skipped — from credit scores to compound interest — explained in plain English.</div></div>
+      <div class="feature-card" onclick="showPage('lessons')"><div class="feature-icon">📚</div><div class="feature-title">34 Expert Lessons</div><div class="feature-desc">Everything schools skipped — from credit scores to compound interest — explained in plain English.</div></div>
       <div class="feature-card" onclick="showPage('gold')"><div class="feature-icon">👑</div><div class="feature-title">Investor Moves — Gold</div><div class="feature-desc">See exactly what Warren Buffett, Bill Ackman, and David Tepper bought and sold this quarter — and why.</div></div>
       <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">📈</div><div class="feature-title">Live Portfolio Tracker</div><div class="feature-desc">Track your stocks with live prices. See total profit, daily gains, and hourly breakdowns of every position.</div></div>
       <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">🤖</div><div class="feature-title">AI Suggestions — Gold</div><div class="feature-desc">Get personalised buy, hold, and sell suggestions. Give the AI specific instructions and it tailors advice to you.</div></div>
@@ -887,9 +982,9 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
     <div class="port-top-grid">
       <div class="port-card green-card">
         <div class="port-label">Total portfolio value</div>
-        <div class="port-value" id="totalValue" onclick="openHourly()" title="Click for hourly breakdown (Gold)">$0.00</div>
+        <div class="port-value" id="totalValue" aria-live="polite" role="button" tabindex="0" onclick="openHourly()" title="Click for hourly breakdown (Gold)">$0.00</div>
         <div class="daily-change-row" onclick="openHourly()">
-          <span class="daily-badge daily-up" id="dailyBadge">+$0.00 today</span>
+          <span class="daily-badge daily-up" id="dailyBadge" aria-live="polite">+$0.00 today</span>
           <span style="font-size:12px;color:var(--muted)">▸ hourly view (Gold)</span>
         </div>
         <div class="chart-wrap"><canvas id="portfolioChart"></canvas></div>
@@ -910,6 +1005,14 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
         </div>
       </div>
     </div>
+    <div id="watchWrap" style="display:none">
+      <div style="font-size:16px;font-weight:700;margin-bottom:12px;font-family:var(--font-display)">Watchlist <span style="font-size:12px;color:var(--muted);font-weight:500">· tap a stock to add it to your portfolio</span></div>
+      <div class="watch-grid" id="watchGrid"></div>
+    </div>
+    <div class="analytics-grid" id="allocWrap" style="display:none">
+      <div class="port-card"><div class="port-label">Sector allocation</div><div style="position:relative;height:200px;margin-top:12px"><canvas id="allocChart" role="img" aria-label="Portfolio sector allocation chart"></canvas></div><div class="alloc-legend" id="allocLegend"></div></div>
+      <div class="port-card"><div class="port-label">Top holdings</div><div id="holdList" style="margin-top:16px"></div></div>
+    </div>
     <div style="font-size:16px;font-weight:700;margin-bottom:12px">Your stocks</div>
     <div class="stocks-grid" id="stocksGrid"><div class="empty" style="grid-column:1/-1">No stocks yet. Click "+ Add stock" to build your portfolio.</div></div>
     <div class="alerts-section">
@@ -923,6 +1026,10 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
       <textarea class="ai-instruction" id="aiInstruction" placeholder="e.g. Only suggest trades for tech stocks. Avoid anything I have held less than 6 months. Focus on dividend stocks. Keep suggestions conservative..."></textarea>
       <button class="ai-run-btn" onclick="runAI()">Get AI suggestions</button>
       <div id="aiRecs"><div class="empty">Add stocks and click above to get personalised suggestions.</div></div>
+    </div>
+    <div class="alerts-section" id="newsSection" style="margin-top:26px">
+      <div style="font-size:16px;font-weight:700;margin-bottom:12px;font-family:var(--font-display)">Market news</div>
+      <div class="news-grid" id="newsGrid"><div class="skel-row"></div><div class="skel-row"></div><div class="skel-row"></div></div>
     </div>
   </div>
 
@@ -954,7 +1061,7 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
 </div>
 
 <!-- HOURLY MODAL -->
-<div class="modal-overlay" id="hourlyModal">
+<div class="modal-overlay" id="hourlyModal" role="dialog" aria-modal="true" aria-label="Hourly portfolio breakdown">
   <div class="modal">
     <h2>Portfolio — Hourly Breakdown <span style="font-size:13px;color:var(--gold);margin-left:8px">Gold</span></h2>
     <div id="hourlyContent"></div>
@@ -963,7 +1070,7 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
 </div>
 
 <!-- SEARCH MODAL -->
-<div class="modal-overlay" id="searchModal">
+<div class="modal-overlay" id="searchModal" role="dialog" aria-modal="true" aria-label="Add a stock">
   <div class="modal">
     <h2>Add stock</h2>
     <input class="modal-input" placeholder="Search ticker or company..." id="searchInput" oninput="handleSearch(this.value)" autocomplete="off">
@@ -973,7 +1080,7 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
 </div>
 
 <!-- SHARES MODAL -->
-<div class="modal-overlay" id="sharesModal">
+<div class="modal-overlay" id="sharesModal" role="dialog" aria-modal="true" aria-label="Enter share count">
   <div class="modal">
     <h2 id="sharesTitle">Add shares</h2>
     <div style="background:var(--green-deeper);border-radius:12px;padding:16px;margin-bottom:20px;border:1px solid var(--green-dim)">
@@ -989,7 +1096,7 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
 </div>
 
 <!-- DETAIL MODAL -->
-<div class="detail-modal" id="detailModal">
+<div class="detail-modal" id="detailModal" role="dialog" aria-modal="true" aria-label="Stock details">
   <div class="detail-inner">
     <button class="back-btn" onclick="closeDetail()" style="margin-bottom:24px">Back to portfolio</button>
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px">
@@ -1960,21 +2067,21 @@ async function loadFromDB(){
 }
 
 // ── SEARCH ──
-function openSearch(){document.getElementById('searchModal').classList.add('open');loadSearchResults();}
+function openSearch(){document.getElementById('searchModal').classList.add('open');loadSearchResults();setTimeout(function(){var i=document.getElementById('searchInput');if(i)i.focus();},80);}
 function closeSearch(){document.getElementById('searchModal').classList.remove('open');document.getElementById('searchInput').value='';}
 function closeShares(){document.getElementById('sharesModal').classList.remove('open');}
 function closeDetail(){document.getElementById('detailModal').classList.remove('open');}
 function closeHourly(){document.getElementById('hourlyModal').classList.remove('open');}
 
 async function loadSearchResults(){
-  document.getElementById('searchResults').innerHTML='<div class="loading"><div class="spinner"></div>Loading live prices...</div>';
+  document.getElementById('searchResults').innerHTML='<div class="skel-row" style="height:60px;margin-bottom:8px"></div>'.repeat(6);
   const quotes=await Promise.all(POP.map(async t=>({t,q:await fetchQ(t)})));
   renderSearchResults(quotes.filter(x=>x.q));
 }
 
 function renderSearchResults(items){
   document.getElementById('searchResults').innerHTML=items.slice(0,12).map(({t,q})=>`
-    <div class="modal-result" onclick="openAddShares('${t}')">
+    <div class="modal-result" onclick="openAddShares('${t}')"><button class="watch-star" aria-label="Toggle watchlist for ${t}" onclick="event.stopPropagation();toggleWatch('${t}',this)">${isWatched(t)?'\u2605':'\u2606'}</button>
       <div><div style="font-size:15px;font-weight:600">${t}</div><div style="font-size:12px;color:var(--muted)">${COMPANIES[t]||t}</div></div>
       <div style="text-align:right">
         <div style="font-size:15px;font-weight:600;color:${q.dp>=0?'#4ade80':'#f87171'}">$${q.c.toFixed(2)}</div>
@@ -2043,9 +2150,12 @@ async function renderPortfolio(){
     document.getElementById('alertsList').innerHTML='<div class="empty">Add stocks to see alerts.</div>';
     document.getElementById('aiRecs').innerHTML='<div class="empty">Add stocks then click Get AI Suggestions.</div>';
     renderPortfolioChart(1);
+    renderWatchlist();
+    var _aw=document.getElementById('allocWrap'); if(_aw)_aw.style.display='none';
+    loadNews();
     return;
   }
-  document.getElementById('stocksGrid').innerHTML='<div class="loading" style="grid-column:1/-1"><div class="spinner"></div>Fetching live prices...</div>';
+  document.getElementById('stocksGrid').innerHTML=Array.from({length:Math.min(portfolio.length,6)},function(){return '<div class="skel-row"></div>';}).join('');
   const quotes=await Promise.all(portfolio.map(async h=>({h,q:await fetchQ(h.ticker)})));
   let totalVal=0,totalInvested=0,totalDayChg=0;
 
@@ -2056,7 +2166,7 @@ async function renderPortfolio(){
     const pnlPct=h.buyPrice>0?((price-h.buyPrice)/h.buyPrice*100):0;
     const dayChg=q?q.dp:0;
     totalVal+=val; totalInvested+=invested; totalDayChg+=q?(q.d*h.shares):0;
-    return '<div class="stock-row" onclick="openDetail(\''+h.ticker+'\')">'+
+    return '<div class="stock-row" data-t="'+h.ticker+'" onclick="openDetail(\''+h.ticker+'\')">'+
       '<div class="s-icon">'+h.ticker.slice(0,2)+'</div>'+
       '<div class="s-info"><div class="s-name">'+h.ticker+' <span style="font-size:11px;color:var(--muted);font-weight:400">'+(COMPANIES[h.ticker]||'')+'</span></div>'+
       '<div class="s-meta">'+h.shares+' shares · $'+price.toFixed(2)+'/share</div></div>'+
@@ -2083,6 +2193,10 @@ async function renderPortfolio(){
   re.className='p-val '+(retPct>=0?'up':'down');
   renderAlerts(quotes);
   renderPortfolioChart(1);
+  renderAnalytics(quotes);
+  renderWatchlist();
+  loadNews();
+  portfolio.forEach(function(h){ wsWatch(h.ticker); });
 }
 
 function renderAlerts(quotes){
@@ -2134,6 +2248,7 @@ function runAI(){
 }
 
 async function renderPortfolioChart(days){
+  await ensureChart();
   const ctx=document.getElementById('portfolioChart');
   if(!ctx) return;
   const c=ctx.getContext('2d');
@@ -2169,7 +2284,7 @@ async function renderPortfolioChart(days){
   }
   const up=pts[pts.length-1]>=pts[0];
   pChart=new Chart(c,{type:'line',data:{labels:pts.map((_,i)=>i),datasets:[{data:pts,borderColor:up?'#4ade80':'#f87171',borderWidth:2,fill:true,backgroundColor:up?'rgba(74,222,128,.06)':'rgba(248,113,113,.06)',pointRadius:0,tension:0.35}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}}},scales:{x:{display:false},y:{ticks:{color:'#555',font:{size:10},callback:v=>'$'+parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:0})},grid:{color:'rgba(255,255,255,.04)'},border:{display:false}}}}});
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(6,12,7,.95)',borderColor:'rgba(134,239,172,.25)',borderWidth:1,padding:12,cornerRadius:10,titleColor:'#86efac',bodyColor:'#eef5ee',displayColors:false,callbacks:{label:c=>'$'+c.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}}},scales:{x:{display:false},y:{ticks:{color:'#555',font:{size:10},callback:v=>'$'+parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:0})},grid:{color:'rgba(255,255,255,.04)'},border:{display:false}}}}});
 }
 
 function setPeriod(btn,days){
@@ -2240,6 +2355,7 @@ async function openDetail(ticker){
 }
 
 async function renderDetailChart(ticker,days){
+  await ensureChart();
   const canvas=document.getElementById('detailChartCanvas');
   if(!canvas) return;
   if(dChart){dChart.destroy();dChart=null;}
@@ -2265,7 +2381,7 @@ async function renderDetailChart(ticker,days){
   }
   const up=pts[pts.length-1]>=pts[0];
   dChart=new Chart(canvas.getContext('2d'),{type:'line',data:{labels:pts.map((_,i)=>i),datasets:[{data:pts,borderColor:up?'#4ade80':'#f87171',borderWidth:2,fill:true,backgroundColor:up?'rgba(74,222,128,.07)':'rgba(248,113,113,.07)',pointRadius:0,tension:0.35}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'$'+c.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}}},scales:{x:{display:false},y:{ticks:{color:'#555',font:{size:10},callback:v=>'$'+parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:0})},grid:{color:'rgba(255,255,255,.04)'},border:{display:false}}}}});
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(6,12,7,.95)',borderColor:'rgba(134,239,172,.25)',borderWidth:1,padding:12,cornerRadius:10,titleColor:'#86efac',bodyColor:'#eef5ee',displayColors:false,callbacks:{label:c=>'$'+c.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}}},scales:{x:{display:false},y:{ticks:{color:'#555',font:{size:10},callback:v=>'$'+parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:0})},grid:{color:'rgba(255,255,255,.04)'},border:{display:false}}}}});
 }
 
 function setDetailPeriod(btn,days){
@@ -2440,9 +2556,16 @@ async function sendMagicLink(){
     document.getElementById('sentEmail').textContent = email;
     document.getElementById('loginStep1').style.display = 'none';
     document.getElementById('loginStep2').style.display = 'block';
+    btn.textContent = 'Continue with email';
+    btn.disabled = false;
   } catch(e){
     const err = document.getElementById('loginError');
-    err.textContent = e.message || 'Something went wrong. Please try again.';
+    var msg = (e && e.message) || '';
+    if(/rate|security purposes|too many/i.test(msg)) msg = 'Too many attempts - wait a minute, then try again.';
+    else if(/invalid/i.test(msg)) msg = 'That email address looks invalid - double-check it and retry.';
+    else if(!navigator.onLine) msg = 'You appear to be offline. Check your connection and retry.';
+    else if(!msg) msg = 'Something went wrong. Please try again.';
+    err.textContent = msg;
     err.style.display = 'block';
     btn.textContent = 'Continue with email';
     btn.disabled = false;
@@ -2454,7 +2577,220 @@ async function signOut(){
   closeUserMenu();
 }
 
+
+// ══ STATE STORE (pub/sub) ══
+const Store = {
+  subs: {},
+  on(k, f){ (this.subs[k] = this.subs[k] || []).push(f); },
+  emit(k, d){ (this.subs[k] || []).forEach(f => { try{ f(d); }catch(e){} }); }
+};
+
+// ══ LAZY CHART.JS LOADER (code-splitting pattern) ══
+let chartPromise = null;
+function ensureChart(){
+  if(window.Chart) return Promise.resolve();
+  if(chartPromise) return chartPromise;
+  chartPromise = new Promise(function(res, rej){
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js';
+    s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+  return chartPromise;
+}
+
+// ══ REAL-TIME WEBSOCKET STREAMING (Finnhub) ══
+let ws = null;
+const wsSubs = new Set();
+function startWS(){
+  if(ws || !('WebSocket' in window)) return;
+  try{
+    ws = new WebSocket('wss://ws.finnhub.io?token=' + FK);
+    ws.onopen = function(){ wsSubs.forEach(function(t){ ws.send(JSON.stringify({type:'subscribe', symbol:t})); }); };
+    ws.onmessage = function(e){
+      try{
+        const m = JSON.parse(e.data);
+        if(m.type === 'trade' && m.data){
+          m.data.forEach(function(tr){
+            const t = tr.s, p = tr.p;
+            const q = priceCache[t];
+            if(q){
+              q.c = p; q.ts = Date.now();
+              if(q.o){ q.d = p - q.o; q.dp = (p - q.o)/q.o*100; }
+            } else {
+              priceCache[t] = {c:p, d:0, dp:0, o:p, ts:Date.now()};
+            }
+            Store.emit('price', t);
+          });
+        }
+      }catch(err){}
+    };
+    ws.onclose = function(){ ws = null; setTimeout(startWS, 6000); };
+    ws.onerror = function(){ try{ ws.close(); }catch(e){} };
+  }catch(e){}
+}
+function wsWatch(t){
+  if(wsSubs.has(t)) return;
+  wsSubs.add(t);
+  if(ws && ws.readyState === 1) ws.send(JSON.stringify({type:'subscribe', symbol:t}));
+  else startWS();
+}
+
+// ══ LIVE DOM UPDATES (throttled, no full re-render) ══
+let liveTick = null;
+Store.on('price', function(){
+  if(liveTick) return;
+  liveTick = setTimeout(function(){ liveTick = null; applyLivePrices(); }, 900);
+});
+function applyLivePrices(){
+  const pg = document.getElementById('page-portfolio');
+  if(!pg || !pg.classList.contains('active') || !portfolio.length) return;
+  let tv = 0, ti = 0, td = 0, has = false;
+  portfolio.forEach(function(h){
+    const q = priceCache[h.ticker];
+    const price = q ? q.c : h.buyPrice;
+    tv += price*h.shares; ti += h.buyPrice*h.shares; td += (q && q.d ? q.d : 0)*h.shares;
+    if(!q) return; has = true;
+    const row = document.querySelector('.stock-row[data-t="' + h.ticker + '"]');
+    if(!row) return;
+    const pnlPct = h.buyPrice > 0 ? ((price - h.buyPrice)/h.buyPrice*100) : 0;
+    const sp = row.querySelector('.s-price'), pc = row.querySelector('.s-pct'),
+          st = row.querySelector('.s-today'), sm = row.querySelector('.s-meta');
+    if(sp) sp.textContent = fmt(price*h.shares);
+    if(pc){ pc.textContent = (pnlPct>=0?'+':'') + pnlPct.toFixed(2) + '% total'; pc.className = 's-pct ' + (pnlPct>=0?'up':'down'); }
+    if(st && q.dp != null){ st.textContent = (q.dp>=0?'+':'') + q.dp.toFixed(2) + '% today'; st.className = 's-today ' + (q.dp>=0?'up':'down'); }
+    if(sm) sm.textContent = h.shares + ' shares \u00b7 $' + price.toFixed(2) + '/share';
+  });
+  if(!has) return;
+  const pnl = tv - ti, rp = ti > 0 ? pnl/ti*100 : 0;
+  const tvEl = document.getElementById('totalValue'); if(tvEl) tvEl.textContent = fmt(tv);
+  const db = document.getElementById('dailyBadge');
+  if(db){ db.textContent = (td>=0?'+':'-') + fmt(Math.abs(td)) + ' today'; db.className = 'daily-badge ' + (td>=0?'daily-up':'daily-down'); }
+  const pi = document.getElementById('pInvested'); if(pi) pi.textContent = fmt(ti);
+  const pcur = document.getElementById('pCurrent'); if(pcur) pcur.textContent = fmt(tv);
+  const pp = document.getElementById('pPnl'); if(pp){ pp.textContent = (pnl>=0?'+':'-') + fmt(Math.abs(pnl)); pp.className = 'p-val ' + (pnl>=0?'up':'down'); }
+  const pr = document.getElementById('pReturn'); if(pr){ pr.textContent = (rp>=0?'+':'') + rp.toFixed(2) + '%'; pr.className = 'p-val ' + (rp>=0?'up':'down'); }
+}
+
+// ══ THEME (dark / light) ══
+function applyTheme(t){
+  document.body.classList.toggle('light', t === 'light');
+  const b = document.getElementById('themeBtn');
+  if(b) b.textContent = t === 'light' ? '\u2600\ufe0f' : '\ud83c\udf19';
+  localStorage.setItem('fp_theme', t);
+}
+function toggleTheme(){ applyTheme(document.body.classList.contains('light') ? 'dark' : 'light'); }
+
+// ══ WATCHLIST ══
+function getWatch(){ try{ return JSON.parse(localStorage.getItem('fp_watch') || '[]'); }catch(e){ return []; } }
+function isWatched(t){ return getWatch().indexOf(t) > -1; }
+function toggleWatch(t, btn){
+  const w = getWatch(); const i = w.indexOf(t);
+  if(i > -1) w.splice(i, 1); else w.push(t);
+  localStorage.setItem('fp_watch', JSON.stringify(w));
+  if(btn) btn.textContent = i > -1 ? '\u2606' : '\u2605';
+  renderWatchlist();
+}
+async function renderWatchlist(){
+  const wrap = document.getElementById('watchWrap'), grid = document.getElementById('watchGrid');
+  if(!wrap || !grid) return;
+  const w = getWatch().filter(function(t){ return !portfolio.find(function(p){ return p.ticker === t; }); });
+  if(!w.length){ wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  grid.innerHTML = w.map(function(){ return '<div class="skel-row" style="height:66px"></div>'; }).join('');
+  const qs = await Promise.all(w.map(async function(t){ return {t: t, q: await fetchQ(t)}; }));
+  grid.innerHTML = qs.map(function(x){
+    const t = x.t, q = x.q, up = q && q.dp >= 0;
+    return '<div class="watch-row" data-w="' + t + '" onclick="openAddShares(\'' + t + '\')" role="button" tabindex="0" aria-label="Add ' + t + ' to portfolio">' +
+      '<div class="s-icon" style="width:36px;height:36px;font-size:11px">' + t.slice(0,2) + '</div>' +
+      '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + t + '</div>' +
+      '<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (COMPANIES[t] || '') + '</div></div>' +
+      (q ? '<div style="text-align:right"><div style="font-size:13px;font-weight:700;font-family:var(--font-display)">' + fmt(q.c) + '</div>' +
+        '<div style="font-size:11px" class="' + (up?'up':'down') + '">' + (up?'+':'') + q.dp.toFixed(2) + '%</div></div>' : '') +
+      '<button class="watch-star" aria-label="Remove ' + t + ' from watchlist" onclick="event.stopPropagation();toggleWatch(\'' + t + '\')">\u2605</button></div>';
+  }).join('');
+  w.forEach(wsWatch);
+}
+
+// ══ SECTOR ANALYTICS ══
+const SECTORS = {AAPL:'Technology',MSFT:'Technology',GOOGL:'Communication',AMZN:'Consumer Cyclical',NVDA:'Technology',META:'Communication',TSLA:'Consumer Cyclical','BRK.B':'Financials',JPM:'Financials',V:'Financials',JNJ:'Healthcare',UNH:'Healthcare',XOM:'Energy',KO:'Consumer Staples',DAL:'Industrials',OXY:'Energy',UBER:'Technology',BN:'Financials',AXP:'Financials',SHOP:'Technology'};
+const ALLOC_COLORS = ['#22c55e','#f5b60b','#60a5fa','#e879f9','#4ade80','#fb7185','#86efac','#facc15'];
+let allocChartObj = null;
+async function renderAnalytics(quotes){
+  const wrap = document.getElementById('allocWrap');
+  if(!wrap) return;
+  if(!portfolio.length){ wrap.style.display = 'none'; return; }
+  wrap.style.display = 'grid';
+  await ensureChart();
+  const totals = {}; let tv = 0;
+  quotes.forEach(function(x){
+    const v = (x.q ? x.q.c : x.h.buyPrice) * x.h.shares;
+    tv += v;
+    const s = SECTORS[x.h.ticker] || 'Other';
+    totals[s] = (totals[s] || 0) + v;
+  });
+  if(tv <= 0){ wrap.style.display = 'none'; return; }
+  const entries = Object.entries(totals).sort(function(a,b){ return b[1]-a[1]; });
+  if(allocChartObj){ allocChartObj.destroy(); allocChartObj = null; }
+  const ctx = document.getElementById('allocChart').getContext('2d');
+  allocChartObj = new Chart(ctx, {type:'doughnut',
+    data:{labels: entries.map(function(e){return e[0]}), datasets:[{data: entries.map(function(e){return e[1]}), backgroundColor: entries.map(function(_, i){ return ALLOC_COLORS[i % ALLOC_COLORS.length]; }), borderColor:'rgba(4,8,5,.55)', borderWidth:2, hoverOffset:6}]},
+    options:{responsive:true, maintainAspectRatio:false, cutout:'68%',
+      plugins:{legend:{display:false}, tooltip:{backgroundColor:'rgba(6,12,7,.95)', borderColor:'rgba(134,239,172,.25)', borderWidth:1, padding:12, cornerRadius:10,
+        callbacks:{label:function(c){ return ' ' + c.label + ': ' + fmt(c.parsed) + ' (' + (c.parsed/tv*100).toFixed(1) + '%)'; }}}}}});
+  document.getElementById('allocLegend').innerHTML = entries.map(function(e, i){
+    return '<div class="alloc-item"><span class="alloc-dot" style="background:' + ALLOC_COLORS[i % ALLOC_COLORS.length] + '"></span>' + e[0] + '<span class="alloc-pct">' + (e[1]/tv*100).toFixed(1) + '%</span></div>';
+  }).join('');
+  const rows = quotes.map(function(x){ return {t: x.h.ticker, v: (x.q ? x.q.c : x.h.buyPrice) * x.h.shares}; }).sort(function(a,b){ return b.v-a.v; }).slice(0,6);
+  const max = rows.length ? rows[0].v : 1;
+  document.getElementById('holdList').innerHTML = rows.map(function(r){
+    return '<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">' + r.t + '</span><span style="color:var(--muted)">' + fmt(r.v) + ' \u00b7 ' + (r.v/tv*100).toFixed(1) + '%</span></div><div class="hold-bar"><div class="hold-fill" style="width:' + (r.v/max*100).toFixed(1) + '%"></div></div></div>';
+  }).join('');
+}
+
+// ══ NEWS FEED ══
+let newsLoadedAt = 0;
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function timeAgo(ts){ const m = Math.floor((Date.now()-ts)/60000); if(m < 60) return m + 'm ago'; const h = Math.floor(m/60); if(h < 24) return h + 'h ago'; return Math.floor(h/24) + 'd ago'; }
+async function loadNews(){
+  const grid = document.getElementById('newsGrid');
+  if(!grid) return;
+  if(Date.now() - newsLoadedAt < 600000) return;
+  try{
+    const r = await fetch('https://finnhub.io/api/v1/news?category=general&token=' + FK);
+    const items = (await r.json()).slice(0, 6);
+    if(!items.length) throw 0;
+    newsLoadedAt = Date.now();
+    grid.innerHTML = items.map(function(n){
+      return '<a class="news-card" href="' + n.url + '" target="_blank" rel="noopener noreferrer">' +
+        (n.image ? '<img class="news-img" src="' + n.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '') +
+        '<div class="news-body"><div class="news-src"><span>' + escapeHtml(n.source || 'News') + '</span><time>' + timeAgo(n.datetime*1000) + '</time></div>' +
+        '<div class="news-title">' + escapeHtml(n.headline) + '</div></div></a>';
+    }).join('');
+  }catch(e){
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">News is unavailable right now. Try again in a minute.</div>';
+  }
+}
+
+// ══ KEYBOARD NAV — Esc closes any open layer ══
+document.addEventListener('keydown', function(e){
+  if(e.key !== 'Escape') return;
+  ['hourlyModal','searchModal','sharesModal'].forEach(function(id){
+    const m = document.getElementById(id);
+    if(m && m.classList.contains('open')) m.classList.remove('open');
+  });
+  const d = document.getElementById('detailModal');
+  if(d && d.classList.contains('open')) d.classList.remove('open');
+  const l = document.getElementById('loginModal');
+  if(l && l.style.display === 'flex') closeLogin();
+  const mm = document.getElementById('mobileMenu');
+  if(mm) mm.classList.remove('open');
+  const um = document.getElementById('userMenu');
+  if(um) um.style.display = 'none';
+});
+
 // ── INIT ──
+applyTheme(localStorage.getItem('fp_theme') || 'dark');
 initAuth();
 checkPaymentReturn();
 renderLessons();
