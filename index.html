@@ -2214,8 +2214,8 @@ function showPage(p){
   window.scrollTo(0,0);
   if(p==='lessons') renderLessons();
   if(p==='gold') renderGold();
-  if(p==='portfolio'){loadFromDB().then(()=>renderPortfolio());renderGoals();renderAchievements();renderAlertsList();}
-  if(p==='markets') initMarkets();
+  if(p==='portfolio'){loadFromDB().then(()=>renderPortfolio());if(typeof renderGoals==='function'){renderGoals();renderAchievements();renderAlertsList();}}
+  if(p==='markets' && typeof initMarkets==='function') initMarkets();
 }
 
 // ── LESSONS ──
@@ -2224,7 +2224,7 @@ function markLessonComplete(i){
   const p = getLessonProgress();
   p[i] = Date.now();
   localStorage.setItem('fp_lessons', JSON.stringify(p));
-  if(Object.keys(p).length >= 5) unlockAchv('scholar');
+  if(Object.keys(p).length >= 5 && typeof unlockAchv==='function') unlockAchv('scholar');
   track('lesson_complete', {lesson: LESSONS[i].name});
   openLesson(i);
 }
@@ -2232,7 +2232,7 @@ function updateLessonProgress(){
   const done = Object.keys(getLessonProgress()).length;
   const lbl = document.getElementById('lessonProgressLabel');
   const fill = document.getElementById('lessonProgressFill');
-  if(lbl){ const iq = financeIQ(); lbl.textContent = done + ' of ' + LESSONS.length + ' lessons completed' + (iq !== null ? ' \u00b7 Finance IQ: ' + iq + '%' : ''); }
+  if(lbl){ const iq = (typeof financeIQ === 'function') ? financeIQ() : null; lbl.textContent = done + ' of ' + LESSONS.length + ' lessons completed' + (iq !== null ? ' \u00b7 Finance IQ: ' + iq + '%' : ''); }
   if(fill) fill.style.width = (done/LESSONS.length*100).toFixed(0) + '%';
 }
 function renderLessons(filtered){
@@ -2454,8 +2454,8 @@ async function handleSearch(v){
 async function openAddShares(ticker){
   selectedStock={ticker};
   closeSearch();
-  document.getElementById('sharesTitle').textContent=(PAPER_MODE?'Paper-buy ':'Add ')+ticker;
-  var _cb=document.getElementById('confirmAddBtn'); if(_cb)_cb.textContent=PAPER_MODE?'Buy (paper)':'Add to portfolio';
+  document.getElementById('sharesTitle').textContent=((typeof PAPER_MODE!=='undefined'&&PAPER_MODE)?'Paper-buy ':'Add ')+ticker;
+  var _cb=document.getElementById('confirmAddBtn'); if(_cb)_cb.textContent=(typeof PAPER_MODE!=='undefined'&&PAPER_MODE)?'Buy (paper)':'Add to portfolio';
   document.getElementById('sharesInsight').textContent=AI_INSIGHT[ticker]||AI_INSIGHT.DEFAULT;
   document.getElementById('sharesInput').value='';
   document.getElementById('sharesPreview').textContent='';
@@ -2473,7 +2473,7 @@ function updatePreview(){
 async function confirmAdd(){
   const shares=parseFloat(document.getElementById('sharesInput').value)||0;
   if(shares<=0){alert('Please enter how many shares you own');return;}
-  if(PAPER_MODE){
+  if(typeof PAPER_MODE!=='undefined' && PAPER_MODE){
     const done = await paperBuy(selectedStock.ticker, shares, selectedStock.price||0);
     if(done) closeShares();
     return;
@@ -2483,7 +2483,7 @@ async function confirmAdd(){
   else portfolio.push({ticker:selectedStock.ticker,shares,buyPrice:selectedStock.price||0});
   try{ const ad=JSON.parse(localStorage.getItem('fp_added')||'{}'); if(!ad[selectedStock.ticker]) ad[selectedStock.ticker]=Date.now(); localStorage.setItem('fp_added',JSON.stringify(ad)); }catch(e){}
   track('add_stock', {ticker: selectedStock.ticker});
-  unlockAchv('first_stock');
+  if(typeof unlockAchv==='function') unlockAchv('first_stock');
   await saveToDB();
   closeShares();
   renderPortfolio();
@@ -2559,8 +2559,7 @@ async function renderPortfolio(){
   renderWatchlist();
   loadNews();
   portfolio.forEach(function(h){ wsWatch(h.ticker); });
-  checkHoldAchvs();
-  checkAlerts();
+  if(typeof checkHoldAchvs==='function'){ checkHoldAchvs(); checkAlerts(); }
 }
 
 function renderAlerts(quotes){
@@ -2717,7 +2716,7 @@ async function openDetail(ticker){
     pe.className='d-mval '+(pnl>=0?'up':'down');
   }
   renderDetailChart(ticker,1);
-  loadWhyMoved(ticker);
+  if(typeof loadWhyMoved==='function') loadWhyMoved(ticker);
 }
 
 async function renderDetailChart(ticker,days){
@@ -3044,8 +3043,8 @@ function applyLivePrices(){
   const pp = document.getElementById('pPnl'); if(pp){ pp.textContent = (pnl>=0?'+':'-') + fmt(Math.abs(pnl)); pp.className = 'p-val ' + (pnl>=0?'up':'down'); }
   const pr = document.getElementById('pReturn'); if(pr){ pr.textContent = (rp>=0?'+':'') + rp.toFixed(2) + '%'; pr.className = 'p-val ' + (rp>=0?'up':'down'); }
   announcePortfolio(tv, td);
-  checkAlerts();
-  if(PAPER_MODE) renderPaper();
+  if(typeof checkAlerts==='function') checkAlerts();
+  if(typeof PAPER_MODE!=='undefined' && PAPER_MODE && typeof renderPaper==='function') renderPaper();
 }
 
 // ══ THEME (dark / light) ══
