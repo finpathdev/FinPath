@@ -537,6 +537,14 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
 /* ── CONFETTI ── */
 #confettiCanvas{position:fixed;inset:0;pointer-events:none;z-index:960}
 @media(max-width:640px){.mode-tabs{width:100%}.mode-tab{flex:1;text-align:center}}
+
+.chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.chip:hover{color:var(--text);border-color:var(--line-strong)}
+.pill{background:rgba(96,165,250,.15);color:#60a5fa;border-radius:999px;padding:2px 9px;font-size:10px;font-weight:800;letter-spacing:.04em;margin-left:6px}
+.cmp-table{width:100%;font-size:13px;border-collapse:collapse}
+.cmp-table td,.cmp-table th{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}
+.cmp-table th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
 </style>
 </style></head><body>
 
@@ -1072,7 +1080,7 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
   <div id="lessons-list-view">
     <div class="page-header"><h1>Lessons</h1><p>Everything schools never taught you about money.</p>
       <div id="lessonProgressWrap" style="margin-top:18px"><div style="font-size:13px;color:var(--muted)" id="lessonProgressLabel"></div><div class="progress-track"><div class="progress-fill" id="lessonProgressFill" style="width:0%"></div></div></div>
-      <input id="lessonSearch" class="modal-input" style="max-width:420px;margin-top:20px;margin-bottom:0" placeholder="Search lessons\u2026 (try \u201ccredit\u201d or \u201cBuffett\u201d)" oninput="filterLessons(this.value)" aria-label="Search lessons">
+      <input id="lessonSearch" class="modal-input" style="max-width:420px;margin-top:20px;margin-bottom:0" placeholder="Search lessons… (try “credit” or “Buffett”)" oninput="filterLessons(this.value)" aria-label="Search lessons">
     </div>
     <div class="lessons-grid" id="lessonsGrid"></div>
   </div>
@@ -1101,17 +1109,24 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
 <!-- PORTFOLIO -->
 <div id="page-portfolio" class="page">
   <div class="portfolio-wrap">
-    <div class="mode-tabs" role="tablist"><button class="mode-tab active" id="tabLive" role="tab" onclick="setMode('live')">Live tracker</button><button class="mode-tab" id="tabPaper" role="tab" onclick="setMode('paper')">Paper trading</button></div>
+    <div class="chip-row">
+      <button class="chip" id="chipAchv" onclick="document.getElementById('achvGrid').scrollIntoView({behavior:'smooth'})">🏅 0 achievements</button>
+      <button class="chip" id="chipStreak" onclick="document.getElementById('achvGrid').scrollIntoView({behavior:'smooth'})">🔥 1-day streak</button>
+      <button class="chip" onclick="sharePortfolio()">🔗 Share portfolio</button>
+      <button class="chip" onclick="setMode('live');analyzePortfolio();document.getElementById('aiRecs').scrollIntoView({behavior:'smooth'})">🧠 AI analyzer</button>
+      <button class="chip" onclick="exportCSV()">📥 Export CSV</button>
+    </div>
+    <div class="mode-tabs" role="tablist"><button class="mode-tab active" id="tabLive" role="tab" onclick="setMode('live')">My portfolio</button><button class="mode-tab" id="tabPaper" role="tab" onclick="setMode('paper')">Paper trading<span class="pill">practice</span></button></div>
     <div id="liveWrap">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
       <div><h1 style="font-size:28px;font-weight:800;letter-spacing:-.5px">Your Portfolio</h1><p style="font-size:14px;color:var(--muted);margin-top:4px"><span class="live-dot"></span> Live prices · AI suggestions · Profit tracking</p></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="add-btn" onclick="openSearch()">+ Add stock</button><button class="btn-secondary" style="padding:14px 20px;font-size:14px" onclick="sharePortfolio()" aria-label="Copy shareable portfolio link">Share</button></div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin:-6px 0 20px">
-      <button class="filter-tab" onclick="openAchievements()">\U0001F3C5 <span id="achCount">0</span> achievements</button>
-      <span class="filter-tab" style="cursor:default">\U0001F525 <span id="streakDays">1</span>-day streak</span>
-      <button class="filter-tab" onclick="sharePortfolio()">\U0001F517 Share portfolio</button>
-      <button class="filter-tab" onclick="openAnalyzer()">\U0001F9E0 AI analyzer</button>
+      <button class="filter-tab" onclick="openAchievements()">🏅 <span id="achCount">0</span> achievements</button>
+      <span class="filter-tab" style="cursor:default">🔥 <span id="streakDays">1</span>-day streak</span>
+      <button class="filter-tab" onclick="sharePortfolio()">🔗 Share portfolio</button>
+      <button class="filter-tab" onclick="openAnalyzer()">🧠 AI analyzer</button>
     </div>
     <div class="period-tabs" style="margin:0 0 20px" role="tablist" aria-label="Portfolio mode">
       <button class="period-tab active" id="tabReal" role="tab" onclick="setPFMode('real')">My portfolio</button>
@@ -1149,7 +1164,7 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
         <div class="port-label" style="margin:0">Savings goals</div>
         <button class="period-tab" onclick="addGoal()">+ New goal</button>
       </div>
-      <div id="goalsList" style="margin-top:14px"><div class="empty" style="padding:20px">No goals yet. Set one \u2014 "Save $1,000 emergency fund by June" \u2014 and track it weekly.</div></div>
+      <div id="goalsList" style="margin-top:14px"><div class="empty" style="padding:20px">No goals yet. Set one — "Save $1,000 emergency fund by June" — and track it weekly.</div></div>
     </div>
     <div class="port-card" style="margin-bottom:26px" id="alertsCard">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
@@ -1165,6 +1180,7 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
     <div class="analytics-grid" id="allocWrap" style="display:none">
       <div class="port-card"><div class="port-label">Sector allocation</div><div style="position:relative;height:200px;margin-top:12px"><canvas id="allocChart" role="img" aria-label="Portfolio sector allocation chart"></canvas></div><div class="alloc-legend" id="allocLegend"></div></div>
       <div class="port-card"><div class="port-label">Top holdings</div><div id="holdList" style="margin-top:16px"></div></div>
+      <div class="port-card"><div class="port-label">Dividend income (projected)</div><div id="divCard" style="margin-top:16px"><div class="skel-row" style="height:60px"></div></div></div>
     </div>
     <div style="font-size:16px;font-weight:700;margin-bottom:12px">Your stocks</div>
     <div class="stocks-grid" id="stocksGrid"><div class="empty" style="grid-column:1/-1">No stocks yet.<br><br><button class="btn-primary" style="padding:12px 24px;font-size:14px" onclick="loadDemoPortfolio()">Try a demo portfolio</button> <button class="btn-secondary" style="padding:12px 24px;font-size:14px" onclick="openSearch()">+ Add your own stock</button></div></div>
@@ -1191,16 +1207,16 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
     </div><!-- /liveWrap -->
     <div id="paperWrap" style="display:none">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px">
-        <div><h2 style="font-size:24px;font-weight:800;letter-spacing:-.5px">Paper Trading</h2><p style="font-size:13px;color:var(--muted);margin-top:4px">Practice with $100,000 of virtual cash \u2014 real live prices, zero risk.</p></div>
+        <div><h2 style="font-size:24px;font-weight:800;letter-spacing:-.5px">Paper Trading</h2><p style="font-size:13px;color:var(--muted);margin-top:4px">Practice with $100,000 of virtual cash — real live prices, zero risk.</p></div>
         <div style="display:flex;gap:10px"><button class="add-btn" onclick="paperOpenBuy()">+ Buy stock</button><button class="btn-secondary" style="padding:14px 18px;font-size:13px" onclick="paperReset()">Reset</button></div>
       </div>
       <div class="pulse-grid" style="margin-bottom:22px">
         <div class="p-metric"><div class="p-label">Cash</div><div class="p-val" id="ppCash">$100,000.00</div></div>
         <div class="p-metric"><div class="p-label">Positions value</div><div class="p-val" id="ppEquity">$0.00</div></div>
         <div class="p-metric"><div class="p-label">Total</div><div class="p-val" id="ppTotal">$100,000.00</div></div>
-        <div class="p-metric"><div class="p-label">You vs S&amp;P 500</div><div class="p-val" id="ppVs">\u2014</div></div>
+        <div class="p-metric"><div class="p-label">You vs S&amp;P 500</div><div class="p-val" id="ppVs">—</div></div>
       </div>
-      <div class="stocks-grid" id="paperGrid"><div class="empty" style="grid-column:1/-1">No paper positions yet. Hit \u201c+ Buy stock\u201d to start practicing.</div></div>
+      <div class="stocks-grid" id="paperGrid"><div class="empty" style="grid-column:1/-1">No paper positions yet. Hit “+ Buy stock” to start practicing.</div></div>
     </div>
     <div style="margin-top:34px">
       <div style="font-size:16px;font-weight:700;margin-bottom:12px;font-family:var(--font-display)">Savings goals</div>
@@ -1232,7 +1248,7 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
         <div class="port-card">
           <div class="port-label">Buying power</div>
           <div class="port-value" id="paperCash" style="cursor:default">$100,000.00</div>
-          <p style="font-size:13px;color:var(--muted);margin-top:10px;line-height:1.7">Practice with $100,000 of virtual cash at real live prices. Zero risk \u2014 all learning. Your performance is benchmarked against the S&P 500 from your first trade.</p>
+          <p style="font-size:13px;color:var(--muted);margin-top:10px;line-height:1.7">Practice with $100,000 of virtual cash at real live prices. Zero risk — all learning. Your performance is benchmarked against the S&P 500 from your first trade.</p>
         </div>
       </div>
       <div style="font-size:16px;font-weight:700;margin-bottom:12px">Paper holdings</div>
@@ -1279,18 +1295,18 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
     </div>
   </div>
   <div class="mk-section" style="padding-bottom:80px">
-    <div style="font-size:16px;font-weight:700;margin-bottom:4px;font-family:var(--font-display)">"What if I had invested\u2026" simulator</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Monthly investing projected with historical average returns. Educational estimate \u2014 past performance never guarantees future results.</p>
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px;font-family:var(--font-display)">"What if I had invested…" simulator</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Monthly investing projected with historical average returns. Educational estimate — past performance never guarantees future results.</p>
     <div class="calc-box" style="margin-top:0">
       <div class="calc-row">
         <div><label>Monthly amount ($)</label><input id="btAmt" type="number" value="300"></div>
         <div><label>Years</label><input id="btYears" type="number" value="10"></div>
         <div><label>Asset (historical avg/yr)</label><select id="btAsset">
-          <option value="10.2">S&P 500 index \u2014 10.2%</option>
-          <option value="13.1">Nasdaq 100 \u2014 13.1%</option>
-          <option value="7.0">Dividend stalwarts \u2014 7%</option>
-          <option value="4.5">High-yield savings \u2014 4.5%</option>
-          <option value="0.5">Checking account \u2014 0.5%</option>
+          <option value="10.2">S&P 500 index — 10.2%</option>
+          <option value="13.1">Nasdaq 100 — 13.1%</option>
+          <option value="7.0">Dividend stalwarts — 7%</option>
+          <option value="4.5">High-yield savings — 4.5%</option>
+          <option value="0.5">Checking account — 0.5%</option>
         </select></div>
       </div>
       <button class="ai-run-btn" style="margin-bottom:0" onclick="runBacktest()">Project it</button>
@@ -1304,8 +1320,8 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
   <div class="portfolio-wrap">
     <div class="page-header" style="padding:16px 0 30px"><h1>Markets</h1><p>Live market pulse, sector heat map, stock screener, earnings calendar and a backtest tool.</p></div>
     <div class="mk-section"><div class="mk-title">Market pulse <span class="live-dot" style="margin-left:6px"></span></div><div class="mk-sub">Major index ETFs, live.</div><div class="pulse-grid" id="pulseGrid"><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div></div><div id="pulseNote" style="font-size:13px;color:var(--muted)"></div></div>
-    <div class="mk-section"><div class="mk-title">Sector heat map</div><div class="mk-sub">Today\u2019s performance by sector (SPDR sector ETFs). Tap a sector for detail.</div><div class="heat-grid" id="heatGrid"><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div></div><div id="heatDetail" style="margin-top:14px;font-size:13px;color:var(--muted)"></div></div>
-    <div class="mk-section"><div class="mk-title">Stock screener</div><div class="mk-sub">Discover stocks by fundamentals across FinPath\u2019s tracked universe.</div>
+    <div class="mk-section"><div class="mk-title">Sector heat map</div><div class="mk-sub">Today’s performance by sector (SPDR sector ETFs). Tap a sector for detail.</div><div class="heat-grid" id="heatGrid"><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div></div><div id="heatDetail" style="margin-top:14px;font-size:13px;color:var(--muted)"></div></div>
+    <div class="mk-section"><div class="mk-title">Stock screener</div><div class="mk-sub">Discover stocks by fundamentals across FinPath’s tracked universe.</div>
       <div class="scr-filters">
         <div><label>Sector</label><select id="scrSector"><option value="">All sectors</option></select></div>
         <div><label>Max price ($)</label><input id="scrPrice" type="number" placeholder="Any"></div>
@@ -1317,12 +1333,20 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
       <button class="ai-run-btn" onclick="runScreener()">Run screener</button>
       <div id="scrResults"><div class="empty">Set your filters and hit Run screener.</div></div>
     </div>
-    <div class="mk-section"><div class="mk-title">Earnings calendar</div><div class="mk-sub">Upcoming reports over the next two weeks \u2014 your holdings are highlighted.</div><div id="earnList"><div class="skel-row" style="height:52px"></div></div></div>
-    <div class="mk-section"><div class="mk-title">Backtest: \u201cWhat if I had invested\u2026\u201d</div><div class="mk-sub">Modeled with historical <b>average annual returns</b> (not actual price paths) \u2014 for education, not prediction.</div>
+    <div class="mk-section"><div class="mk-title">Compare two stocks</div><div class="mk-sub">Head-to-head on the numbers that matter.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+        <select id="cmpA" class="modal-input" style="width:auto;min-width:150px;margin:0"></select>
+        <select id="cmpB" class="modal-input" style="width:auto;min-width:150px;margin:0"></select>
+        <button class="ai-run-btn" style="margin:0" onclick="compareStocks()">Compare</button>
+      </div>
+      <div id="cmpOut"></div>
+    </div>
+    <div class="mk-section"><div class="mk-title">Earnings calendar</div><div class="mk-sub">Upcoming reports over the next two weeks — your holdings are highlighted.</div><div id="earnList"><div class="skel-row" style="height:52px"></div></div></div>
+    <div class="mk-section"><div class="mk-title">Backtest: “What if I had invested…”</div><div class="mk-sub">Modeled with historical <b>average annual returns</b> (not actual price paths) — for education, not prediction.</div>
       <div class="scr-filters">
         <div><label>Monthly amount ($)</label><input id="btAmt" type="number" value="300"></div>
         <div><label>Years</label><input id="btYears" type="number" value="8"></div>
-        <div><label>Asset</label><select id="btAsset"><option value="10">VOO / S&amp;P 500 (~10%/yr)</option><option value="24">AAPL (~24%/yr, 2010\u20132024)</option><option value="22">MSFT (~22%/yr)</option><option value="7">KO (~7%/yr)</option><option value="4.5">High-yield savings (~4.5%)</option></select></div>
+        <div><label>Asset</label><select id="btAsset"><option value="10">VOO / S&amp;P 500 (~10%/yr)</option><option value="24">AAPL (~24%/yr, 2010–2024)</option><option value="22">MSFT (~22%/yr)</option><option value="7">KO (~7%/yr)</option><option value="4.5">High-yield savings (~4.5%)</option></select></div>
       </div>
       <button class="ai-run-btn" onclick="runBacktest()">Calculate</button>
       <div class="calc-out" id="btOut" style="display:none"></div>
@@ -1367,7 +1391,7 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
 <div class="modal-overlay" id="searchModal" role="dialog" aria-modal="true" aria-label="Add a stock">
   <div class="modal">
     <h2>Add stock</h2>
-    <input class="modal-input" placeholder="Search ticker or company..." id="searchInput" oninput="handleSearch(this.value)" autocomplete="off">
+    <input class="modal-input" placeholder="Search stocks or crypto (AAPL, BTC, ETH)…" id="searchInput" oninput="handleSearch(this.value)" autocomplete="off">
     <div id="searchResults"><div class="loading"><div class="spinner"></div>Loading live prices...</div></div>
     <button class="modal-close-btn" onclick="closeSearch()">Cancel</button>
   </div>
@@ -1400,7 +1424,7 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
     <div class="d-metrics">
       <div class="d-metric"><div class="d-mlabel">Live price</div><div class="d-mval" id="dPrice">--</div></div>
       <div class="d-metric"><div class="d-mlabel">Today</div><div class="d-mval" id="dToday">--</div></div>
-      <div class="d-metric"><div class="d-mlabel">Shares</div><div class="d-mval" id="dShares">--</div></div>
+      <div class="d-metric"><div class="d-mlabel">Shares</div><div class="d-mval" id="dShares">--</div><button class="btn-secondary" style="padding:5px 12px;font-size:11px;margin-top:8px" onclick="editBuyPrice()">✎ Edit buy price</button></div>
       <div class="d-metric"><div class="d-mlabel">Position value</div><div class="d-mval" id="dVal">--</div></div>
     </div>
     <div class="d-metric" style="margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
@@ -1426,7 +1450,7 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
           <option value="below">Drops below</option><option value="above">Rises above</option>
         </select>
         <input id="alertPrice" type="number" step="any" class="modal-input" style="width:130px;margin:0" placeholder="$ price">
-        <button class="price-btn" style="width:auto;padding:11px 20px" onclick="addAlertFromDetail()">\ud83d\udd14 Set alert</button>
+        <button class="price-btn" style="width:auto;padding:11px 20px" onclick="addAlertFromDetail()">🔔 Set alert</button>
       </div>
     </div>
     <div id="whyMoved"></div>
@@ -1450,7 +1474,7 @@ function fmt(n){return '$'+parseFloat(n).toLocaleString('en-US',{minimumFraction
 
 let portfolio=[],selectedStock=null,pChart=null,dChart=null,priceCache={},stTimeout=null;
 
-const COMPANIES={AAPL:'Apple Inc',MSFT:'Microsoft Corp',GOOGL:'Alphabet Inc',AMZN:'Amazon',NVDA:'NVIDIA Corp',META:'Meta Platforms',TSLA:'Tesla Inc','BRK.B':'Berkshire Hathaway',JPM:'JPMorgan Chase',V:'Visa Inc',JNJ:'Johnson & Johnson',UNH:'UnitedHealth',XOM:'Exxon Mobil',KO:'Coca-Cola',DAL:'Delta Air Lines',OXY:'Occidental Petroleum',UBER:'Uber Technologies',BN:'Brookfield Corp',AXP:'American Express',SHOP:'Shopify'};
+const COMPANIES={AAPL:'Apple Inc',MSFT:'Microsoft Corp',GOOGL:'Alphabet Inc',AMZN:'Amazon',NVDA:'NVIDIA Corp',META:'Meta Platforms',TSLA:'Tesla Inc','BRK.B':'Berkshire Hathaway',JPM:'JPMorgan Chase',V:'Visa Inc',JNJ:'Johnson & Johnson',UNH:'UnitedHealth',XOM:'Exxon Mobil',KO:'Coca-Cola',DAL:'Delta Air Lines',OXY:'Occidental Petroleum',UBER:'Uber Technologies',BN:'Brookfield Corp',AXP:'American Express',SHOP:'Shopify',BTC:'Bitcoin (crypto)',ETH:'Ethereum (crypto)',SOL:'Solana (crypto)',DOGE:'Dogecoin (crypto)'};
 const POP=Object.keys(COMPANIES).slice(0,14);
 
 const AI_INSIGHT={
@@ -2232,9 +2256,60 @@ function updateLessonProgress(){
   const done = Object.keys(getLessonProgress()).length;
   const lbl = document.getElementById('lessonProgressLabel');
   const fill = document.getElementById('lessonProgressFill');
-  if(lbl){ const iq = (typeof financeIQ === 'function') ? financeIQ() : null; lbl.textContent = done + ' of ' + LESSONS.length + ' lessons completed' + (iq !== null ? ' \u00b7 Finance IQ: ' + iq + '%' : ''); }
+  if(lbl){ const iq = (typeof financeIQ === 'function') ? financeIQ() : null; lbl.textContent = done + ' of ' + LESSONS.length + ' lessons completed' + (iq !== null ? ' · Finance IQ: ' + iq + '%' : ''); }
   if(fill) fill.style.width = (done/LESSONS.length*100).toFixed(0) + '%';
+  if(typeof checkGraduate === 'function') checkGraduate();
 }
+
+function freeDoneCount(){
+  const p = getLessonProgress();
+  return LESSONS.reduce(function(n, l, i){ return n + ((l.plan === 'free' && p[i]) ? 1 : 0); }, 0);
+}
+function checkGraduate(){
+  const totalFree = LESSONS.filter(function(l){ return l.plan === 'free'; }).length;
+  const wrap = document.getElementById('lessonProgressWrap');
+  if(freeDoneCount() >= totalFree){
+    unlockAchv('graduate');
+    if(wrap && !document.getElementById('certBtn')){
+      const b = document.createElement('button');
+      b.id = 'certBtn'; b.className = 'btn-primary';
+      b.style.cssText = 'margin-top:14px;padding:12px 24px;font-size:14px';
+      b.textContent = '🎓 View my certificate';
+      b.onclick = genCertificate;
+      wrap.appendChild(b);
+    }
+  }
+}
+function genCertificate(){
+  let name = (currentUser && currentUser.email) ? currentUser.email.split('@')[0] : '';
+  name = prompt('Name to print on your certificate:', name.charAt(0).toUpperCase() + name.slice(1)) || 'FinPath Student';
+  const c = document.createElement('canvas'); c.width = 1200; c.height = 800;
+  const x = c.getContext('2d');
+  const g = x.createLinearGradient(0,0,1200,800); g.addColorStop(0,'#07120a'); g.addColorStop(1,'#020503');
+  x.fillStyle = g; x.fillRect(0,0,1200,800);
+  x.strokeStyle = '#22c55e'; x.lineWidth = 3; x.strokeRect(40,40,1120,720);
+  x.strokeStyle = 'rgba(134,239,172,.25)'; x.lineWidth = 1; x.strokeRect(56,56,1088,688);
+  x.fillStyle = '#22c55e'; x.font = '700 34px Arial'; x.textAlign = 'center';
+  x.fillText('FinPath', 600, 150);
+  x.fillStyle = 'rgba(134,239,172,.7)'; x.font = '16px Arial';
+  x.fillText('THE FINANCIAL PLAYBOOK SCHOOLS SKIPPED', 600, 185);
+  x.fillStyle = '#ffffff'; x.font = '26px Arial';
+  x.fillText('Certificate of Completion', 600, 280);
+  x.fillStyle = '#86efac'; x.font = '700 58px Arial';
+  x.fillText(name, 600, 380);
+  x.fillStyle = '#c8d6c8'; x.font = '20px Arial';
+  x.fillText('has completed all 20 core lessons of financial education', 600, 440);
+  x.fillText('covering budgeting, credit, investing, taxes and wealth building', 600, 475);
+  x.fillStyle = '#22c55e'; x.font = '48px Arial'; x.fillText('🎓', 600, 560);
+  x.fillStyle = 'rgba(147,166,147,.9)'; x.font = '16px Arial';
+  x.fillText(new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'}), 600, 630);
+  x.fillText('finpathdev.github.io/FinPath — Built by Siddharth Moosani', 600, 690);
+  const a = document.createElement('a');
+  a.href = c.toDataURL('image/png'); a.download = 'finpath-certificate.png'; a.click();
+  toast('🎓','Certificate downloaded — post it and tag FinPath!');
+  track('certificate');
+}
+
 function renderLessons(filtered){
   const prog = getLessonProgress();
   const items = (filtered || LESSONS.map(function(l,i){ return {l:l, i:i}; }));
@@ -2242,13 +2317,13 @@ function renderLessons(filtered){
     const l = x.l, i = x.i;
     return `
     <div class="lesson-card" style="position:relative" onclick="openLesson(${i})">
-      ${prog[i] ? '<div class="lesson-done" aria-label="Completed">\u2713</div>' : ''}
+      ${prog[i] ? '<div class="lesson-done" aria-label="Completed">✓</div>' : ''}
       <div class="lesson-img">${l.icon}</div>
       <div class="lesson-body">
         <div class="lesson-cat">${l.cat}</div>
         <div class="lesson-title">${l.name}</div>
         <div class="lesson-desc">${l.desc}</div>
-        <span class="lesson-plan ${l.plan==='free'?'plan-free':'plan-gold'}">${l.plan==='free'?'Free':'Gold \u2726'}</span>
+        <span class="lesson-plan ${l.plan==='free'?'plan-free':'plan-gold'}">${l.plan==='free'?'Free':'Gold ✦'}</span>
       </div>
     </div>`;
   }).join('') : '<div class="empty" style="grid-column:1/-1">No lessons match that search.</div>';
@@ -2365,6 +2440,8 @@ function showSuccessBanner(){
 }
 
 // ── PORTFOLIO / SUPABASE ──
+const CRYPTO = {BTC:'BINANCE:BTCUSDT', ETH:'BINANCE:ETHUSDT', SOL:'BINANCE:SOLUSDT', DOGE:'BINANCE:DOGEUSDT'};
+const REV_CRYPTO = {}; Object.keys(CRYPTO).forEach(function(k){ REV_CRYPTO[CRYPTO[k]] = k; });
 const _pendingQ = {};
 async function fetchQ(t){
   const cached = priceCache[t];
@@ -2372,7 +2449,7 @@ async function fetchQ(t){
   if(_pendingQ[t]) return _pendingQ[t];
   _pendingQ[t] = (async function(){
     try{
-      const r = await fetch('https://finnhub.io/api/v1/quote?symbol='+t+'&token='+FK);
+      const r = await fetch('https://finnhub.io/api/v1/quote?symbol='+encodeURIComponent(CRYPTO[t]||t)+'&token='+FK);
       const d = await r.json();
       if(d && d.c){
         priceCache[t] = {c:d.c,d:d.d,dp:d.dp,o:d.o,ts:Date.now()};
@@ -2432,7 +2509,7 @@ async function loadSearchResults(){
 
 function renderSearchResults(items){
   document.getElementById('searchResults').innerHTML=items.slice(0,12).map(({t,q})=>`
-    <div class="modal-result" onclick="openAddShares('${t}')"><button class="watch-star" aria-label="Toggle watchlist for ${t}" onclick="event.stopPropagation();toggleWatch('${t}',this)">${isWatched(t)?'\u2605':'\u2606'}</button>
+    <div class="modal-result" onclick="openAddShares('${t}')"><button class="watch-star" aria-label="Toggle watchlist for ${t}" onclick="event.stopPropagation();toggleWatch('${t}',this)">${isWatched(t)?'★':'☆'}</button>
       <div><div style="font-size:15px;font-weight:600">${t}</div><div style="font-size:12px;color:var(--muted)">${COMPANIES[t]||t}</div></div>
       <div style="text-align:right">
         <div style="font-size:15px;font-weight:600;color:${q.dp>=0?'#4ade80':'#f87171'}">$${q.c.toFixed(2)}</div>
@@ -2534,8 +2611,8 @@ async function renderPortfolio(){
       '<div class="s-meta">'+h.shares+' shares · $'+price.toFixed(2)+'/share</div></div>'+
       '<div class="s-right">'+
       '<div class="s-price">$'+val.toFixed(2)+'</div>'+
-      '<div class="s-pct '+(pnlPct>=0?'up':'down')+'">'+(pnlPct>=0?'\u25b2 +':'\u25bc ')+pnlPct.toFixed(2)+'% total</div>'+
-      '<div class="s-today '+(dayChg>=0?'up':'down')+'">'+(dayChg>=0?'\u25b2 +':'\u25bc ')+dayChg.toFixed(2)+'% today</div>'+
+      '<div class="s-pct '+(pnlPct>=0?'up':'down')+'">'+(pnlPct>=0?'▲ +':'▼ ')+pnlPct.toFixed(2)+'% total</div>'+
+      '<div class="s-today '+(dayChg>=0?'up':'down')+'">'+(dayChg>=0?'▲ +':'▼ ')+dayChg.toFixed(2)+'% today</div>'+
       '</div></div>';
   }).join('');
 
@@ -2543,12 +2620,12 @@ async function renderPortfolio(){
   const retPct=totalInvested>0?(pnl/totalInvested*100):0;
   document.getElementById('totalValue').textContent=fmt(totalVal);
   const db=document.getElementById('dailyBadge');
-  db.textContent=(totalDayChg>=0?'\u25b2 +':'\u25bc -')+fmt(Math.abs(totalDayChg))+' today';
+  db.textContent=(totalDayChg>=0?'▲ +':'▼ -')+fmt(Math.abs(totalDayChg))+' today';
   db.className='daily-badge '+(totalDayChg>=0?'daily-up':'daily-down');
   document.getElementById('pInvested').textContent=fmt(totalInvested);
   document.getElementById('pCurrent').textContent=fmt(totalVal);
   const pe=document.getElementById('pPnl');
-  pe.textContent=(pnl>=0?'\u25b2 +':'\u25bc -')+fmt(Math.abs(pnl));
+  pe.textContent=(pnl>=0?'▲ +':'▼ -')+fmt(Math.abs(pnl));
   pe.className='p-val '+(pnl>=0?'up':'down');
   const re=document.getElementById('pReturn');
   re.textContent=(retPct>=0?'+':'')+retPct.toFixed(2)+'%';
@@ -2708,11 +2785,11 @@ async function openDetail(ticker){
     const pnlPct=selectedStock.buyPrice>0?((q.c-selectedStock.buyPrice)/selectedStock.buyPrice*100):0;
     document.getElementById('dPrice').textContent=fmt(q.c);
     const te=document.getElementById('dToday');
-    te.textContent=(q.dp>=0?'\u25b2 +':'\u25bc ')+q.dp.toFixed(2)+'%';
+    te.textContent=(q.dp>=0?'▲ +':'▼ ')+q.dp.toFixed(2)+'%';
     te.className='d-mval '+(q.dp>=0?'up':'down');
     document.getElementById('dVal').textContent=fmt(val);
     const pe=document.getElementById('dPnl');
-    pe.textContent=(pnl>=0?'\u25b2 +':'\u25bc -')+fmt(Math.abs(pnl))+' ('+pnlPct.toFixed(2)+'%)';
+    pe.textContent=(pnl>=0?'▲ +':'▼ -')+fmt(Math.abs(pnl))+' ('+pnlPct.toFixed(2)+'%)';
     pe.className='d-mval '+(pnl>=0?'up':'down');
   }
   renderDetailChart(ticker,1);
@@ -2972,13 +3049,13 @@ function startWS(){
   if(ws || !('WebSocket' in window)) return;
   try{
     ws = new WebSocket('wss://ws.finnhub.io?token=' + FK);
-    ws.onopen = function(){ wsSubs.forEach(function(t){ ws.send(JSON.stringify({type:'subscribe', symbol:t})); }); };
+    ws.onopen = function(){ wsSubs.forEach(function(t){ ws.send(JSON.stringify({type:'subscribe', symbol:(CRYPTO[t]||t)})); }); };
     ws.onmessage = function(e){
       try{
         const m = JSON.parse(e.data);
         if(m.type === 'trade' && m.data){
           m.data.forEach(function(tr){
-            const t = tr.s, p = tr.p;
+            let t = tr.s; if(REV_CRYPTO[t]) t = REV_CRYPTO[t]; const p = tr.p;
             const q = priceCache[t];
             if(q){
               q.c = p; q.ts = Date.now();
@@ -3004,7 +3081,7 @@ function wsUnwatch(t){
 function wsWatch(t){
   if(wsSubs.has(t)) return;
   wsSubs.add(t);
-  if(ws && ws.readyState === 1) ws.send(JSON.stringify({type:'subscribe', symbol:t}));
+  if(ws && ws.readyState === 1) ws.send(JSON.stringify({type:'subscribe', symbol:(CRYPTO[t]||t)}));
   else startWS();
 }
 
@@ -3029,15 +3106,15 @@ function applyLivePrices(){
     const sp = row.querySelector('.s-price'), pc = row.querySelector('.s-pct'),
           st = row.querySelector('.s-today'), sm = row.querySelector('.s-meta');
     if(sp) sp.textContent = fmt(price*h.shares);
-    if(pc){ pc.textContent = (pnlPct>=0?'\u25b2 +':'\u25bc ') + pnlPct.toFixed(2) + '% total'; pc.className = 's-pct ' + (pnlPct>=0?'up':'down'); }
-    if(st && q.dp != null){ st.textContent = (q.dp>=0?'\u25b2 +':'\u25bc ') + q.dp.toFixed(2) + '% today'; st.className = 's-today ' + (q.dp>=0?'up':'down'); }
-    if(sm) sm.textContent = h.shares + ' shares \u00b7 $' + price.toFixed(2) + '/share';
+    if(pc){ pc.textContent = (pnlPct>=0?'▲ +':'▼ ') + pnlPct.toFixed(2) + '% total'; pc.className = 's-pct ' + (pnlPct>=0?'up':'down'); }
+    if(st && q.dp != null){ st.textContent = (q.dp>=0?'▲ +':'▼ ') + q.dp.toFixed(2) + '% today'; st.className = 's-today ' + (q.dp>=0?'up':'down'); }
+    if(sm) sm.textContent = h.shares + ' shares · $' + price.toFixed(2) + '/share';
   });
   if(!has) return;
   const pnl = tv - ti, rp = ti > 0 ? pnl/ti*100 : 0;
   const tvEl = document.getElementById('totalValue'); if(tvEl) tvEl.textContent = fmt(tv);
   const db = document.getElementById('dailyBadge');
-  if(db){ db.textContent = (td>=0?'\u25b2 +':'\u25bc -') + fmt(Math.abs(td)) + ' today'; db.className = 'daily-badge ' + (td>=0?'daily-up':'daily-down'); }
+  if(db){ db.textContent = (td>=0?'▲ +':'▼ -') + fmt(Math.abs(td)) + ' today'; db.className = 'daily-badge ' + (td>=0?'daily-up':'daily-down'); }
   const pi = document.getElementById('pInvested'); if(pi) pi.textContent = fmt(ti);
   const pcur = document.getElementById('pCurrent'); if(pcur) pcur.textContent = fmt(tv);
   const pp = document.getElementById('pPnl'); if(pp){ pp.textContent = (pnl>=0?'+':'-') + fmt(Math.abs(pnl)); pp.className = 'p-val ' + (pnl>=0?'up':'down'); }
@@ -3051,7 +3128,7 @@ function applyLivePrices(){
 function applyTheme(t){
   document.body.classList.toggle('light', t === 'light');
   const b = document.getElementById('themeBtn');
-  if(b) b.textContent = t === 'light' ? '\u2600\ufe0f' : '\ud83c\udf19';
+  if(b) b.textContent = t === 'light' ? '☀️' : '🌙';
   localStorage.setItem('fp_theme', t);
 }
 function toggleTheme(){ applyTheme(document.body.classList.contains('light') ? 'dark' : 'light'); }
@@ -3064,7 +3141,7 @@ function toggleWatch(t, btn){
   if(i > -1) w.splice(i, 1); else w.push(t);
   localStorage.setItem('fp_watch', JSON.stringify(w));
   if(i > -1) wsUnwatch(t);
-  if(btn) btn.textContent = i > -1 ? '\u2606' : '\u2605';
+  if(btn) btn.textContent = i > -1 ? '☆' : '★';
   renderWatchlist();
 }
 async function renderWatchlist(){
@@ -3083,13 +3160,13 @@ async function renderWatchlist(){
       '<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (COMPANIES[t] || '') + '</div></div>' +
       (q ? '<div style="text-align:right"><div style="font-size:13px;font-weight:700;font-family:var(--font-display)">' + fmt(q.c) + '</div>' +
         '<div style="font-size:11px" class="' + (up?'up':'down') + '">' + (up?'+':'') + q.dp.toFixed(2) + '%</div></div>' : '') +
-      '<button class="watch-star" aria-label="Remove ' + t + ' from watchlist" onclick="event.stopPropagation();toggleWatch(\'' + t + '\')">\u2605</button></div>';
+      '<button class="watch-star" aria-label="Remove ' + t + ' from watchlist" onclick="event.stopPropagation();toggleWatch(\'' + t + '\')">★</button></div>';
   }).join('');
   w.forEach(wsWatch);
 }
 
 // ══ SECTOR ANALYTICS ══
-const SECTORS = {AAPL:'Technology',MSFT:'Technology',GOOGL:'Communication',AMZN:'Consumer Cyclical',NVDA:'Technology',META:'Communication',TSLA:'Consumer Cyclical','BRK.B':'Financials',JPM:'Financials',V:'Financials',JNJ:'Healthcare',UNH:'Healthcare',XOM:'Energy',KO:'Consumer Staples',DAL:'Industrials',OXY:'Energy',UBER:'Technology',BN:'Financials',AXP:'Financials',SHOP:'Technology'};
+const SECTORS = {AAPL:'Technology',MSFT:'Technology',GOOGL:'Communication',AMZN:'Consumer Cyclical',NVDA:'Technology',META:'Communication',TSLA:'Consumer Cyclical','BRK.B':'Financials',JPM:'Financials',V:'Financials',JNJ:'Healthcare',UNH:'Healthcare',XOM:'Energy',KO:'Consumer Staples',DAL:'Industrials',OXY:'Energy',UBER:'Technology',BN:'Financials',AXP:'Financials',SHOP:'Technology',BTC:'Crypto',ETH:'Crypto',SOL:'Crypto',DOGE:'Crypto'};
 const ALLOC_COLORS = ['#22c55e','#f5b60b','#60a5fa','#e879f9','#4ade80','#fb7185','#86efac','#facc15'];
 let allocChartObj = null;
 async function renderAnalytics(quotes){
@@ -3120,8 +3197,9 @@ async function renderAnalytics(quotes){
   }).join('');
   const rows = quotes.map(function(x){ return {t: x.h.ticker, v: (x.q ? x.q.c : x.h.buyPrice) * x.h.shares}; }).sort(function(a,b){ return b.v-a.v; }).slice(0,6);
   const max = rows.length ? rows[0].v : 1;
+  renderDividends(quotes, tv);
   document.getElementById('holdList').innerHTML = rows.map(function(r){
-    return '<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">' + r.t + '</span><span style="color:var(--muted)">' + fmt(r.v) + ' \u00b7 ' + (r.v/tv*100).toFixed(1) + '%</span></div><div class="hold-bar"><div class="hold-fill" style="width:' + (r.v/max*100).toFixed(1) + '%"></div></div></div>';
+    return '<div style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:600">' + r.t + '</span><span style="color:var(--muted)">' + fmt(r.v) + ' · ' + (r.v/tv*100).toFixed(1) + '%</span></div><div class="hold-bar"><div class="hold-fill" style="width:' + (r.v/max*100).toFixed(1) + '%"></div></div></div>';
   }).join('');
 }
 
@@ -3188,7 +3266,7 @@ async function loadDemoPortfolio(){
 // ══ SHARE LESSON ══
 function shareLesson(i){
   const l = LESSONS[i];
-  const text = 'I just read "' + l.name + '" on FinPath \u2014 the financial playbook schools skipped.';
+  const text = 'I just read "' + l.name + '" on FinPath — the financial playbook schools skipped.';
   const url = 'https://finpathdev.github.io/FinPath/';
   if(navigator.share){ navigator.share({title:'FinPath', text:text, url:url}).catch(function(){}); }
   else window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank', 'noopener');
@@ -3198,7 +3276,7 @@ function shareLesson(i){
 (function(){
   const bar = document.createElement('div');
   bar.className = 'offline-bar';
-  bar.textContent = 'You are offline \u2014 live prices are paused and will resume automatically.';
+  bar.textContent = 'You are offline — live prices are paused and will resume automatically.';
   document.body.appendChild(bar);
   function upd(){ bar.style.display = navigator.onLine ? 'none' : 'block'; }
   window.addEventListener('online', upd);
@@ -3246,9 +3324,9 @@ document.addEventListener('keydown', function(e){
 function initOnboarding(){
   if(localStorage.getItem('fp_onboarded')) return;
   const steps = [
-    {icon:'\ud83d\udc4b', title:'Welcome to FinPath', body:'The financial playbook schools skipped \u2014 34 lessons, live billionaire trades, and a real-time portfolio tracker.'},
-    {icon:'\ud83d\udcc8', title:'Track your first stock', body:'Open the Portfolio tab, hit \u201c+ Add stock\u201d, and watch live prices stream in. Or start with a one-tap demo portfolio.'},
-    {icon:'\ud83c\udfc6', title:'Learn from the best', body:'See exactly what Buffett, Ackman and Tepper bought last quarter \u2014 then read the lessons behind their moves.'}
+    {icon:'👋', title:'Welcome to FinPath', body:'The financial playbook schools skipped — 34 lessons, live billionaire trades, and a real-time portfolio tracker.'},
+    {icon:'📈', title:'Track your first stock', body:'Open the Portfolio tab, hit “+ Add stock”, and watch live prices stream in. Or start with a one-tap demo portfolio.'},
+    {icon:'🏆', title:'Learn from the best', body:'See exactly what Buffett, Ackman and Tepper bought last quarter — then read the lessons behind their moves.'}
   ];
   let step = 0;
   const ov = document.createElement('div');
@@ -3281,8 +3359,810 @@ function initOnboarding(){
 }
 setTimeout(initOnboarding, 700);
 
+
+// ══════════ EDUCATION LAYER: glossary, quizzes, calculators, audio ══════════
+
+// ── GLOSSARY (tap a dotted term for a plain-English definition) ──
+const GLOSSARY = {
+  'P/E ratio':'Price-to-Earnings ratio. How much you pay for $1 of a company’s yearly profit. S&P 500 average is ~20. Higher = more expensive.',
+  'market cap':'Market capitalization — the total value of all a company’s shares combined. Apple at ~$3T is a "mega cap".',
+  'dividend':'A slice of company profits paid to you in cash, usually every 3 months, just for holding the stock.',
+  'index fund':'A fund that automatically owns every stock in an index (like all 500 S&P companies). Instant diversification, tiny fees.',
+  'ETF':'Exchange-Traded Fund — a basket of many stocks you buy with one purchase, traded like a normal stock.',
+  'compound interest':'Your returns earning their own returns. The longer it runs, the more explosive the growth.',
+  'yield curve':'The gap between short-term and long-term interest rates. When it inverts (short > long), recessions have historically followed.',
+  'VIX':'The market’s "fear index". Above 30 = fear (often a buying opportunity historically). Below 15 = calm.',
+  'diversification':'Spreading money across many stocks/sectors so one bad company can’t wreck you.',
+  'volatility':'How wildly a price swings. High volatility = bigger gains AND bigger drops.',
+  'capital gains':'Profit from selling something for more than you paid. Held over a year = taxed at lower rates.',
+  'liquidity':'How fast you can turn an asset into cash without losing value. Stocks: seconds. A house: months.',
+  'bear market':'A drop of 20%+ from recent highs. Painful, normal, and historically always temporary.',
+  'bull market':'A sustained period of rising prices — markets spend most of their time here.'
+};
+function glossaryWrap(text){
+  let out = text;
+  Object.keys(GLOSSARY).forEach(function(term){
+    const rx = new RegExp('(^|[^\\w])(' + term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')(?![\\w])','i');
+    let done = false;
+    out = out.replace(rx, function(m, pre, hit){
+      if(done) return m; done = true;
+      return pre + '<span class="term" role="button" tabindex="0" onclick="showTerm(event,\'' + term.replace(/'/g,"\\'") + '\')">' + hit + '</span>';
+    });
+  });
+  return out;
+}
+function showTerm(ev, term){
+  ev.stopPropagation();
+  hideTerm();
+  const pop = document.createElement('div');
+  pop.className = 'term-pop'; pop.id = 'termPop';
+  pop.innerHTML = '<b style="color:var(--mint)">' + term + '</b><br>' + GLOSSARY[term];
+  document.body.appendChild(pop);
+  const x = Math.min(ev.clientX, window.innerWidth - 300);
+  const y = Math.min(ev.clientY + 14, window.innerHeight - 140);
+  pop.style.left = Math.max(10,x) + 'px'; pop.style.top = y + 'px';
+  setTimeout(function(){ document.addEventListener('click', hideTerm, {once:true}); }, 10);
+}
+function hideTerm(){ const p = document.getElementById('termPop'); if(p) p.remove(); }
+
+// ── QUIZZES (keyed by lesson name; 3 questions each) ──
+const QUIZZES = {
+"What Schools Never Teach You About Money":[
+ {q:"What separates wealth from income?",o:["Earning a six-figure salary","What you keep and build with what you keep","Having a prestigious job","Spending on luxury goods"],a:1,w:"A doctor earning $400k who spends $390k is one bad month from broke. Wealth = assets you keep and grow."},
+ {q:"Roughly how many income streams does the average millionaire have?",o:["1","3","7","12"],a:2,w:"Seven — salary, business, dividends, rent, interest, capital gains and royalties."},
+ {q:"$200/month invested from 18 vs 30 — what’s the difference by 65?",o:["About the same","~$100k more","~$700k more","Double"],a:2,w:"Starting at 18 ≈ $1,068,000 vs $349,000 starting at 30. Time does the heavy lifting."}],
+"How to Actually Budget: The 50/30/20 Rule":[
+ {q:"In 50/30/20, the 20% goes to…",o:["Wants","Rent","Your future (savings & investing)","Subscriptions"],a:2,w:"20% to savings, investing and extra debt payments — it leaves your account FIRST."},
+ {q:"Your needs eat 70% of income. The real problem is…",o:["Weak willpower","A structural problem: costs too high for income","Not budgeting hard enough","Too many wants"],a:1,w:"Willpower can’t fix structure — you need to raise income or cut fixed costs."},
+ {q:"When should the future 20% leave your account?",o:["End of month if anything is left","Before you spend anything else","Only in months you feel rich","Once a year"],a:1,w:"Pay yourself first. What’s left after saving is what you get to spend."}],
+"How Credit Scores Work":[
+ {q:"The single biggest factor in your credit score is…",o:["Payment history (35%)","Credit mix","New inquiries","Your salary"],a:0,w:"On-time payments are 35% of the score. One missed payment can cost 50–100 points."},
+ {q:"Ideal credit utilisation is…",o:["Below 30% (below 10% is best)","50%","90% — use what you have","0% — never use the card"],a:0,w:"Keep balances under 30% of your limit; under 10% is ideal."},
+ {q:"Your oldest credit card should be…",o:["Closed once unused","Kept open — age helps your score","Maxed out","Downgraded yearly"],a:1,w:"Length of history is 15% of your score — never close your oldest card."}],
+"The Power of Compound Interest":[
+ {q:"The Rule of 72 tells you…",o:["Max safe withdrawal","Years to double your money at a given return","Your tax rate","Ideal stock count"],a:1,w:"72 ÷ annual return = years to double. At 8%, money doubles every ~9 years."},
+ {q:"Person A invests 18–28 then stops. Person B invests 30–65. Who wins?",o:["B — more years of deposits","A — the early start compounds harder","They tie","Neither beats inflation"],a:1,w:"A’s 10 early years out-compound B’s 35 later years. Start NOW."},
+ {q:"The best day to start investing was yesterday. The second best is…",o:["After the next crash","When you earn six figures","Today","At 30"],a:2,w:"Waiting for perfect timing costs more than any crash."}],
+"Emergency Funds: The Foundation of Everything":[
+ {q:"A standard emergency fund covers…",o:["1 week of costs","3–6 months of living expenses","5 years","One rent payment"],a:1,w:"3–6 months of essentials; 6–12 if your income is volatile."},
+ {q:"Where should it live?",o:["Stocks for growth","Checking account","High-yield savings account (HYSA)","Crypto"],a:2,w:"HYSA: ~4–5% interest, FDIC-insured, accessible in a day — and you won’t accidentally spend it."},
+ {q:"Why build it BEFORE investing?",o:["Banks require it","So a surprise bill never forces you to sell investments at the worst time","Tax reasons","It earns more than stocks"],a:1,w:"No buffer = panic-selling during dips. The fund lets your investments ride out storms."}],
+"How the Stock Market Actually Works":[
+ {q:"Buying a share of Apple means…",o:["Lending Apple money","Owning a real slice of the company and its profits","Buying an iPhone voucher","Betting against Apple"],a:1,w:"A share is genuine part-ownership of the business."},
+ {q:"Over the past century the S&P 500 averaged roughly…",o:["3%/yr","10%/yr","25%/yr","0%"],a:1,w:"~10% annually — and it has never had a negative 20-year stretch."},
+ {q:"Dollar cost averaging means…",o:["Buying only at all-time lows","Investing a fixed amount on a schedule regardless of price","Selling when scared","Averaging analyst targets"],a:1,w:"Fixed amount, fixed schedule — you automatically buy more shares when prices dip."}],
+"Good Debt vs Bad Debt":[
+ {q:"Which is GOOD debt?",o:["22% credit card balance","A rental property mortgage the rent covers","Financing a jet ski","Buy-now-pay-later shoes"],a:1,w:"Good debt buys assets that pay for themselves and grow."},
+ {q:"The test for any debt:",o:["Is the monthly payment small?","Will the borrowed money generate more value than its interest cost?","Is everyone else doing it?","Is the bank famous?"],a:1,w:"If borrowed money earns more than it costs, it can build wealth. If not, it drains you."},
+ {q:"Debt above ~7% interest should be…",o:["Ignored","Paid off before serious investing","Refinanced into crypto","Kept for credit score"],a:1,w:"Paying off 20% debt is a guaranteed 20% return — better than the market’s average."}],
+"What Billionaires Actually Invest In":[
+ {q:"How do we know what Buffett owns?",o:["Leaks","Quarterly SEC 13F filings — public for every big fund","His podcast","We don’t"],a:1,w:"Funds over $100M must disclose holdings quarterly in 13F filings. FinPath Gold tracks them."},
+ {q:"Buffett’s favourite holding period is…",o:["One quarter","Until earnings","Forever","30 days"],a:2,w:"He buys businesses he’d happily own for decades."},
+ {q:"What do Buffett, Ackman and Tepper share?",o:["Day-trading","Deep understanding + years-long holds + buying dips","Meme stocks","Never reading filings"],a:1,w:"Concentration in what they understand, patience, and buying when others panic."}],
+"Reading Market Signals":[
+ {q:"An inverted yield curve has historically preceded…",o:["Bull runs","Every US recession for ~50 years","Rate cuts only","Nothing"],a:1,w:"Short rates above long rates = the market’s most famous recession warning."},
+ {q:"A VIX above 30 signals…",o:["Complacency","Fear — historically often a buying opportunity","Guaranteed crash","Low volume"],a:1,w:"Peak fear has historically been closer to bottoms than tops."},
+ {q:"Multiple insiders buying their own stock usually means…",o:["Nothing","They know the business best and like the price","A scandal","Dilution"],a:1,w:"Executives buying with their own money is one of the strongest bullish signals."}],
+"Dollar Cost Averaging":[
+ {q:"Missing the 10 best market days over 20 years cuts returns by about…",o:["5%","Half","Nothing","10%"],a:1,w:"And those best days cluster near the scariest ones — which is why timing fails."},
+ {q:"DCA automatically makes you…",o:["Buy more shares when prices are low","Sell at bottoms","Trade daily","Pay more fees"],a:0,w:"A fixed dollar amount buys MORE shares when prices drop — the opposite of panic."},
+ {q:"The best DCA setup is…",o:["Manual, when you remember","Automatic on payday, then don’t touch it","Only in December","After CNBC says so"],a:1,w:"Automation removes emotion — the #1 destroyer of returns."}]
+};
+function getQuizScore(){ try{ return JSON.parse(localStorage.getItem('fp_quiz')||'{}'); }catch(e){ return {}; } }
+function financeIQ(){
+  const s = getQuizScore(); let c = 0, t = 0;
+  Object.values(s).forEach(function(v){ c += v.c; t += v.t; });
+  return t ? Math.round(c/t*100) : null;
+}
+let _quizState = null;
+function startQuiz(name){
+  _quizState = {name: name, idx: 0, correct: 0};
+  renderQuizQ();
+}
+function renderQuizQ(){
+  const box = document.getElementById('quizBox'); if(!box || !_quizState) return;
+  const qz = QUIZZES[_quizState.name];
+  if(_quizState.idx >= qz.length){
+    const s = getQuizScore();
+    s[_quizState.name] = {c: _quizState.correct, t: qz.length};
+    localStorage.setItem('fp_quiz', JSON.stringify(s));
+    track('quiz_done', {lesson: _quizState.name, score: _quizState.correct});
+    unlockAchv('quiz_whiz');
+    box.innerHTML = '<div style="text-align:center"><div style="font-size:38px;margin-bottom:10px">' + (_quizState.correct === qz.length ? '🏆' : '📚') + '</div>' +
+      '<div style="font-size:19px;font-weight:700;font-family:var(--font-display)">You scored ' + _quizState.correct + '/' + qz.length + '</div>' +
+      '<div style="font-size:13px;color:var(--muted);margin-top:6px">Your overall Finance IQ: <b style="color:var(--mint)">' + financeIQ() + '%</b></div>' +
+      '<button class="btn-secondary" style="margin-top:16px;padding:11px 22px;font-size:13px" onclick="startQuiz(_quizState.name)">Retake quiz</button></div>';
+    if(_quizState.correct === qz.length) confettiBurst();
+    return;
+  }
+  const item = qz[_quizState.idx];
+  box.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:600">KNOWLEDGE CHECK · ' + (_quizState.idx+1) + ' of ' + qz.length + '</div>' +
+    '<div style="font-size:16px;font-weight:700;margin-bottom:16px">' + item.q + '</div>' +
+    item.o.map(function(opt, oi){ return '<button class="quiz-opt" onclick="answerQuiz(' + oi + ')">' + opt + '</button>'; }).join('') +
+    '<div id="quizWhy" style="display:none;margin-top:12px;font-size:13px;color:var(--muted);line-height:1.7;padding:12px 16px;background:rgba(134,239,172,.05);border-radius:12px"></div>';
+}
+function answerQuiz(oi){
+  const item = QUIZZES[_quizState.name][_quizState.idx];
+  const opts = document.querySelectorAll('#quizBox .quiz-opt');
+  opts.forEach(function(b, i){
+    b.disabled = true;
+    if(i === item.a) b.classList.add('right');
+    else if(i === oi) b.classList.add('wrong');
+  });
+  if(oi === item.a) _quizState.correct++;
+  const why = document.getElementById('quizWhy');
+  why.style.display = 'block';
+  why.innerHTML = (oi === item.a ? '<b style="color:#4ade80">Correct.</b> ' : '<b style="color:var(--red)">Not quite.</b> ') + item.w +
+    '<br><button class="btn-secondary" style="margin-top:12px;padding:9px 20px;font-size:13px" onclick="_quizState.idx++;renderQuizQ()">' + (_quizState.idx === QUIZZES[_quizState.name].length-1 ? 'See score' : 'Next question') + '</button>';
+}
+
+// ── INTERACTIVE CALCULATORS (auto-embedded in matching lessons) ──
+function calculatorFor(name){
+  if(name.indexOf('Compound Interest') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">🧮 Compound interest calculator</div><label>Monthly investment ($)</label><input id="ciAmt" type="number" value="200" oninput="calcCI()"><label>Annual return (%)</label><input id="ciRate" type="number" value="8" oninput="calcCI()"><label>Years</label><input id="ciYears" type="number" value="30" oninput="calcCI()"><div class="calc-out" id="ciOut"></div></div>';
+  if(name.indexOf('Renting vs Buying') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">🏡 Rent vs buy quick check</div><label>Home price ($)</label><input id="rbPrice" type="number" value="400000" oninput="calcRB()"><label>Equivalent monthly rent ($)</label><input id="rbRent" type="number" value="2200" oninput="calcRB()"><label>Mortgage rate (%)</label><input id="rbRate" type="number" value="6.5" step="0.1" oninput="calcRB()"><div class="calc-out" id="rbOut"></div></div>';
+  if(name.indexOf('Understanding Your Paycheck') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">💼 401k match calculator</div><label>Annual salary ($)</label><input id="mSal" type="number" value="60000" oninput="calcMatch()"><label>Employer match (% of salary)</label><input id="mPct" type="number" value="4" step="0.5" oninput="calcMatch()"><label>Years until retirement</label><input id="mYears" type="number" value="35" oninput="calcMatch()"><div class="calc-out" id="mOut"></div></div>';
+  if(name === 'How Credit Scores Work') return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">📊 Credit score simulator <span style="font-size:11px;color:var(--muted);font-weight:400">(educational estimate)</span></div><label>On-time payment streak (months)</label><input id="csMonths" type="number" value="12" oninput="calcCS()"><label>Credit utilisation (%)</label><input id="csUtil" type="number" value="25" oninput="calcCS()"><label>Age of oldest account (years)</label><input id="csAge" type="number" value="2" step="0.5" oninput="calcCS()"><div class="calc-out" id="csOut"></div></div>';
+  if(name.indexOf('Understanding Dividends') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">💵 Dividend reinvestment (DRIP) calculator</div><label>Starting amount ($)</label><input id="drAmt" type="number" value="10000" oninput="calcDR()"><label>Dividend yield (%)</label><input id="drYield" type="number" value="3" step="0.1" oninput="calcDR()"><label>Price growth (%/yr)</label><input id="drGrow" type="number" value="7" step="0.1" oninput="calcDR()"><label>Years</label><input id="drYears" type="number" value="30" oninput="calcDR()"><div class="calc-out" id="drOut"></div></div>';
+  return '';
+}
+function _fv(monthly, annualPct, years){
+  const r = annualPct/100/12, n = years*12;
+  return r === 0 ? monthly*n : monthly * ((Math.pow(1+r, n) - 1) / r);
+}
+function calcCI(){
+  const a = +document.getElementById('ciAmt').value||0, r = +document.getElementById('ciRate').value||0, y = +document.getElementById('ciYears').value||0;
+  const fv = _fv(a, r, y), inv = a*12*y;
+  document.getElementById('ciOut').innerHTML = 'Total invested: <b>' + fmt(inv) + '</b><br>Final value: <b style="color:var(--mint)">' + fmt(fv) + '</b><br>Growth from compounding alone: <b>' + fmt(fv-inv) + '</b>';
+}
+function calcRB(){
+  const p = +document.getElementById('rbPrice').value||0, rent = +document.getElementById('rbRent').value||0, rate = +document.getElementById('rbRate').value||0;
+  const loan = p*0.8, r = rate/100/12, n = 360;
+  const mort = r ? loan*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1) : loan/n;
+  const own = mort + p*0.012/12 + p*0.0035/12 + p*0.01/12;
+  const diff = own - rent;
+  document.getElementById('rbOut').innerHTML = 'Est. monthly cost to own (mortgage+tax+insurance+maintenance): <b>' + fmt(own) + '</b><br>Renting: <b>' + fmt(rent) + '</b><br>' + (diff > 0 ? 'Owning costs <b>' + fmt(diff) + '</b>/mo more — but builds equity. Break-even is typically 4–5+ years.' : 'Owning is <b>' + fmt(-diff) + '</b>/mo cheaper here — strong buy signal if you’ll stay 5+ years.');
+}
+function calcMatch(){
+  const s = +document.getElementById('mSal').value||0, p = +document.getElementById('mPct').value||0, y = +document.getElementById('mYears').value||0;
+  const yearly = s*p/100, fv = _fv(yearly/12, 8, y);
+  document.getElementById('mOut').innerHTML = 'Free money per year: <b>' + fmt(yearly) + '</b><br>Skipping the match for ' + y + ' years costs you roughly <b style="color:var(--red)">' + fmt(fv) + '</b> at retirement (8%/yr growth).';
+}
+function calcCS(){
+  const m = +document.getElementById('csMonths').value||0, u = +document.getElementById('csUtil').value||0, a = +document.getElementById('csAge').value||0;
+  let score = 480 + Math.min(m,48)*3.2 + Math.max(0, 30-u)*2.6 - Math.max(0, u-30)*1.8 + Math.min(a,10)*8;
+  score = Math.max(300, Math.min(850, Math.round(score)));
+  const band = score >= 740 ? 'Excellent' : score >= 670 ? 'Good' : score >= 580 ? 'Fair' : 'Building';
+  document.getElementById('csOut').innerHTML = 'Estimated score: <b style="color:var(--mint);font-size:22px">' + score + '</b> · ' + band + '<br><span style="font-size:12px">Biggest levers: never miss a payment, keep utilisation under 30% (under 10% is ideal), let accounts age.</span>';
+}
+function calcDR(){
+  const amt = +document.getElementById('drAmt').value||0, y = +document.getElementById('drYield').value||0, g = +document.getElementById('drGrow').value||0, yrs = +document.getElementById('drYears').value||0;
+  const withD = amt*Math.pow(1+(y+g)/100, yrs), noD = amt*Math.pow(1+g/100, yrs);
+  document.getElementById('drOut').innerHTML = 'With dividends reinvested: <b style="color:var(--mint)">' + fmt(withD) + '</b><br>Without reinvesting: <b>' + fmt(noD) + '</b><br>Reinvestment added: <b>' + fmt(withD-noD) + '</b>';
+}
+
+// ── AUDIO MODE (Web Speech API) ──
+let _speech = {utter:null, playing:false, rate:1, lesson:null};
+function toggleAudio(i){
+  const btn = document.getElementById('audioBtn');
+  if(_speech.playing){ speechSynthesis.cancel(); _speech.playing = false; if(btn) btn.textContent = '🔊 Listen'; return; }
+  if(!('speechSynthesis' in window)){ toast('🔇', 'Audio not supported in this browser.'); return; }
+  const text = LESSONS[i].name + '. ' + LESSONS[i].content;
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = _speech.rate; u.pitch = 1;
+  u.onend = function(){ _speech.playing = false; if(btn) btn.textContent = '🔊 Listen'; };
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+  _speech.utter = u; _speech.playing = true; _speech.lesson = i;
+  if(btn) btn.textContent = '⏸ Stop';
+}
+function cycleSpeed(){
+  _speech.rate = _speech.rate === 1 ? 1.5 : _speech.rate === 1.5 ? 2 : 1;
+  const b = document.getElementById('speedBtn'); if(b) b.textContent = _speech.rate + '×';
+  if(_speech.playing && _speech.lesson != null){ speechSynthesis.cancel(); _speech.playing = false; toggleAudio(_speech.lesson); }
+}
+
+// ── LESSON BODY BUILDER (content + glossary + calculator + quiz + actions) ──
+function buildLessonBody(l, i){
+  const done = getLessonProgress()[i];
+  const hasQuiz = !!QUIZZES[l.name];
+  let out = '<div class="lesson-content">' + glossaryWrap(l.content) + '</div>';
+  out += calculatorFor(l.name);
+  if(hasQuiz) out += '<div class="quiz-box" id="quizBox"><div style="font-size:16px;font-weight:700;font-family:var(--font-display);margin-bottom:6px">Test yourself</div><div style="font-size:13px;color:var(--muted);margin-bottom:14px">3 quick questions — instant feedback, counts toward your Finance IQ.</div><button class="ai-run-btn" style="margin:0" onclick="startQuiz(\'' + l.name.replace(/'/g,"\\'") + '\')">Start quiz</button></div>';
+  out += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:34px">' +
+    (done ? '<button class="btn-secondary" disabled style="opacity:.7;cursor:default">✓ Completed</button>'
+          : '<button class="btn-primary" onclick="markLessonComplete(' + i + ')">Mark lesson complete</button>') +
+    '<button class="btn-secondary" id="audioBtn" onclick="toggleAudio(' + i + ')">🔊 Listen</button>' +
+    '<button class="btn-secondary" id="speedBtn" onclick="cycleSpeed()" title="Playback speed">' + _speech.rate + '×</button>' +
+    '<button class="btn-secondary" onclick="shareLesson(' + i + ')">Share</button></div>';
+  return out;
+}
+
+
+// ══════════ MARKETS + PAPER + GOALS + ALERTS + ACHIEVEMENTS ══════════
+
+// ── TOASTS + CONFETTI + NOTIFICATIONS ──
+function toast(icon, msg){
+  let stack = document.querySelector('.toast-stack');
+  if(!stack){ stack = document.createElement('div'); stack.className = 'toast-stack'; document.body.appendChild(stack); }
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = '<span style="font-size:19px">' + icon + '</span><span>' + msg + '</span>';
+  stack.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 4200);
+}
+function confettiBurst(){
+  const c = document.createElement('canvas'); c.id = 'confettiCanvas';
+  c.width = innerWidth; c.height = innerHeight; document.body.appendChild(c);
+  const x = c.getContext('2d');
+  const P = Array.from({length:90}, function(){ return {x: innerWidth/2, y: innerHeight*0.4, vx:(Math.random()-.5)*14, vy:-Math.random()*11-4, s:4+Math.random()*5, col:['#22c55e','#f5b60b','#60a5fa','#e879f9','#86efac'][Math.floor(Math.random()*5)], r:Math.random()*6}; });
+  let f = 0;
+  (function anim(){
+    x.clearRect(0,0,c.width,c.height); f++;
+    P.forEach(function(p){ p.vy += 0.32; p.x += p.vx; p.y += p.vy; p.r += 0.2; x.save(); x.translate(p.x,p.y); x.rotate(p.r); x.fillStyle = p.col; x.fillRect(-p.s/2,-p.s/2,p.s,p.s); x.restore(); });
+    if(f < 110) requestAnimationFrame(anim); else c.remove();
+  })();
+}
+function notify(title, body){
+  if('Notification' in window && Notification.permission === 'granted'){
+    try{ new Notification(title, {body: body}); }catch(e){}
+  }
+  toast('🔔', '<b>' + title + '</b><br>' + body);
+}
+
+// ── STREAK + ACHIEVEMENTS ──
+const ACHVS = [
+  {id:'first_stock', icon:'🌱', name:'First Steps', desc:'Add your first stock'},
+  {id:'scholar', icon:'📚', name:'Scholar', desc:'Complete 5 lessons'},
+  {id:'quiz_whiz', icon:'🧠', name:'Quiz Whiz', desc:'Finish a knowledge check'},
+  {id:'goal_setter', icon:'🎯', name:'Goal Setter', desc:'Create a savings goal'},
+  {id:'diamond_hands', icon:'💎', name:'Diamond Hands', desc:'Hold a stock for 30 days'},
+  {id:'buffett_shadow', icon:'🏆', name:"Buffett's Shadow", desc:'Own 3 stocks Buffett owns'},
+  {id:'streak_7', icon:'🔥', name:'On Fire', desc:'7-day visit streak'},
+  {id:'paper_trader', icon:'📄', name:'Paper Trader', desc:'Make your first paper trade'},
+  {id:'analyzer', icon:'🔬', name:'Self-Aware', desc:'Run the portfolio analyzer'},
+  {id:'graduate', icon:'🎓', name:'FinPath Graduate', desc:'Complete all 20 free lessons'}
+];
+function getAchv(){ try{ return JSON.parse(localStorage.getItem('fp_achv')||'{}'); }catch(e){ return {}; } }
+function unlockAchv(id){
+  const a = getAchv();
+  if(a[id]) return;
+  a[id] = Date.now();
+  localStorage.setItem('fp_achv', JSON.stringify(a));
+  const def = ACHVS.find(function(x){ return x.id === id; });
+  if(def){ toast(def.icon, '<b>Achievement unlocked:</b> ' + def.name); confettiBurst(); track('achievement', {id:id}); }
+  renderAchievements();
+}
+function renderAchievements(){
+  const grid = document.getElementById('achvGrid'); if(!grid) return;
+  const a = getAchv();
+  grid.innerHTML = ACHVS.map(function(d){
+    const got = !!a[d.id];
+    return '<div class="p-metric" style="' + (got ? 'border-color:var(--line-strong)' : 'opacity:.45') + '"><div style="font-size:22px;margin-bottom:6px">' + d.icon + '</div><div style="font-size:13px;font-weight:700">' + d.name + '</div><div style="font-size:11px;color:var(--muted);margin-top:3px">' + d.desc + '</div></div>';
+  }).join('');
+  const ca = document.getElementById('chipAchv');
+  if(ca) ca.textContent = '🏅 ' + Object.keys(a).length + ' achievement' + (Object.keys(a).length===1?'':'s');
+  const cs = document.getElementById('chipStreak');
+  if(cs) cs.textContent = '🔥 ' + getStreak().count + '-day streak';
+  const chip = document.getElementById('streakChip');
+  const st = getStreak();
+  if(chip) chip.textContent = st.count > 1 ? '🔥 ' + st.count + '-day streak' : '';
+}
+function getStreak(){ try{ return JSON.parse(localStorage.getItem('fp_streak')||'{"last":"","count":0}'); }catch(e){ return {last:'',count:0}; } }
+function initStreak(){
+  const s = getStreak();
+  const today = new Date().toDateString();
+  const yest = new Date(Date.now()-86400000).toDateString();
+  if(s.last === today){ /* already counted */ }
+  else if(s.last === yest) s.count++;
+  else s.count = 1;
+  s.last = today;
+  localStorage.setItem('fp_streak', JSON.stringify(s));
+  if(s.count >= 7) unlockAchv('streak_7');
+}
+function checkHoldAchvs(){
+  try{
+    const added = JSON.parse(localStorage.getItem('fp_added')||'{}');
+    const now = Date.now();
+    if(portfolio.some(function(p){ return added[p.ticker] && now - added[p.ticker] > 30*86400000; })) unlockAchv('diamond_hands');
+    const buffett = MOVES.filter(function(m){ return m.investor === 'Warren Buffett'; }).map(function(m){ return m.ticker; });
+    if(portfolio.filter(function(p){ return buffett.indexOf(p.ticker) > -1; }).length >= 3) unlockAchv('buffett_shadow');
+  }catch(e){}
+}
+
+// ── PRICE ALERTS ──
+function getAlerts(){ try{ return JSON.parse(localStorage.getItem('fp_alerts')||'[]'); }catch(e){ return []; } }
+function saveAlerts(a){ localStorage.setItem('fp_alerts', JSON.stringify(a)); renderAlertsList(); }
+function addAlertFromDetail(){
+  if(!selectedStock) return;
+  const price = parseFloat(document.getElementById('alertPrice').value);
+  if(!price || price <= 0){ toast('⚠️','Enter a valid alert price.'); return; }
+  const dir = document.getElementById('alertDir').value;
+  const a = getAlerts();
+  a.push({t: selectedStock.ticker, dir: dir, price: price, done: false});
+  saveAlerts(a);
+  if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+  wsWatch(selectedStock.ticker);
+  toast('🔔', 'Alert set: ' + selectedStock.ticker + ' ' + (dir === 'below' ? 'drops below' : 'rises above') + ' ' + fmt(price));
+  document.getElementById('alertPrice').value = '';
+}
+function removeAlert(idx){ const a = getAlerts(); a.splice(idx,1); saveAlerts(a); }
+function renderAlertsList(){
+  const sec = document.getElementById('priceAlertsSection'), list = document.getElementById('priceAlertsList');
+  if(!sec || !list) return;
+  const a = getAlerts();
+  if(!a.length){ sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  list.innerHTML = a.map(function(al, i){
+    return '<div class="alert-item ' + (al.done ? '' : 'warn') + '"><div><div class="alert-ticker">' + al.t + ' ' + (al.dir === 'below' ? '▼ drops below' : '▲ rises above') + ' ' + fmt(al.price) + '</div><div class="alert-msg">' + (al.done ? 'Triggered ✓' : 'Watching…') + '</div></div><button class="watch-star" aria-label="Delete alert" onclick="removeAlert(' + i + ')" style="color:var(--red)">✕</button></div>';
+  }).join('');
+}
+function checkAlerts(){
+  const a = getAlerts(); let changed = false;
+  a.forEach(function(al){
+    if(al.done) return;
+    const q = priceCache[al.t]; if(!q) return;
+    if((al.dir === 'below' && q.c <= al.price) || (al.dir === 'above' && q.c >= al.price)){
+      al.done = true; changed = true;
+      notify(al.t + ' hit your target', al.t + ' is now ' + fmt(q.c) + ' (' + (al.dir === 'below' ? 'below' : 'above') + ' your ' + fmt(al.price) + ' alert).');
+    }
+  });
+  if(changed) saveAlerts(a);
+}
+function startAlertLoop(){
+  setInterval(function(){
+    const pending = getAlerts().filter(function(a){ return !a.done; });
+    pending.forEach(function(a){ fetchQ(a.t); });
+    setTimeout(checkAlerts, 2500);
+  }, 90000);
+}
+
+// ── GOALS ──
+function getGoals(){ try{ return JSON.parse(localStorage.getItem('fp_goals')||'[]'); }catch(e){ return []; } }
+function saveGoals(g){ localStorage.setItem('fp_goals', JSON.stringify(g)); renderGoals(); }
+function openGoalForm(){ const f = document.getElementById('goalForm'); f.style.display = f.style.display === 'none' ? 'block' : 'none'; }
+function saveGoal(){
+  const name = document.getElementById('gName').value.trim();
+  const target = parseFloat(document.getElementById('gTarget').value);
+  const date = document.getElementById('gDate').value;
+  if(!name || !target || !date){ toast('⚠️','Fill in all three fields.'); return; }
+  const g = getGoals();
+  g.push({name:name, target:target, date:date, saved:0, hit:{}});
+  saveGoals(g);
+  document.getElementById('goalForm').style.display = 'none';
+  document.getElementById('gName').value = ''; document.getElementById('gTarget').value = '';
+  unlockAchv('goal_setter'); track('goal_created');
+}
+function addToGoal(i){
+  const amt = parseFloat(prompt('How much are you adding to this goal? ($)')||'0');
+  if(!amt || amt <= 0) return;
+  const g = getGoals();
+  g[i].saved += amt;
+  var pct = g[i].saved / g[i].target * 100;
+  [25,50,75,100].forEach(function(m){
+    if(pct >= m && !g[i].hit[m]){ g[i].hit[m] = 1; confettiBurst(); toast('🎉', '<b>' + g[i].name + '</b>: ' + m + '% milestone reached!'); }
+  });
+  saveGoals(g);
+}
+function deleteGoal(i){ const g = getGoals(); g.splice(i,1); saveGoals(g); }
+function renderGoals(){
+  const list = document.getElementById('goalsList'); if(!list) return;
+  const g = getGoals();
+  list.innerHTML = g.length ? g.map(function(goal, i){
+    const pct = Math.min(100, goal.saved/goal.target*100);
+    const daysLeft = Math.max(0, Math.ceil((new Date(goal.date) - Date.now())/86400000));
+    const weeksLeft = Math.max(1, daysLeft/7);
+    const weekly = Math.max(0, (goal.target - goal.saved)/weeksLeft);
+    const elapsedPct = 100 - (daysLeft / Math.max(1,(new Date(goal.date) - new Date(goal.date).setFullYear(new Date(goal.date).getFullYear()-1))/86400000))*100;
+    const pace = pct >= Math.min(99, elapsedPct) ? '' : '';
+    return '<div class="goal-card"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div style="font-weight:700;font-size:15px">' + goal.name + '</div><button class="watch-star" style="color:var(--red)" aria-label="Delete goal" onclick="deleteGoal(' + i + ')">✕</button></div>' +
+      '<div style="font-size:13px;color:var(--muted)">' + fmt(goal.saved) + ' of ' + fmt(goal.target) + ' · ' + daysLeft + ' days left</div>' +
+      '<div class="goal-bar"><div class="goal-fill" style="width:' + pct.toFixed(1) + '%"></div></div>' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div style="font-size:12px;color:var(--muted)">Need <b style="color:var(--mint)">' + fmt(weekly) + '</b>/week to hit it</div><button class="btn-secondary" style="padding:8px 16px;font-size:12px" onclick="addToGoal(' + i + ')">+ Add money</button></div></div>';
+  }).join('') : '<div class="empty" style="padding:20px">No goals yet — turn the SMART-goals lesson into action.</div>';
+}
+
+// ── PAPER TRADING ──
+let PAPER_MODE = false;
+function getPaper(){
+  try{
+    const p = JSON.parse(localStorage.getItem('fp_paper'));
+    if(p && typeof p.cash === 'number') return p;
+  }catch(e){}
+  return {cash:100000, pos:[], start:Date.now(), spyStart:null};
+}
+function savePaper(p){ localStorage.setItem('fp_paper', JSON.stringify(p)); }
+function setMode(m){
+  PAPER_MODE = m === 'paper';
+  document.getElementById('tabLive').classList.toggle('active', !PAPER_MODE);
+  document.getElementById('tabPaper').classList.toggle('active', PAPER_MODE);
+  document.getElementById('liveWrap').style.display = PAPER_MODE ? 'none' : 'block';
+  document.getElementById('paperWrap').style.display = PAPER_MODE ? 'block' : 'none';
+  if(PAPER_MODE) renderPaper();
+}
+function paperOpenBuy(){ openSearch(); }
+async function renderPaper(){
+  const p = getPaper();
+  if(p.spyStart === null){ const q = await fetchQ('SPY'); if(q){ p.spyStart = q.c; savePaper(p); } }
+  const grid = document.getElementById('paperGrid');
+  if(!p.pos.length){
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">No paper positions yet. Hit “+ Buy stock” to start practicing.</div>';
+  } else {
+    grid.innerHTML = p.pos.map(function(){ return '<div class="skel-row"></div>'; }).join('');
+    const qs = await Promise.all(p.pos.map(async function(x){ return {x:x, q: await fetchQ(x.t)}; }));
+    grid.innerHTML = qs.map(function(r, i){
+      const price = r.q ? r.q.c : r.x.price;
+      const val = price * r.x.sh, pnl = (price - r.x.price)*r.x.sh, pct = (price - r.x.price)/r.x.price*100;
+      return '<div class="stock-row"><div class="s-icon">' + r.x.t.slice(0,2) + '</div><div class="s-info"><div class="s-name">' + r.x.t + '</div><div class="s-meta">' + r.x.sh + ' sh @ ' + fmt(r.x.price) + '</div></div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" onclick="paperSell(' + i + ')">Sell</button></div></div>';
+    }).join('');
+    p.pos.forEach(function(x){ wsWatch(x.t); });
+  }
+  let equity = 0;
+  for(const x of p.pos){ const q = priceCache[x.t]; equity += (q ? q.c : x.price)*x.sh; }
+  const total = p.cash + equity;
+  document.getElementById('ppCash').textContent = fmt(p.cash);
+  document.getElementById('ppEquity').textContent = fmt(equity);
+  const te = document.getElementById('ppTotal');
+  te.textContent = fmt(total);
+  te.className = 'p-val ' + (total >= 100000 ? 'up' : 'down');
+  const spy = priceCache['SPY'];
+  const vs = document.getElementById('ppVs');
+  if(spy && p.spyStart){
+    const you = (total/100000 - 1)*100, bench = (spy.c/p.spyStart - 1)*100, d = you - bench;
+    vs.textContent = (d >= 0 ? '▲ +' : '▼ ') + d.toFixed(2) + '%';
+    vs.className = 'p-val ' + (d >= 0 ? 'up' : 'down');
+    vs.title = 'You: ' + you.toFixed(2) + '% vs SPY: ' + bench.toFixed(2) + '% since you started';
+  } else vs.textContent = '—';
+}
+async function paperBuy(t, sh, price){
+  const p = getPaper();
+  const cost = sh * price;
+  if(cost > p.cash){ toast('⚠️', 'Not enough paper cash. You have ' + fmt(p.cash) + '.'); return false; }
+  p.cash -= cost;
+  const ex = p.pos.find(function(x){ return x.t === t; });
+  if(ex){ ex.price = (ex.price*ex.sh + cost)/(ex.sh + sh); ex.sh += sh; }
+  else p.pos.push({t:t, sh:sh, price:price, ts:Date.now()});
+  savePaper(p);
+  unlockAchv('paper_trader'); track('paper_buy', {ticker:t});
+  toast('📄', 'Paper-bought ' + sh + ' ' + t + ' @ ' + fmt(price));
+  renderPaper();
+  return true;
+}
+function paperSell(i){
+  const p = getPaper();
+  const x = p.pos[i]; if(!x) return;
+  const q = priceCache[x.t];
+  const price = q ? q.c : x.price;
+  p.cash += price * x.sh;
+  const pnl = (price - x.price)*x.sh;
+  p.pos.splice(i,1);
+  savePaper(p);
+  toast(pnl >= 0 ? '💰' : '📉', 'Sold ' + x.t + ' — ' + (pnl>=0?'profit ':'loss ') + fmt(Math.abs(pnl)));
+  renderPaper();
+}
+function paperReset(){
+  if(!confirm('Reset paper trading back to $100,000?')) return;
+  localStorage.removeItem('fp_paper');
+  renderPaper();
+}
+
+// ── MARKETS PAGE ──
+const PULSE = [{t:'SPY',n:'S&P 500'},{t:'QQQ',n:'Nasdaq 100'},{t:'DIA',n:'Dow Jones'},{t:'IWM',n:'Russell 2000'},{t:'VIXY',n:'Volatility (VIXY)'}];
+const SECTOR_ETFS = [{t:'XLK',n:'Technology'},{t:'XLV',n:'Healthcare'},{t:'XLF',n:'Financials'},{t:'XLY',n:'Consumer Cyclical'},{t:'XLP',n:'Consumer Staples'},{t:'XLE',n:'Energy'},{t:'XLI',n:'Industrials'},{t:'XLC',n:'Communication'},{t:'XLU',n:'Utilities'},{t:'XLB',n:'Materials'},{t:'XLRE',n:'Real Estate'}];
+let _marketsInit = false;
+function initMarkets(){
+  renderPulse(); renderHeatMap(); loadEarnings();
+  if(_marketsInit) return;
+  _marketsInit = true;
+  fillCompareSelects();
+  const sel = document.getElementById('scrSector');
+  const sectors = Array.from(new Set(Object.values(SECTORS))).sort();
+  sectors.forEach(function(s){ const o = document.createElement('option'); o.textContent = s; sel.appendChild(o); });
+}
+async function renderPulse(){
+  const qs = await Promise.all(PULSE.map(async function(p){ return {p:p, q: await fetchQ(p.t)}; }));
+  document.getElementById('pulseGrid').innerHTML = qs.map(function(r){
+    if(!r.q) return '';
+    const up = r.q.dp >= 0;
+    return '<div class="p-metric"><div class="p-label">' + r.p.n + '</div><div class="p-val">' + fmt(r.q.c) + '</div><div style="font-size:12px;margin-top:3px" class="' + (up?'up':'down') + '">' + (up?'▲ +':'▼ ') + r.q.dp.toFixed(2) + '%</div></div>';
+  }).join('');
+  const spy = qs[0].q, vix = qs[4] ? qs[4].q : null;
+  let note = '';
+  if(spy) note = spy.dp >= 0.5 ? 'Broad market is having a strong day.' : spy.dp <= -0.5 ? 'Broad market is under pressure today — long-term investors, this is normal.' : 'Quiet, range-bound session so far.';
+  if(vix && vix.dp > 5) note += ' Volatility is spiking — markets are nervous.';
+  document.getElementById('pulseNote').textContent = note;
+}
+async function renderHeatMap(){
+  const qs = await Promise.all(SECTOR_ETFS.map(async function(s){ return {s:s, q: await fetchQ(s.t)}; }));
+  document.getElementById('heatGrid').innerHTML = qs.map(function(r, i){
+    if(!r.q) return '';
+    const dp = r.q.dp;
+    const mag = Math.min(1, Math.abs(dp)/2.2);
+    const bg = dp >= 0 ? 'rgba(22,101,52,' + (0.35+mag*0.6) + ')' : 'rgba(153,27,27,' + (0.35+mag*0.6) + ')';
+    return '<div class="heat-cell" style="background:' + bg + '" onclick="heatDetailShow(' + i + ',' + dp.toFixed(2) + ')" role="button" tabindex="0"><div class="heat-name">' + r.s.n + '</div><div class="heat-pct">' + (dp>=0?'▲ +':'▼ ') + dp.toFixed(2) + '%</div></div>';
+  }).join('');
+  // "your portfolio vs today's sectors" line
+  if(portfolio.length){
+    const totals = {}; let tv = 0;
+    portfolio.forEach(function(h){ const q = priceCache[h.ticker]; const v = (q?q.c:h.buyPrice)*h.shares; tv += v; const s = SECTORS[h.ticker]||'Other'; totals[s] = (totals[s]||0)+v; });
+    const top = Object.entries(totals).sort(function(a,b){return b[1]-a[1]})[0];
+    if(top && tv > 0){
+      const etf = qs.find(function(r){ return r.s.n === top[0]; });
+      if(etf && etf.q) document.getElementById('heatDetail').innerHTML = 'Your portfolio is <b>' + (top[1]/tv*100).toFixed(0) + '% ' + top[0] + '</b> — that sector is <b class="' + (etf.q.dp>=0?'up':'down') + '">' + (etf.q.dp>=0?'+':'') + etf.q.dp.toFixed(2) + '%</b> today.';
+    }
+  }
+}
+function heatDetailShow(i, dp){
+  const s = SECTOR_ETFS[i];
+  const mine = portfolio.filter(function(h){ return (SECTORS[h.ticker]||'') === s.n; }).map(function(h){ return h.ticker; });
+  document.getElementById('heatDetail').innerHTML = '<b>' + s.n + '</b> (' + s.t + ') is ' + (dp>=0?'up ':'down ') + Math.abs(dp).toFixed(2) + '% today.' + (mine.length ? ' Your holdings here: <b>' + mine.join(', ') + '</b>.' : ' You hold nothing in this sector.');
+}
+// screener
+const _metricCache = {};
+async function fetchMetrics(t){
+  if(_metricCache[t] && Date.now()-_metricCache[t].ts < 600000) return _metricCache[t];
+  try{
+    const r = await fetch('https://finnhub.io/api/v1/stock/metric?symbol=' + t + '&metric=all&token=' + FK);
+    const d = await r.json();
+    if(d && d.metric){ _metricCache[t] = {m: d.metric, ts: Date.now()}; return _metricCache[t]; }
+  }catch(e){}
+  return null;
+}
+async function runScreener(){
+  const out = document.getElementById('scrResults');
+  const uni = Object.keys(COMPANIES);
+  out.innerHTML = '<div class="skel-row" style="height:56px;margin-bottom:8px"></div>'.repeat(5) + '<div style="font-size:12px;color:var(--muted);text-align:center">Screening ' + uni.length + ' stocks…</div>';
+  const sector = document.getElementById('scrSector').value;
+  const maxP = parseFloat(document.getElementById('scrPrice').value) || Infinity;
+  const maxPE = parseFloat(document.getElementById('scrPE').value) || Infinity;
+  const minDiv = parseFloat(document.getElementById('scrDiv').value) || 0;
+  const minCap = (parseFloat(document.getElementById('scrCap').value) || 0) * 1000; // metric is $M
+  const guru = document.getElementById('scrGuru').value;
+  const guruSet = guru ? new Set(MOVES.filter(function(m){ return m.investor === guru; }).map(function(m){ return m.ticker; })) : null;
+  const rows = [];
+  for(const t of uni){
+    if(sector && (SECTORS[t]||'Other') !== sector) continue;
+    if(guruSet && !guruSet.has(t)) continue;
+    const [q, met] = await Promise.all([fetchQ(t), fetchMetrics(t)]);
+    if(!q) continue;
+    const m = met ? met.m : {};
+    const pe = m.peBasicExclExtraTTM, dy = m.currentDividendYieldTTM || 0, cap = m.marketCapitalization, w52 = m['52WeekPriceReturnDaily'];
+    if(q.c > maxP) continue;
+    if(pe && pe > maxPE) continue;
+    if(dy < minDiv) continue;
+    if(cap && cap < minCap) continue;
+    rows.push({t:t, q:q, pe:pe, dy:dy, cap:cap, w52:w52});
+  }
+  const gurusFor = function(t){
+    return Array.from(new Set(MOVES.filter(function(m){ return m.ticker === t; }).map(function(m){ return m.investor.split(' ')[1]; })));
+  };
+  out.innerHTML = rows.length ? rows.map(function(r){
+    return '<div class="scr-row"><div class="s-icon" style="width:38px;height:38px;font-size:11px">' + r.t.slice(0,2) + '</div>' +
+      '<div style="flex:1;min-width:130px"><div style="font-weight:700;font-size:14px">' + r.t + ' <span style="font-weight:400;color:var(--muted);font-size:12px">' + (COMPANIES[r.t]||'') + '</span></div>' +
+      '<div style="font-size:11px;color:var(--muted)">' + (SECTORS[r.t]||'Other') + (r.cap ? ' · ' + (r.cap/1000).toFixed(0) + 'B cap' : '') + '</div></div>' +
+      '<div style="font-size:12px;color:var(--muted)">P/E ' + (r.pe ? r.pe.toFixed(1) : '—') + '</div>' +
+      '<div style="font-size:12px;color:var(--muted)">Yield ' + r.dy.toFixed(1) + '%</div>' +
+      '<div style="font-size:12px" class="' + ((r.w52||0)>=0?'up':'down') + '">52w ' + (r.w52!=null ? (r.w52>=0?'+':'')+r.w52.toFixed(0)+'%' : '—') + '</div>' +
+      '<div style="font-weight:700;font-family:var(--font-display)">' + fmt(r.q.c) + '</div>' +
+      gurusFor(r.t).map(function(g){ return '<span class="guru-chip">' + g + '</span>'; }).join('') +
+      '<button class="price-btn" style="width:auto;padding:8px 16px;font-size:12px" onclick="openAddShares(\'' + r.t + '\')">Add</button></div>';
+  }).join('') : '<div class="empty">No stocks match those filters — loosen one and try again.</div>';
+  track('screener_run');
+}
+// earnings calendar
+async function loadEarnings(){
+  const el = document.getElementById('earnList');
+  try{
+    const from = new Date().toISOString().slice(0,10);
+    const to = new Date(Date.now()+14*86400000).toISOString().slice(0,10);
+    const r = await fetch('https://finnhub.io/api/v1/calendar/earnings?from=' + from + '&to=' + to + '&token=' + FK);
+    const d = await r.json();
+    let items = (d.earningsCalendar||[]);
+    const known = new Set(Object.keys(COMPANIES).concat(portfolio.map(function(p){return p.ticker;}), getWatch()));
+    const mineFirst = items.filter(function(x){ return known.has(x.symbol); });
+    items = (mineFirst.length ? mineFirst : items).slice(0, 12);
+    if(!items.length) throw 0;
+    el.innerHTML = items.map(function(x){
+      const days = Math.max(0, Math.ceil((new Date(x.date) - Date.now())/86400000));
+      const mine = portfolio.find(function(p){ return p.ticker === x.symbol; });
+      return '<div class="earn-row"><div><b>' + x.symbol + '</b>' + (mine ? ' <span class="guru-chip" style="background:rgba(34,197,94,.15);color:#4ade80">You own this</span>' : '') + '<div style="font-size:11px;color:var(--muted)">' + x.date + (x.hour ? ' · ' + x.hour.toUpperCase() : '') + '</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--mint)">' + (days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : 'in ' + days + ' days') + '</div><div style="font-size:11px;color:var(--muted)">EPS est: ' + (x.epsEstimate != null ? '$' + x.epsEstimate : '—') + '</div></div></div>';
+    }).join('');
+  }catch(e){
+    el.innerHTML = '<div class="empty">Earnings calendar isn’t available on the current data plan — showing it requires a Finnhub upgrade.</div>';
+  }
+}
+// backtest (modeled)
+function runBacktest(){
+  const amt = parseFloat(document.getElementById('btAmt').value)||0;
+  const years = parseFloat(document.getElementById('btYears').value)||0;
+  const rate = parseFloat(document.getElementById('btAsset').value)||0;
+  const fv = _fv(amt, rate, years), inv = amt*12*years;
+  const real = _fv(amt, Math.max(0, rate-3), years);
+  const out = document.getElementById('btOut');
+  out.style.display = 'block';
+  out.innerHTML = 'Total invested: <b>' + fmt(inv) + '</b><br>Modeled final value: <b style="color:var(--mint);font-size:19px">' + fmt(fv) + '</b> (' + ((fv/inv-1)*100).toFixed(0) + '% total return)<br>In today’s dollars (3% inflation): <b>' + fmt(real) + '</b><br><span style="font-size:12px;color:var(--muted)">Modeled with a constant average annual return — real markets zig-zag. Past performance never guarantees the future.</span>';
+}
+
+// ── PORTFOLIO ANALYZER (rule-based) ──
+function analyzePortfolio(){
+  unlockAchv('analyzer'); track('analyzer_run');
+  const recs = document.getElementById('aiRecs');
+  if(!portfolio.length){ recs.innerHTML = '<div class="empty">Add stocks first, then run the analysis.</div>'; return; }
+  let tv = 0; const sec = {};
+  portfolio.forEach(function(h){ const q = priceCache[h.ticker]; const v = (q?q.c:h.buyPrice)*h.shares; tv += v; const s = SECTORS[h.ticker]||'Other'; sec[s] = (sec[s]||0)+v; });
+  const findings = [];
+  Object.entries(sec).forEach(function(e){
+    const pct = e[1]/tv*100;
+    if(pct > 45) findings.push({b:'⚠️ Concentration risk', t: pct.toFixed(0) + '% of your portfolio is ' + e[0] + '. A single-sector downturn would hit hard — consider diversifying below ~35%.'});
+  });
+  portfolio.forEach(function(h){
+    const q = priceCache[h.ticker]; const v = (q?q.c:h.buyPrice)*h.shares;
+    if(v/tv > 0.3) findings.push({b:'⚠️ Single-stock risk', t: h.ticker + ' is ' + (v/tv*100).toFixed(0) + '% of your portfolio. Great companies still crash — most pros cap any one position at 10–20%.'});
+  });
+  const majors = ['Technology','Healthcare','Financials','Consumer Staples','Energy'];
+  const missing = majors.filter(function(m){ return !sec[m]; });
+  if(missing.length) findings.push({b:'🧭 Missing sectors', t:'No exposure to: ' + missing.join(', ') + '. You don’t need all of them — but owning only one story is fragile.'});
+  const gurus = {'Warren Buffett':0,'Bill Ackman':0,'David Tepper':0};
+  portfolio.forEach(function(h){ MOVES.forEach(function(m){ if(m.ticker === h.ticker) gurus[m.investor] = (gurus[m.investor]||0)+1; }); });
+  const overlap = Object.entries(gurus).filter(function(e){ return e[1] > 0; }).map(function(e){ return e[0] + ' (' + e[1] + ')'; });
+  findings.push({b:'🏆 Guru alignment', t: overlap.length ? 'You share holdings with: ' + overlap.join(', ') + '. Check the Gold tab to see what they did with those positions last quarter.' : 'None of your holdings overlap with Buffett, Ackman or Tepper — not wrong, but worth knowing you’re fully off the beaten path.'});
+  if(portfolio.length < 4) findings.push({b:'📊 Position count', t:'Only ' + portfolio.length + ' holding' + (portfolio.length===1?'':'s') + '. Under ~5 positions, single-company luck dominates your results. An index ETF like VOO fixes this in one purchase.'});
+  recs.innerHTML = '<div class="ai-rec"><div class="ai-rec-head"><div class="ai-rec-ticker">Deep portfolio analysis</div><span class="ai-action-badge act-hold">' + portfolio.length + ' holdings · ' + fmt(tv) + '</span></div>' +
+    findings.map(function(f){ return '<div style="margin-top:12px"><b>' + f.b + '</b><div class="ai-rec-text" style="margin-top:4px">' + f.t + '</div></div>'; }).join('') +
+    '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted2)">Rule-based educational analysis — not financial advice.</div></div>';
+}
+
+// ── WHY IT MOVED (headlines for the stock in detail view) ──
+async function loadWhyMoved(t){
+  const el = document.getElementById('whyMoved'); if(!el) return;
+  el.innerHTML = '';
+  try{
+    const to = new Date().toISOString().slice(0,10);
+    const from = new Date(Date.now()-3*86400000).toISOString().slice(0,10);
+    const r = await fetch('https://finnhub.io/api/v1/company-news?symbol=' + t + '&from=' + from + '&to=' + to + '&token=' + FK);
+    const items = (await r.json()).slice(0,3);
+    if(!items.length) return;
+    el.innerHTML = '<div class="d-metric" style="margin-bottom:16px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px"><div class="d-mlabel">Why it might be moving — latest headlines</div>' +
+      items.map(function(n){ return '<a href="' + n.url + '" target="_blank" rel="noopener noreferrer" style="display:block;color:var(--text);text-decoration:none;font-size:13px;line-height:1.5;padding:9px 0;border-bottom:1px solid var(--line)">' + escapeHtml(n.headline) + ' <span style="color:var(--muted2);font-size:11px">— ' + escapeHtml(n.source||'') + '</span></a>'; }).join('') + '</div>';
+  }catch(e){}
+}
+
+// ── SHARE PORTFOLIO (anonymous, encoded in URL — no server) ──
+function sharePortfolio(){
+  if(!portfolio.length){ toast('⚠️','Add some stocks first.'); return; }
+  const data = btoa(JSON.stringify(portfolio.map(function(p){ return [p.ticker, p.shares]; })));
+  const url = 'https://finpathdev.github.io/FinPath/#p=' + data;
+  (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function(){
+    toast('🔗','Anonymous portfolio link copied — it shows holdings only, never your identity.');
+  }).catch(function(){ prompt('Copy your share link:', url); });
+  track('portfolio_shared');
+}
+async function handleSharedLink(){
+  if(location.hash.indexOf('#p=') !== 0) return;
+  let list;
+  try{ list = JSON.parse(atob(location.hash.slice(3))); }catch(e){ return; }
+  if(!Array.isArray(list) || !list.length) return;
+  const ov = document.createElement('div');
+  ov.className = 'modal-overlay open';
+  ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-label','Shared portfolio');
+  ov.innerHTML = '<div class="modal"><h2>🔗 Someone shared a portfolio with you</h2><div id="sharedList"><div class="skel-row"></div></div><div style="display:flex;gap:10px;margin-top:16px"><button class="price-btn" style="flex:1" onclick="importShared()">Import into mine</button><button class="modal-close-btn" style="flex:1;margin-top:0" onclick="this.closest(\'.modal-overlay\').remove();history.replaceState(null,\'\',location.pathname)">Close</button></div></div>';
+  document.body.appendChild(ov);
+  window._sharedData = list;
+  const qs = await Promise.all(list.map(async function(x){ return {t:x[0], sh:x[1], q: await fetchQ(x[0])}; }));
+  let tot = 0;
+  document.getElementById('sharedList').innerHTML = qs.map(function(r){
+    const v = r.q ? r.q.c*r.sh : 0; tot += v;
+    return '<div class="modal-result" style="cursor:default"><div><b>' + r.t + '</b> <span style="color:var(--muted);font-size:12px">' + r.sh + ' shares</span></div><div style="font-weight:700">' + (r.q ? fmt(v) : '—') + '</div></div>';
+  }).join('') + '<div style="text-align:right;font-weight:700;font-family:var(--font-display);margin-top:8px">Total: ' + fmt(tot) + '</div>';
+}
+async function importShared(){
+  (window._sharedData||[]).forEach(function(x){
+    if(!portfolio.find(function(p){ return p.ticker === x[0]; })){
+      const q = priceCache[x[0]];
+      portfolio.push({ticker:x[0], shares:x[1], buyPrice: q ? q.c : 0});
+    }
+  });
+  await saveToDB();
+  document.querySelector('.modal-overlay.open').remove();
+  history.replaceState(null,'',location.pathname);
+  showPage('portfolio');
+  toast('✅','Shared holdings imported into your portfolio.');
+}
+
+
+
+function exportCSV(){
+  if(!portfolio.length){ toast('⚠️','Add some stocks first.'); return; }
+  let rows = [['Ticker','Company','Shares','Buy price','Current price','Value','Profit/Loss']];
+  portfolio.forEach(function(h){
+    const q = priceCache[h.ticker]; const price = q ? q.c : h.buyPrice;
+    rows.push([h.ticker, (COMPANIES[h.ticker]||'').replace(/,/g,' '), h.shares, h.buyPrice.toFixed(2), price.toFixed(2), (price*h.shares).toFixed(2), ((price-h.buyPrice)*h.shares).toFixed(2)]);
+  });
+  const blob = new Blob([rows.map(function(r){return r.join(',');}).join('\n')], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'finpath-portfolio.csv'; a.click();
+  URL.revokeObjectURL(a.href); track('export_csv');
+}
+
+async function editBuyPrice(){
+  if(!selectedStock) return;
+  const h = portfolio.find(function(p){ return p.ticker === selectedStock.ticker; });
+  if(!h) return;
+  const v = parseFloat(prompt('What did you actually pay per share of ' + h.ticker + '?', h.buyPrice.toFixed(2)) || '');
+  if(!v || v <= 0) return;
+  h.buyPrice = v;
+  await saveToDB();
+  toast('✎','Buy price updated — P/L recalculated.');
+  openDetail(h.ticker);
+  renderPortfolio();
+}
+
+async function renderDividends(quotes, tv){
+  const el = document.getElementById('divCard'); if(!el) return;
+  const payers = [];
+  let annual = 0;
+  for(const x of quotes){
+    if((SECTORS[x.h.ticker]||'') === 'Crypto') continue;
+    const met = await fetchMetrics(x.h.ticker);
+    const y = met && met.m ? (met.m.currentDividendYieldTTM || 0) : 0;
+    if(y > 0){
+      const v = (x.q ? x.q.c : x.h.buyPrice) * x.h.shares;
+      const inc = v * y / 100;
+      annual += inc;
+      payers.push({t: x.h.ticker, inc: inc, y: y});
+    }
+  }
+  if(!annual){ el.innerHTML = '<div style="font-size:13px;color:var(--muted);line-height:1.7">None of your holdings pay a dividend yet. The "Understanding Dividends" lesson covers how to add income to a portfolio.</div>'; return; }
+  payers.sort(function(a,b){ return b.inc - a.inc; });
+  el.innerHTML = '<div style="font-size:26px;font-weight:700;font-family:var(--font-display);color:var(--mint)">' + fmt(annual) + '<span style="font-size:13px;color:var(--muted);font-weight:400"> /year</span></div>' +
+    '<div style="font-size:12px;color:var(--muted);margin-bottom:12px">≈ ' + fmt(annual/12) + ' per month, just for holding</div>' +
+    payers.slice(0,5).map(function(p){ return '<div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--line)"><span><b>' + p.t + '</b> <span style="color:var(--muted);font-size:11px">' + p.y.toFixed(1) + '% yield</span></span><span style="font-weight:600">' + fmt(p.inc) + '/yr</span></div>'; }).join('');
+}
+
+function fillCompareSelects(){
+  ['cmpA','cmpB'].forEach(function(id, idx){
+    const sel = document.getElementById(id);
+    if(!sel || sel.options.length) return;
+    Object.keys(COMPANIES).forEach(function(t){
+      const o = document.createElement('option'); o.value = t; o.textContent = t + ' — ' + COMPANIES[t]; sel.appendChild(o);
+    });
+    sel.selectedIndex = idx;
+  });
+}
+async function compareStocks(){
+  const a = document.getElementById('cmpA').value, b = document.getElementById('cmpB').value;
+  if(a === b){ toast('⚠️','Pick two different stocks.'); return; }
+  const out = document.getElementById('cmpOut');
+  out.innerHTML = '<div class="skel-row" style="height:180px"></div>';
+  const [qa, qb, ma, mb] = await Promise.all([fetchQ(a), fetchQ(b), fetchMetrics(a), fetchMetrics(b)]);
+  function gurus(t){ return Array.from(new Set(MOVES.filter(function(m){return m.ticker===t;}).map(function(m){return m.investor;}))).join(', ') || '—'; }
+  function m(x, k){ return x && x.m && x.m[k] != null ? x.m[k] : null; }
+  function row(label, va, vb, fmtFn, higherWins){
+    const f = fmtFn || function(v){ return v == null ? '—' : v; };
+    let ca = '', cb = '';
+    if(higherWins != null && va != null && vb != null && va !== vb){
+      const aw = higherWins ? va > vb : va < vb;
+      ca = aw ? ' style="color:#4ade80;font-weight:700"' : ''; cb = !aw ? ' style="color:#4ade80;font-weight:700"' : '';
+    }
+    return '<tr><th>' + label + '</th><td' + ca + '>' + f(va) + '</td><td' + cb + '>' + f(vb) + '</td></tr>';
+  }
+  const pct = function(v){ return v == null ? '—' : (v>=0?'+':'') + v.toFixed(1) + '%'; };
+  out.innerHTML = '<table class="cmp-table"><tr><th></th><th>' + a + '</th><th>' + b + '</th></tr>' +
+    row('Price', qa && qa.c, qb && qb.c, function(v){ return v==null?'—':fmt(v); }) +
+    row('Today', qa && qa.dp, qb && qb.dp, pct, true) +
+    row('P/E ratio', m(ma,'peBasicExclExtraTTM'), m(mb,'peBasicExclExtraTTM'), function(v){ return v==null?'—':v.toFixed(1); }, false) +
+    row('Dividend yield', m(ma,'currentDividendYieldTTM'), m(mb,'currentDividendYieldTTM'), function(v){ return v==null?'—':v.toFixed(2)+'%'; }, true) +
+    row('Market cap', m(ma,'marketCapitalization'), m(mb,'marketCapitalization'), function(v){ return v==null?'—':'$'+(v/1000).toFixed(0)+'B'; }, true) +
+    row('52-week return', m(ma,'52WeekPriceReturnDaily'), m(mb,'52WeekPriceReturnDaily'), pct, true) +
+    row('Sector', SECTORS[a]||'—', SECTORS[b]||'—') +
+    row('Held by gurus', gurus(a), gurus(b)) +
+    '</table><div style="font-size:11px;color:var(--muted2);margin-top:10px">Green = better on that metric (lower P/E treated as better). Educational, not advice.</div>';
+  track('compare_run');
+}
+
 // ── INIT ──
 applyTheme(localStorage.getItem('fp_theme') || 'dark');
+initStreak();
+startAlertLoop();
+handleSharedLink();
 initAuth();
 checkPaymentReturn();
 renderLessons();
@@ -3346,714 +4226,7 @@ renderLessons();
 })();
 </script>
 
-<script>
-// ══════════ EDUCATION LAYER: glossary, quizzes, calculators, audio ══════════
 
-// ── GLOSSARY (tap a dotted term for a plain-English definition) ──
-const GLOSSARY = {
-  'P/E ratio':'Price-to-Earnings ratio. How much you pay for $1 of a company\u2019s yearly profit. S&P 500 average is ~20. Higher = more expensive.',
-  'market cap':'Market capitalization \u2014 the total value of all a company\u2019s shares combined. Apple at ~$3T is a "mega cap".',
-  'dividend':'A slice of company profits paid to you in cash, usually every 3 months, just for holding the stock.',
-  'index fund':'A fund that automatically owns every stock in an index (like all 500 S&P companies). Instant diversification, tiny fees.',
-  'ETF':'Exchange-Traded Fund \u2014 a basket of many stocks you buy with one purchase, traded like a normal stock.',
-  'compound interest':'Your returns earning their own returns. The longer it runs, the more explosive the growth.',
-  'yield curve':'The gap between short-term and long-term interest rates. When it inverts (short > long), recessions have historically followed.',
-  'VIX':'The market\u2019s "fear index". Above 30 = fear (often a buying opportunity historically). Below 15 = calm.',
-  'diversification':'Spreading money across many stocks/sectors so one bad company can\u2019t wreck you.',
-  'volatility':'How wildly a price swings. High volatility = bigger gains AND bigger drops.',
-  'capital gains':'Profit from selling something for more than you paid. Held over a year = taxed at lower rates.',
-  'liquidity':'How fast you can turn an asset into cash without losing value. Stocks: seconds. A house: months.',
-  'bear market':'A drop of 20%+ from recent highs. Painful, normal, and historically always temporary.',
-  'bull market':'A sustained period of rising prices \u2014 markets spend most of their time here.'
-};
-function glossaryWrap(text){
-  let out = text;
-  Object.keys(GLOSSARY).forEach(function(term){
-    const rx = new RegExp('(^|[^\\w])(' + term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')(?![\\w])','i');
-    let done = false;
-    out = out.replace(rx, function(m, pre, hit){
-      if(done) return m; done = true;
-      return pre + '<span class="term" role="button" tabindex="0" onclick="showTerm(event,\'' + term.replace(/'/g,"\\'") + '\')">' + hit + '</span>';
-    });
-  });
-  return out;
-}
-function showTerm(ev, term){
-  ev.stopPropagation();
-  hideTerm();
-  const pop = document.createElement('div');
-  pop.className = 'term-pop'; pop.id = 'termPop';
-  pop.innerHTML = '<b style="color:var(--mint)">' + term + '</b><br>' + GLOSSARY[term];
-  document.body.appendChild(pop);
-  const x = Math.min(ev.clientX, window.innerWidth - 300);
-  const y = Math.min(ev.clientY + 14, window.innerHeight - 140);
-  pop.style.left = Math.max(10,x) + 'px'; pop.style.top = y + 'px';
-  setTimeout(function(){ document.addEventListener('click', hideTerm, {once:true}); }, 10);
-}
-function hideTerm(){ const p = document.getElementById('termPop'); if(p) p.remove(); }
-
-// ── QUIZZES (keyed by lesson name; 3 questions each) ──
-const QUIZZES = {
-"What Schools Never Teach You About Money":[
- {q:"What separates wealth from income?",o:["Earning a six-figure salary","What you keep and build with what you keep","Having a prestigious job","Spending on luxury goods"],a:1,w:"A doctor earning $400k who spends $390k is one bad month from broke. Wealth = assets you keep and grow."},
- {q:"Roughly how many income streams does the average millionaire have?",o:["1","3","7","12"],a:2,w:"Seven \u2014 salary, business, dividends, rent, interest, capital gains and royalties."},
- {q:"$200/month invested from 18 vs 30 \u2014 what\u2019s the difference by 65?",o:["About the same","~$100k more","~$700k more","Double"],a:2,w:"Starting at 18 \u2248 $1,068,000 vs $349,000 starting at 30. Time does the heavy lifting."}],
-"How to Actually Budget: The 50/30/20 Rule":[
- {q:"In 50/30/20, the 20% goes to\u2026",o:["Wants","Rent","Your future (savings & investing)","Subscriptions"],a:2,w:"20% to savings, investing and extra debt payments \u2014 it leaves your account FIRST."},
- {q:"Your needs eat 70% of income. The real problem is\u2026",o:["Weak willpower","A structural problem: costs too high for income","Not budgeting hard enough","Too many wants"],a:1,w:"Willpower can\u2019t fix structure \u2014 you need to raise income or cut fixed costs."},
- {q:"When should the future 20% leave your account?",o:["End of month if anything is left","Before you spend anything else","Only in months you feel rich","Once a year"],a:1,w:"Pay yourself first. What\u2019s left after saving is what you get to spend."}],
-"How Credit Scores Work":[
- {q:"The single biggest factor in your credit score is\u2026",o:["Payment history (35%)","Credit mix","New inquiries","Your salary"],a:0,w:"On-time payments are 35% of the score. One missed payment can cost 50\u2013100 points."},
- {q:"Ideal credit utilisation is\u2026",o:["Below 30% (below 10% is best)","50%","90% \u2014 use what you have","0% \u2014 never use the card"],a:0,w:"Keep balances under 30% of your limit; under 10% is ideal."},
- {q:"Your oldest credit card should be\u2026",o:["Closed once unused","Kept open \u2014 age helps your score","Maxed out","Downgraded yearly"],a:1,w:"Length of history is 15% of your score \u2014 never close your oldest card."}],
-"The Power of Compound Interest":[
- {q:"The Rule of 72 tells you\u2026",o:["Max safe withdrawal","Years to double your money at a given return","Your tax rate","Ideal stock count"],a:1,w:"72 \u00f7 annual return = years to double. At 8%, money doubles every ~9 years."},
- {q:"Person A invests 18\u201328 then stops. Person B invests 30\u201365. Who wins?",o:["B \u2014 more years of deposits","A \u2014 the early start compounds harder","They tie","Neither beats inflation"],a:1,w:"A\u2019s 10 early years out-compound B\u2019s 35 later years. Start NOW."},
- {q:"The best day to start investing was yesterday. The second best is\u2026",o:["After the next crash","When you earn six figures","Today","At 30"],a:2,w:"Waiting for perfect timing costs more than any crash."}],
-"Emergency Funds: The Foundation of Everything":[
- {q:"A standard emergency fund covers\u2026",o:["1 week of costs","3\u20136 months of living expenses","5 years","One rent payment"],a:1,w:"3\u20136 months of essentials; 6\u201312 if your income is volatile."},
- {q:"Where should it live?",o:["Stocks for growth","Checking account","High-yield savings account (HYSA)","Crypto"],a:2,w:"HYSA: ~4\u20135% interest, FDIC-insured, accessible in a day \u2014 and you won\u2019t accidentally spend it."},
- {q:"Why build it BEFORE investing?",o:["Banks require it","So a surprise bill never forces you to sell investments at the worst time","Tax reasons","It earns more than stocks"],a:1,w:"No buffer = panic-selling during dips. The fund lets your investments ride out storms."}],
-"How the Stock Market Actually Works":[
- {q:"Buying a share of Apple means\u2026",o:["Lending Apple money","Owning a real slice of the company and its profits","Buying an iPhone voucher","Betting against Apple"],a:1,w:"A share is genuine part-ownership of the business."},
- {q:"Over the past century the S&P 500 averaged roughly\u2026",o:["3%/yr","10%/yr","25%/yr","0%"],a:1,w:"~10% annually \u2014 and it has never had a negative 20-year stretch."},
- {q:"Dollar cost averaging means\u2026",o:["Buying only at all-time lows","Investing a fixed amount on a schedule regardless of price","Selling when scared","Averaging analyst targets"],a:1,w:"Fixed amount, fixed schedule \u2014 you automatically buy more shares when prices dip."}],
-"Good Debt vs Bad Debt":[
- {q:"Which is GOOD debt?",o:["22% credit card balance","A rental property mortgage the rent covers","Financing a jet ski","Buy-now-pay-later shoes"],a:1,w:"Good debt buys assets that pay for themselves and grow."},
- {q:"The test for any debt:",o:["Is the monthly payment small?","Will the borrowed money generate more value than its interest cost?","Is everyone else doing it?","Is the bank famous?"],a:1,w:"If borrowed money earns more than it costs, it can build wealth. If not, it drains you."},
- {q:"Debt above ~7% interest should be\u2026",o:["Ignored","Paid off before serious investing","Refinanced into crypto","Kept for credit score"],a:1,w:"Paying off 20% debt is a guaranteed 20% return \u2014 better than the market\u2019s average."}],
-"What Billionaires Actually Invest In":[
- {q:"How do we know what Buffett owns?",o:["Leaks","Quarterly SEC 13F filings \u2014 public for every big fund","His podcast","We don\u2019t"],a:1,w:"Funds over $100M must disclose holdings quarterly in 13F filings. FinPath Gold tracks them."},
- {q:"Buffett\u2019s favourite holding period is\u2026",o:["One quarter","Until earnings","Forever","30 days"],a:2,w:"He buys businesses he\u2019d happily own for decades."},
- {q:"What do Buffett, Ackman and Tepper share?",o:["Day-trading","Deep understanding + years-long holds + buying dips","Meme stocks","Never reading filings"],a:1,w:"Concentration in what they understand, patience, and buying when others panic."}],
-"Reading Market Signals":[
- {q:"An inverted yield curve has historically preceded\u2026",o:["Bull runs","Every US recession for ~50 years","Rate cuts only","Nothing"],a:1,w:"Short rates above long rates = the market\u2019s most famous recession warning."},
- {q:"A VIX above 30 signals\u2026",o:["Complacency","Fear \u2014 historically often a buying opportunity","Guaranteed crash","Low volume"],a:1,w:"Peak fear has historically been closer to bottoms than tops."},
- {q:"Multiple insiders buying their own stock usually means\u2026",o:["Nothing","They know the business best and like the price","A scandal","Dilution"],a:1,w:"Executives buying with their own money is one of the strongest bullish signals."}],
-"Dollar Cost Averaging":[
- {q:"Missing the 10 best market days over 20 years cuts returns by about\u2026",o:["5%","Half","Nothing","10%"],a:1,w:"And those best days cluster near the scariest ones \u2014 which is why timing fails."},
- {q:"DCA automatically makes you\u2026",o:["Buy more shares when prices are low","Sell at bottoms","Trade daily","Pay more fees"],a:0,w:"A fixed dollar amount buys MORE shares when prices drop \u2014 the opposite of panic."},
- {q:"The best DCA setup is\u2026",o:["Manual, when you remember","Automatic on payday, then don\u2019t touch it","Only in December","After CNBC says so"],a:1,w:"Automation removes emotion \u2014 the #1 destroyer of returns."}]
-};
-function getQuizScore(){ try{ return JSON.parse(localStorage.getItem('fp_quiz')||'{}'); }catch(e){ return {}; } }
-function financeIQ(){
-  const s = getQuizScore(); let c = 0, t = 0;
-  Object.values(s).forEach(function(v){ c += v.c; t += v.t; });
-  return t ? Math.round(c/t*100) : null;
-}
-let _quizState = null;
-function startQuiz(name){
-  _quizState = {name: name, idx: 0, correct: 0};
-  renderQuizQ();
-}
-function renderQuizQ(){
-  const box = document.getElementById('quizBox'); if(!box || !_quizState) return;
-  const qz = QUIZZES[_quizState.name];
-  if(_quizState.idx >= qz.length){
-    const s = getQuizScore();
-    s[_quizState.name] = {c: _quizState.correct, t: qz.length};
-    localStorage.setItem('fp_quiz', JSON.stringify(s));
-    track('quiz_done', {lesson: _quizState.name, score: _quizState.correct});
-    unlockAchv('quiz_whiz');
-    box.innerHTML = '<div style="text-align:center"><div style="font-size:38px;margin-bottom:10px">' + (_quizState.correct === qz.length ? '\ud83c\udfc6' : '\ud83d\udcda') + '</div>' +
-      '<div style="font-size:19px;font-weight:700;font-family:var(--font-display)">You scored ' + _quizState.correct + '/' + qz.length + '</div>' +
-      '<div style="font-size:13px;color:var(--muted);margin-top:6px">Your overall Finance IQ: <b style="color:var(--mint)">' + financeIQ() + '%</b></div>' +
-      '<button class="btn-secondary" style="margin-top:16px;padding:11px 22px;font-size:13px" onclick="startQuiz(_quizState.name)">Retake quiz</button></div>';
-    if(_quizState.correct === qz.length) confettiBurst();
-    return;
-  }
-  const item = qz[_quizState.idx];
-  box.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:600">KNOWLEDGE CHECK \u00b7 ' + (_quizState.idx+1) + ' of ' + qz.length + '</div>' +
-    '<div style="font-size:16px;font-weight:700;margin-bottom:16px">' + item.q + '</div>' +
-    item.o.map(function(opt, oi){ return '<button class="quiz-opt" onclick="answerQuiz(' + oi + ')">' + opt + '</button>'; }).join('') +
-    '<div id="quizWhy" style="display:none;margin-top:12px;font-size:13px;color:var(--muted);line-height:1.7;padding:12px 16px;background:rgba(134,239,172,.05);border-radius:12px"></div>';
-}
-function answerQuiz(oi){
-  const item = QUIZZES[_quizState.name][_quizState.idx];
-  const opts = document.querySelectorAll('#quizBox .quiz-opt');
-  opts.forEach(function(b, i){
-    b.disabled = true;
-    if(i === item.a) b.classList.add('right');
-    else if(i === oi) b.classList.add('wrong');
-  });
-  if(oi === item.a) _quizState.correct++;
-  const why = document.getElementById('quizWhy');
-  why.style.display = 'block';
-  why.innerHTML = (oi === item.a ? '<b style="color:#4ade80">Correct.</b> ' : '<b style="color:var(--red)">Not quite.</b> ') + item.w +
-    '<br><button class="btn-secondary" style="margin-top:12px;padding:9px 20px;font-size:13px" onclick="_quizState.idx++;renderQuizQ()">' + (_quizState.idx === QUIZZES[_quizState.name].length-1 ? 'See score' : 'Next question') + '</button>';
-}
-
-// ── INTERACTIVE CALCULATORS (auto-embedded in matching lessons) ──
-function calculatorFor(name){
-  if(name.indexOf('Compound Interest') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">\ud83e\uddee Compound interest calculator</div><label>Monthly investment ($)</label><input id="ciAmt" type="number" value="200" oninput="calcCI()"><label>Annual return (%)</label><input id="ciRate" type="number" value="8" oninput="calcCI()"><label>Years</label><input id="ciYears" type="number" value="30" oninput="calcCI()"><div class="calc-out" id="ciOut"></div></div>';
-  if(name.indexOf('Renting vs Buying') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">\ud83c\udfe1 Rent vs buy quick check</div><label>Home price ($)</label><input id="rbPrice" type="number" value="400000" oninput="calcRB()"><label>Equivalent monthly rent ($)</label><input id="rbRent" type="number" value="2200" oninput="calcRB()"><label>Mortgage rate (%)</label><input id="rbRate" type="number" value="6.5" step="0.1" oninput="calcRB()"><div class="calc-out" id="rbOut"></div></div>';
-  if(name.indexOf('Understanding Your Paycheck') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">\ud83d\udcbc 401k match calculator</div><label>Annual salary ($)</label><input id="mSal" type="number" value="60000" oninput="calcMatch()"><label>Employer match (% of salary)</label><input id="mPct" type="number" value="4" step="0.5" oninput="calcMatch()"><label>Years until retirement</label><input id="mYears" type="number" value="35" oninput="calcMatch()"><div class="calc-out" id="mOut"></div></div>';
-  if(name === 'How Credit Scores Work') return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">\ud83d\udcca Credit score simulator <span style="font-size:11px;color:var(--muted);font-weight:400">(educational estimate)</span></div><label>On-time payment streak (months)</label><input id="csMonths" type="number" value="12" oninput="calcCS()"><label>Credit utilisation (%)</label><input id="csUtil" type="number" value="25" oninput="calcCS()"><label>Age of oldest account (years)</label><input id="csAge" type="number" value="2" step="0.5" oninput="calcCS()"><div class="calc-out" id="csOut"></div></div>';
-  if(name.indexOf('Understanding Dividends') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">\ud83d\udcb5 Dividend reinvestment (DRIP) calculator</div><label>Starting amount ($)</label><input id="drAmt" type="number" value="10000" oninput="calcDR()"><label>Dividend yield (%)</label><input id="drYield" type="number" value="3" step="0.1" oninput="calcDR()"><label>Price growth (%/yr)</label><input id="drGrow" type="number" value="7" step="0.1" oninput="calcDR()"><label>Years</label><input id="drYears" type="number" value="30" oninput="calcDR()"><div class="calc-out" id="drOut"></div></div>';
-  return '';
-}
-function _fv(monthly, annualPct, years){
-  const r = annualPct/100/12, n = years*12;
-  return r === 0 ? monthly*n : monthly * ((Math.pow(1+r, n) - 1) / r);
-}
-function calcCI(){
-  const a = +document.getElementById('ciAmt').value||0, r = +document.getElementById('ciRate').value||0, y = +document.getElementById('ciYears').value||0;
-  const fv = _fv(a, r, y), inv = a*12*y;
-  document.getElementById('ciOut').innerHTML = 'Total invested: <b>' + fmt(inv) + '</b><br>Final value: <b style="color:var(--mint)">' + fmt(fv) + '</b><br>Growth from compounding alone: <b>' + fmt(fv-inv) + '</b>';
-}
-function calcRB(){
-  const p = +document.getElementById('rbPrice').value||0, rent = +document.getElementById('rbRent').value||0, rate = +document.getElementById('rbRate').value||0;
-  const loan = p*0.8, r = rate/100/12, n = 360;
-  const mort = r ? loan*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1) : loan/n;
-  const own = mort + p*0.012/12 + p*0.0035/12 + p*0.01/12;
-  const diff = own - rent;
-  document.getElementById('rbOut').innerHTML = 'Est. monthly cost to own (mortgage+tax+insurance+maintenance): <b>' + fmt(own) + '</b><br>Renting: <b>' + fmt(rent) + '</b><br>' + (diff > 0 ? 'Owning costs <b>' + fmt(diff) + '</b>/mo more \u2014 but builds equity. Break-even is typically 4\u20135+ years.' : 'Owning is <b>' + fmt(-diff) + '</b>/mo cheaper here \u2014 strong buy signal if you\u2019ll stay 5+ years.');
-}
-function calcMatch(){
-  const s = +document.getElementById('mSal').value||0, p = +document.getElementById('mPct').value||0, y = +document.getElementById('mYears').value||0;
-  const yearly = s*p/100, fv = _fv(yearly/12, 8, y);
-  document.getElementById('mOut').innerHTML = 'Free money per year: <b>' + fmt(yearly) + '</b><br>Skipping the match for ' + y + ' years costs you roughly <b style="color:var(--red)">' + fmt(fv) + '</b> at retirement (8%/yr growth).';
-}
-function calcCS(){
-  const m = +document.getElementById('csMonths').value||0, u = +document.getElementById('csUtil').value||0, a = +document.getElementById('csAge').value||0;
-  let score = 480 + Math.min(m,48)*3.2 + Math.max(0, 30-u)*2.6 - Math.max(0, u-30)*1.8 + Math.min(a,10)*8;
-  score = Math.max(300, Math.min(850, Math.round(score)));
-  const band = score >= 740 ? 'Excellent' : score >= 670 ? 'Good' : score >= 580 ? 'Fair' : 'Building';
-  document.getElementById('csOut').innerHTML = 'Estimated score: <b style="color:var(--mint);font-size:22px">' + score + '</b> \u00b7 ' + band + '<br><span style="font-size:12px">Biggest levers: never miss a payment, keep utilisation under 30% (under 10% is ideal), let accounts age.</span>';
-}
-function calcDR(){
-  const amt = +document.getElementById('drAmt').value||0, y = +document.getElementById('drYield').value||0, g = +document.getElementById('drGrow').value||0, yrs = +document.getElementById('drYears').value||0;
-  const withD = amt*Math.pow(1+(y+g)/100, yrs), noD = amt*Math.pow(1+g/100, yrs);
-  document.getElementById('drOut').innerHTML = 'With dividends reinvested: <b style="color:var(--mint)">' + fmt(withD) + '</b><br>Without reinvesting: <b>' + fmt(noD) + '</b><br>Reinvestment added: <b>' + fmt(withD-noD) + '</b>';
-}
-
-// ── AUDIO MODE (Web Speech API) ──
-let _speech = {utter:null, playing:false, rate:1, lesson:null};
-function toggleAudio(i){
-  const btn = document.getElementById('audioBtn');
-  if(_speech.playing){ speechSynthesis.cancel(); _speech.playing = false; if(btn) btn.textContent = '\ud83d\udd0a Listen'; return; }
-  if(!('speechSynthesis' in window)){ toast('\ud83d\udd07', 'Audio not supported in this browser.'); return; }
-  const text = LESSONS[i].name + '. ' + LESSONS[i].content;
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = _speech.rate; u.pitch = 1;
-  u.onend = function(){ _speech.playing = false; if(btn) btn.textContent = '\ud83d\udd0a Listen'; };
-  speechSynthesis.cancel(); speechSynthesis.speak(u);
-  _speech.utter = u; _speech.playing = true; _speech.lesson = i;
-  if(btn) btn.textContent = '\u23f8 Stop';
-}
-function cycleSpeed(){
-  _speech.rate = _speech.rate === 1 ? 1.5 : _speech.rate === 1.5 ? 2 : 1;
-  const b = document.getElementById('speedBtn'); if(b) b.textContent = _speech.rate + '\u00d7';
-  if(_speech.playing && _speech.lesson != null){ speechSynthesis.cancel(); _speech.playing = false; toggleAudio(_speech.lesson); }
-}
-
-// ── LESSON BODY BUILDER (content + glossary + calculator + quiz + actions) ──
-function buildLessonBody(l, i){
-  const done = getLessonProgress()[i];
-  const hasQuiz = !!QUIZZES[l.name];
-  let out = '<div class="lesson-content">' + glossaryWrap(l.content) + '</div>';
-  out += calculatorFor(l.name);
-  if(hasQuiz) out += '<div class="quiz-box" id="quizBox"><div style="font-size:16px;font-weight:700;font-family:var(--font-display);margin-bottom:6px">Test yourself</div><div style="font-size:13px;color:var(--muted);margin-bottom:14px">3 quick questions \u2014 instant feedback, counts toward your Finance IQ.</div><button class="ai-run-btn" style="margin:0" onclick="startQuiz(\'' + l.name.replace(/'/g,"\\'") + '\')">Start quiz</button></div>';
-  out += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:34px">' +
-    (done ? '<button class="btn-secondary" disabled style="opacity:.7;cursor:default">\u2713 Completed</button>'
-          : '<button class="btn-primary" onclick="markLessonComplete(' + i + ')">Mark lesson complete</button>') +
-    '<button class="btn-secondary" id="audioBtn" onclick="toggleAudio(' + i + ')">\ud83d\udd0a Listen</button>' +
-    '<button class="btn-secondary" id="speedBtn" onclick="cycleSpeed()" title="Playback speed">' + _speech.rate + '\u00d7</button>' +
-    '<button class="btn-secondary" onclick="shareLesson(' + i + ')">Share</button></div>';
-  return out;
-}
-</script>
-
-<script>
-// ══════════ MARKETS + PAPER + GOALS + ALERTS + ACHIEVEMENTS ══════════
-
-// ── TOASTS + CONFETTI + NOTIFICATIONS ──
-function toast(icon, msg){
-  let stack = document.querySelector('.toast-stack');
-  if(!stack){ stack = document.createElement('div'); stack.className = 'toast-stack'; document.body.appendChild(stack); }
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.innerHTML = '<span style="font-size:19px">' + icon + '</span><span>' + msg + '</span>';
-  stack.appendChild(t);
-  setTimeout(function(){ t.remove(); }, 4200);
-}
-function confettiBurst(){
-  const c = document.createElement('canvas'); c.id = 'confettiCanvas';
-  c.width = innerWidth; c.height = innerHeight; document.body.appendChild(c);
-  const x = c.getContext('2d');
-  const P = Array.from({length:90}, function(){ return {x: innerWidth/2, y: innerHeight*0.4, vx:(Math.random()-.5)*14, vy:-Math.random()*11-4, s:4+Math.random()*5, col:['#22c55e','#f5b60b','#60a5fa','#e879f9','#86efac'][Math.floor(Math.random()*5)], r:Math.random()*6}; });
-  let f = 0;
-  (function anim(){
-    x.clearRect(0,0,c.width,c.height); f++;
-    P.forEach(function(p){ p.vy += 0.32; p.x += p.vx; p.y += p.vy; p.r += 0.2; x.save(); x.translate(p.x,p.y); x.rotate(p.r); x.fillStyle = p.col; x.fillRect(-p.s/2,-p.s/2,p.s,p.s); x.restore(); });
-    if(f < 110) requestAnimationFrame(anim); else c.remove();
-  })();
-}
-function notify(title, body){
-  if('Notification' in window && Notification.permission === 'granted'){
-    try{ new Notification(title, {body: body}); }catch(e){}
-  }
-  toast('\ud83d\udd14', '<b>' + title + '</b><br>' + body);
-}
-
-// ── STREAK + ACHIEVEMENTS ──
-const ACHVS = [
-  {id:'first_stock', icon:'\ud83c\udf31', name:'First Steps', desc:'Add your first stock'},
-  {id:'scholar', icon:'\ud83d\udcda', name:'Scholar', desc:'Complete 5 lessons'},
-  {id:'quiz_whiz', icon:'\ud83e\udde0', name:'Quiz Whiz', desc:'Finish a knowledge check'},
-  {id:'goal_setter', icon:'\ud83c\udfaf', name:'Goal Setter', desc:'Create a savings goal'},
-  {id:'diamond_hands', icon:'\ud83d\udc8e', name:'Diamond Hands', desc:'Hold a stock for 30 days'},
-  {id:'buffett_shadow', icon:'\ud83c\udfc6', name:"Buffett's Shadow", desc:'Own 3 stocks Buffett owns'},
-  {id:'streak_7', icon:'\ud83d\udd25', name:'On Fire', desc:'7-day visit streak'},
-  {id:'paper_trader', icon:'\ud83d\udcc4', name:'Paper Trader', desc:'Make your first paper trade'},
-  {id:'analyzer', icon:'\ud83d\udd2c', name:'Self-Aware', desc:'Run the portfolio analyzer'}
-];
-function getAchv(){ try{ return JSON.parse(localStorage.getItem('fp_achv')||'{}'); }catch(e){ return {}; } }
-function unlockAchv(id){
-  const a = getAchv();
-  if(a[id]) return;
-  a[id] = Date.now();
-  localStorage.setItem('fp_achv', JSON.stringify(a));
-  const def = ACHVS.find(function(x){ return x.id === id; });
-  if(def){ toast(def.icon, '<b>Achievement unlocked:</b> ' + def.name); confettiBurst(); track('achievement', {id:id}); }
-  renderAchievements();
-}
-function renderAchievements(){
-  const grid = document.getElementById('achvGrid'); if(!grid) return;
-  const a = getAchv();
-  grid.innerHTML = ACHVS.map(function(d){
-    const got = !!a[d.id];
-    return '<div class="p-metric" style="' + (got ? 'border-color:var(--line-strong)' : 'opacity:.45') + '"><div style="font-size:22px;margin-bottom:6px">' + d.icon + '</div><div style="font-size:13px;font-weight:700">' + d.name + '</div><div style="font-size:11px;color:var(--muted);margin-top:3px">' + d.desc + '</div></div>';
-  }).join('');
-  const chip = document.getElementById('streakChip');
-  const st = getStreak();
-  if(chip) chip.textContent = st.count > 1 ? '\ud83d\udd25 ' + st.count + '-day streak' : '';
-}
-function getStreak(){ try{ return JSON.parse(localStorage.getItem('fp_streak')||'{"last":"","count":0}'); }catch(e){ return {last:'',count:0}; } }
-function initStreak(){
-  const s = getStreak();
-  const today = new Date().toDateString();
-  const yest = new Date(Date.now()-86400000).toDateString();
-  if(s.last === today){ /* already counted */ }
-  else if(s.last === yest) s.count++;
-  else s.count = 1;
-  s.last = today;
-  localStorage.setItem('fp_streak', JSON.stringify(s));
-  if(s.count >= 7) unlockAchv('streak_7');
-}
-function checkHoldAchvs(){
-  try{
-    const added = JSON.parse(localStorage.getItem('fp_added')||'{}');
-    const now = Date.now();
-    if(portfolio.some(function(p){ return added[p.ticker] && now - added[p.ticker] > 30*86400000; })) unlockAchv('diamond_hands');
-    const buffett = MOVES.filter(function(m){ return m.investor === 'Warren Buffett'; }).map(function(m){ return m.ticker; });
-    if(portfolio.filter(function(p){ return buffett.indexOf(p.ticker) > -1; }).length >= 3) unlockAchv('buffett_shadow');
-  }catch(e){}
-}
-
-// ── PRICE ALERTS ──
-function getAlerts(){ try{ return JSON.parse(localStorage.getItem('fp_alerts')||'[]'); }catch(e){ return []; } }
-function saveAlerts(a){ localStorage.setItem('fp_alerts', JSON.stringify(a)); renderAlertsList(); }
-function addAlertFromDetail(){
-  if(!selectedStock) return;
-  const price = parseFloat(document.getElementById('alertPrice').value);
-  if(!price || price <= 0){ toast('\u26a0\ufe0f','Enter a valid alert price.'); return; }
-  const dir = document.getElementById('alertDir').value;
-  const a = getAlerts();
-  a.push({t: selectedStock.ticker, dir: dir, price: price, done: false});
-  saveAlerts(a);
-  if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
-  wsWatch(selectedStock.ticker);
-  toast('\ud83d\udd14', 'Alert set: ' + selectedStock.ticker + ' ' + (dir === 'below' ? 'drops below' : 'rises above') + ' ' + fmt(price));
-  document.getElementById('alertPrice').value = '';
-}
-function removeAlert(idx){ const a = getAlerts(); a.splice(idx,1); saveAlerts(a); }
-function renderAlertsList(){
-  const sec = document.getElementById('priceAlertsSection'), list = document.getElementById('priceAlertsList');
-  if(!sec || !list) return;
-  const a = getAlerts();
-  if(!a.length){ sec.style.display = 'none'; return; }
-  sec.style.display = 'block';
-  list.innerHTML = a.map(function(al, i){
-    return '<div class="alert-item ' + (al.done ? '' : 'warn') + '"><div><div class="alert-ticker">' + al.t + ' ' + (al.dir === 'below' ? '\u25bc drops below' : '\u25b2 rises above') + ' ' + fmt(al.price) + '</div><div class="alert-msg">' + (al.done ? 'Triggered \u2713' : 'Watching\u2026') + '</div></div><button class="watch-star" aria-label="Delete alert" onclick="removeAlert(' + i + ')" style="color:var(--red)">\u2715</button></div>';
-  }).join('');
-}
-function checkAlerts(){
-  const a = getAlerts(); let changed = false;
-  a.forEach(function(al){
-    if(al.done) return;
-    const q = priceCache[al.t]; if(!q) return;
-    if((al.dir === 'below' && q.c <= al.price) || (al.dir === 'above' && q.c >= al.price)){
-      al.done = true; changed = true;
-      notify(al.t + ' hit your target', al.t + ' is now ' + fmt(q.c) + ' (' + (al.dir === 'below' ? 'below' : 'above') + ' your ' + fmt(al.price) + ' alert).');
-    }
-  });
-  if(changed) saveAlerts(a);
-}
-function startAlertLoop(){
-  setInterval(function(){
-    const pending = getAlerts().filter(function(a){ return !a.done; });
-    pending.forEach(function(a){ fetchQ(a.t); });
-    setTimeout(checkAlerts, 2500);
-  }, 90000);
-}
-
-// ── GOALS ──
-function getGoals(){ try{ return JSON.parse(localStorage.getItem('fp_goals')||'[]'); }catch(e){ return []; } }
-function saveGoals(g){ localStorage.setItem('fp_goals', JSON.stringify(g)); renderGoals(); }
-function openGoalForm(){ const f = document.getElementById('goalForm'); f.style.display = f.style.display === 'none' ? 'block' : 'none'; }
-function saveGoal(){
-  const name = document.getElementById('gName').value.trim();
-  const target = parseFloat(document.getElementById('gTarget').value);
-  const date = document.getElementById('gDate').value;
-  if(!name || !target || !date){ toast('\u26a0\ufe0f','Fill in all three fields.'); return; }
-  const g = getGoals();
-  g.push({name:name, target:target, date:date, saved:0, hit:{}});
-  saveGoals(g);
-  document.getElementById('goalForm').style.display = 'none';
-  document.getElementById('gName').value = ''; document.getElementById('gTarget').value = '';
-  unlockAchv('goal_setter'); track('goal_created');
-}
-function addToGoal(i){
-  const amt = parseFloat(prompt('How much are you adding to this goal? ($)')||'0');
-  if(!amt || amt <= 0) return;
-  const g = getGoals();
-  g[i].saved += amt;
-  var pct = g[i].saved / g[i].target * 100;
-  [25,50,75,100].forEach(function(m){
-    if(pct >= m && !g[i].hit[m]){ g[i].hit[m] = 1; confettiBurst(); toast('\ud83c\udf89', '<b>' + g[i].name + '</b>: ' + m + '% milestone reached!'); }
-  });
-  saveGoals(g);
-}
-function deleteGoal(i){ const g = getGoals(); g.splice(i,1); saveGoals(g); }
-function renderGoals(){
-  const list = document.getElementById('goalsList'); if(!list) return;
-  const g = getGoals();
-  list.innerHTML = g.length ? g.map(function(goal, i){
-    const pct = Math.min(100, goal.saved/goal.target*100);
-    const daysLeft = Math.max(0, Math.ceil((new Date(goal.date) - Date.now())/86400000));
-    const weeksLeft = Math.max(1, daysLeft/7);
-    const weekly = Math.max(0, (goal.target - goal.saved)/weeksLeft);
-    const elapsedPct = 100 - (daysLeft / Math.max(1,(new Date(goal.date) - new Date(goal.date).setFullYear(new Date(goal.date).getFullYear()-1))/86400000))*100;
-    const pace = pct >= Math.min(99, elapsedPct) ? '' : '';
-    return '<div class="goal-card"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div style="font-weight:700;font-size:15px">' + goal.name + '</div><button class="watch-star" style="color:var(--red)" aria-label="Delete goal" onclick="deleteGoal(' + i + ')">\u2715</button></div>' +
-      '<div style="font-size:13px;color:var(--muted)">' + fmt(goal.saved) + ' of ' + fmt(goal.target) + ' \u00b7 ' + daysLeft + ' days left</div>' +
-      '<div class="goal-bar"><div class="goal-fill" style="width:' + pct.toFixed(1) + '%"></div></div>' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div style="font-size:12px;color:var(--muted)">Need <b style="color:var(--mint)">' + fmt(weekly) + '</b>/week to hit it</div><button class="btn-secondary" style="padding:8px 16px;font-size:12px" onclick="addToGoal(' + i + ')">+ Add money</button></div></div>';
-  }).join('') : '<div class="empty" style="padding:20px">No goals yet \u2014 turn the SMART-goals lesson into action.</div>';
-}
-
-// ── PAPER TRADING ──
-let PAPER_MODE = false;
-function getPaper(){
-  try{
-    const p = JSON.parse(localStorage.getItem('fp_paper'));
-    if(p && typeof p.cash === 'number') return p;
-  }catch(e){}
-  return {cash:100000, pos:[], start:Date.now(), spyStart:null};
-}
-function savePaper(p){ localStorage.setItem('fp_paper', JSON.stringify(p)); }
-function setMode(m){
-  PAPER_MODE = m === 'paper';
-  document.getElementById('tabLive').classList.toggle('active', !PAPER_MODE);
-  document.getElementById('tabPaper').classList.toggle('active', PAPER_MODE);
-  document.getElementById('liveWrap').style.display = PAPER_MODE ? 'none' : 'block';
-  document.getElementById('paperWrap').style.display = PAPER_MODE ? 'block' : 'none';
-  if(PAPER_MODE) renderPaper();
-}
-function paperOpenBuy(){ openSearch(); }
-async function renderPaper(){
-  const p = getPaper();
-  if(p.spyStart === null){ const q = await fetchQ('SPY'); if(q){ p.spyStart = q.c; savePaper(p); } }
-  const grid = document.getElementById('paperGrid');
-  if(!p.pos.length){
-    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">No paper positions yet. Hit \u201c+ Buy stock\u201d to start practicing.</div>';
-  } else {
-    grid.innerHTML = p.pos.map(function(){ return '<div class="skel-row"></div>'; }).join('');
-    const qs = await Promise.all(p.pos.map(async function(x){ return {x:x, q: await fetchQ(x.t)}; }));
-    grid.innerHTML = qs.map(function(r, i){
-      const price = r.q ? r.q.c : r.x.price;
-      const val = price * r.x.sh, pnl = (price - r.x.price)*r.x.sh, pct = (price - r.x.price)/r.x.price*100;
-      return '<div class="stock-row"><div class="s-icon">' + r.x.t.slice(0,2) + '</div><div class="s-info"><div class="s-name">' + r.x.t + '</div><div class="s-meta">' + r.x.sh + ' sh @ ' + fmt(r.x.price) + '</div></div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'\u25b2 +':'\u25bc ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" onclick="paperSell(' + i + ')">Sell</button></div></div>';
-    }).join('');
-    p.pos.forEach(function(x){ wsWatch(x.t); });
-  }
-  let equity = 0;
-  for(const x of p.pos){ const q = priceCache[x.t]; equity += (q ? q.c : x.price)*x.sh; }
-  const total = p.cash + equity;
-  document.getElementById('ppCash').textContent = fmt(p.cash);
-  document.getElementById('ppEquity').textContent = fmt(equity);
-  const te = document.getElementById('ppTotal');
-  te.textContent = fmt(total);
-  te.className = 'p-val ' + (total >= 100000 ? 'up' : 'down');
-  const spy = priceCache['SPY'];
-  const vs = document.getElementById('ppVs');
-  if(spy && p.spyStart){
-    const you = (total/100000 - 1)*100, bench = (spy.c/p.spyStart - 1)*100, d = you - bench;
-    vs.textContent = (d >= 0 ? '\u25b2 +' : '\u25bc ') + d.toFixed(2) + '%';
-    vs.className = 'p-val ' + (d >= 0 ? 'up' : 'down');
-    vs.title = 'You: ' + you.toFixed(2) + '% vs SPY: ' + bench.toFixed(2) + '% since you started';
-  } else vs.textContent = '\u2014';
-}
-async function paperBuy(t, sh, price){
-  const p = getPaper();
-  const cost = sh * price;
-  if(cost > p.cash){ toast('\u26a0\ufe0f', 'Not enough paper cash. You have ' + fmt(p.cash) + '.'); return false; }
-  p.cash -= cost;
-  const ex = p.pos.find(function(x){ return x.t === t; });
-  if(ex){ ex.price = (ex.price*ex.sh + cost)/(ex.sh + sh); ex.sh += sh; }
-  else p.pos.push({t:t, sh:sh, price:price, ts:Date.now()});
-  savePaper(p);
-  unlockAchv('paper_trader'); track('paper_buy', {ticker:t});
-  toast('\ud83d\udcc4', 'Paper-bought ' + sh + ' ' + t + ' @ ' + fmt(price));
-  renderPaper();
-  return true;
-}
-function paperSell(i){
-  const p = getPaper();
-  const x = p.pos[i]; if(!x) return;
-  const q = priceCache[x.t];
-  const price = q ? q.c : x.price;
-  p.cash += price * x.sh;
-  const pnl = (price - x.price)*x.sh;
-  p.pos.splice(i,1);
-  savePaper(p);
-  toast(pnl >= 0 ? '\ud83d\udcb0' : '\ud83d\udcc9', 'Sold ' + x.t + ' \u2014 ' + (pnl>=0?'profit ':'loss ') + fmt(Math.abs(pnl)));
-  renderPaper();
-}
-function paperReset(){
-  if(!confirm('Reset paper trading back to $100,000?')) return;
-  localStorage.removeItem('fp_paper');
-  renderPaper();
-}
-
-// ── MARKETS PAGE ──
-const PULSE = [{t:'SPY',n:'S&P 500'},{t:'QQQ',n:'Nasdaq 100'},{t:'DIA',n:'Dow Jones'},{t:'IWM',n:'Russell 2000'},{t:'VIXY',n:'Volatility (VIXY)'}];
-const SECTOR_ETFS = [{t:'XLK',n:'Technology'},{t:'XLV',n:'Healthcare'},{t:'XLF',n:'Financials'},{t:'XLY',n:'Consumer Cyclical'},{t:'XLP',n:'Consumer Staples'},{t:'XLE',n:'Energy'},{t:'XLI',n:'Industrials'},{t:'XLC',n:'Communication'},{t:'XLU',n:'Utilities'},{t:'XLB',n:'Materials'},{t:'XLRE',n:'Real Estate'}];
-let _marketsInit = false;
-function initMarkets(){
-  renderPulse(); renderHeatMap(); loadEarnings();
-  if(_marketsInit) return;
-  _marketsInit = true;
-  const sel = document.getElementById('scrSector');
-  const sectors = Array.from(new Set(Object.values(SECTORS))).sort();
-  sectors.forEach(function(s){ const o = document.createElement('option'); o.textContent = s; sel.appendChild(o); });
-}
-async function renderPulse(){
-  const qs = await Promise.all(PULSE.map(async function(p){ return {p:p, q: await fetchQ(p.t)}; }));
-  document.getElementById('pulseGrid').innerHTML = qs.map(function(r){
-    if(!r.q) return '';
-    const up = r.q.dp >= 0;
-    return '<div class="p-metric"><div class="p-label">' + r.p.n + '</div><div class="p-val">' + fmt(r.q.c) + '</div><div style="font-size:12px;margin-top:3px" class="' + (up?'up':'down') + '">' + (up?'\u25b2 +':'\u25bc ') + r.q.dp.toFixed(2) + '%</div></div>';
-  }).join('');
-  const spy = qs[0].q, vix = qs[4] ? qs[4].q : null;
-  let note = '';
-  if(spy) note = spy.dp >= 0.5 ? 'Broad market is having a strong day.' : spy.dp <= -0.5 ? 'Broad market is under pressure today \u2014 long-term investors, this is normal.' : 'Quiet, range-bound session so far.';
-  if(vix && vix.dp > 5) note += ' Volatility is spiking \u2014 markets are nervous.';
-  document.getElementById('pulseNote').textContent = note;
-}
-async function renderHeatMap(){
-  const qs = await Promise.all(SECTOR_ETFS.map(async function(s){ return {s:s, q: await fetchQ(s.t)}; }));
-  document.getElementById('heatGrid').innerHTML = qs.map(function(r, i){
-    if(!r.q) return '';
-    const dp = r.q.dp;
-    const mag = Math.min(1, Math.abs(dp)/2.2);
-    const bg = dp >= 0 ? 'rgba(22,101,52,' + (0.35+mag*0.6) + ')' : 'rgba(153,27,27,' + (0.35+mag*0.6) + ')';
-    return '<div class="heat-cell" style="background:' + bg + '" onclick="heatDetailShow(' + i + ',' + dp.toFixed(2) + ')" role="button" tabindex="0"><div class="heat-name">' + r.s.n + '</div><div class="heat-pct">' + (dp>=0?'\u25b2 +':'\u25bc ') + dp.toFixed(2) + '%</div></div>';
-  }).join('');
-  // "your portfolio vs today's sectors" line
-  if(portfolio.length){
-    const totals = {}; let tv = 0;
-    portfolio.forEach(function(h){ const q = priceCache[h.ticker]; const v = (q?q.c:h.buyPrice)*h.shares; tv += v; const s = SECTORS[h.ticker]||'Other'; totals[s] = (totals[s]||0)+v; });
-    const top = Object.entries(totals).sort(function(a,b){return b[1]-a[1]})[0];
-    if(top && tv > 0){
-      const etf = qs.find(function(r){ return r.s.n === top[0]; });
-      if(etf && etf.q) document.getElementById('heatDetail').innerHTML = 'Your portfolio is <b>' + (top[1]/tv*100).toFixed(0) + '% ' + top[0] + '</b> \u2014 that sector is <b class="' + (etf.q.dp>=0?'up':'down') + '">' + (etf.q.dp>=0?'+':'') + etf.q.dp.toFixed(2) + '%</b> today.';
-    }
-  }
-}
-function heatDetailShow(i, dp){
-  const s = SECTOR_ETFS[i];
-  const mine = portfolio.filter(function(h){ return (SECTORS[h.ticker]||'') === s.n; }).map(function(h){ return h.ticker; });
-  document.getElementById('heatDetail').innerHTML = '<b>' + s.n + '</b> (' + s.t + ') is ' + (dp>=0?'up ':'down ') + Math.abs(dp).toFixed(2) + '% today.' + (mine.length ? ' Your holdings here: <b>' + mine.join(', ') + '</b>.' : ' You hold nothing in this sector.');
-}
-// screener
-const _metricCache = {};
-async function fetchMetrics(t){
-  if(_metricCache[t] && Date.now()-_metricCache[t].ts < 600000) return _metricCache[t];
-  try{
-    const r = await fetch('https://finnhub.io/api/v1/stock/metric?symbol=' + t + '&metric=all&token=' + FK);
-    const d = await r.json();
-    if(d && d.metric){ _metricCache[t] = {m: d.metric, ts: Date.now()}; return _metricCache[t]; }
-  }catch(e){}
-  return null;
-}
-async function runScreener(){
-  const out = document.getElementById('scrResults');
-  const uni = Object.keys(COMPANIES);
-  out.innerHTML = '<div class="skel-row" style="height:56px;margin-bottom:8px"></div>'.repeat(5) + '<div style="font-size:12px;color:var(--muted);text-align:center">Screening ' + uni.length + ' stocks\u2026</div>';
-  const sector = document.getElementById('scrSector').value;
-  const maxP = parseFloat(document.getElementById('scrPrice').value) || Infinity;
-  const maxPE = parseFloat(document.getElementById('scrPE').value) || Infinity;
-  const minDiv = parseFloat(document.getElementById('scrDiv').value) || 0;
-  const minCap = (parseFloat(document.getElementById('scrCap').value) || 0) * 1000; // metric is $M
-  const guru = document.getElementById('scrGuru').value;
-  const guruSet = guru ? new Set(MOVES.filter(function(m){ return m.investor === guru; }).map(function(m){ return m.ticker; })) : null;
-  const rows = [];
-  for(const t of uni){
-    if(sector && (SECTORS[t]||'Other') !== sector) continue;
-    if(guruSet && !guruSet.has(t)) continue;
-    const [q, met] = await Promise.all([fetchQ(t), fetchMetrics(t)]);
-    if(!q) continue;
-    const m = met ? met.m : {};
-    const pe = m.peBasicExclExtraTTM, dy = m.currentDividendYieldTTM || 0, cap = m.marketCapitalization, w52 = m['52WeekPriceReturnDaily'];
-    if(q.c > maxP) continue;
-    if(pe && pe > maxPE) continue;
-    if(dy < minDiv) continue;
-    if(cap && cap < minCap) continue;
-    rows.push({t:t, q:q, pe:pe, dy:dy, cap:cap, w52:w52});
-  }
-  const gurusFor = function(t){
-    return Array.from(new Set(MOVES.filter(function(m){ return m.ticker === t; }).map(function(m){ return m.investor.split(' ')[1]; })));
-  };
-  out.innerHTML = rows.length ? rows.map(function(r){
-    return '<div class="scr-row"><div class="s-icon" style="width:38px;height:38px;font-size:11px">' + r.t.slice(0,2) + '</div>' +
-      '<div style="flex:1;min-width:130px"><div style="font-weight:700;font-size:14px">' + r.t + ' <span style="font-weight:400;color:var(--muted);font-size:12px">' + (COMPANIES[r.t]||'') + '</span></div>' +
-      '<div style="font-size:11px;color:var(--muted)">' + (SECTORS[r.t]||'Other') + (r.cap ? ' \u00b7 ' + (r.cap/1000).toFixed(0) + 'B cap' : '') + '</div></div>' +
-      '<div style="font-size:12px;color:var(--muted)">P/E ' + (r.pe ? r.pe.toFixed(1) : '\u2014') + '</div>' +
-      '<div style="font-size:12px;color:var(--muted)">Yield ' + r.dy.toFixed(1) + '%</div>' +
-      '<div style="font-size:12px" class="' + ((r.w52||0)>=0?'up':'down') + '">52w ' + (r.w52!=null ? (r.w52>=0?'+':'')+r.w52.toFixed(0)+'%' : '\u2014') + '</div>' +
-      '<div style="font-weight:700;font-family:var(--font-display)">' + fmt(r.q.c) + '</div>' +
-      gurusFor(r.t).map(function(g){ return '<span class="guru-chip">' + g + '</span>'; }).join('') +
-      '<button class="price-btn" style="width:auto;padding:8px 16px;font-size:12px" onclick="openAddShares(\'' + r.t + '\')">Add</button></div>';
-  }).join('') : '<div class="empty">No stocks match those filters \u2014 loosen one and try again.</div>';
-  track('screener_run');
-}
-// earnings calendar
-async function loadEarnings(){
-  const el = document.getElementById('earnList');
-  try{
-    const from = new Date().toISOString().slice(0,10);
-    const to = new Date(Date.now()+14*86400000).toISOString().slice(0,10);
-    const r = await fetch('https://finnhub.io/api/v1/calendar/earnings?from=' + from + '&to=' + to + '&token=' + FK);
-    const d = await r.json();
-    let items = (d.earningsCalendar||[]);
-    const known = new Set(Object.keys(COMPANIES).concat(portfolio.map(function(p){return p.ticker;}), getWatch()));
-    const mineFirst = items.filter(function(x){ return known.has(x.symbol); });
-    items = (mineFirst.length ? mineFirst : items).slice(0, 12);
-    if(!items.length) throw 0;
-    el.innerHTML = items.map(function(x){
-      const days = Math.max(0, Math.ceil((new Date(x.date) - Date.now())/86400000));
-      const mine = portfolio.find(function(p){ return p.ticker === x.symbol; });
-      return '<div class="earn-row"><div><b>' + x.symbol + '</b>' + (mine ? ' <span class="guru-chip" style="background:rgba(34,197,94,.15);color:#4ade80">You own this</span>' : '') + '<div style="font-size:11px;color:var(--muted)">' + x.date + (x.hour ? ' \u00b7 ' + x.hour.toUpperCase() : '') + '</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--mint)">' + (days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : 'in ' + days + ' days') + '</div><div style="font-size:11px;color:var(--muted)">EPS est: ' + (x.epsEstimate != null ? '$' + x.epsEstimate : '\u2014') + '</div></div></div>';
-    }).join('');
-  }catch(e){
-    el.innerHTML = '<div class="empty">Earnings calendar isn\u2019t available on the current data plan \u2014 showing it requires a Finnhub upgrade.</div>';
-  }
-}
-// backtest (modeled)
-function runBacktest(){
-  const amt = parseFloat(document.getElementById('btAmt').value)||0;
-  const years = parseFloat(document.getElementById('btYears').value)||0;
-  const rate = parseFloat(document.getElementById('btAsset').value)||0;
-  const fv = _fv(amt, rate, years), inv = amt*12*years;
-  const real = _fv(amt, Math.max(0, rate-3), years);
-  const out = document.getElementById('btOut');
-  out.style.display = 'block';
-  out.innerHTML = 'Total invested: <b>' + fmt(inv) + '</b><br>Modeled final value: <b style="color:var(--mint);font-size:19px">' + fmt(fv) + '</b> (' + ((fv/inv-1)*100).toFixed(0) + '% total return)<br>In today\u2019s dollars (3% inflation): <b>' + fmt(real) + '</b><br><span style="font-size:12px;color:var(--muted)">Modeled with a constant average annual return \u2014 real markets zig-zag. Past performance never guarantees the future.</span>';
-}
-
-// ── PORTFOLIO ANALYZER (rule-based) ──
-function analyzePortfolio(){
-  unlockAchv('analyzer'); track('analyzer_run');
-  const recs = document.getElementById('aiRecs');
-  if(!portfolio.length){ recs.innerHTML = '<div class="empty">Add stocks first, then run the analysis.</div>'; return; }
-  let tv = 0; const sec = {};
-  portfolio.forEach(function(h){ const q = priceCache[h.ticker]; const v = (q?q.c:h.buyPrice)*h.shares; tv += v; const s = SECTORS[h.ticker]||'Other'; sec[s] = (sec[s]||0)+v; });
-  const findings = [];
-  Object.entries(sec).forEach(function(e){
-    const pct = e[1]/tv*100;
-    if(pct > 45) findings.push({b:'\u26a0\ufe0f Concentration risk', t: pct.toFixed(0) + '% of your portfolio is ' + e[0] + '. A single-sector downturn would hit hard \u2014 consider diversifying below ~35%.'});
-  });
-  portfolio.forEach(function(h){
-    const q = priceCache[h.ticker]; const v = (q?q.c:h.buyPrice)*h.shares;
-    if(v/tv > 0.3) findings.push({b:'\u26a0\ufe0f Single-stock risk', t: h.ticker + ' is ' + (v/tv*100).toFixed(0) + '% of your portfolio. Great companies still crash \u2014 most pros cap any one position at 10\u201320%.'});
-  });
-  const majors = ['Technology','Healthcare','Financials','Consumer Staples','Energy'];
-  const missing = majors.filter(function(m){ return !sec[m]; });
-  if(missing.length) findings.push({b:'\ud83e\udded Missing sectors', t:'No exposure to: ' + missing.join(', ') + '. You don\u2019t need all of them \u2014 but owning only one story is fragile.'});
-  const gurus = {'Warren Buffett':0,'Bill Ackman':0,'David Tepper':0};
-  portfolio.forEach(function(h){ MOVES.forEach(function(m){ if(m.ticker === h.ticker) gurus[m.investor] = (gurus[m.investor]||0)+1; }); });
-  const overlap = Object.entries(gurus).filter(function(e){ return e[1] > 0; }).map(function(e){ return e[0] + ' (' + e[1] + ')'; });
-  findings.push({b:'\ud83c\udfc6 Guru alignment', t: overlap.length ? 'You share holdings with: ' + overlap.join(', ') + '. Check the Gold tab to see what they did with those positions last quarter.' : 'None of your holdings overlap with Buffett, Ackman or Tepper \u2014 not wrong, but worth knowing you\u2019re fully off the beaten path.'});
-  if(portfolio.length < 4) findings.push({b:'\ud83d\udcca Position count', t:'Only ' + portfolio.length + ' holding' + (portfolio.length===1?'':'s') + '. Under ~5 positions, single-company luck dominates your results. An index ETF like VOO fixes this in one purchase.'});
-  recs.innerHTML = '<div class="ai-rec"><div class="ai-rec-head"><div class="ai-rec-ticker">Deep portfolio analysis</div><span class="ai-action-badge act-hold">' + portfolio.length + ' holdings \u00b7 ' + fmt(tv) + '</span></div>' +
-    findings.map(function(f){ return '<div style="margin-top:12px"><b>' + f.b + '</b><div class="ai-rec-text" style="margin-top:4px">' + f.t + '</div></div>'; }).join('') +
-    '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted2)">Rule-based educational analysis \u2014 not financial advice.</div></div>';
-}
-
-// ── WHY IT MOVED (headlines for the stock in detail view) ──
-async function loadWhyMoved(t){
-  const el = document.getElementById('whyMoved'); if(!el) return;
-  el.innerHTML = '';
-  try{
-    const to = new Date().toISOString().slice(0,10);
-    const from = new Date(Date.now()-3*86400000).toISOString().slice(0,10);
-    const r = await fetch('https://finnhub.io/api/v1/company-news?symbol=' + t + '&from=' + from + '&to=' + to + '&token=' + FK);
-    const items = (await r.json()).slice(0,3);
-    if(!items.length) return;
-    el.innerHTML = '<div class="d-metric" style="margin-bottom:16px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px"><div class="d-mlabel">Why it might be moving \u2014 latest headlines</div>' +
-      items.map(function(n){ return '<a href="' + n.url + '" target="_blank" rel="noopener noreferrer" style="display:block;color:var(--text);text-decoration:none;font-size:13px;line-height:1.5;padding:9px 0;border-bottom:1px solid var(--line)">' + escapeHtml(n.headline) + ' <span style="color:var(--muted2);font-size:11px">\u2014 ' + escapeHtml(n.source||'') + '</span></a>'; }).join('') + '</div>';
-  }catch(e){}
-}
-
-// ── SHARE PORTFOLIO (anonymous, encoded in URL — no server) ──
-function sharePortfolio(){
-  if(!portfolio.length){ toast('\u26a0\ufe0f','Add some stocks first.'); return; }
-  const data = btoa(JSON.stringify(portfolio.map(function(p){ return [p.ticker, p.shares]; })));
-  const url = 'https://finpathdev.github.io/FinPath/#p=' + data;
-  (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function(){
-    toast('\ud83d\udd17','Anonymous portfolio link copied \u2014 it shows holdings only, never your identity.');
-  }).catch(function(){ prompt('Copy your share link:', url); });
-  track('portfolio_shared');
-}
-async function handleSharedLink(){
-  if(location.hash.indexOf('#p=') !== 0) return;
-  let list;
-  try{ list = JSON.parse(atob(location.hash.slice(3))); }catch(e){ return; }
-  if(!Array.isArray(list) || !list.length) return;
-  const ov = document.createElement('div');
-  ov.className = 'modal-overlay open';
-  ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-label','Shared portfolio');
-  ov.innerHTML = '<div class="modal"><h2>\ud83d\udd17 Someone shared a portfolio with you</h2><div id="sharedList"><div class="skel-row"></div></div><div style="display:flex;gap:10px;margin-top:16px"><button class="price-btn" style="flex:1" onclick="importShared()">Import into mine</button><button class="modal-close-btn" style="flex:1;margin-top:0" onclick="this.closest(\'.modal-overlay\').remove();history.replaceState(null,\'\',location.pathname)">Close</button></div></div>';
-  document.body.appendChild(ov);
-  window._sharedData = list;
-  const qs = await Promise.all(list.map(async function(x){ return {t:x[0], sh:x[1], q: await fetchQ(x[0])}; }));
-  let tot = 0;
-  document.getElementById('sharedList').innerHTML = qs.map(function(r){
-    const v = r.q ? r.q.c*r.sh : 0; tot += v;
-    return '<div class="modal-result" style="cursor:default"><div><b>' + r.t + '</b> <span style="color:var(--muted);font-size:12px">' + r.sh + ' shares</span></div><div style="font-weight:700">' + (r.q ? fmt(v) : '\u2014') + '</div></div>';
-  }).join('') + '<div style="text-align:right;font-weight:700;font-family:var(--font-display);margin-top:8px">Total: ' + fmt(tot) + '</div>';
-}
-async function importShared(){
-  (window._sharedData||[]).forEach(function(x){
-    if(!portfolio.find(function(p){ return p.ticker === x[0]; })){
-      const q = priceCache[x[0]];
-      portfolio.push({ticker:x[0], shares:x[1], buyPrice: q ? q.c : 0});
-    }
-  });
-  await saveToDB();
-  document.querySelector('.modal-overlay.open').remove();
-  history.replaceState(null,'',location.pathname);
-  showPage('portfolio');
-  toast('\u2705','Shared holdings imported into your portfolio.');
-}
-
-// run once definitions above exist
-initStreak();
-startAlertLoop();
-handleSharedLink();
-</script>
 
 <script>
 (function(){
