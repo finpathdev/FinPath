@@ -20,6 +20,7 @@
   --panel:rgba(18,28,19,.55);--panel-solid:#0b110c;--panel2:#101a11;
   --line:rgba(134,239,172,.10);--line-strong:rgba(134,239,172,.22);
   --green:#22c55e;--mint:#86efac;--green-dark:#16a34a;--deep:#052e16;--green-dim:#15803d;
+  --green-deeper:#052e16;--surface:#0b110c;--surface2:#101a11;--border:rgba(134,239,172,.10);
   --text:#eef5ee;--muted:#93a693;--muted2:#5a6b5c;
   --gold:#f5b60b;--gold-soft:rgba(245,182,11,.12);
   --red:#f87171;--blue:#60a5fa;
@@ -378,6 +379,7 @@ body.light{
   --line:rgba(20,83,45,.15);--line-strong:rgba(20,83,45,.34);
   --text:#0e1f13;--muted:#47604e;--muted2:#8aa08c;
   --deep:#dcfce7;--gold-soft:rgba(180,120,7,.12);
+  --green-deeper:#dcfce7;--surface:#ffffff;--surface2:#eef3ed;--border:rgba(20,83,45,.15);
   --shadow-glow:0 8px 26px rgba(34,197,94,.28);
   background-image:
     radial-gradient(ellipse 900px 500px at 15% -5%,rgba(34,197,94,.13),transparent 60%),
@@ -546,7 +548,7 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
 .cmp-table td,.cmp-table th{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}
 .cmp-table th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
 </style>
-</style></head><body>
+</head><body>
 
 
 <!-- LOGIN MODAL -->
@@ -1122,17 +1124,6 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
       <div><h1 style="font-size:28px;font-weight:800;letter-spacing:-.5px">Your Portfolio</h1><p style="font-size:14px;color:var(--muted);margin-top:4px"><span class="live-dot"></span> Live prices · AI suggestions · Profit tracking</p></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="add-btn" onclick="openSearch()">+ Add stock</button><button class="btn-secondary" style="padding:14px 20px;font-size:14px" onclick="sharePortfolio()" aria-label="Copy shareable portfolio link">Share</button></div>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:-6px 0 20px">
-      <button class="filter-tab" onclick="openAchievements()">🏅 <span id="achCount">0</span> achievements</button>
-      <span class="filter-tab" style="cursor:default">🔥 <span id="streakDays">1</span>-day streak</span>
-      <button class="filter-tab" onclick="sharePortfolio()">🔗 Share portfolio</button>
-      <button class="filter-tab" onclick="openAnalyzer()">🧠 AI analyzer</button>
-    </div>
-    <div class="period-tabs" style="margin:0 0 20px" role="tablist" aria-label="Portfolio mode">
-      <button class="period-tab active" id="tabReal" role="tab" onclick="setPFMode('real')">My portfolio</button>
-      <button class="period-tab" id="tabPaper" role="tab" onclick="setPFMode('paper')">Paper trading <span class="paper-badge">practice</span></button>
-    </div>
-    <div id="realWrap">
     <div class="port-top-grid">
       <div class="port-card green-card">
         <div class="port-label">Total portfolio value</div>
@@ -1158,20 +1149,6 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
           <div class="p-metric"><div class="p-label">Return %</div><div class="p-val" id="pReturn">0.00%</div></div>
         </div>
       </div>
-    </div>
-    <div class="port-card" style="margin-bottom:26px" id="goalsCard">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-        <div class="port-label" style="margin:0">Savings goals</div>
-        <button class="period-tab" onclick="addGoal()">+ New goal</button>
-      </div>
-      <div id="goalsList" style="margin-top:14px"><div class="empty" style="padding:20px">No goals yet. Set one — "Save $1,000 emergency fund by June" — and track it weekly.</div></div>
-    </div>
-    <div class="port-card" style="margin-bottom:26px" id="alertsCard">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-        <div class="port-label" style="margin:0">Price alerts</div>
-        <button class="period-tab" onclick="addAlert()">+ New alert</button>
-      </div>
-      <div id="alertsUserList" style="margin-top:14px"><div class="empty" style="padding:20px">No alerts. Get notified when a stock crosses your target price (while FinPath is open).</div></div>
     </div>
     <div id="watchWrap" style="display:none">
       <div style="font-size:16px;font-weight:700;margin-bottom:12px;font-family:var(--font-display)">Watchlist <span style="font-size:12px;color:var(--muted);font-weight:500">· tap a stock to add it to your portfolio</span></div>
@@ -1233,86 +1210,9 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div style="font-size:16px;font-weight:700;font-family:var(--font-display)">Achievements</div><span id="streakChip" style="font-size:12px;color:var(--gold);font-weight:700"></span></div>
       <div id="achvGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px"></div>
     </div>
-    </div><!-- /realWrap -->
-    <div id="paperWrap" style="display:none">
-      <div class="port-top-grid">
-        <div class="port-card green-card">
-          <div class="port-label">Paper account value <span class="paper-badge" style="margin-left:6px">virtual money</span></div>
-          <div class="port-value" id="paperValue">$100,000.00</div>
-          <div class="daily-change-row"><span class="daily-badge daily-up" id="paperPerf">+0.00% all time</span><span style="font-size:12px;color:var(--muted)" id="paperVsSpy"></span></div>
-          <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
-            <button class="add-btn" style="margin:0" onclick="paperBuyStart()">+ Buy stock</button>
-            <button class="period-tab" onclick="resetPaper()" style="align-self:center">Reset account</button>
-          </div>
-        </div>
-        <div class="port-card">
-          <div class="port-label">Buying power</div>
-          <div class="port-value" id="paperCash" style="cursor:default">$100,000.00</div>
-          <p style="font-size:13px;color:var(--muted);margin-top:10px;line-height:1.7">Practice with $100,000 of virtual cash at real live prices. Zero risk — all learning. Your performance is benchmarked against the S&P 500 from your first trade.</p>
-        </div>
-      </div>
-      <div style="font-size:16px;font-weight:700;margin-bottom:12px">Paper holdings</div>
-      <div class="stocks-grid" id="paperGrid"><div class="empty" style="grid-column:1/-1">No paper trades yet. Hit "+ Buy stock" to practice with virtual money.</div></div>
-    </div>
   </div>
 
 <div style="text-align:center;padding:22px;font-size:12px;color:#5a6b5c;border-top:1px solid rgba(134,239,172,.08);position:relative;z-index:2">Built by <span style="color:#22c55e;font-weight:600">Siddharth Moosani</span> · © 2026 FinPath</div>
-</div>
-
-<!-- MARKETS -->
-<div id="page-markets" class="page">
-  <div class="page-header"><h1>Markets</h1><p>Live sector heat map, market pulse, earnings, screener and simulators.</p></div>
-  <div class="mk-section">
-    <div style="font-size:16px;font-weight:700;margin-bottom:4px;font-family:var(--font-display)">Sector heat map</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Today's performance by sector (via sector ETFs). Tap a sector to see movers.</p>
-    <div class="heat-grid" id="heatGrid"><div class="skel-row"></div><div class="skel-row"></div><div class="skel-row"></div><div class="skel-row"></div></div>
-    <div id="heatMovers" style="margin-top:14px"></div>
-  </div>
-  <div class="mk-section">
-    <div style="font-size:16px;font-weight:700;margin-bottom:4px;font-family:var(--font-display)">Market pulse</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">The signals from the "Reading Market Signals" lesson, live.</p>
-    <div class="pulse-grid" id="pulseGrid"><div class="skel-row"></div><div class="skel-row"></div><div class="skel-row"></div></div>
-  </div>
-  <div class="mk-section">
-    <div style="font-size:16px;font-weight:700;margin-bottom:4px;font-family:var(--font-display)">Earnings calendar</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Upcoming reports for your stocks and major companies. Earnings are the #1 catalyst for price moves.</p>
-    <div id="earnList"><div class="skel-row"></div><div class="skel-row"></div></div>
-  </div>
-  <div class="mk-section">
-    <div style="font-size:16px;font-weight:700;margin-bottom:4px;font-family:var(--font-display)">Stock screener</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Discover stocks by criteria instead of guessing tickers.</p>
-    <div class="port-card">
-      <div class="scr-controls">
-        <div><label>Sector</label><select id="scrSector"><option value="">All sectors</option></select></div>
-        <div><label>Max P/E</label><input id="scrPE" type="number" placeholder="e.g. 30"></div>
-        <div><label>Min dividend yield %</label><input id="scrDiv" type="number" step="0.1" placeholder="e.g. 1.5"></div>
-        <div><label>Min market cap ($B)</label><input id="scrCap" type="number" placeholder="e.g. 100"></div>
-        <div><label>52-week trend</label><select id="scrTrend"><option value="">Any</option><option value="up">Up over 52 weeks</option><option value="down">Down over 52 weeks</option></select></div>
-        <div style="display:flex;align-items:flex-end"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;font-size:13px;color:var(--text)"><input type="checkbox" id="scrBuffett" style="width:auto"> Buffett owns it</label></div>
-      </div>
-      <button class="ai-run-btn" style="margin-bottom:0" onclick="runScreener()">Screen stocks</button>
-      <div id="scrResults" style="margin-top:16px"><div class="empty">Set your criteria and hit Screen stocks.</div></div>
-    </div>
-  </div>
-  <div class="mk-section" style="padding-bottom:80px">
-    <div style="font-size:16px;font-weight:700;margin-bottom:4px;font-family:var(--font-display)">"What if I had invested…" simulator</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Monthly investing projected with historical average returns. Educational estimate — past performance never guarantees future results.</p>
-    <div class="calc-box" style="margin-top:0">
-      <div class="calc-row">
-        <div><label>Monthly amount ($)</label><input id="btAmt" type="number" value="300"></div>
-        <div><label>Years</label><input id="btYears" type="number" value="10"></div>
-        <div><label>Asset (historical avg/yr)</label><select id="btAsset">
-          <option value="10.2">S&P 500 index — 10.2%</option>
-          <option value="13.1">Nasdaq 100 — 13.1%</option>
-          <option value="7.0">Dividend stalwarts — 7%</option>
-          <option value="4.5">High-yield savings — 4.5%</option>
-          <option value="0.5">Checking account — 0.5%</option>
-        </select></div>
-      </div>
-      <button class="ai-run-btn" style="margin-bottom:0" onclick="runBacktest()">Project it</button>
-      <div id="btResult" style="margin-top:16px"></div>
-    </div>
-  </div>
 </div>
 
 <!-- MARKETS -->
@@ -4157,6 +4057,19 @@ async function compareStocks(){
     '</table><div style="font-size:11px;color:var(--muted2);margin-top:10px">Green = better on that metric (lower P/E treated as better). Educational, not advice.</div>';
   track('compare_run');
 }
+
+
+// Defensive dedupe — removes any duplicated UI rows (e.g. from a bad merge/paste)
+(function(){
+  ['.chip-row', '.mode-tabs'].forEach(function(sel){
+    var els = document.querySelectorAll(sel);
+    for(var i = 1; i < els.length; i++) els[i].remove();
+  });
+  var seen = {};
+  document.querySelectorAll('[id]').forEach(function(el){
+    if(seen[el.id]) el.remove(); else seen[el.id] = true;
+  });
+})();
 
 // ── INIT ──
 applyTheme(localStorage.getItem('fp_theme') || 'dark');
