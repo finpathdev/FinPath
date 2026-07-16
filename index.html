@@ -8,6 +8,25 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>FinPath — The Financial Playbook Schools Skipped</title>
+<meta name="description" content="Learn investing the way schools never taught it — 34 plain-English lessons, live billionaire trades, a real-time portfolio tracker, and risk-free paper trading with $100,000 of virtual cash.">
+<meta name="theme-color" content="#040604">
+<link rel="canonical" href="https://finpathdev.github.io/FinPath/">
+<!-- Open Graph (link previews on iMessage, WhatsApp, Discord, Facebook, LinkedIn…) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FinPath">
+<meta property="og:title" content="FinPath — The Financial Playbook Schools Skipped">
+<meta property="og:description" content="34 plain-English investing lessons, live billionaire trades, a real-time portfolio tracker, and $100,000 of risk-free paper trading.">
+<meta property="og:url" content="https://finpathdev.github.io/FinPath/">
+<!-- NOTE: upload the og-image.png file (provided alongside this HTML) into the same folder as this page -->
+<meta property="og:image" content="https://finpathdev.github.io/FinPath/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FinPath — learn investing with live prices, lessons and paper trading">
+<!-- Twitter / X card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FinPath — The Financial Playbook Schools Skipped">
+<meta name="twitter:description" content="34 plain-English investing lessons, live billionaire trades, a real-time portfolio tracker, and $100,000 of risk-free paper trading.">
+<meta name="twitter:image" content="https://finpathdev.github.io/FinPath/og-image.png">
 <script src="https://js.stripe.com/v3/"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -547,6 +566,53 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
 .cmp-table{width:100%;font-size:13px;border-collapse:collapse}
 .cmp-table td,.cmp-table th{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}
 .cmp-table th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+
+/* ── API STATUS BANNER (rate-limit / outage) ── */
+.api-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:940;background:#3a2b06;color:#fde68a;border:1px solid rgba(245,182,11,.4);border-radius:999px;padding:10px 20px;font-size:13px;font-weight:600;display:none;align-items:center;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:calc(100% - 32px)}
+.api-bar .spinner{width:14px;height:14px;border-width:2px;flex-shrink:0}
+body.light .api-bar{background:#fef3c7;color:#92400e;border-color:rgba(180,120,7,.35)}
+
+/* ── TRANSACTION HISTORY ── */
+.txn-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.txn-list{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.txn-row{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--line);font-size:13.5px}
+.txn-row:last-child{border-bottom:none}
+.txn-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:rgba(134,239,172,.08)}
+.txn-buy .txn-icon{background:rgba(34,197,94,.14)}
+.txn-sell .txn-icon{background:rgba(96,165,250,.12)}
+.txn-main{flex:1;min-width:0}
+.txn-title{font-weight:600}
+.txn-title .tk{font-family:var(--font-display)}
+.txn-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.txn-right{text-align:right;flex-shrink:0}
+.txn-amt{font-weight:700;font-family:var(--font-display)}
+.txn-pnl{font-size:12px;font-weight:600;margin-top:1px}
+.txn-badge{font-size:10px;font-weight:800;letter-spacing:.05em;border-radius:999px;padding:2px 8px;margin-left:7px;vertical-align:1px}
+.txn-badge.paper{background:rgba(96,165,250,.15);color:#60a5fa}
+.txn-badge.live{background:rgba(34,197,94,.14);color:var(--green)}
+@media(max-width:520px){.txn-row{padding:12px 13px;gap:10px}.txn-sub .when-full{display:none}}
+
+/* ── GETTING STARTED CHECKLIST ── */
+.gs-card{background:linear-gradient(135deg,rgba(5,46,22,.5),var(--panel));border:1px solid var(--line-strong);border-radius:var(--radius-lg);padding:22px;margin-bottom:22px;position:relative}
+.gs-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+.gs-title{font-size:16px;font-weight:700;font-family:var(--font-display)}
+.gs-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
+.gs-dismiss{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:4px 8px;border-radius:8px}
+.gs-dismiss:hover{color:var(--text);background:rgba(134,239,172,.07)}
+.gs-items{display:grid;gap:9px}
+.gs-item{display:flex;align-items:center;gap:13px;background:rgba(6,12,7,.45);border:1px solid var(--line);border-radius:14px;padding:13px 15px;cursor:pointer;transition:border-color .15s;text-align:left;width:100%;color:var(--text);font-family:var(--font-body)}
+.gs-item:hover{border-color:var(--line-strong)}
+.gs-item.done{opacity:.62;cursor:default}
+.gs-check{width:26px;height:26px;border-radius:50%;border:2px solid var(--muted2);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;color:transparent;transition:all .2s}
+.gs-item.done .gs-check{background:var(--green);border-color:var(--green);color:#fff}
+.gs-item-title{font-size:14px;font-weight:600}
+.gs-item.done .gs-item-title{text-decoration:line-through}
+.gs-item-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.gs-arrow{margin-left:auto;color:var(--muted2);font-size:15px;flex-shrink:0}
+.gs-item.done .gs-arrow{visibility:hidden}
+.gs-bar{height:6px;border-radius:99px;background:rgba(134,239,172,.12);margin-top:16px;overflow:hidden}
+.gs-bar-fill{height:100%;background:linear-gradient(90deg,var(--green-dark),var(--green));border-radius:99px;transition:width .4s ease}
+body.light .gs-item{background:#fff}
 </style>
 </head><body>
 
@@ -1111,6 +1177,7 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
 <!-- PORTFOLIO -->
 <div id="page-portfolio" class="page">
   <div class="portfolio-wrap">
+    <div id="startChecklist"></div>
     <div class="chip-row">
       <button class="chip" id="chipAchv" onclick="document.getElementById('achvGrid').scrollIntoView({behavior:'smooth'})">🏅 0 achievements</button>
       <button class="chip" id="chipStreak" onclick="document.getElementById('achvGrid').scrollIntoView({behavior:'smooth'})">🔥 1-day streak</button>
@@ -1209,6 +1276,18 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
     <div style="margin-top:34px">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div style="font-size:16px;font-weight:700;font-family:var(--font-display)">Achievements</div><span id="streakChip" style="font-size:12px;color:var(--gold);font-weight:700"></span></div>
       <div id="achvGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px"></div>
+    </div>
+    <div style="margin-top:34px" id="txnSection">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+        <div style="font-size:16px;font-weight:700;font-family:var(--font-display)">Transaction history <span style="font-size:12px;color:var(--muted);font-weight:500">· every buy &amp; sell, so you can review how each call went</span></div>
+        <button class="period-tab" onclick="exportTxnCSV()" aria-label="Export transaction history as CSV">📥 Export</button>
+      </div>
+      <div class="txn-filters" role="tablist" aria-label="Filter transactions">
+        <button class="chip" id="txnFilterAll" onclick="setTxnFilter('all')" role="tab">All</button>
+        <button class="chip" id="txnFilterLive" onclick="setTxnFilter('live')" role="tab">My portfolio</button>
+        <button class="chip" id="txnFilterPaper" onclick="setTxnFilter('paper')" role="tab">Paper trading</button>
+      </div>
+      <div id="txnList"></div>
     </div>
   </div>
 
@@ -2138,7 +2217,7 @@ function showPage(p){
   window.scrollTo(0,0);
   if(p==='lessons') renderLessons();
   if(p==='gold') renderGold();
-  if(p==='portfolio'){loadFromDB().then(()=>renderPortfolio());if(typeof renderGoals==='function'){renderGoals();renderAchievements();renderAlertsList();}}
+  if(p==='portfolio'){loadFromDB().then(()=>renderPortfolio());if(typeof renderGoals==='function'){renderGoals();renderAchievements();renderAlertsList();}if(typeof renderTxns==='function')renderTxns();if(typeof renderChecklist==='function')renderChecklist();}
   if(p==='markets' && typeof initMarkets==='function') initMarkets();
 }
 
@@ -2150,6 +2229,7 @@ function markLessonComplete(i){
   localStorage.setItem('fp_lessons', JSON.stringify(p));
   if(Object.keys(p).length >= 5 && typeof unlockAchv==='function') unlockAchv('scholar');
   track('lesson_complete', {lesson: LESSONS[i].name});
+  if(typeof renderChecklist==='function') renderChecklist();
   openLesson(i);
 }
 function updateLessonProgress(){
@@ -2343,6 +2423,68 @@ function showSuccessBanner(){
 const CRYPTO = {BTC:'BINANCE:BTCUSDT', ETH:'BINANCE:ETHUSDT', SOL:'BINANCE:SOLUSDT', DOGE:'BINANCE:DOGEUSDT'};
 const REV_CRYPTO = {}; Object.keys(CRYPTO).forEach(function(k){ REV_CRYPTO[CRYPTO[k]] = k; });
 const _pendingQ = {};
+// ── RESILIENT PRICE FETCHING ──
+// Prices are cached in-memory AND persisted to localStorage, so if Finnhub
+// rate-limits (free tier) or the network drops, we show the last known price
+// instead of stuck skeletons, tell the user, and retry automatically.
+try{
+  const saved = JSON.parse(localStorage.getItem('fp_pricecache')||'{}');
+  Object.keys(saved).forEach(function(k){ if(saved[k] && typeof saved[k].c === 'number') priceCache[k] = saved[k]; });
+}catch(e){}
+let _cachePersistT = null;
+function persistPriceCache(){
+  if(_cachePersistT) return;
+  _cachePersistT = setTimeout(function(){
+    _cachePersistT = null;
+    try{ localStorage.setItem('fp_pricecache', JSON.stringify(priceCache)); }catch(e){}
+  }, 3000);
+}
+let _apiDown = false, _apiFailStreak = 0, _apiRetryT = null;
+function _apiBar(){
+  let b = document.getElementById('apiBar');
+  if(!b){
+    b = document.createElement('div');
+    b.id = 'apiBar'; b.className = 'api-bar'; b.setAttribute('role','status'); b.setAttribute('aria-live','polite');
+    b.innerHTML = '<div class="spinner"></div><span>Live prices temporarily unavailable — showing last known prices. Retrying…</span>';
+    document.body.appendChild(b);
+  }
+  return b;
+}
+function apiTrouble(){
+  _apiFailStreak++;
+  if(_apiFailStreak < 3 || _apiDown) return;   // tolerate a couple of one-off misses
+  _apiDown = true;
+  _apiBar().style.display = 'flex';
+  scheduleApiRetry();
+}
+function apiOK(){
+  _apiFailStreak = 0;
+  if(!_apiDown) return;
+  _apiDown = false;
+  if(_apiRetryT){ clearTimeout(_apiRetryT); _apiRetryT = null; }
+  const b = document.getElementById('apiBar'); if(b) b.style.display = 'none';
+  toast('✅','Live prices are back — everything is up to date.');
+  // refresh whatever the user is looking at
+  try{
+    const active = document.querySelector('.page.active');
+    if(active && active.id === 'page-portfolio'){ (typeof PAPER_MODE!=='undefined' && PAPER_MODE) ? renderPaper() : renderPortfolio(); }
+    if(active && active.id === 'page-markets' && typeof initMarkets === 'function') initMarkets();
+  }catch(e){}
+}
+function scheduleApiRetry(){
+  if(_apiRetryT) return;
+  _apiRetryT = setTimeout(async function(){
+    _apiRetryT = null;
+    try{
+      const r = await fetch('https://finnhub.io/api/v1/quote?symbol=SPY&token='+FK);
+      if(r.ok){
+        const d = await r.json();
+        if(d && d.c){ priceCache['SPY'] = {c:d.c,d:d.d,dp:d.dp,o:d.o,ts:Date.now()}; persistPriceCache(); apiOK(); return; }
+      }
+    }catch(e){}
+    if(_apiDown) scheduleApiRetry();   // still down — keep trying every 25s
+  }, 25000);
+}
 async function fetchQ(t){
   const cached = priceCache[t];
   if(cached && Date.now()-cached.ts < 30000) return cached;
@@ -2350,18 +2492,23 @@ async function fetchQ(t){
   _pendingQ[t] = (async function(){
     try{
       const r = await fetch('https://finnhub.io/api/v1/quote?symbol='+encodeURIComponent(CRYPTO[t]||t)+'&token='+FK);
+      if(r.status === 429 || r.status === 403){ apiTrouble(); return cached ? {...cached, stale:true} : null; }
       const d = await r.json();
       if(d && d.c){
+        apiOK();
         priceCache[t] = {c:d.c,d:d.d,dp:d.dp,o:d.o,ts:Date.now()};
+        persistPriceCache();
         const keys = Object.keys(priceCache);
         if(keys.length > 60){
           const cutoff = Date.now()-300000;
-          keys.forEach(function(k){ if(priceCache[k].ts < cutoff) delete priceCache[k]; });
+          keys.forEach(function(k){ if(priceCache[k].ts < cutoff && !portfolio.find(function(p){return p.ticker===k;})) delete priceCache[k]; });
         }
         return priceCache[t];
       }
-    }catch(e){}
-    return null;
+      apiTrouble();
+    }catch(e){ apiTrouble(); }
+    // fall back to the last known price (may be stale) rather than nothing
+    return cached ? {...cached, stale:true} : null;
   })().finally(function(){ delete _pendingQ[t]; });
   return _pendingQ[t];
 }
@@ -2460,6 +2607,8 @@ async function confirmAdd(){
   else portfolio.push({ticker:selectedStock.ticker,shares,buyPrice:selectedStock.price||0});
   try{ const ad=JSON.parse(localStorage.getItem('fp_added')||'{}'); if(!ad[selectedStock.ticker]) ad[selectedStock.ticker]=Date.now(); localStorage.setItem('fp_added',JSON.stringify(ad)); }catch(e){}
   track('add_stock', {ticker: selectedStock.ticker});
+  logTxn({type:'buy', mode:'live', t:selectedStock.ticker, sh:shares, price:selectedStock.price||0});
+  if(typeof renderChecklist==='function') renderChecklist();
   if(typeof unlockAchv==='function') unlockAchv('first_stock');
   await saveToDB();
   closeShares();
@@ -2468,6 +2617,12 @@ async function confirmAdd(){
 
 async function removeStock(){
   const _t = selectedStock ? selectedStock.ticker : null;
+  const _h = _t ? portfolio.find(function(p){ return p.ticker === _t; }) : null;
+  if(_h){
+    const q = priceCache[_t];
+    const price = q ? q.c : _h.buyPrice;
+    logTxn({type:'remove', mode:'live', t:_t, sh:_h.shares, price:price, pnl:(price - _h.buyPrice)*_h.shares});
+  }
   portfolio=portfolio.filter(p=>p.ticker!==selectedStock.ticker);
   await saveToDB();
   closeDetail();
@@ -3157,9 +3312,13 @@ async function loadDemoPortfolio(){
   document.getElementById('stocksGrid').innerHTML = '<div class="skel-row"></div>'.repeat(3);
   for(const p of picks){
     const q = await fetchQ(p.t);
-    if(!portfolio.find(function(x){return x.ticker===p.t;})) portfolio.push({ticker:p.t, shares:p.s, buyPrice:q?q.c:0});
+    if(!portfolio.find(function(x){return x.ticker===p.t;})){
+      portfolio.push({ticker:p.t, shares:p.s, buyPrice:q?q.c:0});
+      logTxn({type:'buy', mode:'live', demo:true, t:p.t, sh:p.s, price:q?q.c:0});
+    }
   }
   await saveToDB();
+  if(typeof renderChecklist==='function') renderChecklist();
   renderPortfolio();
 }
 
@@ -3224,9 +3383,9 @@ document.addEventListener('keydown', function(e){
 function initOnboarding(){
   if(localStorage.getItem('fp_onboarded')) return;
   const steps = [
-    {icon:'👋', title:'Welcome to FinPath', body:'The financial playbook schools skipped — 34 lessons, live billionaire trades, and a real-time portfolio tracker.'},
-    {icon:'📈', title:'Track your first stock', body:'Open the Portfolio tab, hit “+ Add stock”, and watch live prices stream in. Or start with a one-tap demo portfolio.'},
-    {icon:'🏆', title:'Learn from the best', body:'See exactly what Buffett, Ackman and Tepper bought last quarter — then read the lessons behind their moves.'}
+    {icon:'👋', title:'Welcome to FinPath', body:'The financial playbook schools skipped. Three small steps and you\u2019ll have the hang of it — this takes about a minute.'},
+    {icon:'📈', title:'Step 1 — Add your first stock', body:'Track a real stock with live prices, or practice risk-free with $100,000 of virtual paper-trading cash. Not sure where to start? Try the one-tap demo portfolio.'},
+    {icon:'🎯', title:'Step 2 — Set a goal, then learn', body:'Set a concrete savings goal (like a $1,000 emergency fund), then try your first 5-minute lesson. A checklist on your Portfolio page tracks all three steps for you.'}
   ];
   let step = 0;
   const ov = document.createElement('div');
@@ -3243,7 +3402,7 @@ function initOnboarding(){
       '<p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:26px">' + s.body + '</p>' +
       '<div style="display:flex;gap:10px;justify-content:center">' +
       (isLast
-        ? '<button class="btn-primary" style="padding:13px 26px;font-size:14px" onclick="obFinish(\'portfolio\')">Add my first stock</button><button class="btn-secondary" style="padding:13px 26px;font-size:14px" onclick="obFinish(\'lessons\')">Browse lessons</button>'
+        ? '<button class="btn-primary" style="padding:13px 26px;font-size:14px" onclick="obFinish(\'portfolio\')">Start step 1 →</button><button class="btn-secondary" style="padding:13px 26px;font-size:14px" onclick="obFinish(\'lessons\')">Browse lessons</button>'
         : '<button class="btn-primary" style="padding:13px 30px;font-size:14px" onclick="obNext()">Next</button><button class="btn-secondary" style="padding:13px 22px;font-size:14px" onclick="obFinish()">Skip</button>') +
       '</div></div>';
   }
@@ -3630,6 +3789,7 @@ function saveGoal(){
   document.getElementById('goalForm').style.display = 'none';
   document.getElementById('gName').value = ''; document.getElementById('gTarget').value = '';
   unlockAchv('goal_setter'); track('goal_created');
+  if(typeof renderChecklist==='function') renderChecklist();
 }
 function addToGoal(i){
   const amt = parseFloat(prompt('How much are you adding to this goal? ($)')||'0');
@@ -3721,6 +3881,8 @@ async function paperBuy(t, sh, price){
   if(ex){ ex.price = (ex.price*ex.sh + cost)/(ex.sh + sh); ex.sh += sh; }
   else p.pos.push({t:t, sh:sh, price:price, ts:Date.now()});
   savePaper(p);
+  logTxn({type:'buy', mode:'paper', t:t, sh:sh, price:price});
+  if(typeof renderChecklist==='function') renderChecklist();
   unlockAchv('paper_trader'); track('paper_buy', {ticker:t});
   toast('📄', 'Paper-bought ' + sh + ' ' + t + ' @ ' + fmt(price));
   renderPaper();
@@ -3735,13 +3897,125 @@ function paperSell(i){
   const pnl = (price - x.price)*x.sh;
   p.pos.splice(i,1);
   savePaper(p);
+  logTxn({type:'sell', mode:'paper', t:x.t, sh:x.sh, price:price, pnl:pnl});
   toast(pnl >= 0 ? '💰' : '📉', 'Sold ' + x.t + ' — ' + (pnl>=0?'profit ':'loss ') + fmt(Math.abs(pnl)));
   renderPaper();
 }
 function paperReset(){
   if(!confirm('Reset paper trading back to $100,000?')) return;
   localStorage.removeItem('fp_paper');
+  logTxn({type:'reset', mode:'paper'});
   renderPaper();
+}
+
+// ══ TRANSACTION HISTORY ══
+// Every buy, sell and removal is logged locally so users can review
+// "what did I buy, when, and how did it go" — the core learning loop.
+function getTxns(){ try{ const t = JSON.parse(localStorage.getItem('fp_txns')); return Array.isArray(t) ? t : []; }catch(e){ return []; } }
+function logTxn(e){
+  const t = getTxns();
+  e.ts = Date.now();
+  t.unshift(e);
+  if(t.length > 500) t.length = 500;   // keep the last 500
+  try{ localStorage.setItem('fp_txns', JSON.stringify(t)); }catch(err){}
+  if(typeof renderTxns === 'function') renderTxns();
+}
+let TXN_FILTER = 'all';
+function setTxnFilter(f){ TXN_FILTER = f; renderTxns(); }
+function txnWhen(ts){
+  const d = Date.now() - ts, m = 60000, h = 3600000, day = 86400000;
+  if(d < m) return 'just now';
+  if(d < h) return Math.floor(d/m) + 'm ago';
+  if(d < day) return Math.floor(d/h) + 'h ago';
+  if(d < 7*day) return Math.floor(d/day) + 'd ago';
+  return new Date(ts).toLocaleDateString('en-US', {month:'short', day:'numeric', year: new Date(ts).getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined});
+}
+function renderTxns(){
+  const list = document.getElementById('txnList'); if(!list) return;
+  ['All','Live','Paper'].forEach(function(k){
+    const b = document.getElementById('txnFilter'+k);
+    if(b) b.style.cssText = (TXN_FILTER === k.toLowerCase()) ? 'color:#fff;background:linear-gradient(135deg,var(--green-dark),var(--green));border-color:transparent' : '';
+  });
+  let txns = getTxns();
+  if(TXN_FILTER !== 'all') txns = txns.filter(function(x){ return x.mode === TXN_FILTER; });
+  if(!txns.length){
+    list.innerHTML = '<div class="empty" style="padding:26px">No transactions yet. Every stock you add, buy or sell will show up here so you can look back and learn from each decision.</div>';
+    return;
+  }
+  list.innerHTML = '<div class="txn-list">' + txns.slice(0,50).map(function(x){
+    const badge = '<span class="txn-badge ' + (x.mode==='paper'?'paper':'live') + '">' + (x.mode==='paper'?'PAPER':'PORTFOLIO') + '</span>';
+    const when = '<span class="when-full">' + txnWhen(x.ts) + '</span>';
+    if(x.type === 'reset')
+      return '<div class="txn-row"><div class="txn-icon">🔄</div><div class="txn-main"><div class="txn-title">Paper account reset to $100,000' + badge + '</div><div class="txn-sub">' + when + '</div></div></div>';
+    const total = (x.price||0) * (x.sh||0);
+    const shTxt = x.sh + ' share' + (x.sh===1?'':'s') + ' @ ' + fmt(x.price||0);
+    if(x.type === 'buy')
+      return '<div class="txn-row txn-buy"><div class="txn-icon">' + (x.demo?'🎓':'🟢') + '</div><div class="txn-main"><div class="txn-title">' + (x.demo?'Demo-added':'Bought') + ' <span class="tk">' + x.t + '</span>' + badge + '</div><div class="txn-sub">' + shTxt + ' · ' + when + '</div></div><div class="txn-right"><div class="txn-amt">' + fmt(total) + '</div></div></div>';
+    // sell / remove
+    const pnl = (typeof x.pnl === 'number') ? x.pnl : null;
+    const pnlHtml = pnl === null ? '' : '<div class="txn-pnl ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ -') + fmt(Math.abs(pnl)).slice(1) + ' ' + (pnl>=0?'profit':'loss') + '</div>';
+    return '<div class="txn-row txn-sell"><div class="txn-icon">' + (x.type==='remove'?'🗑️':'🔵') + '</div><div class="txn-main"><div class="txn-title">' + (x.type==='remove'?'Removed':'Sold') + ' <span class="tk">' + x.t + '</span>' + badge + '</div><div class="txn-sub">' + shTxt + ' · ' + when + '</div></div><div class="txn-right"><div class="txn-amt">' + fmt(total) + '</div>' + pnlHtml + '</div></div>';
+  }).join('') + '</div>' + (txns.length > 50 ? '<div style="font-size:12px;color:var(--muted);text-align:center;margin-top:10px">Showing the 50 most recent of ' + txns.length + ' — use Export for the full history.</div>' : '');
+}
+function exportTxnCSV(){
+  const txns = getTxns();
+  if(!txns.length){ toast('⚠️','No transactions to export yet.'); return; }
+  let rows = [['Date','Action','Mode','Ticker','Shares','Price','Total','Profit/Loss']];
+  txns.forEach(function(x){
+    rows.push([new Date(x.ts).toISOString(), x.type, x.mode, x.t||'', x.sh||'', x.price!=null?x.price.toFixed(2):'', (x.price!=null&&x.sh!=null)?(x.price*x.sh).toFixed(2):'', (typeof x.pnl==='number')?x.pnl.toFixed(2):'']);
+  });
+  const blob = new Blob([rows.map(function(r){return r.join(',');}).join('\n')], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'finpath-transactions.csv'; a.click();
+  URL.revokeObjectURL(a.href); track('export_txns');
+}
+
+// ══ GETTING STARTED CHECKLIST ══
+// A friendly 3-step checklist for first-time users: add a stock → set a
+// goal → try a lesson. Checks itself off automatically and disappears
+// forever once completed or dismissed — zero nagging.
+function gsSteps(){
+  let hasStock = portfolio.length > 0;
+  try{ if(!hasStock) hasStock = getPaper().pos.length > 0; }catch(e){}
+  let hasGoal = false; try{ hasGoal = (typeof getGoals==='function' ? getGoals() : JSON.parse(localStorage.getItem('fp_goals')||'[]')).length > 0; }catch(e){}
+  let hasLesson = false; try{ hasLesson = Object.keys(JSON.parse(localStorage.getItem('fp_lessons')||'{}')).length > 0; }catch(e){}
+  return [
+    {done:hasStock, icon:'📈', title:'Add your first stock', sub:'Track a real stock — or paper-trade with virtual cash', act:"openSearch()"},
+    {done:hasGoal, icon:'🎯', title:'Set a savings goal', sub:'Something concrete, like a $1,000 emergency fund', act:"document.getElementById('goalsList').scrollIntoView({behavior:'smooth'});openGoalForm()"},
+    {done:hasLesson, icon:'📚', title:'Try your first lesson', sub:'5-minute reads, in plain English', act:"showPage('lessons')"}
+  ];
+}
+function renderChecklist(){
+  const el = document.getElementById('startChecklist'); if(!el) return;
+  if(localStorage.getItem('fp_checklist_done')){ el.innerHTML = ''; return; }
+  const steps = gsSteps();
+  const done = steps.filter(function(s){ return s.done; }).length;
+  if(done === steps.length){
+    localStorage.setItem('fp_checklist_done','1');
+    el.innerHTML = '';
+    if(localStorage.getItem('fp_checklist_seen')){   // only celebrate if they actually used the checklist
+      toast('🎉','You finished the getting-started checklist. You\u2019re officially on your way!');
+      if(typeof confettiBurst === 'function') confettiBurst();
+      track('checklist_complete');
+    }
+    return;
+  }
+  localStorage.setItem('fp_checklist_seen','1');
+  el.innerHTML = '<div class="gs-card">' +
+    '<div class="gs-head"><div class="gs-title">🚀 Getting started — ' + done + ' of ' + steps.length + '</div>' +
+    '<button class="gs-dismiss" onclick="dismissChecklist()" aria-label="Dismiss getting started checklist">Dismiss ✕</button></div>' +
+    '<div class="gs-sub">Three small steps and you\u2019ll have the hang of FinPath.</div>' +
+    '<div class="gs-items">' + steps.map(function(s){
+      return '<button class="gs-item' + (s.done?' done':'') + '"' + (s.done?' disabled':' onclick="' + s.act.replace(/"/g,'&quot;') + '"') + '>' +
+        '<div class="gs-check">✓</div><div><div class="gs-item-title">' + s.icon + ' ' + s.title + '</div><div class="gs-item-sub">' + s.sub + '</div></div>' +
+        '<div class="gs-arrow">→</div></button>';
+    }).join('') + '</div>' +
+    '<div class="gs-bar"><div class="gs-bar-fill" style="width:' + (done/steps.length*100) + '%"></div></div></div>';
+}
+function dismissChecklist(){
+  localStorage.setItem('fp_checklist_done','1');
+  const el = document.getElementById('startChecklist'); if(el) el.innerHTML = '';
+  track('checklist_dismissed');
 }
 
 // ── MARKETS PAGE ──
@@ -3958,8 +4232,10 @@ async function importShared(){
     if(!portfolio.find(function(p){ return p.ticker === x[0]; })){
       const q = priceCache[x[0]];
       portfolio.push({ticker:x[0], shares:x[1], buyPrice: q ? q.c : 0});
+      logTxn({type:'buy', mode:'live', t:x[0], sh:x[1], price:q?q.c:0});
     }
   });
+  if(typeof renderChecklist==='function') renderChecklist();
   await saveToDB();
   document.querySelector('.modal-overlay.open').remove();
   history.replaceState(null,'',location.pathname);
