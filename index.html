@@ -27,6 +27,7 @@
 <meta name="twitter:title" content="FinPath — The Financial Playbook Schools Skipped">
 <meta name="twitter:description" content="34 plain-English investing lessons, live billionaire trades, a real-time portfolio tracker, and $100,000 of risk-free paper trading.">
 <meta name="twitter:image" content="https://finpathdev.github.io/FinPath/og-image.png">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://js.stripe.com/v3/"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -613,6 +614,73 @@ body.light .api-bar{background:#fef3c7;color:#92400e;border-color:rgba(180,120,7
 .gs-bar{height:6px;border-radius:99px;background:rgba(134,239,172,.12);margin-top:16px;overflow:hidden}
 .gs-bar-fill{height:100%;background:linear-gradient(90deg,var(--green-dark),var(--green));border-radius:99px;transition:width .4s ease}
 body.light .gs-item{background:#fff}
+
+/* ── HOW IT WORKS CARDS ── */
+.hiw-card{position:relative;background:linear-gradient(160deg,rgba(5,46,22,.28),var(--panel));border:1px solid var(--line);border-radius:22px;padding:28px 26px 26px;cursor:pointer;transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;overflow:hidden}
+.hiw-card:hover{transform:translateY(-3px);border-color:var(--line-strong);box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.hiw-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top right,rgba(34,197,94,.10),transparent 60%);pointer-events:none;opacity:0;transition:opacity .3s}
+.hiw-card:hover::before{opacity:1}
+.hiw-num{font-family:var(--font-display);font-size:64px;font-weight:800;line-height:.9;color:transparent;-webkit-text-stroke:1.5px var(--green);letter-spacing:-3px;margin-bottom:6px}
+.hiw-icon{font-size:32px;margin-bottom:14px}
+.hiw-title{font-family:var(--font-display);font-size:19px;font-weight:700;margin-bottom:8px;letter-spacing:-.3px}
+.hiw-body{font-size:14px;color:var(--muted);line-height:1.55;margin-bottom:16px}
+.hiw-cta{font-size:13px;font-weight:600;color:var(--green);transition:transform .2s}
+.hiw-card:hover .hiw-cta{transform:translateX(3px)}
+
+/* ── FOUNDER / EARLY ACCESS ── */
+.founder-section{max-width:820px;margin:70px auto 0;padding:44px 34px;background:linear-gradient(135deg,rgba(5,46,22,.35),var(--panel));border:1px solid var(--line-strong);border-radius:24px;text-align:center;position:relative;overflow:hidden}
+.founder-section::before{content:'';position:absolute;top:-40%;right:-20%;width:60%;height:180%;background:radial-gradient(circle,rgba(34,197,94,.09),transparent 60%);pointer-events:none}
+.founder-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(245,182,11,.10);border:1px solid rgba(245,182,11,.28);color:#f5b60b;padding:6px 14px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px;position:relative}
+.founder-title{font-family:var(--font-display);font-size:clamp(22px,2.6vw,30px);font-weight:800;letter-spacing:-.6px;margin-bottom:14px;position:relative}
+.founder-body{font-size:15px;color:var(--muted);line-height:1.7;max-width:600px;margin:0 auto 22px;position:relative}
+.founder-body strong{color:var(--text);font-weight:600}
+.founder-signature{margin-top:26px;font-family:'Caveat','Dancing Script','Segoe Script','Bradley Hand',cursive;font-size:38px;line-height:1;color:var(--green);position:relative;transform:rotate(-3deg);display:inline-block;text-shadow:0 2px 12px rgba(34,197,94,.25)}
+.founder-signature-role{display:block;font-family:var(--font-body);font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.05em;margin-top:8px;transform:rotate(0deg);text-shadow:none}
+
+/* ── STRATEGY PLAYGROUND ── */
+.sp-hero{background:linear-gradient(160deg,rgba(5,46,22,.4),var(--panel));border:1px solid var(--line-strong);border-radius:22px;padding:28px 26px;margin-bottom:18px}
+.sp-hero-title{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+.sp-hero-sub{font-size:14px;color:var(--muted);margin-bottom:22px;line-height:1.5}
+.sp-controls{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;margin-bottom:16px}
+.sp-controls label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.sp-controls input,.sp-controls select{width:100%;background:rgba(6,12,7,.5);border:1px solid var(--line);color:var(--text);padding:11px 12px;border-radius:11px;font-family:var(--font-body);font-size:14px}
+.sp-controls input:focus,.sp-controls select:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px rgba(34,197,94,.15)}
+.sp-run{background:linear-gradient(135deg,var(--green-dark),var(--green));color:#fff;border:none;padding:11px 20px;border-radius:11px;font-family:var(--font-body);font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:transform .15s}
+.sp-run:hover{transform:translateY(-1px)}
+.sp-quick{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.sp-quick-btn{background:rgba(134,239,172,.06);border:1px solid var(--line);color:var(--muted);padding:7px 13px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;font-family:var(--font-body)}
+.sp-quick-btn:hover{color:var(--green);border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.08)}
+.sp-result{background:rgba(6,12,7,.55);border:1px solid var(--line);border-radius:16px;padding:22px;display:none}
+.sp-result.on{display:block;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.sp-headline{font-family:var(--font-display);font-size:15px;color:var(--muted);margin-bottom:8px;line-height:1.5}
+.sp-headline b{color:var(--text);font-weight:600}
+.sp-big{font-family:var(--font-display);font-size:clamp(38px,6vw,58px);font-weight:800;color:var(--green);letter-spacing:-2px;line-height:1;margin:8px 0 4px;text-shadow:0 4px 24px rgba(34,197,94,.2)}
+.sp-return-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.14);color:var(--green);padding:4px 12px;border-radius:99px;font-weight:700;font-size:13px;margin-bottom:18px}
+.sp-return-pill.down{background:rgba(248,113,113,.14);color:#f87171}
+.sp-breakdown{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0}
+.sp-brk{background:rgba(4,6,4,.55);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.sp-brk-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;font-weight:600}
+.sp-brk-val{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:-.5px}
+.sp-chart-wrap{background:rgba(4,6,4,.55);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+.sp-insight{background:rgba(245,182,11,.06);border-left:3px solid #f5b60b;padding:12px 14px;border-radius:8px;margin-top:14px;font-size:13px;color:var(--text);line-height:1.55}
+.sp-insight b{color:#f5b60b}
+.sp-share{display:inline-flex;align-items:center;gap:6px;background:rgba(134,239,172,.08);border:1px solid var(--line);color:var(--text);padding:8px 14px;border-radius:99px;font-size:12px;font-weight:600;cursor:pointer;margin-top:14px}
+.sp-share:hover{border-color:var(--green);color:var(--green)}
+@media(max-width:640px){.sp-controls{grid-template-columns:1fr 1fr;gap:10px}.sp-controls > :nth-child(3){grid-column:span 2}.sp-controls > :nth-child(4){grid-column:span 2}.sp-run{width:100%}}
+
+/* ── CLASSIC STRATEGIES ── */
+.cs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:16px}
+.cs-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.cs-card:hover{border-color:var(--line-strong);transform:translateY(-2px)}
+.cs-icon{font-size:26px;margin-bottom:10px}
+.cs-name{font-family:var(--font-display);font-size:17px;font-weight:800;margin-bottom:4px;letter-spacing:-.3px}
+.cs-nick{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin-bottom:12px}
+.cs-desc{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px}
+.cs-stat{display:flex;justify-content:space-between;align-items:baseline;padding-top:12px;border-top:1px solid var(--line)}
+.cs-stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.cs-stat-val{font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--green)}
+.cs-try{font-size:12px;font-weight:700;color:var(--green);margin-top:10px}
 </style>
 </head><body>
 
@@ -691,7 +759,7 @@ body.light .gs-item{background:#fff}
   <section class="hero">
     <div class="hero-bg"></div>
     <div class="hero-inner">
-      <div class="hero-tag">Live prices · Real 13F filings · AI suggestions</div>
+      <div class="hero-tag">🚀 Just launched · Early access · Built by a high schooler</div>
       <h1>Money doesn't come with a manual.<br><span>Now it does.</span></h1>
       <p>34 no-fluff lessons, the exact trades Buffett, Ackman and Tepper filed last quarter, and a live portfolio tracker with AI buy/hold/sell suggestions — built for people starting from zero.</p>
       <div class="hero-btns">
@@ -699,13 +767,49 @@ body.light .gs-item{background:#fff}
         <button class="btn-secondary" onclick="showPage('portfolio')">Open Portfolio Tracker</button>
       </div>
       <div class="stats-row">
-        <div class="stat"><div class="stat-num">34</div><div class="stat-label">Expert lessons</div></div>
-        <div class="stat"><div class="stat-num">19+</div><div class="stat-label">Investor moves tracked</div></div>
-        <div class="stat"><div class="stat-num">3</div><div class="stat-label">Billionaires followed</div></div>
+        <div class="stat"><div class="stat-num" id="heroStat1">34</div><div class="stat-label">Expert lessons</div></div>
+        <div class="stat"><div class="stat-num" id="heroStat2">$100k</div><div class="stat-label">Paper trading cash · per user</div></div>
+        <div class="stat"><div class="stat-num" id="heroStat3">3</div><div class="stat-label">Billionaires you can copy</div></div>
+      </div>
+      <div id="liveActivity" style="margin-top:40px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;color:var(--muted);opacity:0;transition:opacity .6s">
+        <span style="width:8px;height:8px;border-radius:50%;background:var(--green);animation:blip 2s ease-in-out infinite;flex-shrink:0"></span>
+        <span id="liveActivityText">Loading recent activity…</span>
       </div>
     </div>
   </section>
   <div class="tape"><div class="tape-track" id="tapeTrack"><span class="tape-item"><span class="t-sym">FINPATH</span><span class="t-price">loading live prices…</span></span></div></div>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" style="padding:80px 5% 20px;max-width:1200px;margin:0 auto">
+  <div style="text-align:center;margin-bottom:44px">
+    <div style="font-size:11px;font-weight:600;color:#22c55e;text-transform:uppercase;letter-spacing:.14em;margin-bottom:12px">How it works</div>
+    <h2 style="font-size:clamp(26px,3.5vw,42px);font-weight:800;letter-spacing:-1px;line-height:1.15;margin-bottom:12px">From <span style="color:#22c55e">"what's a stock?"</span> to confident<br>in three steps</h2>
+    <p style="font-size:15px;color:#93a693;max-width:560px;margin:0 auto">No prior finance knowledge required. If you know how to use TikTok, you can use FinPath.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
+    <div class="hiw-card" onclick="showPage('lessons')">
+      <div class="hiw-num">1</div>
+      <div class="hiw-icon">📚</div>
+      <div class="hiw-title">Learn the fundamentals</div>
+      <div class="hiw-body">34 five-minute lessons in plain English. Compound interest, index funds, taxes — the stuff school skipped.</div>
+      <div class="hiw-cta">Open lessons →</div>
+    </div>
+    <div class="hiw-card" onclick="showPage('portfolio')">
+      <div class="hiw-num">2</div>
+      <div class="hiw-icon">🎮</div>
+      <div class="hiw-title">Practice risk-free</div>
+      <div class="hiw-body">Get $100,000 of virtual cash and trade real stocks at real live prices. Losses cost you nothing but a lesson.</div>
+      <div class="hiw-cta">Start paper trading →</div>
+    </div>
+    <div class="hiw-card" onclick="showPage('gold')">
+      <div class="hiw-num">3</div>
+      <div class="hiw-icon">📈</div>
+      <div class="hiw-title">Follow the pros</div>
+      <div class="hiw-body">See what Buffett, Ackman, and Tepper actually bought last quarter — straight from real SEC filings.</div>
+      <div class="hiw-cta">See billionaire moves →</div>
+    </div>
+  </div>
+</section>
 
 <!-- 3D INTERACTIVE SECTION -->
 <div id="interactive-3d" style="padding:60px 5% 20px;max-width:1200px;margin:0 auto;text-align:center">
@@ -1095,6 +1199,15 @@ body.light .gs-item{background:#fff}
       </div>
     </div>
   </section>
+  <section style="padding:60px 5% 0">
+    <div class="founder-section">
+      <div class="founder-badge">✨ Just launched · Early adopter</div>
+      <div class="founder-title">Hi, I'm Siddharth. I built FinPath because school skipped this.</div>
+      <div class="founder-body">I'm a high school student who kept hearing "invest early" without anyone actually explaining <strong>how</strong>. So I spent months building the tool I wish existed — <strong>34 lessons in plain English, $100k of practice cash, real filings from real billionaires, and a live portfolio tracker</strong> — all free.<br><br>You're early. That means your feedback shapes what FinPath becomes next. Thanks for checking it out.</div>
+      <div class="founder-signature">— Siddharth<span class="founder-signature-role">Founder, FinPath</span></div>
+      <div style="margin-top:26px;position:relative"><button class="btn-primary" onclick="handleAuthClick()">Get started free →</button></div>
+    </div>
+  </section>
   <section class="pricing">
     <div class="section-tag">Pricing</div>
     <h2 class="section-title">Start free. Go Gold when you're ready.</h2>
@@ -1321,14 +1434,88 @@ body.light .gs-item{background:#fff}
       <div id="cmpOut"></div>
     </div>
     <div class="mk-section"><div class="mk-title">Earnings calendar</div><div class="mk-sub">Upcoming reports over the next two weeks — your holdings are highlighted.</div><div id="earnList"><div class="skel-row" style="height:52px"></div></div></div>
-    <div class="mk-section"><div class="mk-title">Backtest: “What if I had invested…”</div><div class="mk-sub">Modeled with historical <b>average annual returns</b> (not actual price paths) — for education, not prediction.</div>
-      <div class="scr-filters">
-        <div><label>Monthly amount ($)</label><input id="btAmt" type="number" value="300"></div>
-        <div><label>Years</label><input id="btYears" type="number" value="8"></div>
-        <div><label>Asset</label><select id="btAsset"><option value="10">VOO / S&amp;P 500 (~10%/yr)</option><option value="24">AAPL (~24%/yr, 2010–2024)</option><option value="22">MSFT (~22%/yr)</option><option value="7">KO (~7%/yr)</option><option value="4.5">High-yield savings (~4.5%)</option></select></div>
+    <div class="mk-section"><div class="mk-title">🎮 Strategy Playground</div><div class="mk-sub">See how classic investing strategies would have played out — no risk, no math homework, just answers.</div>
+      <div class="sp-hero">
+        <div class="sp-hero-title">"What if I had invested…"</div>
+        <div class="sp-hero-sub">Set a monthly amount, pick an asset, pick a timeframe. See what happens.</div>
+        <div class="sp-controls">
+          <div><label>Monthly amount</label><input id="btAmt" type="number" value="100" min="1" max="50000"></div>
+          <div><label>Years</label><input id="btYears" type="number" value="10" min="1" max="40"></div>
+          <div><label>Asset</label>
+            <select id="btAsset">
+              <option value="10">S&amp;P 500 index (~10%/yr)</option>
+              <option value="24">Apple / AAPL (~24%/yr)</option>
+              <option value="22">Microsoft / MSFT (~22%/yr)</option>
+              <option value="35">Tesla / TSLA (~35%/yr since 2015)</option>
+              <option value="18">Nasdaq 100 / QQQ (~18%/yr)</option>
+              <option value="7">Coca-Cola / KO (~7%/yr)</option>
+              <option value="4.5">High-yield savings (~4.5%)</option>
+              <option value="0">Cash under the mattress (0%)</option>
+            </select>
+          </div>
+          <button class="sp-run" onclick="runBacktest()">Run it →</button>
+        </div>
+        <div class="sp-quick">
+          <span style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;align-self:center;margin-right:4px">Try:</span>
+          <button class="sp-quick-btn" onclick="spPreset(50,10,10)">$50/mo · S&amp;P · 10yr</button>
+          <button class="sp-quick-btn" onclick="spPreset(100,15,10)">$100/mo · S&amp;P · 15yr</button>
+          <button class="sp-quick-btn" onclick="spPreset(100,10,24)">$100/mo · Apple · 10yr</button>
+          <button class="sp-quick-btn" onclick="spPreset(25,20,10)">$25/mo · 20yr</button>
+        </div>
+        <div class="sp-result" id="btOut"></div>
       </div>
-      <button class="ai-run-btn" onclick="runBacktest()">Calculate</button>
-      <div class="calc-out" id="btOut" style="display:none"></div>
+    </div>
+    <div class="mk-section"><div class="mk-title">📖 Classic Strategies</div><div class="mk-sub">The playbook every generation of investor learns — explained in plain English. Tap any one to see how it would have performed.</div>
+      <div class="cs-grid">
+        <div class="cs-card" onclick="spPreset(100,10,10)">
+          <div class="cs-icon">🏛️</div>
+          <div class="cs-name">The Bogle</div>
+          <div class="cs-nick">Set-and-forget indexing</div>
+          <div class="cs-desc">Named after Jack Bogle, who invented the index fund. Buy the whole S&amp;P 500, hold it forever, ignore the noise. Boring, brutal, and beats most professionals.</div>
+          <div class="cs-stat"><span class="cs-stat-label">Avg return</span><span class="cs-stat-val">~10%/yr</span></div>
+          <div class="cs-try">Try in playground →</div>
+        </div>
+        <div class="cs-card" onclick="spPreset(200,15,10)">
+          <div class="cs-icon">💰</div>
+          <div class="cs-name">The DCA</div>
+          <div class="cs-nick">Dollar-cost averaging</div>
+          <div class="cs-desc">Buy the same dollar amount every month, no matter what price is. You automatically buy more when it's cheap, less when it's expensive. The chill-mode strategy.</div>
+          <div class="cs-stat"><span class="cs-stat-label">Best for</span><span class="cs-stat-val">Beginners</span></div>
+          <div class="cs-try">Try in playground →</div>
+        </div>
+        <div class="cs-card" onclick="spPreset(150,20,10)">
+          <div class="cs-icon">🐢</div>
+          <div class="cs-name">The Buffett</div>
+          <div class="cs-nick">Buy quality, hold forever</div>
+          <div class="cs-desc">Warren Buffett's approach: find a small number of great businesses and hold for decades. "Our favorite holding period is forever." Requires patience most people don't have.</div>
+          <div class="cs-stat"><span class="cs-stat-label">Timeframe</span><span class="cs-stat-val">20yr+</span></div>
+          <div class="cs-try">Try in playground →</div>
+        </div>
+        <div class="cs-card" onclick="spPreset(300,10,18)">
+          <div class="cs-icon">🚀</div>
+          <div class="cs-name">The Growth Tilt</div>
+          <div class="cs-nick">Nasdaq-heavy portfolio</div>
+          <div class="cs-desc">Overweight tech and innovation via the Nasdaq 100. Higher highs, deeper lows. If you can stomach a 40% drop without selling, you get the tech premium.</div>
+          <div class="cs-stat"><span class="cs-stat-label">Avg return</span><span class="cs-stat-val">~18%/yr</span></div>
+          <div class="cs-try">Try in playground →</div>
+        </div>
+        <div class="cs-card" onclick="spPreset(500,5,4.5)">
+          <div class="cs-icon">🛡️</div>
+          <div class="cs-name">The Safety Net</div>
+          <div class="cs-nick">Emergency fund first</div>
+          <div class="cs-desc">Before stocks, save 3–6 months of expenses in a high-yield savings account. Boring but non-negotiable — an emergency fund is what keeps a bad month from becoming a bad year.</div>
+          <div class="cs-stat"><span class="cs-stat-label">Where</span><span class="cs-stat-val">4–5% APY</span></div>
+          <div class="cs-try">Try in playground →</div>
+        </div>
+        <div class="cs-card" onclick="spPreset(100,10,0)">
+          <div class="cs-icon">😬</div>
+          <div class="cs-name">The Mattress</div>
+          <div class="cs-nick">Do nothing (bad plan)</div>
+          <div class="cs-desc">Keep cash under the mattress — or in a checking account earning 0%. This exists to show you the cost of doing nothing. Inflation quietly eats about 3% every year.</div>
+          <div class="cs-stat"><span class="cs-stat-label">Real return</span><span class="cs-stat-val" style="color:#f87171">-3%/yr</span></div>
+          <div class="cs-try">Try in playground →</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -3305,6 +3492,48 @@ function track(event, props){
   try{ if(window.plausible) window.plausible(event, {props: props||{}}); }catch(e){}
 }
 
+// ══ LIVE ACTIVITY TICKER (honest — uses real user data) ══
+// This shows real, growing numbers from the user's own session so the
+// homepage feels alive without fabricating anything. As the user (and future
+// users, if data is ever aggregated) do things, the numbers reflect that.
+function updateLiveActivity(){
+  const el = document.getElementById('liveActivityText');
+  const wrap = document.getElementById('liveActivity');
+  if(!el || !wrap) return;
+  let txns = 0, lessons = 0, goals = 0, paperUsers = 0;
+  try{ txns = (JSON.parse(localStorage.getItem('fp_txns')||'[]')).length; }catch(e){}
+  try{ lessons = Object.keys(JSON.parse(localStorage.getItem('fp_lessons')||'{}')).length; }catch(e){}
+  try{ goals = (JSON.parse(localStorage.getItem('fp_goals')||'[]')).length; }catch(e){}
+  try{ paperUsers = localStorage.getItem('fp_paper') ? 1 : 0; }catch(e){}
+  // "days since launch" gives a real, growing number that always exists.
+  // Change this launch date to whenever you actually launched.
+  const LAUNCH = new Date('2026-07-15').getTime();
+  const daysLive = Math.max(1, Math.floor((Date.now()-LAUNCH)/86400000));
+  const messages = [];
+  if(txns > 0) messages.push('You\u2019ve made <b>' + txns + '</b> ' + (txns===1?'transaction':'transactions') + ' on FinPath');
+  if(lessons > 0) messages.push('You\u2019ve completed <b>' + lessons + '</b> ' + (lessons===1?'lesson':'lessons'));
+  if(goals > 0) messages.push('You\u2019re tracking <b>' + goals + '</b> ' + (goals===1?'goal':'goals'));
+  if(!messages.length){
+    messages.push('Live on day <b>' + daysLive + '</b> · be one of the first to try it');
+  } else {
+    messages.push('Live on day <b>' + daysLive + '</b> since launch');
+  }
+  let idx = 0;
+  el.innerHTML = messages[0];
+  wrap.style.opacity = '1';
+  if(wrap._liveInt) clearInterval(wrap._liveInt);
+  if(messages.length > 1){
+    wrap.setAttribute('aria-live','polite');
+    wrap._liveInt = setInterval(function(){
+      idx = (idx+1) % messages.length;
+      el.style.opacity = '0';
+      setTimeout(function(){ el.innerHTML = messages[idx]; el.style.opacity = '1'; }, 220);
+    }, 3800);
+    el.style.transition = 'opacity .22s';
+  }
+}
+document.addEventListener('DOMContentLoaded', function(){ setTimeout(updateLiveActivity, 400); });
+
 // ══ DEMO PORTFOLIO ══
 async function loadDemoPortfolio(){
   track('demo_portfolio');
@@ -4144,15 +4373,92 @@ async function loadEarnings(){
   }
 }
 // backtest (modeled)
+function spPreset(amt, years, rate){
+  document.getElementById('btAmt').value = amt;
+  document.getElementById('btYears').value = years;
+  const sel = document.getElementById('btAsset');
+  // find closest matching option, else use custom
+  let best = 0, bestDiff = Infinity;
+  for(let i = 0; i < sel.options.length; i++){
+    const d = Math.abs(parseFloat(sel.options[i].value) - rate);
+    if(d < bestDiff){ bestDiff = d; best = i; }
+  }
+  sel.selectedIndex = best;
+  runBacktest();
+  document.getElementById('btOut').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
 function runBacktest(){
   const amt = parseFloat(document.getElementById('btAmt').value)||0;
   const years = parseFloat(document.getElementById('btYears').value)||0;
-  const rate = parseFloat(document.getElementById('btAsset').value)||0;
-  const fv = _fv(amt, rate, years), inv = amt*12*years;
-  const real = _fv(amt, Math.max(0, rate-3), years);
+  const sel = document.getElementById('btAsset');
+  const rate = parseFloat(sel.value)||0;
+  const assetName = sel.options[sel.selectedIndex].text.replace(/\s*\(.*/, '');
   const out = document.getElementById('btOut');
-  out.style.display = 'block';
-  out.innerHTML = 'Total invested: <b>' + fmt(inv) + '</b><br>Modeled final value: <b style="color:var(--mint);font-size:19px">' + fmt(fv) + '</b> (' + ((fv/inv-1)*100).toFixed(0) + '% total return)<br>In today’s dollars (3% inflation): <b>' + fmt(real) + '</b><br><span style="font-size:12px;color:var(--muted)">Modeled with a constant average annual return — real markets zig-zag. Past performance never guarantees the future.</span>';
+  if(amt <= 0 || years <= 0){ out.className = 'sp-result on'; out.innerHTML = '<div style="color:#f87171">Enter a monthly amount and number of years above.</div>'; return; }
+  const fv = _fv(amt, rate, years);
+  const inv = amt*12*years;
+  const gain = fv - inv;
+  const real = _fv(amt, Math.max(-3, rate-3), years);
+  const pctGain = inv ? ((fv/inv-1)*100) : 0;
+  // build year-by-year for the chart
+  const yrs = [], vals = [], contribs = [];
+  const monthlyRate = rate/100/12;
+  let bal = 0;
+  for(let y = 0; y <= years; y++){
+    yrs.push(y);
+    vals.push(bal);
+    contribs.push(amt*12*y);
+    for(let m = 0; m < 12 && y < years; m++){ bal = bal*(1+monthlyRate) + amt; }
+  }
+  const maxV = Math.max.apply(null, vals) || 1;
+  const w = 600, h = 180, pad = 12;
+  const xStep = (w - pad*2) / Math.max(1, years);
+  const sy = function(v){ return h - pad - (v/maxV) * (h - pad*2); };
+  const linePts = vals.map(function(v,i){ return (pad + i*xStep) + ',' + sy(v); }).join(' ');
+  const contribPts = contribs.map(function(v,i){ return (pad + i*xStep) + ',' + sy(v); }).join(' ');
+  const areaPts = 'M ' + linePts.split(' ').join(' L ') + ' L ' + (pad + years*xStep) + ',' + (h-pad) + ' L ' + pad + ',' + (h-pad) + ' Z';
+
+  // insight text — pick the most educational takeaway
+  let insight = '';
+  const compoundShare = fv > 0 ? (gain / fv * 100) : 0;
+  if(rate === 0){
+    insight = '<b>Ouch.</b> Doing nothing costs you real money — inflation quietly erodes cash by about 3% every year. In today\u2019s dollars, this ' + fmt(inv) + ' is only worth ' + fmt(real) + '.';
+  } else if(compoundShare >= 50){
+    insight = '<b>Compounding did most of the work.</b> You put in ' + fmt(inv) + ' — the rest (' + fmt(gain) + ') came from returns on returns. Einstein reportedly called compound interest "the eighth wonder of the world" for exactly this reason.';
+  } else if(years <= 5){
+    insight = '<b>Short timeframes hide compounding.</b> Most of the magic happens in the last decade. Try running this again with 20+ years and watch what happens.';
+  } else {
+    insight = '<b>Time is the ingredient.</b> The same monthly amount over ' + years + ' years produced ' + fmt(gain) + ' in growth. Starting earlier matters more than starting bigger.';
+  }
+
+  out.className = 'sp-result on';
+  out.innerHTML =
+    '<div class="sp-headline">Investing <b>' + fmt(amt) + '/month</b> in <b>' + assetName + '</b> for <b>' + years + ' years</b> would have grown to:</div>' +
+    '<div class="sp-big">' + fmt(fv) + '</div>' +
+    '<div class="sp-return-pill' + (pctGain < 0 ? ' down' : '') + '">' + (pctGain >= 0 ? '▲ +' : '▼ ') + pctGain.toFixed(0) + '% total return</div>' +
+    '<div class="sp-chart-wrap"><svg viewBox="0 0 ' + w + ' ' + h + '" style="width:100%;height:auto;display:block" aria-label="Growth chart"><defs><linearGradient id="spGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22c55e" stop-opacity=".35"/><stop offset="100%" stop-color="#22c55e" stop-opacity="0"/></linearGradient></defs>' +
+      '<path d="' + areaPts + '" fill="url(#spGrad)"/>' +
+      '<polyline points="' + contribPts + '" fill="none" stroke="#93a693" stroke-width="1.5" stroke-dasharray="4,4"/>' +
+      '<polyline points="' + linePts + '" fill="none" stroke="#22c55e" stroke-width="2.5"/>' +
+      '<circle cx="' + (pad + years*xStep) + '" cy="' + sy(vals[vals.length-1]) + '" r="5" fill="#86efac"/>' +
+    '</svg><div style="display:flex;gap:14px;font-size:11px;color:var(--muted);margin-top:6px;justify-content:center"><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:14px;height:2px;background:#22c55e;display:inline-block"></span>Portfolio value</span><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:14px;height:2px;background:#93a693;border-top:1px dashed #93a693;display:inline-block"></span>What you put in</span></div></div>' +
+    '<div class="sp-breakdown">' +
+      '<div class="sp-brk"><div class="sp-brk-label">You invested</div><div class="sp-brk-val">' + fmt(inv) + '</div></div>' +
+      '<div class="sp-brk"><div class="sp-brk-label">Growth</div><div class="sp-brk-val" style="color:var(--green)">' + (gain >= 0 ? '+' : '') + fmt(gain) + '</div></div>' +
+      '<div class="sp-brk"><div class="sp-brk-label">In today\u2019s $ (3% infl.)</div><div class="sp-brk-val">' + fmt(real) + '</div></div>' +
+    '</div>' +
+    '<div class="sp-insight">' + insight + '</div>' +
+    '<button class="sp-share" onclick="spShare(' + amt + ',' + years + ',' + fv + ',\'' + assetName.replace(/'/g,'') + '\')">📤 Share this result</button>' +
+    '<div style="font-size:11px;color:var(--muted);margin-top:14px;line-height:1.5">Modeled with each asset\u2019s <b>historical average annual return</b> — real markets zig-zag; past performance never guarantees future returns.</div>';
+  track('playground_run', {amt:amt, years:years, rate:rate});
+}
+
+function spShare(amt, years, fv, asset){
+  const text = 'If I invested $' + amt + '/mo in ' + asset + ' for ' + years + ' years, I\u2019d have ' + fmt(fv) + ' 🤯\n\nRun your own numbers at finpathdev.github.io/FinPath';
+  if(navigator.share){ navigator.share({title:'FinPath', text:text}).catch(function(){}); }
+  else if(navigator.clipboard){ navigator.clipboard.writeText(text).then(function(){ toast('✅','Result copied — paste it anywhere.'); }); }
+  track('playground_share');
 }
 
 // ── PORTFOLIO ANALYZER (rule-based) ──
