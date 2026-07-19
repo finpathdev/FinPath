@@ -424,7 +424,6 @@ body.light nav{background:rgba(255,255,255,.82);box-shadow:0 12px 40px rgba(20,4
 body.light .tape{background:rgba(255,255,255,.72)}
 body.light footer{background:rgba(255,255,255,.6)}
 body.light .hero h1 span::after{background:rgba(34,197,94,.28)}
-body.light .bg-lines{display:none!important}
 body.light .ai-disclaimer{background:rgba(20,83,45,.06)}
 body.light .ai-rec{background:rgba(20,83,45,.05)}
 body.light .ai-rec-text{color:#41584a}
@@ -4681,61 +4680,8 @@ renderLessons();
 
 <!-- ANIMATED BACKGROUND LINES - Pure CSS -->
 <style>
-.bg-lines{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:-1;overflow:hidden;display:none}
-.bg-lines.visible{display:block}
-.bg-line{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,0.04)}
-.bg-line::after{content:'';position:absolute;top:0;height:1px;width:200px;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.22) 50%,transparent 100%);animation:lightMove linear infinite}
-@keyframes lightMove{from{transform:translateX(-100%)}to{transform:translateX(calc(100vw + 240px))}}
+
 </style>
-<div class="bg-lines" id="bgLinesDiv"></div>
-<script>
-(function(){
-  var container = document.getElementById('bgLinesDiv');
-  if(!container) return;
-
-  // Build lines
-  var lineCount = Math.ceil(window.innerHeight / 44) + 2;
-  for(var i=0; i<lineCount; i++){
-    var line = document.createElement('div');
-    line.className = 'bg-line';
-    line.style.top = (i * 44) + 'px';
-    var spd = 16 + Math.random() * 18;
-    var delay = -(Math.random() * spd);
-    line.style.setProperty('--spd', spd + 's');
-    // Set animation on the ::after via inline style trick - use a span instead
-    var light = document.createElement('span');
-    light.style.cssText = 'position:absolute;top:0;height:1px;width:240px;background:linear-gradient(90deg,transparent 0%,transparent 20%,rgba(255,255,255,0.18) 50%,transparent 80%,transparent 100%);animation:lightMove '+spd+'s '+delay+'s linear infinite;left:-240px';
-    line.appendChild(light);
-    container.appendChild(line);
-  }
-
-  // Show/hide based on page
-  function update(){
-    var home = document.getElementById('page-home');
-    var isHome = home && home.classList.contains('active');
-    container.className = isHome ? 'bg-lines' : 'bg-lines visible';
-  }
-
-  // Hook into showPage
-  function tryHook(){
-    if(window.showPage){
-      var orig = window.showPage;
-      window.showPage = function(p){
-        orig(p);
-        setTimeout(update, 30);
-      };
-      update();
-    } else {
-      setTimeout(tryHook, 100);
-    }
-  }
-  tryHook();
-  window.addEventListener('load', update);
-})();
-</script>
-
-
-
 <script>
 (function(){
   var el = document.getElementById('tapeTrack');
