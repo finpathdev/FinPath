@@ -1,0 +1,24 @@
+{
+  "name": "FinPath — The Financial Playbook Schools Skipped",
+  "short_name": "FinPath",
+  "description": "Learn investing the way schools never taught it — 34 plain-English lessons, live billionaire trades, a real-time portfolio tracker, and $100,000 of risk-free paper trading.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#040604",
+  "theme_color": "#040604",
+  "categories": ["finance", "education", "productivity"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Portfolio", "short_name": "Portfolio", "description": "Track your holdings", "url": "./#portfolio", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Lessons", "short_name": "Lessons", "description": "34 investing lessons", "url": "./#lessons", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] },
+    { "name": "Billionaire Moves", "short_name": "Gold", "description": "Latest 13F filings", "url": "./#gold", "icons": [{ "src": "icon-192.png", "sizes": "192x192" }] }
+  ]
+}
