@@ -3,7 +3,7 @@
 // Live prices, filings, and API responses are intentionally NOT cached — those
 // must always be fresh.
 
-const CACHE = 'finpath-v1';
+const CACHE = 'finpath-v2';
 const SHELL = [
   './',
   './index.html',
@@ -55,7 +55,18 @@ self.addEventListener('fetch', function(event){
   }
 
   event.respondWith(
-    caches.match(req).then(function(cached){
+    // Network-first for HTML navigations — this way, any HTML update we push
+    // deploys instantly for existing users instead of being trapped in cache.
+    // We only fall back to cache when the network fails (true offline mode).
+    req.mode === 'navigate' || (req.headers.get('accept')||'').indexOf('text/html') !== -1
+      ? fetch(req).then(function(res){
+          if(res && res.ok){
+            const clone = res.clone();
+            caches.open(CACHE).then(function(cache){ cache.put(req, clone); });
+          }
+          return res;
+        }).catch(function(){ return caches.match('./index.html').then(function(m){ return m || caches.match('./'); }); })
+      : caches.match(req).then(function(cached){
       if(cached) return cached;
       return fetch(req).then(function(res){
         // opportunistically cache successful same-origin GETs (fonts, images, etc.)
