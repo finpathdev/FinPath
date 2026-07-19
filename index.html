@@ -780,28 +780,14 @@ body.light{scrollbar-color:rgba(20,83,45,.22) transparent;}
 body.light ::-webkit-scrollbar-thumb{background:rgba(20,83,45,.22);border:3px solid transparent;background-clip:content-box;}
 body.light ::-webkit-scrollbar-thumb:hover{background:rgba(20,83,45,.4);border:3px solid transparent;background-clip:content-box;}
 
-/* Globe frame — soften the harsh dark rectangle against light backgrounds */
+/* Globe frame — canvas now paints itself for the current theme; just soften the frame */
 body.light .globe-sub{color:#546b58 !important;}
 body.light .globe-frame{
-  background:linear-gradient(180deg,#0a1a10 0%,#02040A 100%) !important;
-  border:1px solid rgba(20,83,45,.18) !important;
-  box-shadow:
-    0 20px 60px rgba(20,60,30,.18),
-    0 4px 16px rgba(20,60,30,.10),
-    inset 0 1px 0 rgba(134,239,172,.08) !important;
-  padding:6px !important;
-  border-radius:28px !important;
-  position:relative !important;
+  background:transparent !important;
+  border:1px solid rgba(20,83,45,.14) !important;
+  box-shadow:0 20px 60px rgba(20,60,30,.10), 0 4px 16px rgba(20,60,30,.06) !important;
 }
-body.light .globe-frame::before{
-  content:'';position:absolute;inset:-1px;
-  border-radius:28px;padding:1px;
-  background:linear-gradient(135deg,rgba(34,197,94,.4),rgba(20,83,45,.1),rgba(34,197,94,.2));
-  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
-  -webkit-mask-composite:xor;mask-composite:exclude;
-  pointer-events:none;
-}
-body.light .globe-frame canvas{border-radius:22px;}
+body.light .globe-hint{background:rgba(255,255,255,.7) !important;color:#546b58 !important;border:1px solid rgba(20,83,45,.15) !important;}
 /* ── TOASTS ── */
 .toast-stack{position:fixed;bottom:20px;right:20px;z-index:900;display:flex;flex-direction:column;gap:10px;max-width:340px}
 .toast{background:var(--panel-solid);border:1px solid var(--line-strong);border-radius:14px;padding:14px 18px;font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.5);display:flex;gap:11px;align-items:flex-start;animation:toastIn .25s ease}
@@ -1163,7 +1149,7 @@ body.light .gs-item{background:#fff}
     <!-- Floating ticker cards -->
     <div id="ticker-cards" style="position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none"></div>
     <!-- Instructions -->
-    <div style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:12px;color:#eef5ee;background:rgba(0,0,0,.6);padding:6px 14px;border-radius:20px;white-space:nowrap;backdrop-filter:blur(4px)">Drag to rotate · Scroll to zoom</div>
+    <div class="globe-hint" style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:12px;color:#eef5ee;background:rgba(0,0,0,.6);padding:6px 14px;border-radius:20px;white-space:nowrap;backdrop-filter:blur(4px)">Drag to rotate · Scroll to zoom</div>
   </div>
 </div>
 
@@ -1270,18 +1256,24 @@ body.light .gs-item{background:#fff}
     const W = cssW || canvas.width, H = cssH || canvas.height;
     const cx = W/2, cy = H/2;
     const R = Math.min(W, H) * 0.38;
+    const isLight = document.body.classList.contains('light');
 
     ctx.clearRect(0, 0, W, H);
 
-    // Background gradient
+    // Background gradient — light theme uses a soft mint→white; dark keeps space
     const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, R*1.5);
-    bgGrad.addColorStop(0, '#0a0a0a');
-    bgGrad.addColorStop(1, '#000000');
+    if(isLight){
+      bgGrad.addColorStop(0, '#f7faf6');
+      bgGrad.addColorStop(1, '#eef3ed');
+    } else {
+      bgGrad.addColorStop(0, '#0a0a0a');
+      bgGrad.addColorStop(1, '#000000');
+    }
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, W, H);
 
-    // Stars
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    // Stars → soft green "dust" specks in light mode; white stars in dark
+    ctx.fillStyle = isLight ? 'rgba(20,83,45,0.18)' : 'rgba(255,255,255,0.4)';
     for(let i=0;i<80;i++){
       const sx = (i*137.5)%W;
       const sy = (i*97.3)%H;
@@ -1295,29 +1287,41 @@ body.light .gs-item{background:#fff}
 
     // Globe glow
     const glowGrad = ctx.createRadialGradient(cx-R*0.3, cy-R*0.3, 0, cx, cy, R*1.1);
-    glowGrad.addColorStop(0, 'rgba(34,197,94,0.08)');
-    glowGrad.addColorStop(0.5, 'rgba(34,197,94,0.04)');
-    glowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    if(isLight){
+      glowGrad.addColorStop(0, 'rgba(34,197,94,0.14)');
+      glowGrad.addColorStop(0.5, 'rgba(34,197,94,0.08)');
+      glowGrad.addColorStop(1, 'rgba(255,255,255,0)');
+    } else {
+      glowGrad.addColorStop(0, 'rgba(34,197,94,0.08)');
+      glowGrad.addColorStop(0.5, 'rgba(34,197,94,0.04)');
+      glowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    }
     ctx.fillStyle = glowGrad;
     ctx.beginPath();
     ctx.arc(cx, cy, R*1.1, 0, Math.PI*2);
     ctx.fill();
 
-    // Globe base circle
+    // Globe base circle — light theme: mint→white gradient; dark: near-black green
     const globeGrad = ctx.createRadialGradient(cx-R*0.2, cy-R*0.2, R*0.1, cx, cy, R);
-    globeGrad.addColorStop(0, '#0d1a0d');
-    globeGrad.addColorStop(0.5, '#071307');
-    globeGrad.addColorStop(1, '#020802');
+    if(isLight){
+      globeGrad.addColorStop(0, '#e5f5e8');
+      globeGrad.addColorStop(0.5, '#c8e6cf');
+      globeGrad.addColorStop(1, '#96c9a4');
+    } else {
+      globeGrad.addColorStop(0, '#0d1a0d');
+      globeGrad.addColorStop(0.5, '#071307');
+      globeGrad.addColorStop(1, '#020802');
+    }
     ctx.beginPath();
     ctx.arc(cx, cy, R, 0, Math.PI*2);
     ctx.fillStyle = globeGrad;
     ctx.fill();
-    ctx.strokeStyle = 'rgba(34,197,94,0.2)';
+    ctx.strokeStyle = isLight ? 'rgba(20,83,45,0.35)' : 'rgba(34,197,94,0.2)';
     ctx.lineWidth = 0.5;
     ctx.stroke();
 
     // Latitude/longitude grid lines
-    ctx.strokeStyle = 'rgba(34,197,94,0.08)';
+    ctx.strokeStyle = isLight ? 'rgba(20,83,45,0.18)' : 'rgba(34,197,94,0.08)';
     ctx.lineWidth = 0.5;
     
     // Draw lat lines
@@ -1404,20 +1408,21 @@ body.light .gs-item{background:#fff}
       // Label on hover or always for large screens
       if(isHovered || W > 600){
         ctx.font = `${isHovered?600:500} ${isHovered?13:11}px -apple-system,sans-serif`;
-        ctx.fillStyle = isHovered ? '#fff' : 'rgba(255,255,255,0.7)';
+        ctx.fillStyle = isHovered ? (isLight?'#0a1a10':'#fff') : (isLight?'rgba(20,83,45,0.75)':'rgba(255,255,255,0.7)');
         const labelX = proj.sx + 8;
         const labelY = proj.sy - 6;
         
         if(isHovered){
           // Background pill
           const tw = ctx.measureText(city.name).width + ctx.measureText(city.val).width + 24;
-          ctx.fillStyle = 'rgba(0,0,0,0.85)';
+          ctx.fillStyle = isLight ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.85)';
           ctx.beginPath();
           ctx.roundRect(labelX - 4, labelY - 13, tw, 32, 6);
           ctx.fill();
-          ctx.fillStyle = '#fff';
+          if(isLight){ ctx.strokeStyle = 'rgba(20,83,45,0.2)'; ctx.lineWidth = 0.5; ctx.stroke(); }
+          ctx.fillStyle = isLight ? '#0a1a10' : '#fff';
           ctx.fillText(city.name, labelX, labelY);
-          ctx.fillStyle = city.val.startsWith('+') ? '#4ade80' : '#f87171';
+          ctx.fillStyle = city.val.startsWith('+') ? (isLight?'#15803d':'#4ade80') : (isLight?'#c2410c':'#f87171');
           ctx.fillText(city.val, labelX, labelY + 14);
         } else if(W > 600) {
           ctx.fillText(city.ticker, labelX, labelY + 4);
