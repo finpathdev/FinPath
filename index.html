@@ -71,6 +71,16 @@ body{
   position:relative;
 }
 body > *{position:relative;z-index:1;}
+
+/* ── SCROLLBARS — blend into the theme ── */
+/* Firefox */
+html{scrollbar-width:thin;scrollbar-color:rgba(134,239,172,.22) transparent;}
+/* WebKit / Chromium / Safari */
+::-webkit-scrollbar{width:12px;height:12px;background:transparent;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(134,239,172,.18);border-radius:99px;border:3px solid transparent;background-clip:content-box;transition:background .15s;}
+::-webkit-scrollbar-thumb:hover{background:rgba(134,239,172,.34);border:3px solid transparent;background-clip:content-box;}
+::-webkit-scrollbar-corner{background:transparent;}
 /* ── NUCLEAR: kill any full-viewport fixed/animated white overlay effect ── */
 /* Hides any orphan fullscreen decorative div that isn't a real page/nav/etc. */
 body > div[style*="position: fixed"][style*="rgba(255,255,255"],
@@ -764,6 +774,11 @@ body.light .tape-item .t-down{color:#c2410c !important;}
 
 /* Fix the moon/sun theme toggle button */
 body.light .theme-btn{background:rgba(20,83,45,.06) !important; border-color:rgba(20,83,45,.15) !important;}
+
+/* Scrollbar in light mode — darker forest-green so it's visible on white */
+body.light{scrollbar-color:rgba(20,83,45,.22) transparent;}
+body.light ::-webkit-scrollbar-thumb{background:rgba(20,83,45,.22);border:3px solid transparent;background-clip:content-box;}
+body.light ::-webkit-scrollbar-thumb:hover{background:rgba(20,83,45,.4);border:3px solid transparent;background-clip:content-box;}
 /* ── TOASTS ── */
 .toast-stack{position:fixed;bottom:20px;right:20px;z-index:900;display:flex;flex-direction:column;gap:10px;max-width:340px}
 .toast{background:var(--panel-solid);border:1px solid var(--line-strong);border-radius:14px;padding:14px 18px;font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.5);display:flex;gap:11px;align-items:flex-start;animation:toastIn .25s ease}
