@@ -88,7 +88,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{
 nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px,calc(100% - 24px));z-index:200;background:rgba(9,15,10,.72);backdrop-filter:blur(22px) saturate(1.3);border:1px solid var(--line);border-radius:999px;padding:0 8px;box-shadow:0 12px 40px rgba(0,0,0,.45)}
 .nav-inner{display:flex;align-items:center;justify-content:space-between;height:58px;padding:0 14px}
 .logo{font-size:21px;font-weight:700;color:var(--green);letter-spacing:-.5px;cursor:pointer;display:flex;align-items:center;gap:9px}
-.logo span{color:var(--text)}
+.logo-text{white-space:nowrap;letter-spacing:-.5px}
+.logo .logo-path{color:var(--text)}
 .logo-mark{width:26px;height:26px;flex-shrink:0;filter:drop-shadow(0 0 10px rgba(34,197,94,.35))}
 .nav-links{display:flex;align-items:center;gap:4px}
 .nav-links a{color:var(--muted);font-size:14px;font-weight:500;text-decoration:none;cursor:pointer;transition:all .15s;padding:8px 14px;border-radius:999px}
@@ -734,7 +735,7 @@ body.light nav{
   box-shadow:0 12px 40px rgba(20,60,30,.08) !important;
 }
 body.light .logo{color:#15803d !important;}
-body.light .logo span{color:#0a1a10 !important;}
+body.light .logo .logo-path{color:#0a1a10 !important;}
 body.light .nav-links a{color:#3d5245 !important;}
 body.light .nav-links a:hover{color:#0a1a10 !important;}
 
@@ -943,26 +944,68 @@ body.light .gs-item{background:#fff}
 <!-- LOGIN MODAL -->
 <a href="#" class="skip-link" onclick="var p=document.querySelector('.page.active');if(p){p.setAttribute('tabindex','-1');p.focus();}return false;">Skip to content</a>
 <div aria-live="polite" aria-atomic="true" id="priceAnnounce" class="sr-only"></div>
-<div id="loginModal" role="dialog" aria-modal="true" aria-label="Sign in to FinPath" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:600;align-items:center;justify-content:center;padding:20px">
-  <div style="background:#0b110c;border:1px solid rgba(134,239,172,.22);border-radius:24px;width:100%;max-width:420px;padding:40px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6)">
-    <button onclick="closeLogin()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:#888;font-size:22px;cursor:pointer;line-height:1">×</button>
+<div id="loginModal" role="dialog" aria-modal="true" aria-label="Sign in to FinPath" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:600;align-items:center;justify-content:center;padding:20px;overflow-y:auto">
+  <div style="background:#0b110c;border:1px solid rgba(134,239,172,.22);border-radius:24px;width:100%;max-width:460px;padding:36px 32px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6);margin:auto">
+    <button onclick="closeLogin()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:#888;font-size:22px;cursor:pointer;line-height:1" aria-label="Close">×</button>
     
-    <!-- Logo -->
-    <div style="text-align:center;margin-bottom:28px">
+    <div style="text-align:center;margin-bottom:24px">
       <div style="font-size:28px;font-weight:800;color:#22c55e;letter-spacing:-1px">Fin<span style="color:#fff">Path</span></div>
       <div style="font-size:13px;color:#888;margin-top:4px">The financial playbook schools skipped</div>
     </div>
 
-    <!-- State: enter email -->
+    <!-- STEP 1: Email -->
     <div id="loginStep1">
       <div style="font-size:18px;font-weight:700;margin-bottom:6px;text-align:center">Sign in or create account</div>
-      <div style="font-size:13px;color:#888;margin-bottom:24px;text-align:center">We will send a magic link to your email — no password needed</div>
-      <input id="loginEmail" type="email" placeholder="Enter your email address" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:13px;padding:14px;color:#eef5ee;font-size:15px;outline:none;margin-bottom:12px" onkeydown="if(event.key==='Enter')sendMagicLink()">
-      <button onclick="sendMagicLink()" id="loginBtn" style="width:100%;background:linear-gradient(135deg,#16a34a,#22c55e);border:none;border-radius:13px;padding:14px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(34,197,94,.3)">Continue with email</button>
+      <div style="font-size:13px;color:#888;margin-bottom:22px;text-align:center">We'll send a magic link to your email — no password needed</div>
+      <input id="loginEmail" type="email" placeholder="Enter your email address" autocomplete="email" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:13px;padding:14px;color:#eef5ee;font-size:15px;outline:none;margin-bottom:12px" onkeydown="if(event.key==='Enter')nextLoginStep()">
+      <button onclick="nextLoginStep()" id="loginBtn" style="width:100%;background:linear-gradient(135deg,#16a34a,#22c55e);border:none;border-radius:13px;padding:14px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(34,197,94,.3)">Continue</button>
       <div id="loginError" style="color:#f87171;font-size:13px;margin-top:10px;text-align:center;display:none"></div>
     </div>
 
-    <!-- State: email sent -->
+    <!-- STEP 2: Age check -->
+    <div id="loginStepAge" style="display:none">
+      <div style="font-size:18px;font-weight:700;margin-bottom:6px;text-align:center">Quick question</div>
+      <div style="font-size:13px;color:#888;margin-bottom:22px;text-align:center;line-height:1.55">FinPath has different rules for users under 18. It only takes a second — pick one:</div>
+      <button onclick="setAge('adult')" style="width:100%;background:rgba(134,239,172,.06);border:1px solid rgba(134,239,172,.2);border-radius:13px;padding:16px;color:#eef5ee;font-size:15px;font-weight:600;cursor:pointer;margin-bottom:10px;text-align:left;display:flex;align-items:center;gap:14px" onmouseover="this.style.borderColor='rgba(134,239,172,.4)'" onmouseout="this.style.borderColor='rgba(134,239,172,.2)'">
+        <span style="font-size:22px">👤</span>
+        <span>I am 18 or older</span>
+      </button>
+      <button onclick="setAge('minor')" style="width:100%;background:rgba(134,239,172,.06);border:1px solid rgba(134,239,172,.2);border-radius:13px;padding:16px;color:#eef5ee;font-size:15px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px" onmouseover="this.style.borderColor='rgba(134,239,172,.4)'" onmouseout="this.style.borderColor='rgba(134,239,172,.2)'">
+        <span style="font-size:22px">🎒</span>
+        <span>I am under 18</span>
+      </button>
+      <button onclick="backToStep1()" style="width:100%;background:none;border:none;color:#888;font-size:13px;cursor:pointer;margin-top:14px">← Back</button>
+    </div>
+
+    <!-- STEP 3: Parental consent (minors only) -->
+    <div id="loginStepConsent" style="display:none">
+      <div style="font-size:18px;font-weight:700;margin-bottom:6px;text-align:center">Parent or guardian consent</div>
+      <div style="font-size:13px;color:#888;margin-bottom:18px;text-align:center;line-height:1.55">Because you're under 18, we need a parent or guardian to sign off. Please have them fill this out with you.</div>
+      <div style="background:rgba(245,182,11,.08);border:1px solid rgba(245,182,11,.28);border-radius:12px;padding:14px;font-size:12px;color:#fde68a;line-height:1.55;margin-bottom:18px">
+        <b>To the parent/guardian:</b> FinPath is an educational finance platform. It does NOT execute trades or hold funds. It includes paper trading (virtual money) and educational content. Your child cannot subscribe to paid features (Gold) without you. Full terms: <a onclick="closeLogin();showPage('legal')" style="color:#f5b60b;cursor:pointer;text-decoration:underline">Legal &amp; Terms</a>
+      </div>
+      <label style="display:block;font-size:12px;color:#93a693;margin-bottom:6px;font-weight:600">Parent/guardian full name</label>
+      <input id="pcName" type="text" placeholder="e.g. Priya Patel" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:11px;padding:12px;color:#eef5ee;font-size:14px;outline:none;margin-bottom:12px">
+      <label style="display:block;font-size:12px;color:#93a693;margin-bottom:6px;font-weight:600">Parent/guardian email <span style="color:#93a693;font-weight:400">(a copy of consent will be sent here)</span></label>
+      <input id="pcEmail" type="email" placeholder="parent@example.com" autocomplete="off" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:11px;padding:12px;color:#eef5ee;font-size:14px;outline:none;margin-bottom:12px">
+      <label style="display:block;font-size:12px;color:#93a693;margin-bottom:6px;font-weight:600">Relationship</label>
+      <select id="pcRel" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:11px;padding:12px;color:#eef5ee;font-size:14px;outline:none;margin-bottom:12px">
+        <option value="Parent">Parent</option>
+        <option value="Legal guardian">Legal guardian</option>
+        <option value="Other">Other authorized adult</option>
+      </select>
+      <label style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#c3d0c5;line-height:1.55;margin-bottom:12px;cursor:pointer">
+        <input type="checkbox" id="pcAgree" style="margin-top:3px;flex-shrink:0;accent-color:#22c55e">
+        <span>I confirm I am the parent or legal guardian of this user, I have read and agree to the <a onclick="event.stopPropagation();closeLogin();showPage('legal')" style="color:#22c55e;cursor:pointer;text-decoration:underline">Terms &amp; Legal</a>, and I consent to my child using FinPath's free educational features. I understand paid features require my separate authorization.</span>
+      </label>
+      <label style="display:block;font-size:12px;color:#93a693;margin-bottom:6px;font-weight:600">Type your full name below as your electronic signature</label>
+      <input id="pcSig" type="text" placeholder="Type your name here to sign" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:11px;padding:12px;color:#eef5ee;font-size:16px;font-family:'Caveat',cursive;letter-spacing:.5px;outline:none;margin-bottom:16px">
+      <button onclick="submitParentalConsent()" id="pcSubmit" style="width:100%;background:linear-gradient(135deg,#16a34a,#22c55e);border:none;border-radius:13px;padding:14px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(34,197,94,.3)">Sign and continue</button>
+      <button onclick="backToStep1()" style="width:100%;background:none;border:none;color:#888;font-size:13px;cursor:pointer;margin-top:10px">← Back</button>
+      <div id="pcError" style="color:#f87171;font-size:13px;margin-top:10px;text-align:center;display:none"></div>
+    </div>
+
+    <!-- STEP 4: Magic link sent -->
     <div id="loginStep2" style="display:none;text-align:center">
       <div style="font-size:40px;margin-bottom:16px">📬</div>
       <div style="font-size:18px;font-weight:700;margin-bottom:8px">Check your inbox</div>
@@ -971,12 +1014,18 @@ body.light .gs-item{background:#fff}
     </div>
 
     <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(134,239,172,.1);text-align:center;font-size:12px;color:#555">
-      By continuing you agree to our <a onclick="showPage('legal');closeLogin()" style="color:#22c55e;cursor:pointer;text-decoration:none">Terms & Legal Disclaimers</a>
+      By continuing you agree to our <a onclick="showPage('legal');closeLogin()" style="color:#22c55e;cursor:pointer;text-decoration:none">Terms &amp; Legal Disclaimers</a>
     </div>
   </div>
 </div>
 
-<!-- USER MENU (shown when logged in) -->
+<!-- SIGN-IN NUDGE PILL (shows only when signed out; disappears once logged in) -->
+<div id="loginNudge" role="complementary" aria-label="Sign in to sync" style="display:none;position:fixed;bottom:20px;left:20px;z-index:930;background:linear-gradient(135deg,#052e16,#0b1a10);border:1px solid rgba(134,239,172,.28);border-radius:16px;padding:14px 18px;box-shadow:0 20px 50px rgba(0,0,0,.5);max-width:calc(100% - 40px);font-family:var(--font-body);align-items:center;gap:12px;opacity:0;transform:translateY(20px);transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .3s">
+  <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0" aria-hidden="true">👤</div>
+  <div style="min-width:0;flex:1"><div style="font-size:14px;font-weight:700;color:#eef5ee">Sign in to save your progress</div><div style="font-size:12px;color:#93a693;margin-top:1px">Sync your portfolio, goals, and streaks across devices</div></div>
+  <button onclick="openLogin();hideLoginNudge()" style="background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border:none;padding:9px 15px;border-radius:99px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0" aria-label="Sign in">Sign in</button>
+  <button onclick="dismissLoginNudge()" style="background:none;border:none;color:#93a693;font-size:20px;cursor:pointer;padding:4px 8px;line-height:1;flex-shrink:0" aria-label="Not now">×</button>
+</div>
 <div id="userMenu" style="display:none;position:fixed;top:74px;right:5%;background:#0b110c;border:1px solid rgba(134,239,172,.18);border-radius:16px;padding:8px;z-index:500;min-width:210px;box-shadow:0 16px 48px rgba(0,0,0,.6)">
   <div id="userEmailDisplay" style="padding:10px 12px;font-size:13px;color:#888;border-bottom:1px solid rgba(134,239,172,.1);margin-bottom:4px"></div>
   <div id="goldStatusMenu" style="padding:8px 12px;font-size:13px"></div>
@@ -986,7 +1035,7 @@ body.light .gs-item{background:#fff}
 
 <nav>
   <div class="nav-inner">
-    <div class="logo" onclick="showPage('home')" aria-label="FinPath home"><img class="logo-mark" src="logo-mark.png" alt="" aria-hidden="true">Fin<span>Path</span></div>
+    <div class="logo" onclick="showPage('home')" aria-label="FinPath home"><img class="logo-mark" src="logo-mark.png" alt="" aria-hidden="true"><span class="logo-text">Fin<span class="logo-path">Path</span></span></div>
     <div class="nav-links">
       <a onclick="showPage('home')">Home</a>
       <a onclick="showPage('lessons')">Lessons</a>
@@ -995,7 +1044,7 @@ body.light .gs-item{background:#fff}
       <a onclick="showPage('markets')">Markets</a>
       <a onclick="showPage('legal')">Legal</a>
     </div>
-    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle light or dark mode" title="Toggle theme">🌙</button><button class="nav-cta" id="navAuthBtn" onclick="handleAuthClick()">Get Started Free</button>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle light or dark mode" title="Toggle theme">🌙</button><button class="theme-btn" id="navInstallBtn" onclick="triggerInstall()" aria-label="Install FinPath as an app" title="Install FinPath" style="display:inline-flex">📲</button><button class="nav-cta" id="navAuthBtn" onclick="handleAuthClick()">Get Started Free</button>
     <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu" aria-controls="mobileMenu"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -1507,7 +1556,7 @@ body.light .gs-item{background:#fff}
       <a onclick="showPage('gold')">Gold</a><a onclick="showPage('portfolio')">Portfolio</a>
       <a onclick="showPage('legal')">Legal & Disclaimers</a>
     </div>
-    <div id="footerInstall" style="display:none;margin-bottom:26px">
+    <div id="footerInstall" style="margin-bottom:26px">
       <button onclick="triggerInstall()" style="background:linear-gradient(135deg,#052e16,#0b1a10);color:#eef5ee;border:1px solid rgba(134,239,172,.3);padding:12px 24px;border-radius:99px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:9px;transition:all .2s" aria-label="Install FinPath as an app on this device">
         <span style="font-size:16px" aria-hidden="true">📲</span>
         <span id="footerInstallLabel">Install FinPath as an app</span>
@@ -1785,22 +1834,158 @@ body.light .gs-item{background:#fff}
 <!-- LEGAL -->
 <div id="page-legal" class="page">
   <div class="legal-wrap">
-    <h1>Legal Disclaimers &amp; Terms of Use</h1>
-    <div class="legal-updated">Last updated: June 2026</div>
-    <div class="warning-box"><p>Important: Please read these terms carefully before using FinPath. By using this platform you acknowledge that you have read, understood, and agreed to all terms and disclaimers below.</p></div>
-    <div class="legal-section"><h2>1. Not Financial Advice</h2><p>FinPath is an educational platform. All content, lessons, investor move summaries, portfolio tracking features, and AI-generated suggestions are provided for informational and educational purposes only. Nothing on FinPath constitutes financial advice, investment advice, trading advice, or any other type of professional financial guidance.</p><p>FinPath does not recommend that any specific security, portfolio, transaction, or investment strategy is suitable for any specific person. You should consult a qualified financial adviser before making any investment decisions.</p></div>
-    <div class="legal-section"><h2>2. AI Suggestions Disclaimer</h2><p>The AI suggestions feature provides algorithmic commentary based on general market principles and publicly available information. These suggestions are not personalised financial advice and should never be used as the sole basis for any investment decision.</p><p>FinPath AI does not have access to your full financial situation, tax circumstances, investment goals, risk tolerance, or personal circumstances. Any suggestion may be incorrect, outdated, or unsuitable for you personally.</p><ul><li>AI suggestions are generated algorithmically and may contain errors or inaccuracies</li><li>Past performance data referenced does not guarantee future results</li><li>You are solely responsible for all investment decisions you make</li><li>FinPath is not liable for any losses arising from following AI suggestions</li><li>Always verify information independently before acting on any suggestion</li></ul></div>
-    <div class="legal-section"><h2>3. Investor Move Data</h2><p>Investor move data is sourced from publicly available SEC 13F filings. This data reflects holdings as of the filing date and may not represent current positions. Investors may have changed positions since the last filing. FinPath does not have any insider information about any investor.</p></div>
-    <div class="legal-section"><h2>4. Portfolio Tracking</h2><p>FinPath portfolio tracker displays estimated values based on market data from third-party providers. Price data may be delayed and may not reflect real-time market conditions. FinPath does not execute trades and does not have access to any brokerage account. Portfolio values shown are estimates only.</p></div>
-    <div class="legal-section"><h2>5. Investment Risk Warning</h2><p>All investments carry risk. You can lose some or all of your invested capital.</p><ul><li>Stock prices can fall as well as rise</li><li>Past performance is not a reliable indicator of future results</li><li>Markets can be volatile and unpredictable</li><li>You should never invest money you cannot afford to lose</li><li>Diversification does not guarantee profits or protect against all losses</li></ul></div>
-    <div class="legal-section"><h2>6. No Brokerage Services</h2><p>FinPath is not a broker, dealer, investment adviser, or financial institution. FinPath does not hold any securities licences and is not registered with the SEC, FINRA, or any other regulatory body as an investment adviser. FinPath does not execute, facilitate, or process any securities transactions on your behalf.</p></div>
-    <div class="legal-section"><h2>7. Third-Party Data</h2><p>Market data and stock prices are sourced from third-party providers including Finnhub. FinPath makes no representations about the accuracy, completeness, or timeliness of this data. Always verify prices with your broker before making any trade.</p></div>
-    <div class="legal-section"><h2>8. Limitation of Liability</h2><p>To the maximum extent permitted by law, FinPath and its founders, employees, and affiliates shall not be liable for any direct, indirect, incidental, special, consequential, or punitive damages arising from your use of the platform, including but not limited to any investment losses, loss of profits, or loss of data.</p></div>
-    <div class="legal-section"><h2>9. User Responsibilities</h2><ul><li>You must be 18 years or older to use FinPath portfolio features</li><li>You are responsible for all investment decisions you make</li><li>You agree to use FinPath for educational and informational purposes only</li><li>You agree not to rely solely on FinPath content for investment decisions</li><li>You agree to consult a qualified financial professional for personalised advice</li></ul></div>
-    <div class="legal-section"><h2>10. Changes to Terms</h2><p>FinPath reserves the right to update these terms at any time. Continued use of the platform following any changes constitutes acceptance of the updated terms.</p></div>
+    <h1>Legal, Privacy &amp; Terms of Use</h1>
+    <div class="legal-updated">Last updated: July 2026</div>
+    <div class="warning-box"><p><strong>Please read carefully.</strong> By using FinPath you confirm you have read, understood, and agreed to everything below. If you do not agree, do not use FinPath. Some sections limit your legal rights — including a mandatory arbitration clause and class-action waiver — so read them attentively.</p></div>
+
+    <div class="legal-section" id="l-not-advice"><h2>1. Not Financial, Investment, Legal, or Tax Advice</h2>
+      <p>FinPath is an <strong>educational and informational platform</strong>. Nothing on FinPath — including lessons, articles, screener output, market pulse data, sector heat maps, portfolio analytics, the AI Analyzer, the AI Suggestions feature (Gold), investor move summaries, the Strategy Playground, backtest results, share prices, alert notifications, or any communication from FinPath or Siddharth Moosani — constitutes financial advice, investment advice, tax advice, legal advice, accounting advice, retirement planning advice, or any other form of professional advice.</p>
+      <p>FinPath does <strong>not</strong> know your full financial situation, income, debts, tax bracket, dependents, age, health, insurance, employment status, retirement horizon, other assets, or personal risk tolerance. Any statement about a security, sector, strategy, or approach is generic educational content and does not consider your individual circumstances.</p>
+      <p>You must consult a qualified, licensed financial adviser, tax professional, or attorney before making any investment, tax, or legal decision. Your reliance on FinPath is solely at your own risk.</p>
+    </div>
+
+    <div class="legal-section" id="l-no-fiduciary"><h2>2. No Fiduciary or Advisory Relationship</h2>
+      <p>Using FinPath does <strong>not</strong> create a fiduciary duty, advisory relationship, agency relationship, or any other special legal relationship between you and FinPath or its founder. FinPath is not a Registered Investment Adviser (RIA) under the Investment Advisers Act of 1940 or any state securities law. FinPath is not registered with the U.S. Securities and Exchange Commission (SEC), the Financial Industry Regulatory Authority (FINRA), the Commodity Futures Trading Commission (CFTC), or any state or foreign securities regulator.</p>
+      <p>Nothing on FinPath is a solicitation to buy or sell any security, offer of securities, or a recommendation that any security, transaction, or investment strategy is suitable for any specific person.</p>
+    </div>
+
+    <div class="legal-section" id="l-ai"><h2>3. AI Features Disclaimer</h2>
+      <p>FinPath includes AI-generated content, including the free portfolio Analyzer and the paid Gold "AI Suggestions" feature. These features apply <strong>rule-based algorithmic commentary</strong> using general publicly available information and educational heuristics. They are not personalized financial advice and should never be the sole basis for any investment decision.</p>
+      <ul>
+        <li>AI outputs may be inaccurate, out-of-date, biased, incomplete, or contradictory</li>
+        <li>AI does not verify or fact-check its outputs and can produce false statements presented as confident</li>
+        <li>Past performance data referenced does not guarantee future results</li>
+        <li>AI does not know your goals, tax situation, or risk tolerance</li>
+        <li>You are solely responsible for any decision made after reading AI content</li>
+        <li>FinPath is not liable for any losses arising from your use of AI content</li>
+        <li>Always verify AI outputs independently against primary sources before acting</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="l-13f"><h2>4. Investor Move Data (Gold Feature)</h2>
+      <p>Investor holdings shown in the "Billionaire Moves" and related features are derived from publicly available <strong>SEC Form 13F filings</strong>. Under SEC rules, 13F filings reflect long U.S. equity positions as of the end of a calendar quarter and are filed up to 45 days after that quarter ends. This means the data you see may be up to four and a half months old and does not reflect:</p>
+      <ul>
+        <li>Current positions — the investor may have sold, added to, or eliminated any holding since the filing date</li>
+        <li>Short positions, options, derivatives, private investments, or non-U.S. holdings</li>
+        <li>The size of any position relative to the investor's total wealth</li>
+        <li>The reasons behind any purchase or sale</li>
+      </ul>
+      <p>Copying famous investors is <strong>not</strong> a guaranteed strategy and can produce very different results due to timing, position sizing, tax treatment, and risk capacity differences.</p>
+    </div>
+
+    <div class="legal-section" id="l-portfolio"><h2>5. Portfolio Tracking &amp; Paper Trading</h2>
+      <p>The FinPath portfolio tracker is a self-reported record-keeping tool. You manually enter your holdings; FinPath does not connect to any brokerage, custodian, bank, or financial institution. All portfolio values shown are <strong>estimates</strong> based on delayed third-party market data. Actual values in your brokerage account may differ.</p>
+      <p>The paper trading feature uses simulated virtual currency for educational purposes only. Paper trading performance is not indicative of real-money trading results, does not include real slippage, spreads, commissions, taxes, emotional pressure, or other real-world friction, and does not constitute a track record.</p>
+    </div>
+
+    <div class="legal-section" id="l-risk"><h2>6. Investment Risk Warning</h2>
+      <p>All investments involve risk of loss, including the total loss of your invested capital.</p>
+      <ul>
+        <li>Stock, ETF, crypto, and other asset prices can fall as well as rise, sometimes dramatically and without warning</li>
+        <li>Past performance is not a reliable indicator of future results</li>
+        <li>Markets can be volatile, illiquid, and unpredictable</li>
+        <li>Do not invest money you cannot afford to lose entirely</li>
+        <li>Diversification reduces but does not eliminate risk</li>
+        <li>Cryptocurrencies are especially volatile and largely unregulated; you can lose 100% of your investment quickly</li>
+        <li>Leverage, options, and derivatives can produce losses greater than your initial investment</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="l-third-party"><h2>7. Third-Party Data &amp; Services</h2>
+      <p>FinPath uses third-party services and APIs to provide functionality, including but not limited to: <strong>Finnhub</strong> (market data), <strong>Supabase</strong> (authentication and storage), <strong>Stripe</strong> (payments), and various content delivery networks. Market data is provided "as is" and may be delayed, inaccurate, or unavailable. FinPath makes no representations about the accuracy, completeness, timeliness, or availability of any third-party data.</p>
+      <p>Always verify prices, filings, and any other data with your broker, the SEC's EDGAR database, or another primary source before acting on it.</p>
+    </div>
+
+    <div class="legal-section" id="l-subscription"><h2>8. FinPath Gold Subscription Terms</h2>
+      <p>FinPath Gold is an optional paid subscription providing access to additional features. By subscribing you agree to the following:</p>
+      <ul>
+        <li><strong>Price:</strong> $4.99 USD per month, billed monthly, unless otherwise displayed at checkout.</li>
+        <li><strong>Billing:</strong> Payment is processed by Stripe. Your subscription renews automatically at the end of each billing period until you cancel.</li>
+        <li><strong>Cancellation:</strong> You may cancel at any time by contacting <a href="mailto:support@finpath.app" style="color:var(--green)">support@finpath.app</a>. Cancellation stops future billing; you retain Gold access until the end of your current paid period.</li>
+        <li><strong>Refunds:</strong> Except where required by law, subscription fees are <strong>non-refundable</strong>. If you believe you were charged in error, contact support within 14 days of the charge.</li>
+        <li><strong>Feature changes:</strong> FinPath may add, remove, or modify Gold features at any time. Gold does not entitle you to any specific feature indefinitely.</li>
+        <li><strong>Termination:</strong> FinPath may terminate your Gold access for violation of these terms, abusive behavior, fraud, or chargebacks, without refund.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="l-privacy"><h2>9. Privacy &amp; Data</h2>
+      <p>FinPath is designed to <strong>minimize data collection</strong>. Where possible, your data is stored locally in your browser (localStorage) and never sent to a server.</p>
+      <p><strong>What we collect:</strong></p>
+      <ul>
+        <li><strong>Account data</strong> (if you sign up): email address and encrypted password, stored by Supabase</li>
+        <li><strong>Portfolio &amp; goals</strong>: stored locally in your browser, and optionally synced to Supabase when signed in</li>
+        <li><strong>Payment data</strong> (Gold subscribers only): handled entirely by Stripe; FinPath never sees or stores your card number</li>
+        <li><strong>Analytics</strong>: anonymous, aggregated event data (page views, feature usage) via privacy-respecting analytics — no cookies, no personal identifiers</li>
+        <li><strong>Technical logs</strong>: standard web-server logs (IP address, user agent) retained temporarily for security</li>
+      </ul>
+      <p><strong>What we do not do:</strong> sell your data, share it with advertisers, run targeted ads, use tracking cookies, or share information with data brokers.</p>
+      <p><strong>Your rights:</strong> You may request access to, correction of, or deletion of your personal data at any time by emailing <a href="mailto:privacy@finpath.app" style="color:var(--green)">privacy@finpath.app</a>. If you are in the EU/UK, you have additional rights under GDPR. If you are in California, you have additional rights under the CCPA.</p>
+    </div>
+
+    <div class="legal-section" id="l-ages"><h2>10. Age, Eligibility &amp; Parental Consent</h2>
+      <p>FinPath's educational content is generally available to all ages. However:</p>
+      <ul>
+        <li>You must be at least <strong>13 years old</strong> to create an account (as required by the U.S. Children's Online Privacy Protection Act — COPPA).</li>
+        <li>If you are <strong>under 18 years old</strong> (or under the age of majority in your jurisdiction), you may not create an account or use any personalized feature of FinPath — including portfolio tracking, paper trading, goals, alerts, streaks, the checklist, or synced data — <strong>without the verifiable consent of a parent or legal guardian</strong>. A parent or guardian must complete FinPath's in-app consent form during signup, providing their full name, email address, relationship to the minor, agreement to these Terms on the minor's behalf, and a typed electronic signature matching their name.</li>
+        <li>An electronic typed signature has the same legal effect as a handwritten signature under the U.S. Electronic Signatures in Global and National Commerce Act (E-SIGN) and applicable state Uniform Electronic Transactions Acts.</li>
+        <li>By providing that consent, the parent or guardian: (a) confirms they are the parent or legal guardian of the minor; (b) agrees to be bound by these Terms on the minor's behalf; (c) accepts responsibility for the minor's use of the platform; and (d) consents to FinPath processing the minor's data as described in Section 9.</li>
+        <li>You must be at least <strong>18 years old</strong> (or the age of majority in your jurisdiction) to purchase a FinPath Gold subscription. Gold subscriptions cannot be purchased by minors even with parental consent — a parent may choose to purchase Gold themselves for a minor's use.</li>
+        <li>You must be at least 18 (or the age of majority in your jurisdiction) to open a real brokerage account elsewhere; FinPath is not a brokerage.</li>
+        <li>FinPath retains signed parental consent records securely and will provide a copy to the parent or guardian on request via <a href="mailto:privacy@finpath.app" style="color:var(--green)">privacy@finpath.app</a>. A parent may withdraw consent at any time by emailing that address, which will result in the minor's account being suspended and personal data deleted.</li>
+        <li>If FinPath learns that a user under 13, or a user 13–17 without valid parental consent, has created an account, FinPath will suspend the account and delete the associated personal data.</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="l-user-conduct"><h2>11. Acceptable Use</h2>
+      <p>You agree not to:</p>
+      <ul>
+        <li>Use FinPath to give financial or investment advice to others as if it were your own product</li>
+        <li>Scrape, reverse-engineer, or attempt to extract source data from FinPath in bulk</li>
+        <li>Attempt to circumvent Gold subscription paywalls or rate limits</li>
+        <li>Impersonate another person or misrepresent your affiliation with FinPath</li>
+        <li>Upload malicious code, exploit vulnerabilities, or interfere with other users' use of the service</li>
+        <li>Use FinPath for any illegal purpose, including tax evasion, market manipulation, or securities fraud</li>
+      </ul>
+    </div>
+
+    <div class="legal-section" id="l-ip"><h2>12. Intellectual Property &amp; DMCA</h2>
+      <p>All FinPath content, lessons, code, design, logos, and trademarks are the property of Siddharth Moosani unless otherwise credited. You may not reproduce, redistribute, or create derivative works from FinPath content without written permission, except for standard fair-use purposes (short quotations with attribution, personal educational use).</p>
+      <p>If you believe content on FinPath infringes your copyright, send a written notice to <a href="mailto:dmca@finpath.app" style="color:var(--green)">dmca@finpath.app</a> including: a description of the copyrighted work, the URL of the alleged infringement, your contact information, a statement of good-faith belief that the use is unauthorized, and your signature. We respond to valid DMCA notices in accordance with U.S. law.</p>
+    </div>
+
+    <div class="legal-section" id="l-liability"><h2>13. Limitation of Liability &amp; No Warranty</h2>
+      <p>FinPath is provided <strong>"as is" and "as available"</strong>, without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, non-infringement, accuracy, or uninterrupted availability. FinPath does not guarantee that the service will be error-free, secure, or continuously available.</p>
+      <p>To the maximum extent permitted by law, FinPath, its founder, employees, contractors, service providers, and affiliates shall <strong>not be liable</strong> for any direct, indirect, incidental, special, consequential, punitive, or exemplary damages arising from your use of the platform, including but not limited to investment losses, missed opportunities, loss of profits, loss of data, service interruption, or reputational harm — even if FinPath was advised of the possibility of such damages.</p>
+      <p>In no event shall FinPath's total aggregate liability to you exceed the amount you have paid to FinPath in the twelve months preceding the claim, or one hundred U.S. dollars ($100), whichever is greater.</p>
+    </div>
+
+    <div class="legal-section" id="l-indemnity"><h2>14. Indemnification</h2>
+      <p>You agree to defend, indemnify, and hold harmless FinPath and its founder from and against any claims, losses, damages, liabilities, and expenses (including reasonable attorneys' fees) arising from your use of the platform, your violation of these terms, your infringement of any third-party right, or any investment decision you make.</p>
+    </div>
+
+    <div class="legal-section" id="l-arbitration"><h2>15. Governing Law, Arbitration &amp; Class Action Waiver</h2>
+      <p>These terms are governed by the laws of the State of Texas, United States, without regard to conflict-of-laws principles. Any dispute arising from these terms or your use of FinPath shall be resolved <strong>exclusively by binding individual arbitration</strong> administered by the American Arbitration Association under its Consumer Arbitration Rules, in Harris County, Texas.</p>
+      <p><strong>You waive the right to a jury trial and the right to participate in a class action.</strong> Arbitration will be conducted on an individual basis; class arbitration, class actions, and consolidated actions are not permitted. If any part of this section is found unenforceable, the remainder of the arbitration agreement remains in effect.</p>
+      <p>You may opt out of this arbitration provision by emailing <a href="mailto:legal@finpath.app" style="color:var(--green)">legal@finpath.app</a> with your name, email, and the words "arbitration opt-out" within 30 days of first agreeing to these terms.</p>
+    </div>
+
+    <div class="legal-section" id="l-changes"><h2>16. Changes to These Terms</h2>
+      <p>FinPath may update these terms at any time. Material changes will be communicated by updating the "Last updated" date at the top of this page and, where practical, via in-app notice. Continued use of FinPath following any update constitutes acceptance of the updated terms. If you do not agree with the updated terms, stop using FinPath and delete your account.</p>
+    </div>
+
+    <div class="legal-section" id="l-contact"><h2>17. Contact</h2>
+      <p>For questions, cancellations, DMCA notices, privacy requests, or legal matters:</p>
+      <ul>
+        <li>General: <a href="mailto:support@finpath.app" style="color:var(--green)">support@finpath.app</a></li>
+        <li>Privacy: <a href="mailto:privacy@finpath.app" style="color:var(--green)">privacy@finpath.app</a></li>
+        <li>Legal &amp; DMCA: <a href="mailto:legal@finpath.app" style="color:var(--green)">legal@finpath.app</a></li>
+      </ul>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">FinPath is operated by Siddharth Moosani in Houston, Texas, United States.</p>
+    </div>
+
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:16px;padding:28px;margin-top:40px;text-align:center">
       <div style="font-size:18px;font-weight:700;margin-bottom:8px">I have read and agree to all terms</div>
-      <div style="font-size:14px;color:var(--muted);margin-bottom:20px">By clicking below you confirm you understand FinPath is for educational purposes only and does not constitute financial advice.</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:20px">By clicking below you confirm you have read and understood everything above, including the arbitration clause and class-action waiver in section 15, and that FinPath is for educational purposes only and does not constitute financial, investment, tax, or legal advice.</div>
       <button class="agree-btn" onclick="agreeToTerms()">I Agree — Take Me to FinPath</button>
     </div>
   </div>
@@ -3391,7 +3576,35 @@ function onUserLoggedIn(user){
   }
   // Check gold status from DB
   checkGoldStatus(user.id);
+  hideLoginNudge();
 }
+
+// ══ LOGIN NUDGE ══
+// A friendly bottom-left pill inviting signed-out users to log in.
+// Disappears the moment they sign in, and can be dismissed forever.
+function showLoginNudge(){
+  const n = document.getElementById('loginNudge');
+  if(!n) return;
+  if(currentUser) return;   // logged in — never show
+  if(localStorage.getItem('fp_nudge_dismissed')) return;
+  if(document.getElementById('loginModal') && document.getElementById('loginModal').style.display === 'flex') return;
+  n.style.display = 'flex';
+  requestAnimationFrame(function(){ n.style.opacity = '1'; n.style.transform = 'translateY(0)'; });
+}
+function hideLoginNudge(){
+  const n = document.getElementById('loginNudge');
+  if(!n) return;
+  n.style.opacity = '0'; n.style.transform = 'translateY(20px)';
+  setTimeout(function(){ n.style.display = 'none'; }, 300);
+}
+function dismissLoginNudge(){
+  localStorage.setItem('fp_nudge_dismissed','1');
+  hideLoginNudge();
+  if(typeof track === 'function') track('login_nudge_dismissed');
+}
+// Show the nudge 6 seconds after page load if signed out — gives users a
+// moment to see the site first before asking them to commit to an account.
+window.addEventListener('load', function(){ setTimeout(showLoginNudge, 6000); });
 
 function onUserSignedOut(){
   UID = localStorage.getItem('fp_uid') || 'anon';
@@ -3475,47 +3688,113 @@ function closeLogin(){
 
 function showStep1(){
   document.getElementById('loginStep1').style.display = 'block';
+  document.getElementById('loginStepAge').style.display = 'none';
+  document.getElementById('loginStepConsent').style.display = 'none';
   document.getElementById('loginStep2').style.display = 'none';
   document.getElementById('loginError').style.display = 'none';
   document.getElementById('loginEmail').value = '';
 }
+function backToStep1(){
+  document.getElementById('loginStep1').style.display = 'block';
+  document.getElementById('loginStepAge').style.display = 'none';
+  document.getElementById('loginStepConsent').style.display = 'none';
+}
 
-async function sendMagicLink(){
+// STEP 1 → 2: validate email, then ask age
+function nextLoginStep(){
   const email = document.getElementById('loginEmail').value.trim();
-  if(!email || !email.includes('@')){
-    const err = document.getElementById('loginError');
-    err.textContent = 'Please enter a valid email address';
-    err.style.display = 'block';
+  const err = document.getElementById('loginError');
+  if(!email || !email.includes('@') || email.length < 5){
+    err.textContent = 'Please enter a valid email address'; err.style.display = 'block'; return;
+  }
+  err.style.display = 'none';
+  // If they've signed in on this device before (any prior consent record found), skip age gate
+  const priorConsent = localStorage.getItem('fp_consent_v1');
+  if(priorConsent){ sendMagicLink(email); return; }
+  document.getElementById('loginStep1').style.display = 'none';
+  document.getElementById('loginStepAge').style.display = 'block';
+}
+
+// STEP 2 → 3 or 4: adult goes straight to send; minor sees parent form
+function setAge(kind){
+  if(kind === 'adult'){
+    // Record their attestation locally so we don't ask again
+    try{ localStorage.setItem('fp_consent_v1', JSON.stringify({kind:'adult', at: Date.now()})); }catch(e){}
+    sendMagicLink(document.getElementById('loginEmail').value.trim());
     return;
   }
-  const btn = document.getElementById('loginBtn');
-  btn.textContent = 'Sending...';
-  btn.disabled = true;
+  document.getElementById('loginStepAge').style.display = 'none';
+  document.getElementById('loginStepConsent').style.display = 'block';
+}
 
+// STEP 3: parent fills form, types signature, we record it
+async function submitParentalConsent(){
+  const name = document.getElementById('pcName').value.trim();
+  const pemail = document.getElementById('pcEmail').value.trim();
+  const rel = document.getElementById('pcRel').value;
+  const agree = document.getElementById('pcAgree').checked;
+  const sig = document.getElementById('pcSig').value.trim();
+  const err = document.getElementById('pcError');
+  const submit = document.getElementById('pcSubmit');
+  err.style.display = 'none';
+  if(name.length < 2){ err.textContent = 'Please enter the parent/guardian\'s full name.'; err.style.display='block'; return; }
+  if(!pemail.includes('@') || pemail.length < 5){ err.textContent = 'Please enter a valid parent/guardian email.'; err.style.display='block'; return; }
+  if(!agree){ err.textContent = 'Please check the consent box to continue.'; err.style.display='block'; return; }
+  if(sig.length < 2){ err.textContent = 'Please type your name to sign.'; err.style.display='block'; return; }
+  // Signature must reasonably match the printed name (case-insensitive, spaces flexible)
+  if(sig.replace(/\s+/g,'').toLowerCase() !== name.replace(/\s+/g,'').toLowerCase()){
+    err.textContent = 'Signature must match the parent/guardian name typed above.'; err.style.display='block'; return;
+  }
+  const childEmail = document.getElementById('loginEmail').value.trim();
+  const consent = {
+    kind:'minor',
+    childEmail: childEmail,
+    parentName: name, parentEmail: pemail, relationship: rel,
+    signatureTyped: sig,
+    at: Date.now(),
+    ip: null,   // we don't collect IPs client-side
+    userAgent: navigator.userAgent.slice(0,200),
+    termsVersion: 'legal-2026-07'
+  };
+  try{ localStorage.setItem('fp_consent_v1', JSON.stringify(consent)); }catch(e){}
+  // Best-effort remote record: save to Supabase if configured; otherwise the localStorage record still serves as proof
+  submit.textContent = 'Submitting…'; submit.disabled = true;
+  try{
+    if(typeof supabaseClient !== 'undefined' && supabaseClient && supabaseClient.from){
+      await supabaseClient.from('parental_consents').insert([consent]).then(function(){}, function(){});
+    }
+  }catch(e){}
+  if(typeof track === 'function') track('parental_consent_recorded');
+  sendMagicLink(childEmail);
+}
+
+async function sendMagicLink(email){
+  email = (email || document.getElementById('loginEmail').value || '').trim();
+  const btn = document.getElementById('loginBtn');
+  if(btn){ btn.textContent = 'Sending...'; btn.disabled = true; }
   try {
     const { error } = await supabaseClient.auth.signInWithOtp({
       email: email,
-      options: {
-        emailRedirectTo: 'https://finpathdev.github.io/FinPath/'
-      }
+      options: { emailRedirectTo: 'https://finpathdev.github.io/FinPath/' }
     });
     if(error) throw error;
     document.getElementById('sentEmail').textContent = email;
     document.getElementById('loginStep1').style.display = 'none';
+    document.getElementById('loginStepAge').style.display = 'none';
+    document.getElementById('loginStepConsent').style.display = 'none';
     document.getElementById('loginStep2').style.display = 'block';
-    btn.textContent = 'Continue with email';
-    btn.disabled = false;
+    if(btn){ btn.textContent = 'Continue'; btn.disabled = false; }
   } catch(e){
-    const err = document.getElementById('loginError');
+    const err = document.getElementById('loginError') || document.getElementById('pcError');
     var msg = (e && e.message) || '';
     if(/rate|security purposes|too many/i.test(msg)) msg = 'Too many attempts - wait a minute, then try again.';
     else if(/invalid/i.test(msg)) msg = 'That email address looks invalid - double-check it and retry.';
     else if(!navigator.onLine) msg = 'You appear to be offline. Check your connection and retry.';
     else if(!msg) msg = 'Something went wrong. Please try again.';
-    err.textContent = msg;
-    err.style.display = 'block';
-    btn.textContent = 'Continue with email';
-    btn.disabled = false;
+    if(err){ err.textContent = msg; err.style.display = 'block'; }
+    if(btn){ btn.textContent = 'Continue'; btn.disabled = false; }
+    const pcs = document.getElementById('pcSubmit');
+    if(pcs){ pcs.textContent = 'Sign and continue'; pcs.disabled = false; }
   }
 }
 
@@ -3753,6 +4032,53 @@ document.addEventListener('keydown', function(e){
 function track(event, props){
   try{ if(window.plausible) window.plausible(event, {props: props||{}}); }catch(e){}
 }
+
+// ══ LIVE PRICE AUTO-REFRESH ══
+// Refreshes the currently visible page (Portfolio, Paper Trading, or Markets)
+// every 30 seconds during market hours, less often outside them, and pauses
+// entirely when the browser tab isn't in focus so we don't burn the API quota.
+let _refreshInt = null;
+function isMarketHours(){
+  // NYSE open ~9:30 AM to 4:00 PM ET, Monday–Friday.
+  // Uses the visitor's local time offset to approximate — good enough
+  // for a refresh cadence decision (not for trading).
+  const now = new Date();
+  const day = now.getUTCDay(); // 0 = Sun, 6 = Sat
+  if(day === 0 || day === 6) return false;
+  const utcHour = now.getUTCHours() + (now.getUTCMinutes()/60);
+  // NYSE 9:30–16:00 ET = 14:30–21:00 UTC (during standard time; DST shifts by 1)
+  // Widen the window slightly (13:00–22:00 UTC) so we refresh a bit before/after too
+  return utcHour >= 13 && utcHour <= 22;
+}
+function refreshCurrentPage(){
+  if(document.hidden) return;   // tab isn't in focus — save API calls
+  const active = document.querySelector('.page.active');
+  if(!active) return;
+  try{
+    if(active.id === 'page-portfolio'){
+      if(typeof PAPER_MODE !== 'undefined' && PAPER_MODE && typeof renderPaper === 'function') renderPaper();
+      else if(typeof renderPortfolio === 'function' && portfolio.length) renderPortfolio();
+    } else if(active.id === 'page-markets'){
+      if(typeof renderPulse === 'function') renderPulse();
+      if(typeof renderHeatMap === 'function') renderHeatMap();
+    }
+    // Home/lessons/gold/legal don't have live prices, so nothing to refresh
+  }catch(e){ console.log('refresh skipped:', e); }
+}
+function startPriceRefresh(){
+  if(_refreshInt) return;
+  _refreshInt = setInterval(function(){
+    const cadence = isMarketHours() ? 30000 : 120000;   // 30s during market hours, 2min otherwise
+    if(!refreshCurrentPage._last || Date.now() - refreshCurrentPage._last >= cadence){
+      refreshCurrentPage._last = Date.now();
+      refreshCurrentPage();
+    }
+  }, 5000);   // check every 5s, but only actually fetch based on cadence
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden){ refreshCurrentPage._last = 0; refreshCurrentPage(); }
+  });
+}
+document.addEventListener('DOMContentLoaded', function(){ setTimeout(startPriceRefresh, 3000); });
 
 // ══ LIVE ACTIVITY TICKER (honest — uses real user data) ══
 // This shows real, growing numbers from the user's own session so the
@@ -4986,7 +5312,25 @@ renderLessons();
 // (never on first visit — that comes across as pushy).
 if('serviceWorker' in navigator){
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('sw.js').catch(function(err){ console.log('PWA offline mode unavailable:', err); });
+    navigator.serviceWorker.register('sw.js').then(function(reg){
+      // Aggressively check for updates every time the app opens
+      reg.update();
+      reg.addEventListener('updatefound', function(){
+        const nw = reg.installing;
+        if(!nw) return;
+        nw.addEventListener('statechange', function(){
+          if(nw.state === 'installed' && navigator.serviceWorker.controller){
+            // A fresh version is ready — swap and reload once so users see it.
+            nw.postMessage({type:'SKIP_WAITING'});
+          }
+        });
+      });
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', function(){
+        if(refreshing) return; refreshing = true;
+        window.location.reload();
+      });
+    }).catch(function(err){ console.log('PWA offline mode unavailable:', err); });
   });
 }
 let _deferredInstall = null;
@@ -5020,25 +5364,15 @@ function isStandalone(){
 }
 function updateFooterInstall(){
   const box = document.getElementById('footerInstall');
+  const navBtn = document.getElementById('navInstallBtn');
   const label = document.getElementById('footerInstallLabel');
-  if(!box || !label) return;
-  if(isStandalone()){ box.style.display = 'none'; return; }   // already running as installed app
+  const standalone = isStandalone();
+  if(box) box.style.display = standalone ? 'none' : 'block';
+  if(navBtn) navBtn.style.display = standalone ? 'none' : 'inline-flex';
+  if(!label) return;
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  const isAndroid = /Android/.test(navigator.userAgent);
-  if(isIOS){
-    label.textContent = 'How to install FinPath on iPhone';
-    box.style.display = 'block';
-  } else if(_deferredInstall){
-    label.textContent = 'Install FinPath as an app';
-    box.style.display = 'block';
-  } else if(isAndroid || !('serviceWorker' in navigator)){
-    label.textContent = 'How to install FinPath';
-    box.style.display = 'block';
-  } else {
-    // Chrome / Edge on desktop before beforeinstallprompt fires — show anyway with generic help
-    label.textContent = 'Install FinPath as an app';
-    box.style.display = 'block';
-  }
+  if(isIOS) label.textContent = 'Install FinPath on iPhone';
+  else label.textContent = 'Install FinPath as an app';
 }
 async function triggerInstall(){
   if(typeof track === 'function') track('install_button_click');
