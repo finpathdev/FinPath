@@ -3,7 +3,7 @@
 // Live prices, filings, and API responses are intentionally NOT cached — those
 // must always be fresh.
 
-const CACHE = 'finpath-v3';
+const CACHE = 'finpath-v4';
 const SHELL = [
   './',
   './index.html',
@@ -20,6 +20,11 @@ self.addEventListener('install', function(event){
       .then(function(cache){ return cache.addAll(SHELL); })
       .then(function(){ return self.skipWaiting(); })
   );
+});
+
+// Allow the page to force an immediate takeover when a new SW is ready.
+self.addEventListener('message', function(event){
+  if(event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
 // Activate: clean out old cache versions on new deploys.
