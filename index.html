@@ -71,6 +71,14 @@ body{
   position:relative;
 }
 body > *{position:relative;z-index:1;}
+/* ── NUCLEAR: kill any full-viewport fixed/animated white overlay effect ── */
+/* Hides any orphan fullscreen decorative div that isn't a real page/nav/etc. */
+body > div[style*="position: fixed"][style*="rgba(255,255,255"],
+body > div[style*="position:fixed"][style*="rgba(255,255,255"],
+body > span[style*="position: fixed"],
+.bg-lines, .bg-line, .scan-lines, .light-streaks, .matrix-rain{
+  display:none !important; visibility:hidden !important; opacity:0 !important;
+}
 h1,h2,h3,.stat-num,.price-amount,.port-value,.logo,.section-title,.price-name{font-family:var(--font-display)}
 ::selection{background:rgba(34,197,94,.35);color:#fff}
 button{font-family:var(--font-body)}
