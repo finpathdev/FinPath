@@ -412,17 +412,21 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
 
 /* ── LIGHT THEME ── */
 body.light{
-  --bg:#f2f6f1;--bg2:#e9efe8;
-  --panel:rgba(255,255,255,.78);--panel-solid:#ffffff;--panel2:#eef3ed;
-  --line:rgba(20,83,45,.15);--line-strong:rgba(20,83,45,.34);
-  --text:#0e1f13;--muted:#47604e;--muted2:#8aa08c;
+  --bg:#f7faf6;--bg2:#eef3ed;
+  --panel:#ffffff;--panel-solid:#ffffff;--panel2:#f2f6f0;
+  --line:rgba(20,83,45,.14);--line-strong:rgba(20,83,45,.32);
+  --text:#0a1a10;--muted:#546b58;--muted2:#8ba28d;
   --deep:#dcfce7;--gold-soft:rgba(180,120,7,.12);
-  --green-deeper:#dcfce7;--surface:#ffffff;--surface2:#eef3ed;--border:rgba(20,83,45,.15);
+  --green-deeper:#e5f5e8;--surface:#ffffff;--surface2:#f2f6f0;--border:rgba(20,83,45,.14);
   --shadow-glow:0 8px 26px rgba(34,197,94,.28);
   background-image:
     radial-gradient(ellipse 1400px 900px at 8% -12%,rgba(34,197,94,.14),transparent 55%),
-    radial-gradient(ellipse 1000px 700px at 95% 5%,rgba(34,197,94,.08),transparent 55%),
-    radial-gradient(ellipse 900px 600px at 50% 105%,rgba(34,197,94,.05),transparent 60%);
+    radial-gradient(ellipse 1000px 700px at 95% 5%,rgba(34,197,94,.09),transparent 55%),
+    radial-gradient(ellipse 900px 600px at 50% 105%,rgba(34,197,94,.05),transparent 60%),
+    radial-gradient(circle at center, rgba(20,83,45,.11) 1px, transparent 1.4px);
+  background-size:100% 100%, 100% 100%, 100% 100%, 22px 22px;
+  background-repeat:no-repeat, no-repeat, no-repeat, repeat;
+  background-attachment:fixed, fixed, fixed, fixed;
 }
 body.light nav{background:rgba(255,255,255,.82);box-shadow:0 12px 40px rgba(20,40,25,.12)}
 body.light .tape{background:rgba(255,255,255,.72)}
@@ -524,6 +528,229 @@ body.light .goal-item{background:rgba(20,83,45,.05)}
 body.light .mobile-menu{background:rgba(255,255,255,.97);box-shadow:0 20px 60px rgba(20,40,25,.2)}
 body.light .mobile-menu a:hover{background:rgba(34,197,94,.1)}
 body.light .hamburger span{background:var(--text)}
+
+/* ── LIGHT MODE COMPONENT POLISH (applies across every page) ── */
+
+/* All main card types get a real white background with a soft green-tinted border
+   and a proper drop shadow so they lift off the page instead of blending in. */
+body.light .feature-card,
+body.light .lesson-card,
+body.light .move-card,
+body.light .investor-card,
+body.light .price-card,
+body.light .port-card,
+body.light .stock-row,
+body.light .alert-item,
+body.light .hiw-card,
+body.light .founder-section,
+body.light .cs-card,
+body.light .mk-section,
+body.light .stat,
+body.light .filter-tab,
+body.light .goal-card,
+body.light .analyzer-card{
+  background:#ffffff !important;
+  border-color:rgba(20,83,45,.14) !important;
+  box-shadow:0 2px 8px rgba(20,60,30,.06), 0 12px 30px rgba(20,60,30,.05);
+}
+body.light .feature-card:hover,
+body.light .lesson-card:hover,
+body.light .move-card:hover,
+body.light .investor-card:hover,
+body.light .hiw-card:hover,
+body.light .cs-card:hover{
+  border-color:rgba(20,83,45,.28) !important;
+  box-shadow:0 4px 12px rgba(20,60,30,.09), 0 20px 40px rgba(20,60,30,.08);
+}
+
+/* Metric tiles (market pulse, portfolio breakdown, sector heat, etc.) —
+   These were the worst offender in the screenshot: gray on gray. */
+body.light .d-metric,
+body.light .heat-cell,
+body.light .pulse-card,
+body.light .sp-brk,
+body.light .sp-hero,
+body.light .sp-result,
+body.light .sp-chart-wrap,
+body.light .txn-list,
+body.light .gs-card,
+body.light .gs-item,
+body.light .achv-item,
+body.light .calc-box{
+  background:#ffffff !important;
+  border-color:rgba(20,83,45,.14) !important;
+  box-shadow:0 1px 4px rgba(20,60,30,.04), 0 6px 16px rgba(20,60,30,.05);
+}
+body.light .d-metric .d-label,
+body.light .heat-cell .heat-name,
+body.light .pulse-card .pulse-name,
+body.light .sp-brk-label{
+  color:#546b58 !important; opacity:1;
+}
+body.light .d-metric .d-value,
+body.light .heat-cell .heat-price,
+body.light .pulse-card .pulse-price,
+body.light .sp-brk-val,
+body.light .port-value,
+body.light .stat-num{
+  color:#0a1a10 !important;
+}
+
+/* Text hierarchy — force real contrast on all headings and body text */
+body.light h1,
+body.light h2,
+body.light h3,
+body.light h4,
+body.light .section-title,
+body.light .mk-title,
+body.light .lesson-title,
+body.light .hiw-title,
+body.light .cs-name,
+body.light .founder-title,
+body.light .sp-hero-title,
+body.light .price-name,
+body.light .investor-name,
+body.light .move-title{
+  color:#0a1a10 !important;
+}
+body.light .mk-sub,
+body.light .lesson-preview,
+body.light .lesson-cat,
+body.light .hiw-body,
+body.light .cs-desc,
+body.light .founder-body,
+body.light .sp-hero-sub,
+body.light .investor-role,
+body.light .move-body,
+body.light .stat-label,
+body.light .news-title,
+body.light .footer-copy,
+body.light .footer-sub{
+  color:#3d5245 !important;
+}
+body.light .cs-nick,
+body.light .sp-headline,
+body.light .price-features li{
+  color:#546b58 !important;
+}
+
+/* Inputs and search boxes — make them look like real inputs, not placeholder pills */
+body.light input[type="text"],
+body.light input[type="number"],
+body.light input[type="email"],
+body.light input[type="password"],
+body.light input[type="search"],
+body.light select,
+body.light textarea,
+body.light .sp-controls input,
+body.light .sp-controls select{
+  background:#ffffff !important;
+  border:1px solid rgba(20,83,45,.2) !important;
+  color:#0a1a10 !important;
+  box-shadow:inset 0 1px 3px rgba(20,60,30,.04);
+}
+body.light input::placeholder,
+body.light textarea::placeholder{
+  color:#8ba28d !important;
+  opacity:1;
+}
+body.light input:focus,
+body.light select:focus,
+body.light textarea:focus{
+  border-color:var(--green) !important;
+  box-shadow:0 0 0 3px rgba(34,197,94,.15) !important;
+  outline:none;
+}
+
+/* Search bar on Lessons page */
+body.light #lessonSearch{
+  background:#ffffff !important;
+  border:1px solid rgba(20,83,45,.2) !important;
+  color:#0a1a10 !important;
+  box-shadow:0 2px 6px rgba(20,60,30,.06);
+}
+
+/* Chips, tabs, and pills */
+body.light .chip,
+body.light .filter-tab,
+body.light .txn-filters .chip,
+body.light .sp-quick-btn,
+body.light .period-tab{
+  background:#ffffff !important;
+  border:1px solid rgba(20,83,45,.18) !important;
+  color:#546b58 !important;
+}
+body.light .chip.active,
+body.light .filter-tab.active,
+body.light .period-tab.active{
+  background:linear-gradient(135deg, var(--green-dark), var(--green)) !important;
+  color:#ffffff !important;
+  border-color:transparent !important;
+}
+
+/* Progress bars need a visible track */
+body.light .progress-bar,
+body.light .goal-bar,
+body.light .hold-bar,
+body.light .gs-bar{
+  background:rgba(20,83,45,.08) !important;
+}
+
+/* Green accent text stays green on both themes but slightly darker for contrast */
+body.light .cs-try,
+body.light .hiw-cta,
+body.light .section-tag,
+body.light .news-src{
+  color:#15803d !important;
+}
+
+/* Table-like rows */
+body.light .txn-row,
+body.light .stock-row,
+body.light .alert-item{
+  background:#ffffff !important;
+}
+body.light .txn-row:hover,
+body.light .stock-row:hover{
+  background:#f7faf6 !important;
+}
+
+/* Nav needs a slightly stronger border in light mode to define its shape */
+body.light nav{
+  background:rgba(255,255,255,.88) !important;
+  border:1px solid rgba(20,83,45,.12) !important;
+  box-shadow:0 12px 40px rgba(20,60,30,.08) !important;
+}
+body.light .logo{color:#15803d !important;}
+body.light .logo span{color:#0a1a10 !important;}
+body.light .nav-links a{color:#3d5245 !important;}
+body.light .nav-links a:hover{color:#0a1a10 !important;}
+
+/* Founder signature */
+body.light .founder-signature{color:#15803d !important;}
+body.light .founder-signature-role{color:#546b58 !important;}
+
+/* Hero tag and section tags */
+body.light .hero-tag{background:rgba(20,83,45,.06) !important; border-color:rgba(20,83,45,.15) !important; color:#15803d !important;}
+
+/* Text streak on the hero underline */
+body.light .hero h1{color:#0a1a10 !important;}
+body.light .hero p{color:#3d5245 !important;}
+
+/* Modals need a solid backdrop and white content */
+body.light .modal, body.light .modal > div{background:#ffffff !important; color:#0a1a10 !important;}
+
+/* Achievement chips + streak highlights */
+body.light .achv-item{background:#ffffff !important;}
+body.light .achv-item.locked{background:#f2f6f0 !important; opacity:.72;}
+
+/* Ticker tape items in light mode */
+body.light .tape-item .t-sym{color:#0a1a10 !important;}
+body.light .tape-item .t-up{color:#15803d !important;}
+body.light .tape-item .t-down{color:#c2410c !important;}
+
+/* Fix the moon/sun theme toggle button */
+body.light .theme-btn{background:rgba(20,83,45,.06) !important; border-color:rgba(20,83,45,.15) !important;}
 /* ── TOASTS ── */
 .toast-stack{position:fixed;bottom:20px;right:20px;z-index:900;display:flex;flex-direction:column;gap:10px;max-width:340px}
 .toast{background:var(--panel-solid);border:1px solid var(--line-strong);border-radius:14px;padding:14px 18px;font-size:13px;box-shadow:0 12px 40px rgba(0,0,0,.5);display:flex;gap:11px;align-items:flex-start;animation:toastIn .25s ease}
