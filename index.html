@@ -566,7 +566,7 @@ body.light .cs-card:hover{
 /* Metric tiles (market pulse, portfolio breakdown, sector heat, etc.) —
    These were the worst offender in the screenshot: gray on gray. */
 body.light .d-metric,
-body.light .heat-cell,
+body.light .p-metric,
 body.light .pulse-card,
 body.light .sp-brk,
 body.light .sp-hero,
@@ -576,25 +576,37 @@ body.light .txn-list,
 body.light .gs-card,
 body.light .gs-item,
 body.light .achv-item,
-body.light .calc-box{
+body.light .calc-box,
+body.light .scr-controls,
+body.light .scr-results,
+body.light .scr-row,
+body.light .scr-result,
+body.light .cmp-out,
+body.light .earn-row,
+body.light .goal-item,
+body.light .news-card{
   background:#ffffff !important;
   border-color:rgba(20,83,45,.14) !important;
   box-shadow:0 1px 4px rgba(20,60,30,.04), 0 6px 16px rgba(20,60,30,.05);
 }
 body.light .d-metric .d-label,
-body.light .heat-cell .heat-name,
+body.light .p-metric .p-label,
 body.light .pulse-card .pulse-name,
 body.light .sp-brk-label{
   color:#546b58 !important; opacity:1;
 }
 body.light .d-metric .d-value,
-body.light .heat-cell .heat-price,
+body.light .p-metric .p-val,
 body.light .pulse-card .pulse-price,
 body.light .sp-brk-val,
 body.light .port-value,
 body.light .stat-num{
   color:#0a1a10 !important;
 }
+/* Heat-map cells KEEP their JavaScript-set green/red backgrounds (they signal sector performance).
+   Just make the text on them readable in light mode. */
+body.light .heat-cell .heat-name,
+body.light .heat-cell .heat-pct{color:#ffffff !important; text-shadow:0 1px 2px rgba(0,0,0,.35);}
 
 /* Text hierarchy — force real contrast on all headings and body text */
 body.light h1,
@@ -1494,6 +1506,13 @@ body.light .gs-item{background:#fff}
       <a onclick="showPage('home')">Home</a><a onclick="showPage('lessons')">Lessons</a>
       <a onclick="showPage('gold')">Gold</a><a onclick="showPage('portfolio')">Portfolio</a>
       <a onclick="showPage('legal')">Legal & Disclaimers</a>
+    </div>
+    <div id="footerInstall" style="display:none;margin-bottom:26px">
+      <button onclick="triggerInstall()" style="background:linear-gradient(135deg,#052e16,#0b1a10);color:#eef5ee;border:1px solid rgba(134,239,172,.3);padding:12px 24px;border-radius:99px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:9px;transition:all .2s" aria-label="Install FinPath as an app on this device">
+        <span style="font-size:16px" aria-hidden="true">📲</span>
+        <span id="footerInstallLabel">Install FinPath as an app</span>
+      </button>
+      <div style="font-size:11px;color:var(--muted2);margin-top:8px;line-height:1.5">Opens fullscreen, works offline, updates automatically</div>
     </div>
     <div class="footer-copy">© 2026 FinPath. Built by Siddharth Moosani. For educational purposes only. Not financial advice.</div>
   </footer>
@@ -4974,6 +4993,7 @@ let _deferredInstall = null;
 window.addEventListener('beforeinstallprompt', function(e){
   e.preventDefault();
   _deferredInstall = e;
+  updateFooterInstall();
   const visits = parseInt(localStorage.getItem('fp_visits')||'0', 10) + 1;
   localStorage.setItem('fp_visits', String(visits));
   const dismissed = localStorage.getItem('fp_install_dismissed');
@@ -4986,7 +5006,103 @@ window.addEventListener('appinstalled', function(){
   const p = document.getElementById('installPill'); if(p) p.remove();
   if(typeof toast === 'function') toast('🎉','FinPath is now on your home screen.');
   if(typeof track === 'function') track('pwa_installed');
+  updateFooterInstall();
 });
+
+// ══ SMART FOOTER "INSTALL AS APP" BUTTON ══
+// Always-available install access — even after someone dismisses the pill or
+// deletes the shortcut. Adapts to platform: real Chrome/Edge install prompt
+// on Android/desktop, Safari share-menu instructions on iOS.
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true
+      || document.referrer.indexOf('android-app://') === 0;
+}
+function updateFooterInstall(){
+  const box = document.getElementById('footerInstall');
+  const label = document.getElementById('footerInstallLabel');
+  if(!box || !label) return;
+  if(isStandalone()){ box.style.display = 'none'; return; }   // already running as installed app
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isAndroid = /Android/.test(navigator.userAgent);
+  if(isIOS){
+    label.textContent = 'How to install FinPath on iPhone';
+    box.style.display = 'block';
+  } else if(_deferredInstall){
+    label.textContent = 'Install FinPath as an app';
+    box.style.display = 'block';
+  } else if(isAndroid || !('serviceWorker' in navigator)){
+    label.textContent = 'How to install FinPath';
+    box.style.display = 'block';
+  } else {
+    // Chrome / Edge on desktop before beforeinstallprompt fires — show anyway with generic help
+    label.textContent = 'Install FinPath as an app';
+    box.style.display = 'block';
+  }
+}
+async function triggerInstall(){
+  if(typeof track === 'function') track('install_button_click');
+  // Ideal path — the browser gave us a real install prompt
+  if(_deferredInstall){
+    _deferredInstall.prompt();
+    const choice = await _deferredInstall.userChoice;
+    if(typeof track === 'function') track('pwa_install_prompt', {outcome: choice.outcome, source: 'footer'});
+    if(choice.outcome === 'accepted'){ _deferredInstall = null; localStorage.removeItem('fp_install_dismissed'); updateFooterInstall(); }
+    return;
+  }
+  // Fallback — show a modal with platform-specific instructions
+  showInstallHelp();
+}
+function showInstallHelp(){
+  if(document.getElementById('installHelpModal')) return;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isAndroid = /Android/.test(navigator.userAgent);
+  const isDesktop = !isIOS && !isAndroid;
+  let steps = '';
+  if(isIOS){
+    steps = '<ol style="margin:0;padding-left:22px;line-height:1.9;color:var(--text)">' +
+      '<li>Tap the <b>Share</b> button <span style="opacity:.7">(square with an up arrow)</span> at the bottom of Safari</li>' +
+      '<li>Scroll down and tap <b>Add to Home Screen</b></li>' +
+      '<li>Tap <b>Add</b> in the top right</li>' +
+      '</ol>' +
+      '<div style="font-size:12px;color:var(--muted);margin-top:14px">Requires Safari — installation isn\u2019t available in Chrome or Firefox on iPhone due to Apple\u2019s rules.</div>';
+  } else if(isAndroid){
+    steps = '<ol style="margin:0;padding-left:22px;line-height:1.9;color:var(--text)">' +
+      '<li>Tap the <b>⋮ menu</b> (three dots) in the top right of Chrome</li>' +
+      '<li>Tap <b>Install app</b> or <b>Add to Home screen</b></li>' +
+      '<li>Confirm by tapping <b>Install</b></li>' +
+      '</ol>';
+  } else {
+    steps = '<ol style="margin:0;padding-left:22px;line-height:1.9;color:var(--text)">' +
+      '<li>Look for the <b>install icon</b> <span style="opacity:.7">(a small monitor with a down arrow)</span> at the far right of your address bar</li>' +
+      '<li>Click it and confirm <b>Install</b></li>' +
+      '</ol>' +
+      '<div style="font-size:12px;color:var(--muted);margin-top:14px">Or open your browser\u2019s menu and choose <b>Install FinPath…</b>. Works best in Chrome or Edge.</div>';
+  }
+  const modal = document.createElement('div');
+  modal.id = 'installHelpModal';
+  modal.setAttribute('role','dialog');
+  modal.setAttribute('aria-modal','true');
+  modal.setAttribute('aria-label','How to install FinPath');
+  modal.style.cssText = 'position:fixed;inset:0;z-index:950;background:rgba(2,6,3,.72);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px);opacity:0;transition:opacity .2s';
+  modal.innerHTML =
+    '<div style="background:var(--panel-solid,#0b1a10);border:1px solid var(--line);border-radius:20px;padding:28px 26px 22px;max-width:420px;width:100%;box-shadow:0 30px 80px rgba(0,0,0,.6);color:var(--text)">' +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:22px" aria-hidden="true">📲</span><div style="font-family:var(--font-display);font-size:18px;font-weight:700">Install FinPath</div></div>' +
+      '<div style="font-size:13px;color:var(--muted);margin-bottom:18px">Get the FinPath app on your ' + (isIOS?'iPhone':isAndroid?'Android':'desktop') + '. Free — takes 10 seconds.</div>' +
+      steps +
+      '<button onclick="closeInstallHelp()" style="margin-top:20px;width:100%;background:linear-gradient(135deg,var(--green-dark),var(--green));color:#fff;border:none;padding:12px;border-radius:12px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">Got it</button>' +
+    '</div>';
+  document.body.appendChild(modal);
+  requestAnimationFrame(function(){ modal.style.opacity = '1'; });
+  modal.addEventListener('click', function(e){ if(e.target === modal) closeInstallHelp(); });
+}
+function closeInstallHelp(){
+  const m = document.getElementById('installHelpModal');
+  if(m){ m.style.opacity = '0'; setTimeout(function(){ m.remove(); }, 200); }
+}
+document.addEventListener('DOMContentLoaded', updateFooterInstall);
+window.addEventListener('load', updateFooterInstall);
+
 function showInstallPill(){
   if(!_deferredInstall || document.getElementById('installPill')) return;
   const pill = document.createElement('div');
