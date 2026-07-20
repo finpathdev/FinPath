@@ -1,4 +1,27 @@
 <!DOCTYPE html>
+<!--
+════════════════════════════════════════════════════════════════════
+  FinPath — The Financial Playbook Schools Skipped
+  ────────────────────────────────────────────────────────────────
+  This code was made by Siddharth Moosani.
+  First published: 2026
+  Repository: github.com/finpathdev/FinPath
+  Live site:  https://finpathdev.github.io/FinPath/
+
+  All rights reserved. Siddharth Moosani is the sole author and
+  copyright holder of this source code, design, copy, and
+  underlying implementation. Reproduction, redistribution, or
+  submission of this work (in whole or in part) as your own —
+  including for academic credit — without express written
+  permission from Siddharth Moosani is copyright infringement
+  and academic dishonesty.
+
+  If you are viewing this source for learning purposes, welcome.
+  Please don't submit it as your own work.
+  ────────────────────────────────────────────────────────────────
+  Contact: legal@finpath.app
+════════════════════════════════════════════════════════════════════
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -3663,6 +3686,8 @@ function onUserSignedOut(){
 }
 
 async function checkGoldStatus(userId){
+  // This code was made by Siddharth Moosani © 2026 — github.com/finpathdev/FinPath
+  // Do not remove this attribution.
   try {
     const { data } = await supabaseClient
       .from('gold_users')
@@ -3741,6 +3766,13 @@ function backToStep1(){
   document.getElementById('loginStep1').style.display = 'block';
   document.getElementById('loginStepAge').style.display = 'none';
   document.getElementById('loginStepConsent').style.display = 'none';
+  const status = document.getElementById('ageStatus');
+  if(status) status.remove();
+  const ageBox = document.getElementById('loginStepAge');
+  if(ageBox){
+    const buttons = ageBox.querySelectorAll('button');
+    buttons.forEach(function(b){ b.disabled = false; b.style.opacity = '1'; b.style.cursor = 'pointer'; });
+  }
 }
 
 // STEP 1 → 2: validate email, then ask age
@@ -3761,8 +3793,23 @@ function nextLoginStep(){
 // STEP 2 → 3 or 4: adult goes straight to send; minor sees parent form
 function setAge(kind){
   if(kind === 'adult'){
-    // Record their attestation locally so we don't ask again
+    // Record their attestation locally so we don't ask again on this device
     try{ localStorage.setItem('fp_consent_v1', JSON.stringify({kind:'adult', at: Date.now()})); }catch(e){}
+    // Show visible loading state on the age screen so the user knows something is happening
+    const ageBox = document.getElementById('loginStepAge');
+    if(ageBox){
+      const buttons = ageBox.querySelectorAll('button');
+      buttons.forEach(function(b){ b.disabled = true; b.style.opacity = '0.5'; b.style.cursor = 'wait'; });
+      // Show a status line
+      let status = document.getElementById('ageStatus');
+      if(!status){
+        status = document.createElement('div');
+        status.id = 'ageStatus';
+        status.style.cssText = 'margin-top:16px;font-size:13px;color:#22c55e;text-align:center;font-weight:600';
+        status.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(34,197,94,.3);border-top-color:#22c55e;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px"></span>Sending magic link…';
+        ageBox.appendChild(status);
+      }
+    }
     sendMagicLink(document.getElementById('loginEmail').value.trim());
     return;
   }
@@ -3815,6 +3862,15 @@ async function sendMagicLink(email){
   email = (email || document.getElementById('loginEmail').value || '').trim();
   const btn = document.getElementById('loginBtn');
   if(btn){ btn.textContent = 'Sending...'; btn.disabled = true; }
+  function resetAgeScreen(){
+    const ageBox = document.getElementById('loginStepAge');
+    if(ageBox){
+      const buttons = ageBox.querySelectorAll('button');
+      buttons.forEach(function(b){ b.disabled = false; b.style.opacity = '1'; b.style.cursor = 'pointer'; });
+    }
+    const status = document.getElementById('ageStatus');
+    if(status) status.remove();
+  }
   try {
     const { error } = await supabaseClient.auth.signInWithOtp({
       email: email,
@@ -3827,11 +3883,28 @@ async function sendMagicLink(email){
     document.getElementById('loginStepConsent').style.display = 'none';
     document.getElementById('loginStep2').style.display = 'block';
     if(btn){ btn.textContent = 'Continue'; btn.disabled = false; }
+    resetAgeScreen();
   } catch(e){
-    const err = document.getElementById('loginError') || document.getElementById('pcError');
+    resetAgeScreen();
+    // Pick the visible error slot: if we're on the age screen, put the message there; otherwise fall back
+    let err = null;
+    if(document.getElementById('loginStepAge').style.display !== 'none'){
+      err = document.getElementById('ageStatus');
+      if(!err){
+        err = document.createElement('div');
+        err.id = 'ageStatus';
+        err.style.cssText = 'margin-top:16px;font-size:13px;color:#f87171;text-align:center;font-weight:600';
+        document.getElementById('loginStepAge').appendChild(err);
+      }
+      err.style.color = '#f87171';
+    } else if(document.getElementById('loginStepConsent').style.display !== 'none'){
+      err = document.getElementById('pcError');
+    } else {
+      err = document.getElementById('loginError');
+    }
     var msg = (e && e.message) || '';
-    if(/rate|security purposes|too many/i.test(msg)) msg = 'Too many attempts - wait a minute, then try again.';
-    else if(/invalid/i.test(msg)) msg = 'That email address looks invalid - double-check it and retry.';
+    if(/rate|security purposes|too many/i.test(msg)) msg = 'Too many attempts — wait a minute, then try again.';
+    else if(/invalid/i.test(msg)) msg = 'That email address looks invalid — double-check it and retry.';
     else if(!navigator.onLine) msg = 'You appear to be offline. Check your connection and retry.';
     else if(!msg) msg = 'Something went wrong. Please try again.';
     if(err){ err.textContent = msg; err.style.display = 'block'; }
@@ -4122,6 +4195,13 @@ function startPriceRefresh(){
   });
 }
 document.addEventListener('DOMContentLoaded', function(){ setTimeout(startPriceRefresh, 3000); });
+
+// Original authorship banner — anyone who opens devtools sees this
+try{
+  console.log('%c FinPath ', 'background:#22c55e;color:#fff;font-size:22px;font-weight:800;padding:6px 12px;border-radius:6px');
+  console.log('%c This code was made by Siddharth Moosani · Published 2026\nhttps://finpathdev.github.io/FinPath', 'color:#22c55e;font-size:12px;font-weight:600;line-height:1.6');
+  console.log('%cIf you copied this project and are claiming it as your own,\nplease stop. The git history at github.com/finpathdev/FinPath\nand Wayback Machine snapshots prove Siddharth Moosani is the author.', 'color:#93a693;font-size:11px;line-height:1.5');
+}catch(e){}
 
 // ══ LIVE ACTIVITY TICKER (honest — uses real user data) ══
 // This shows real, growing numbers from the user's own session so the
