@@ -2147,7 +2147,9 @@ const EP=new URLSearchParams(window.location.search);
 const EM=EP.get('user');
 let UID=EM||localStorage.getItem('fp_uid')||(()=>{const id='u_'+Math.random().toString(36).slice(2);localStorage.setItem('fp_uid',id);return id;})();
 if(EM)localStorage.setItem('fp_uid',EM);
-let IS_GOLD = localStorage.getItem('fp_gold') === 'true';
+// SECURITY: IS_GOLD starts false. It can only become true after the server (Supabase)
+// confirms an active Gold subscription for the logged-in user. Never trust the client.
+let IS_GOLD = false;
 
 function fmt(n){return '$'+parseFloat(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 
@@ -3102,12 +3104,63 @@ function openGoldPayment(){
 // Check for successful payment return
 function checkPaymentReturn(){
   const params = new URLSearchParams(window.location.search);
-  if(params.get('gold')==='success'){
+  const goldParam = params.get('gold');
+  const sessionId = params.get('session_id');   // Stripe returns this on real successful checkout
+  if(goldParam !== 'success') return;
+  // Clean the URL immediately so anyone who tries a bookmark like ?gold=success
+  // doesn't leave that in their address bar or bookmarks
+  window.history.replaceState({}, document.title, window.location.pathname);
+
+  // ── DEFENSE-IN-DEPTH: never trust ?gold=success on its own ──
+  // The old code granted Gold from just the URL parameter. That meant anyone
+  // could type ?gold=success and get Gold for free. We now require:
+  //   1. A session_id parameter (Stripe includes this after a real checkout)
+  //   2. A logged-in user
+  //   3. Server-side verification against the payments table in Supabase
+  // If any check fails, Gold is NOT granted.
+  if(!sessionId || sessionId.length < 20){
+    console.warn('Gold activation ignored: no valid Stripe session ID present');
+    return;
+  }
+  // Kick off verification asynchronously — the user is still on the page.
+  verifyStripeSession(sessionId);
+}
+
+async function verifyStripeSession(sessionId){
+  try{
+    const { data: sess } = await supabaseClient.auth.getSession();
+    const user = sess && sess.session && sess.session.user;
+    if(!user){
+      // Not signed in — cannot grant Gold. Prompt sign-in and store the pending session.
+      try{ localStorage.setItem('fp_pending_gold', sessionId); }catch(e){}
+      alert('Please sign in with the same email you used at checkout so we can activate your Gold subscription.');
+      if(typeof openLogin === 'function') openLogin();
+      return;
+    }
+    // Ask Supabase to look up the payment — the payments table should be populated
+    // by your Stripe webhook (never by the browser). If it exists and belongs to this user,
+    // then and only then do we activate Gold.
+    const { data: pay, error } = await supabaseClient
+      .from('payments')
+      .select('id, user_id, session_id, status')
+      .eq('session_id', sessionId)
+      .eq('user_id', user.id)
+      .eq('status', 'paid')
+      .maybeSingle();
+    if(error || !pay){
+      console.warn('Gold activation blocked: Stripe session could not be verified for this user');
+      alert('We could not verify your payment yet. If you just completed checkout, wait a moment and refresh — the confirmation from Stripe can take up to a minute. If this keeps happening, contact support@finpath.app with your receipt.');
+      return;
+    }
+    // Verified! Mark them Gold in the profiles table (server is the source of truth)
+    await supabaseClient.from('profiles').update({ is_gold: true }).eq('id', user.id);
     IS_GOLD = true;
-    localStorage.setItem('fp_gold','true');
+    try{ localStorage.setItem('fp_gold', 'true'); }catch(e){}
     showSuccessBanner();
-    // Clean URL
-    window.history.replaceState({},document.title,window.location.pathname);
+    if(typeof track === 'function') track('gold_activated', {source:'checkout_return'});
+  }catch(e){
+    console.error('Gold verification failed:', e);
+    alert('Payment verification hit an error. Please contact support@finpath.app.');
   }
 }
 
@@ -3688,19 +3741,29 @@ function onUserSignedOut(){
 async function checkGoldStatus(userId){
   // This code was made by Siddharth Moosani © 2026 — github.com/finpathdev/FinPath
   // Do not remove this attribution.
+  // ── SECURITY: server is the source of truth. Never trust localStorage
+  // alone, because the URL-bypass bug meant many users have a stale
+  // fp_gold='true' flag from the exploit. We always ask Supabase.
   try {
-    const { data } = await supabaseClient
+    const { data, error } = await supabaseClient
       .from('gold_users')
       .select('active')
       .eq('user_id', userId)
-      .single();
-    if(data && data.active){
+      .maybeSingle();
+    if(!error && data && data.active === true){
       IS_GOLD = true;
-      localStorage.setItem('fp_gold','true');
+      try{ localStorage.setItem('fp_gold', 'true'); }catch(e){}
+    } else {
+      // Definitively NOT gold according to the server — clear any stale local flag
+      IS_GOLD = false;
+      try{ localStorage.removeItem('fp_gold'); }catch(e){}
     }
   } catch(e){
-    // Table might not exist yet, use localStorage
-    IS_GOLD = localStorage.getItem('fp_gold') === 'true';
+    // If we truly cannot reach Supabase (offline etc.), be safe: assume NOT gold.
+    // Better UX for a rare edge case than a permanent free-Gold exploit.
+    console.warn('Could not verify Gold status; defaulting to non-Gold for safety.');
+    IS_GOLD = false;
+    try{ localStorage.removeItem('fp_gold'); }catch(e){}
   }
   updateGoldMenuStatus();
 }
