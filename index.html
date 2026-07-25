@@ -3696,7 +3696,24 @@ async function renderPortfolio(){
 }
 
 function renderAlerts(quotes){
-  document.getElementById('alertsList').innerHTML=portfolio.map((h,i)=>{
+  const host = document.getElementById('alertsList');
+  if(!host) return;
+  // AI Alerts contain the same premium reasoning as AI Suggestions, so the
+  // actual advice (action + explanation) is Gold-only. Non-Gold users see the
+  // stock and a locked teaser prompting an upgrade — but never the real advice.
+  if(!IS_GOLD){
+    host.innerHTML = portfolio.map((h,i)=>{
+      const q = quotes && quotes[i] ? quotes[i].q : null;
+      return '<div class="alert-item">'+
+        '<div><div class="alert-ticker">'+h.ticker+' — <span style="filter:blur(4px);user-select:none;color:var(--muted)">Hold ·</span> 🔒</div>'+
+        '<div class="alert-msg" style="filter:blur(3px);user-select:none">Upgrade to Gold to see the AI\u2019s reasoning for this position and personalised buy / hold / sell guidance.</div></div>'+
+        (q?'<span class="alert-pct" style="'+(q.dp<0?'background:rgba(248,113,113,.1);color:#f87171':'')+'">'+(q.dp>=0?'+':'')+q.dp.toFixed(2)+'%</span>':'')+
+        '</div>';
+    }).join('') +
+    (portfolio.length ? '<div style="text-align:center;margin-top:14px"><button onclick="openGoldPayment()" style="background:var(--green-dim);border:none;border-radius:10px;padding:11px 24px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">👑 Unlock AI Alerts with Gold — $4.99/mo</button></div>' : '');
+    return;
+  }
+  host.innerHTML=portfolio.map((h,i)=>{
     const adv=AI_ADVISOR[h.ticker]||AI_ADVISOR.DEFAULT;
     const q=quotes&&quotes[i]?quotes[i].q:null;
     const cls=adv.cls==='act-sell'?'sell':adv.cls==='act-watch'?'warn':'';
