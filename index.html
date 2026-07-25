@@ -1224,7 +1224,7 @@ body.light .gs-item{background:#fff}
       <p>34 no-fluff lessons, the exact trades Buffett, Ackman and Tepper filed last quarter, and a live portfolio tracker with AI buy/hold/sell suggestions — built for people starting from zero.</p>
       <div class="hero-btns">
         <button class="btn-primary" onclick="handleAuthClick()">Get Started Free</button>
-        <button class="btn-secondary" onclick="showPage('portfolio')">Open Portfolio Tracker</button>
+        <button class="btn-secondary" onclick="startDemoMode()">👀 Try the Demo — no sign-in</button>
       </div>
       <div class="stats-row">
         <div class="stat"><div class="stat-num" id="heroStat1">34</div><div class="stat-label">Expert lessons</div></div>
@@ -1747,6 +1747,7 @@ body.light .gs-item{background:#fff}
   <div id="lessons-list-view">
     <div class="page-header"><h1>Lessons</h1><p>Everything schools never taught you about money.</p>
       <div id="lessonProgressWrap" style="margin-top:18px"><div style="font-size:13px;color:var(--muted)" id="lessonProgressLabel"></div><div class="progress-track"><div class="progress-fill" id="lessonProgressFill" style="width:0%"></div></div></div>
+      <div id="certCTA"></div>
       <input id="lessonSearch" class="modal-input" style="max-width:420px;margin-top:20px;margin-bottom:0" placeholder="Search lessons… (try “credit” or “Buffett”)" oninput="filterLessons(this.value)" aria-label="Search lessons">
     </div>
     <div class="lessons-grid" id="lessonsGrid"></div>
@@ -3050,6 +3051,116 @@ function updateLessonProgress(){
   if(lbl){ const iq = (typeof financeIQ === 'function') ? financeIQ() : null; lbl.textContent = done + ' of ' + LESSONS.length + ' lessons completed' + (iq !== null ? ' · Finance IQ: ' + iq + '%' : ''); }
   if(fill) fill.style.width = (done/LESSONS.length*100).toFixed(0) + '%';
   if(typeof checkGraduate === 'function') checkGraduate();
+  if(typeof checkGraduateComplete === 'function') checkGraduateComplete();
+}
+
+// ══ COMPLETION CERTIFICATE / SHARE CARD ══
+// Shows a "get your certificate" card once a learner hits milestones, and
+// generates a downloadable, shareable image — great for students to post or
+// show parents, and real evidence of the program's educational output.
+function renderCertificateCTA(done){
+  const host = document.getElementById('certCTA');
+  if(!host) return;
+  const free = LESSONS.filter(function(l){ return l.plan === 'free'; }).length;
+  const milestones = [
+    {n: free, label: 'Finished all free lessons', key: 'free'},
+    {n: LESSONS.length, label: 'Completed the entire Financial Playbook', key: 'all'}
+  ];
+  const hit = milestones.filter(function(m){ return done >= m.n; }).pop();
+  if(!hit){ host.innerHTML = ''; return; }
+  host.innerHTML =
+    '<div style="background:linear-gradient(135deg,rgba(245,182,11,.10),var(--panel));border:1px solid rgba(245,182,11,.3);border-radius:18px;padding:22px 24px;margin:20px 0;display:flex;align-items:center;gap:18px;flex-wrap:wrap">' +
+      '<div style="font-size:34px">🎓</div>' +
+      '<div style="flex:1;min-width:200px"><div style="font-size:16px;font-weight:800;font-family:var(--font-display)">' + hit.label + '!</div>' +
+      '<div style="font-size:13px;color:var(--muted);margin-top:2px">Download your certificate to share or show it off.</div></div>' +
+      '<button class="btn-primary" style="white-space:nowrap" onclick="generateCertificate(\'' + hit.key + '\')">🎓 Get certificate</button>' +
+    '</div>';
+}
+function generateCertificate(kind){
+  track('certificate_generated', {kind: kind});
+  const done = Object.keys(getLessonProgress()).length;
+  const iq = (typeof financeIQ === 'function') ? financeIQ() : 100;
+  const name = (currentUser && currentUser.email) ? currentUser.email.split('@')[0] : 'FinPath Learner';
+  const prettyName = name.charAt(0).toUpperCase() + name.slice(1).replace(/[._]/g,' ');
+  const title = kind === 'all' ? 'The Complete Financial Playbook' : 'Financial Foundations';
+
+  const c = document.createElement('canvas');
+  c.width = 1200; c.height = 800;
+  const x = c.getContext('2d');
+
+  // Background
+  const bg = x.createLinearGradient(0,0,1200,800);
+  bg.addColorStop(0,'#040604'); bg.addColorStop(1,'#0a1a10');
+  x.fillStyle = bg; x.fillRect(0,0,1200,800);
+  // subtle grid dots
+  x.fillStyle = 'rgba(134,239,172,0.05)';
+  for(let gx=40; gx<1200; gx+=44){ for(let gy=40; gy<800; gy+=44){ x.beginPath(); x.arc(gx,gy,1.3,0,Math.PI*2); x.fill(); } }
+  // Gold double border
+  x.strokeStyle = 'rgba(245,182,11,0.55)'; x.lineWidth = 3; x.strokeRect(40,40,1120,720);
+  x.strokeStyle = 'rgba(245,182,11,0.25)'; x.lineWidth = 1; x.strokeRect(52,52,1096,696);
+
+  x.textAlign = 'center';
+  // Logo mark (green arrow chevron)
+  x.fillStyle = '#22c55e';
+  x.beginPath();
+  x.moveTo(560,120); x.lineTo(620,120); x.lineTo(620,95); x.lineTo(660,140); x.lineTo(620,185); x.lineTo(620,160); x.lineTo(560,160);
+  x.closePath(); x.fill();
+  x.font = '700 34px Arial'; x.fillStyle = '#22c55e'; x.fillText('Fin', 585, 235);
+  x.fillStyle = '#eef5ee'; x.fillText('Path', 640, 235);
+
+  x.fillStyle = 'rgba(245,182,11,0.9)'; x.font = '600 18px Arial';
+  x.fillText('CERTIFICATE OF COMPLETION', 600, 295);
+
+  x.fillStyle = '#93a693'; x.font = '400 20px Arial';
+  x.fillText('This certifies that', 600, 355);
+
+  x.fillStyle = '#ffffff'; x.font = '700 58px Georgia';
+  x.fillText(prettyName, 600, 430);
+
+  // underline
+  const uw = Math.min(700, x.measureText(prettyName).width + 80);
+  x.strokeStyle = 'rgba(34,197,94,0.5)'; x.lineWidth = 2;
+  x.beginPath(); x.moveTo(600-uw/2, 452); x.lineTo(600+uw/2, 452); x.stroke();
+
+  x.fillStyle = '#93a693'; x.font = '400 20px Arial';
+  x.fillText('has successfully completed', 600, 500);
+  x.fillStyle = '#22c55e'; x.font = '700 32px Arial';
+  x.fillText(title, 600, 545);
+
+  // Stats row
+  x.fillStyle = '#eef5ee'; x.font = '700 30px Arial';
+  x.fillText(done + '', 400, 620); x.fillText(iq + '%', 800, 620);
+  x.fillStyle = '#93a693'; x.font = '400 15px Arial';
+  x.fillText('LESSONS COMPLETED', 400, 645); x.fillText('FINANCE IQ', 800, 645);
+
+  // Footer
+  x.fillStyle = '#546b58'; x.font = '400 15px Arial';
+  const today = new Date().toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+  x.fillText('Issued ' + today + '  ·  finpathdev.github.io/FinPath', 600, 715);
+
+  // Download
+  const url = c.toDataURL('image/png');
+  const a = document.createElement('a');
+  a.href = url; a.download = 'finpath-certificate.png'; a.click();
+
+  // Also offer to share on mobile
+  if(navigator.share && navigator.canShare){
+    c.toBlob(function(blob){
+      const file = new File([blob], 'finpath-certificate.png', {type:'image/png'});
+      if(navigator.canShare({files:[file]})){
+        navigator.share({files:[file], title:'FinPath Certificate', text:'I completed FinPath\u2019s Financial Playbook! 🎓📈'}).catch(function(){});
+      }
+    });
+  }
+  toast('🎓','Certificate downloaded! Share it anywhere.');
+}
+function checkGraduateComplete(){
+  const done = Object.keys(getLessonProgress()).length;
+  if(done >= LESSONS.length && !localStorage.getItem('fp_graduated')){
+    localStorage.setItem('fp_graduated','1');
+    if(typeof confettiBurst === 'function') confettiBurst();
+    toast('🎉','You finished the entire Financial Playbook!');
+  }
 }
 
 function freeDoneCount(){
@@ -3066,7 +3177,7 @@ function checkGraduate(){
       b.id = 'certBtn'; b.className = 'btn-primary';
       b.style.cssText = 'margin-top:14px;padding:12px 24px;font-size:14px';
       b.textContent = '🎓 View my certificate';
-      b.onclick = genCertificate;
+      b.onclick = function(){ generateCertificate('free'); };
       wrap.appendChild(b);
     }
   }
@@ -4517,6 +4628,60 @@ async function loadDemoPortfolio(){
   renderPortfolio();
 }
 
+// ══ DEMO / GUEST MODE ══
+// One-click tour for reviewers (college admissions, judges, first-timers).
+// Pre-loads a realistic portfolio + a few completed lessons + achievements so
+// the full app is visible in seconds — no sign-up wall. Everything is local
+// and clearly marked as a demo; it never touches a real account.
+async function startDemoMode(){
+  track('demo_mode_start');
+  try{ sessionStorage.setItem('fp_demo', '1'); }catch(e){}
+  // Pre-complete a few free lessons so the Finance IQ bar and checkmarks show
+  try{
+    const prog = {};
+    [0,1,3].forEach(function(i){ prog[i] = Date.now() - (i+1)*86400000; });
+    localStorage.setItem('fp_lessons', JSON.stringify(prog));
+  }catch(e){}
+  // Seed a savings goal so the goals section isn't empty
+  try{
+    const existing = JSON.parse(localStorage.getItem('fp_goals') || '[]');
+    if(!existing.length){
+      localStorage.setItem('fp_goals', JSON.stringify([
+        {name:'Emergency fund', target:1000, saved:250, date: new Date(Date.now()+180*86400000).toISOString().slice(0,10), hit:{}}
+      ]));
+    }
+  }catch(e){}
+  // Mark the getting-started checklist as seen so it shows progress, not a fresh prompt
+  try{ localStorage.setItem('fp_checklist_seen','1'); }catch(e){}
+  // Show a dismissible "demo mode" banner
+  showDemoBanner();
+  // Load the demo portfolio and jump to it
+  showPage('portfolio');
+  await loadDemoPortfolio();
+  if(typeof renderGoals === 'function') renderGoals();
+  if(typeof renderAchievements === 'function') renderAchievements();
+  if(typeof unlockAchv === 'function'){ unlockAchv('first_stock'); unlockAchv('scholar'); }
+  toast('👀','Demo mode — explore freely. Nothing here is saved to an account.');
+}
+function showDemoBanner(){
+  if(document.getElementById('demoBanner')) return;
+  const b = document.createElement('div');
+  b.id = 'demoBanner';
+  b.setAttribute('role','status');
+  b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:935;background:linear-gradient(90deg,#052e16,#0b1a10);border-bottom:1px solid rgba(134,239,172,.25);color:#eef5ee;font-size:13px;font-weight:600;padding:8px 16px;text-align:center;font-family:var(--font-body);display:flex;align-items:center;justify-content:center;gap:12px';
+  b.innerHTML = '<span>👀 You\u2019re viewing FinPath in <b>demo mode</b> — sample data, no account needed.</span>' +
+    '<button onclick="exitDemoMode()" style="background:rgba(134,239,172,.14);border:1px solid rgba(134,239,172,.3);color:#86efac;font-family:inherit;font-size:12px;font-weight:700;padding:4px 12px;border-radius:99px;cursor:pointer">Get started for real →</button>' +
+    '<button onclick="document.getElementById(\'demoBanner\').remove()" aria-label="Dismiss" style="background:none;border:none;color:#93a693;font-size:18px;cursor:pointer;line-height:1;padding:0 4px">×</button>';
+  document.body.appendChild(b);
+  document.body.style.paddingTop = '36px';
+}
+function exitDemoMode(){
+  try{ sessionStorage.removeItem('fp_demo'); }catch(e){}
+  const b = document.getElementById('demoBanner'); if(b) b.remove();
+  document.body.style.paddingTop = '';
+  handleAuthClick();
+}
+
 // ══ SHARE LESSON ══
 function shareLesson(i){
   const l = LESSONS[i];
@@ -4661,6 +4826,102 @@ function hideTerm(){ const p = document.getElementById('termPop'); if(p) p.remov
 
 // ── QUIZZES (keyed by lesson name; 3 questions each) ──
 const QUIZZES = {
+"Assets vs Liabilities: The Rule That Changes Everything":[
+ {q:"What defines an asset?",o:["Anything expensive you own","Something that puts money in your pocket","Your home and car","Anything that holds value"],a:1,w:"An asset puts money IN your pocket. A liability takes money OUT — regardless of how expensive it is."},
+ {q:"Why isn't the home you live in an asset?",o:["It never appreciates","It costs you money every month via mortgage, taxes and upkeep","Homes always lose value","You can't sell it"],a:1,w:"While you live in it, it drains money monthly. It only acts like an asset if it earns you income (e.g. rent)."},
+ {q:"What is the wealth formula?",o:["Earn more, spend more","Buy assets, reduce liabilities, reinvest the income, repeat","Save every penny in cash","Buy one big house"],a:1,w:"Buy assets, cut liabilities, and use the income from assets to buy more assets — compounded over decades."}],
+"The Truth About Taxes":[
+ {q:"Do you pay your top tax bracket on ALL of your income?",o:["Yes, on every dollar","No — brackets are marginal, so your effective rate is lower","Only if you earn over $1M","Only on investment income"],a:1,w:"Brackets are marginal. A $50k earner pays 10% on the first chunk, 12% on the next — the effective rate is well below the top bracket."},
+ {q:"What makes a Roth IRA especially good for young people?",o:["Contributions are tax-deductible now","Money grows and is withdrawn completely tax-free","It has no contribution limit","It guarantees returns"],a:1,w:"Roth money goes in after-tax but grows and comes out tax-free — ideal when you expect to earn (and be taxed) more later."},
+ {q:"What should you always take if your employer offers it?",o:["A company car","The full 401(k) match — it's free money","Extra vacation instead of pay","A higher tax bracket"],a:1,w:"An employer 401(k) match is free money. Always contribute at least enough to capture all of it."}],
+"How to Build Multiple Streams of Income":[
+ {q:"Roughly how many income streams does the average millionaire have?",o:["1","3","7","20"],a:2,w:"About seven — salary, business, dividends, interest, rent, capital gains and royalties."},
+ {q:"What's the key trait of 'content income' (a course, channel, or blog)?",o:["It requires daily work forever","Create once, earn repeatedly over time","It's guaranteed income","It only works for celebrities"],a:1,w:"Content income is created once and can keep earning indefinitely — the opposite of trading time for money."},
+ {q:"Which stream simply means putting cash in a high-yield savings account?",o:["Earned income","Interest income","Dividend income","Service income"],a:1,w:"Interest income — money that was earning nothing now earns 4–5% automatically."}],
+"Understanding Economic Crashes":[
+ {q:"What typically comes right before a crash in the market cycle?",o:["A recession","Euphoria — prices disconnect from fundamentals","A recovery","Deflation"],a:1,w:"Optimism turns to euphoria, prices detach from reality, then a trigger causes panic selling."},
+ {q:"How are patient investors usually rewarded after a crash?",o:["They aren't — crashes are permanent","Those who held or bought during the crash benefit in the recovery","Only day-traders profit","Governments repay their losses"],a:1,w:"Crashes are followed by recoveries. Investors who stayed invested or bought while prices were low are rewarded."},
+ {q:"Which is a classic warning sign of an overheated market?",o:["Boring, calm media coverage","P/E ratios far above historical averages and rapid margin-debt growth","Low unemployment","High savings rates"],a:1,w:"Sky-high valuations, an inverted yield curve, enthusiastic media, and rising margin debt often precede trouble."}],
+"The Difference Between Rich and Wealthy":[
+ {q:"What's the core difference between 'rich' and 'wealthy'?",o:["Rich = high income; wealthy = assets that generate income whether you work or not","They mean the same thing","Wealthy just means older","Rich means you own a business"],a:0,w:"Rich is high income. Wealthy is owning assets that pay you whether or not you work."},
+ {q:"Why are many high earners NOT actually wealthy?",o:["They pay too little tax","They spend nearly all they earn and couldn't sustain their lifestyle without a salary","They invest too aggressively","They have too many assets"],a:1,w:"Studies show most high-income professionals couldn't sustain their lifestyle beyond a few months without their paycheck."},
+ {q:"What is the 'investment gap'?",o:["The time before markets open","Income minus expenses — the money you can invest","A tax loophole","The gap between two stocks"],a:1,w:"Income minus expenses = the gap. Investing that gap into income-producing assets is how wealth is built."}],
+"The Real Estate Playbook":[
+ {q:"What makes real estate uniquely powerful for building wealth?",o:["It never loses value","Leverage — you can control a large asset with borrowed money","It's tax-free","It requires no maintenance"],a:1,w:"Leverage: $50k down on a $250k property that rises 10% earns $25k — a 50% return on your cash, not 10%."},
+ {q:"What is 'house hacking'?",o:["Illegally occupying a home","Buying a multi-unit home, living in one unit and renting the others","Flipping houses quickly","Renting out your car"],a:1,w:"You live in one unit while tenants' rent covers your mortgage — often with just 3–5% down on a primary residence."},
+ {q:"Why can a primary residence be a cheaper way to start?",o:["No taxes ever","Primary-residence mortgages can require as little as 3–5% down vs ~20% for investment property","Banks give them away","Rent is always higher"],a:1,w:"Owner-occupied loans have far lower down-payment requirements than pure investment-property loans."}],
+"How Inflation Works and How to Beat It":[
+ {q:"What is inflation?",o:["A tax you vote for","The rate at which prices rise and your money's purchasing power falls","A type of investment","When the stock market crashes"],a:1,w:"Inflation is rising prices — each dollar buys a little less over time, quietly eroding savings."},
+ {q:"At ~3% inflation, roughly what is $10,000 worth in 20 years?",o:["Still $10,000","About $5,500","About $9,000","About $12,000"],a:1,w:"Around $5,500 — nearly half its purchasing power gone. Cash is a guaranteed slow loss."},
+ {q:"Why is holding all your money in cash risky long-term?",o:["Banks can't be trusted","Inflation guarantees it loses purchasing power every year","Cash can't be spent","It's illegal"],a:1,w:"Cash feels safe but loses value to inflation every year — you need assets that grow faster than prices rise."}],
+"How to Set Financial Goals That Actually Work":[
+ {q:"Why do vague goals like 'save more money' usually fail?",o:["They're too ambitious","There's no specific plan, number or deadline attached","Saving is impossible","They're too specific"],a:1,w:"Without a specific amount, deadline and plan, a goal is just a wish. SMART goals give you something to track."},
+ {q:"What does the 'T' in a SMART goal stand for?",o:["Taxable","Time-bound (has a deadline)","Theoretical","Tax-free"],a:1,w:"Time-bound — a real goal has a specific deadline, like 'reach $10,000 by December'."},
+ {q:"Which is the stronger, SMART version of a goal?",o:["I want to invest more","I'll invest $300/month in VOO starting Sept 1 to reach $10,000 by December","I'll get rich someday","I'll try to save"],a:1,w:"Specific amount, specific fund, specific start date and deadline — that's what makes a goal actionable."}],
+"How to Analyse a Stock":[
+ {q:"What's step one before buying any stock?",o:["Check the price chart","Be able to explain in one sentence what the company does and how it makes money","Ask friends","Look at the logo"],a:1,w:"If you can't explain how it makes money in one sentence, you don't understand it well enough to invest."},
+ {q:"What is a 'moat'?",o:["A company's debt","A durable competitive advantage that protects it from rivals","A type of dividend","A stock exchange"],a:1,w:"A moat is a sustainable edge — brand loyalty, network effects, cost advantages or switching costs."},
+ {q:"Which is an example of a network-effect moat?",o:["Coca-Cola's brand","Visa or Meta getting more valuable as more people use them","Walmart's low costs","Microsoft's switching costs"],a:1,w:"Network effects: each new user makes the product more valuable to everyone (Visa, Meta)."}],
+"How to Choose Your First Credit Card":[
+ {q:"What should your first credit card almost always have?",o:["A high annual fee","No annual fee","A low credit limit only","Cash-back on luxury goods"],a:1,w:"Your first card should be free to hold. Great no-fee cards build credit just as fast as fee cards."},
+ {q:"How should you treat the interest rate on a card you use responsibly?",o:["Ignore it entirely","Aim to never carry a balance, but a lower rate limits damage if you ever do","Pick the highest rate","Rates don't matter"],a:1,w:"If you pay in full monthly, interest never applies — but a low rate protects you if you ever slip."},
+ {q:"How should rewards influence your choice?",o:["Always pick the most points regardless","Choose rewards that match where you actually spend","Rewards are a scam","Only airline miles count"],a:1,w:"Match rewards to your real spending — food/transport cards for someone who mostly spends there."}],
+"Understanding Your Paycheck: Where Does the Money Go?":[
+ {q:"What's the difference between gross and net pay?",o:["Nothing","Gross is what your employer pays; net is what you take home after deductions","Net is before taxes","Gross is your bonus"],a:1,w:"Gross is the full salary; net (take-home) is what's left after taxes and benefits — often 20–35% less."},
+ {q:"Which form determines how much federal tax is withheld?",o:["1099","Your W-4","10-K","W-2"],a:1,w:"Your W-4 tells your employer how much federal income tax to withhold from each paycheck."},
+ {q:"Which is true about state income tax?",o:["Every state charges the same","Some states, like Texas and Florida, have no state income tax","Only rich states charge it","It's always higher than federal"],a:1,w:"State income tax varies — nine states, including Texas and Florida, have none at all."}],
+"ETFs vs Individual Stocks":[
+ {q:"What is an ETF?",o:["A single high-risk stock","A basket of many stocks bought in one purchase","A type of savings account","A government bond"],a:1,w:"An ETF is a basket — e.g. VOO gives you all 500 largest US companies in a single buy."},
+ {q:"What's a major advantage of a broad index ETF?",o:["Guaranteed high returns","Instant diversification and very low fees","No risk at all","It beats the market every year"],a:1,w:"Instant diversification, tiny fees (VOO ~0.03%), and it historically beats most active managers over 10 years."},
+ {q:"What's the main appeal of picking individual stocks?",o:["Lower risk","Potential for higher returns if you choose correctly","No research needed","Guaranteed dividends"],a:1,w:"Individual stocks offer higher upside if you're right — but with more risk and required research."}],
+"Renting vs Buying a Home: The Real Math":[
+ {q:"Which is a genuine advantage of buying?",o:["No maintenance costs","You build equity with each mortgage payment","Total flexibility to move","No upfront costs"],a:1,w:"Each mortgage payment builds equity, and a fixed payment doesn't rise like rent can."},
+ {q:"Which is a real advantage of renting?",o:["You build equity","Geographic flexibility and no surprise repair bills","Guaranteed appreciation","Tax deductions on interest"],a:1,w:"Renters can move freely, skip maintenance costs, and keep the would-be down payment invested."},
+ {q:"What does 'it depends on the numbers' really mean here?",o:["Buying is always better","Neither is universally right — it depends on your costs, timeline and local market","Renting is always better","Only the rich should buy"],a:1,w:"The rent-vs-buy answer depends on your specific situation, not a blanket rule."}],
+"How to Negotiate Your Salary (And Why Most People Never Do)":[
+ {q:"Why does a higher STARTING salary matter so much?",o:["It doesn't","Raises compound off it, so it can mean $200k+ more over a career","Only the first year matters","It raises your taxes only"],a:1,w:"A $5k higher start, compounded by annual raises, can add over $200,000 across a career."},
+ {q:"What should you do BEFORE negotiating?",o:["Nothing, just ask","Research the market rate for your role, location and experience","Threaten to quit","Ask for double"],a:1,w:"Come armed with data from Glassdoor, Levels.fyi, or LinkedIn so your number is credible."},
+ {q:"Why do most people never negotiate?",o:["It's illegal","Fear — even though it's often the highest-paid conversation of their life","It never works","Employers forbid it"],a:1,w:"Fear stops most people, yet that 10-minute conversation can be the best-paid time of their career."}],
+"The Psychology of Money: Why Smart People Make Bad Financial Decisions":[
+ {q:"Roughly how much of financial success is behaviour vs knowledge?",o:["All knowledge","About 80% behaviour, 20% knowledge","50/50","All luck"],a:1,w:"It's mostly behaviour — you can know every concept and still fail if your habits and emotions get in the way."},
+ {q:"What is loss aversion?",o:["Avoiding all investments","Feeling losses about twice as strongly as equivalent gains","Only buying safe assets","Hating to spend money"],a:1,w:"Losses hurt about 2x as much as gains feel good — which pushes people to panic-sell and lock in losses."},
+ {q:"What is 'present bias'?",o:["Preferring the future","Overvaluing rewards now versus larger rewards later","Ignoring the present","A stock-market indicator"],a:1,w:"Present bias makes $100 today feel better than $150 next year — the enemy of long-term investing."}],
+"How to Read a Financial News Article Without Being Misled":[
+ {q:"How do most financial news outlets actually make money?",o:["Accurate predictions","From attention and clicks — so they favour fear and excitement","Subscriptions only","Government funding"],a:1,w:"Their business is attention. Fear and hype get more clicks than calm, boring truth."},
+ {q:"Which headline is a red flag?",o:["'Markets closed slightly higher'","'This stock will double in 2026'","'Company reports quarterly earnings'","'Fed holds rates steady'"],a:1,w:"Nobody can know a stock will double. Confident predictions of specific gains are a warning sign."},
+ {q:"What's the healthiest default reaction to dramatic market headlines?",o:["Buy immediately","Ignore most of it and stick to your plan","Sell everything","Panic"],a:1,w:"Most breathless coverage is noise. A long-term plan beats reacting to headlines."}],
+"Understanding Dividends":[
+ {q:"What is a dividend?",o:["A loan to a company","A share of company profits paid to shareholders, usually quarterly","A type of tax","A stock split"],a:1,w:"Dividends are profit distributions paid to shareholders — you get paid just for holding the stock."},
+ {q:"If a stock trades at $70 and pays $1.84/year, what's the dividend yield?",o:["1.84%","About 2.6%","7%","26%"],a:1,w:"Yield = annual dividend ÷ price = 1.84 ÷ 70 ≈ 2.6%."},
+ {q:"What does reinvesting dividends do?",o:["Nothing useful","Buys more shares, which pay more dividends — compounding your returns","Reduces your shares","Triggers a penalty"],a:1,w:"Reinvested dividends buy more shares, which pay more dividends, which buy more shares — compounding at work."}],
+"Building Credit From Zero: A Step by Step Guide":[
+ {q:"What is the catch-22 of building credit?",o:["Credit is always expensive","You need credit history to get credit, but need credit to build history","Banks hate young people","Credit scores are random"],a:1,w:"You can't get credit without history, and can't build history without credit — the classic beginner's trap."},
+ {q:"What is a secured credit card?",o:["A card with no limit","A card backed by a refundable deposit that becomes your limit","A debit card","A business card"],a:1,w:"You put down a deposit (often $200–500) that becomes your credit line — a common first step to build credit."},
+ {q:"Is a secured card's deposit gone forever?",o:["Yes","No — it's refundable when you close or upgrade the account","Only half is returned","It becomes a fee"],a:1,w:"The deposit is fully refundable when you close the account in good standing or upgrade to an unsecured card."}],
+"How to Avoid the 5 Most Expensive Money Mistakes People Make in Their 20s":[
+ {q:"What's the single most expensive mistake in your 20s?",o:["Buying coffee","Not starting to invest early","Renting an apartment","Using a credit card"],a:1,w:"Thanks to compounding, money invested at 22 can be worth ~4x more at 65 than the same money invested at 35."},
+ {q:"Why is carrying credit-card debt so damaging?",o:["It's fine if small","High interest (e.g. 22%) drains hundreds per year and compounds against you","It builds credit fast","It's tax-deductible"],a:1,w:"A $3,000 balance at 22% costs ~$660/year — compounding in the wrong direction."},
+ {q:"What's the best fix for the 'not investing' mistake?",o:["Wait until you're rich","Open a Roth IRA now and start small, increasing with each raise","Only invest a windfall","Keep it all in cash"],a:1,w:"Start now, even $50/month. Time in the market matters more than the amount."}],
+"Bonds Cash and Portfolio Diversification":[
+ {q:"How do bonds typically behave when stocks crash?",o:["They crash harder","They often hold steady or rise, cushioning the portfolio","They disappear","They always fall too"],a:1,w:"Bonds are less volatile and often stable (or up) during stock crashes — that's why they diversify risk."},
+ {q:"Which asset class has the highest long-term returns but the most volatility?",o:["Cash","Stocks","Bonds","Savings accounts"],a:1,w:"Stocks lead long-term returns but swing hard — the S&P fell 57% in 2008, for example."},
+ {q:"What's the point of diversification?",o:["To guarantee profit","To spread money across asset types so no single one can sink you","To pick only one winner","To avoid all risk"],a:1,w:"Spreading across stocks, bonds, cash and real assets means a crash in one area doesn't wipe you out."}],
+"How to Read a Company Annual Report":[
+ {q:"What is a company's annual report officially called?",o:["A W-2","A 10-K","A 1099","A prospectus"],a:1,w:"Public companies file a 10-K each year with detailed financials — found on SEC.gov or investor-relations pages."},
+ {q:"What does the income statement show?",o:["Only debt","Revenue, costs and profits","The CEO's salary only","Stock price history"],a:1,w:"It shows revenue, costs and profit — key questions: is revenue growing and are margins healthy?"},
+ {q:"Why is the letter to shareholders worth reading?",o:["It's legally required to lie","It explains in plain English what happened and management's plans","It lists every employee","It's just marketing"],a:1,w:"It's usually plain-English context on the year — Buffett's letters are considered classic financial writing."}],
+"Tax-Loss Harvesting":[
+ {q:"What is tax-loss harvesting?",o:["Avoiding taxes illegally","Selling losing investments to offset capital-gains taxes","Harvesting dividends","Delaying your tax return"],a:1,w:"You realize losses on purpose to offset gains, lowering the taxes you owe."},
+ {q:"How much loss can you deduct against ordinary income per year?",o:["Unlimited","Up to $3,000, carrying the rest forward","$100","Nothing"],a:1,w:"Up to $3,000/year against ordinary income, with remaining losses carried forward indefinitely."},
+ {q:"What does the wash-sale rule prevent?",o:["Selling stocks at all","Claiming a loss if you rebuy the same/substantially identical security within 30 days","Buying ETFs","Paying taxes"],a:1,w:"If you rebuy the same or nearly identical security within 30 days, the IRS disallows the loss."}],
+"International Investing":[
+ {q:"Roughly what share of global stock market value is the US?",o:["About 10%","About 60%","About 90%","About 100%"],a:1,w:"The US is ~60% of global market value — the other ~40% (Europe, Asia, emerging markets) is often overlooked."},
+ {q:"Why can international exposure reduce risk?",o:["Foreign stocks never fall","Different countries outperform at different times, so it diversifies","It's tax-free","It guarantees higher returns"],a:1,w:"The US had a flat decade (2000–2010) while emerging markets soared — diversification smooths that out."},
+ {q:"What does an international ETF like VEA give you?",o:["Only US stocks","Exposure to developed international markets in one purchase","Crypto","Bonds only"],a:1,w:"VEA covers developed international markets — an easy, diversified way to invest outside the US."}],
+"Building a Long-Term Investment Strategy":[
+ {q:"What's the biggest predictor of investment success?",o:["Picking the perfect stock","Having a strategy you can stick to through crashes and emotions","Timing the market","Watching the news daily"],a:1,w:"Consistency beats stock-picking. A strategy you can hold through downturns is what wins long-term."},
+ {q:"If you'll need the money in under 3 years, where should it NOT go?",o:["A savings account","Into stocks","Into a CD","Into cash"],a:1,w:"Short time horizons and stocks don't mix — the market can drop 40% and take years to recover."},
+ {q:"Why does risk tolerance matter?",o:["It sets your tax rate","If a 30% drop would make you sell everything, you need a more conservative mix","It picks your stocks","It doesn't"],a:1,w:"Your allocation must match what you can emotionally hold — otherwise you'll sell at the worst time."}],
 "What Schools Never Teach You About Money":[
  {q:"What separates wealth from income?",o:["Earning a six-figure salary","What you keep and build with what you keep","Having a prestigious job","Spending on luxury goods"],a:1,w:"A doctor earning $400k who spends $390k is one bad month from broke. Wealth = assets you keep and grow."},
  {q:"Roughly how many income streams does the average millionaire have?",o:["1","3","7","12"],a:2,w:"Seven — salary, business, dividends, rent, interest, capital gains and royalties."},
