@@ -1392,202 +1392,261 @@ body.light .gs-item{background:#fff}
 
     ctx.clearRect(0, 0, W, H);
 
-    // Background gradient — light theme uses a soft mint→white; dark keeps space
-    const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, R*1.5);
+    // Background gradient
+    const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, R*1.7);
     if(isLight){
       bgGrad.addColorStop(0, '#f7faf6');
       bgGrad.addColorStop(1, '#eef3ed');
     } else {
-      bgGrad.addColorStop(0, '#0a0a0a');
+      bgGrad.addColorStop(0, '#071009');
+      bgGrad.addColorStop(0.6, '#040604');
       bgGrad.addColorStop(1, '#000000');
     }
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, W, H);
 
-    // Stars → soft green "dust" specks in light mode; white stars in dark
-    ctx.fillStyle = isLight ? 'rgba(20,83,45,0.18)' : 'rgba(255,255,255,0.4)';
-    for(let i=0;i<80;i++){
-      const sx = (i*137.5)%W;
-      const sy = (i*97.3)%H;
-      const dist = Math.sqrt((sx-cx)**2+(sy-cy)**2);
-      if(dist > R*1.1){
-        ctx.beginPath();
-        ctx.arc(sx, sy, 0.6, 0, Math.PI*2);
-        ctx.fill();
+    // Twinkling starfield (dark only) with depth
+    if(!isLight){
+      for(let i=0;i<120;i++){
+        const sx = (i*137.5)%W;
+        const sy = (i*89.3)%H;
+        const dist = Math.sqrt((sx-cx)**2+(sy-cy)**2);
+        if(dist > R*1.15){
+          const tw = Math.sin(frame*0.03 + i)*0.5 + 0.5;
+          ctx.fillStyle = 'rgba(190,240,205,'+(0.12 + tw*0.35)+')';
+          ctx.beginPath();
+          ctx.arc(sx, sy, (i%5===0?1.1:0.6), 0, Math.PI*2);
+          ctx.fill();
+        }
+      }
+    } else {
+      ctx.fillStyle = 'rgba(20,83,45,0.14)';
+      for(let i=0;i<70;i++){
+        const sx=(i*137.5)%W, sy=(i*97.3)%H;
+        if(Math.sqrt((sx-cx)**2+(sy-cy)**2) > R*1.15){ ctx.beginPath(); ctx.arc(sx,sy,0.7,0,Math.PI*2); ctx.fill(); }
       }
     }
 
-    // Globe glow
-    const glowGrad = ctx.createRadialGradient(cx-R*0.3, cy-R*0.3, 0, cx, cy, R*1.1);
-    if(isLight){
-      glowGrad.addColorStop(0, 'rgba(34,197,94,0.14)');
-      glowGrad.addColorStop(0.5, 'rgba(34,197,94,0.08)');
-      glowGrad.addColorStop(1, 'rgba(255,255,255,0)');
-    } else {
-      glowGrad.addColorStop(0, 'rgba(34,197,94,0.08)');
-      glowGrad.addColorStop(0.5, 'rgba(34,197,94,0.04)');
-      glowGrad.addColorStop(1, 'rgba(0,0,0,0)');
-    }
-    ctx.fillStyle = glowGrad;
-    ctx.beginPath();
-    ctx.arc(cx, cy, R*1.1, 0, Math.PI*2);
-    ctx.fill();
+    // Outer atmosphere bloom
+    const bloom = ctx.createRadialGradient(cx, cy, R*0.75, cx, cy, R*1.35);
+    bloom.addColorStop(0, 'rgba(34,197,94,0)');
+    bloom.addColorStop(0.55, isLight?'rgba(34,197,94,0.07)':'rgba(34,197,94,0.10)');
+    bloom.addColorStop(0.8, isLight?'rgba(34,197,94,0.12)':'rgba(52,211,153,0.16)');
+    bloom.addColorStop(1, 'rgba(34,197,94,0)');
+    ctx.fillStyle = bloom;
+    ctx.beginPath(); ctx.arc(cx, cy, R*1.35, 0, Math.PI*2); ctx.fill();
 
-    // Globe base circle — light theme: mint→white gradient; dark: near-black green
-    const globeGrad = ctx.createRadialGradient(cx-R*0.2, cy-R*0.2, R*0.1, cx, cy, R);
+    // Globe sphere body with a light-from-upper-left shading
+    const globeGrad = ctx.createRadialGradient(cx-R*0.35, cy-R*0.4, R*0.05, cx, cy, R*1.05);
     if(isLight){
-      globeGrad.addColorStop(0, '#e5f5e8');
-      globeGrad.addColorStop(0.5, '#c8e6cf');
-      globeGrad.addColorStop(1, '#96c9a4');
+      globeGrad.addColorStop(0, '#eafaee');
+      globeGrad.addColorStop(0.5, '#cdebd4');
+      globeGrad.addColorStop(1, '#8fc39e');
     } else {
-      globeGrad.addColorStop(0, '#0d1a0d');
-      globeGrad.addColorStop(0.5, '#071307');
-      globeGrad.addColorStop(1, '#020802');
+      globeGrad.addColorStop(0, '#123021');
+      globeGrad.addColorStop(0.45, '#0a1c11');
+      globeGrad.addColorStop(1, '#020604');
     }
     ctx.beginPath();
     ctx.arc(cx, cy, R, 0, Math.PI*2);
     ctx.fillStyle = globeGrad;
     ctx.fill();
-    ctx.strokeStyle = isLight ? 'rgba(20,83,45,0.35)' : 'rgba(34,197,94,0.2)';
-    ctx.lineWidth = 0.5;
+
+    // ── Depth-shaded wireframe ──
+    // Lines fade toward the back (lower z) so the sphere reads as 3D, not flat.
+    function wire(alphaFront, alphaBack){
+      return function(z){
+        // z ranges roughly -1..1; map to alpha
+        const t = (z + 1) / 2;
+        const a = alphaBack + (alphaFront - alphaBack) * t;
+        return a;
+      };
+    }
+    const latColor = isLight ? '20,83,45' : '52,211,153';
+    const alphaFor = wire(isLight?0.32:0.42, isLight?0.05:0.06);
+
+    // Latitude rings (draw back-to-front so front overlaps back)
+    for(let lat=-75;lat<=75;lat+=15){
+      let prev = null;
+      for(let lng=-180;lng<=185;lng+=6){
+        const p3 = latLngTo3D(lat, lng, 1);
+        const pr = rotatePoint(p3, rotX, rotY);
+        const proj = project(pr, cx, cy, R);
+        if(prev){
+          ctx.beginPath();
+          ctx.moveTo(prev.sx, prev.sy);
+          ctx.lineTo(proj.sx, proj.sy);
+          ctx.strokeStyle = 'rgba('+latColor+','+alphaFor((pr.z+prev.z)/2).toFixed(3)+')';
+          ctx.lineWidth = pr.z > 0 ? 0.8 : 0.5;
+          ctx.stroke();
+        }
+        prev = {sx:proj.sx, sy:proj.sy, z:pr.z};
+      }
+    }
+    // Longitude meridians
+    for(let lng=-180;lng<=180;lng+=30){
+      let prev = null;
+      for(let lat=-90;lat<=90;lat+=6){
+        const p3 = latLngTo3D(lat, lng, 1);
+        const pr = rotatePoint(p3, rotX, rotY);
+        const proj = project(pr, cx, cy, R);
+        if(prev){
+          ctx.beginPath();
+          ctx.moveTo(prev.sx, prev.sy);
+          ctx.lineTo(proj.sx, proj.sy);
+          ctx.strokeStyle = 'rgba('+latColor+','+alphaFor((pr.z+prev.z)/2).toFixed(3)+')';
+          ctx.lineWidth = pr.z > 0 ? 0.8 : 0.5;
+          ctx.stroke();
+        }
+        prev = {sx:proj.sx, sy:proj.sy, z:pr.z};
+      }
+    }
+
+    // Crisp terminator edge ring
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI*2);
+    ctx.strokeStyle = isLight ? 'rgba(20,83,45,0.45)' : 'rgba(52,211,153,0.35)';
+    ctx.lineWidth = 1;
     ctx.stroke();
 
-    // Latitude/longitude grid lines
-    ctx.strokeStyle = isLight ? 'rgba(20,83,45,0.18)' : 'rgba(34,197,94,0.08)';
-    ctx.lineWidth = 0.5;
-    
-    // Draw lat lines
-    for(let lat=-75;lat<=75;lat+=15){
-      ctx.beginPath();
-      let first = true;
-      for(let lng=-180;lng<=180;lng+=5){
-        const p3 = latLngTo3D(lat, lng, 1);
-        const pr = rotatePoint(p3, rotX, rotY);
-        if(pr.z < 0) continue;
-        const proj = project(pr, cx, cy, R);
-        if(first){ctx.moveTo(proj.sx, proj.sy); first=false;}
-        else ctx.lineTo(proj.sx, proj.sy);
-      }
-      ctx.stroke();
-    }
-    
-    // Draw lng lines
-    for(let lng=-180;lng<=180;lng+=30){
-      ctx.beginPath();
-      let first = true;
-      for(let lat=-90;lat<=90;lat+=5){
-        const p3 = latLngTo3D(lat, lng, 1);
-        const pr = rotatePoint(p3, rotX, rotY);
-        if(pr.z < 0) continue;
-        const proj = project(pr, cx, cy, R);
-        if(first){ctx.moveTo(proj.sx, proj.sy); first=false;}
-        else ctx.lineTo(proj.sx, proj.sy);
-      }
-      ctx.stroke();
-    }
-
-    // Draw connection arcs between cities
+    // ── Connection arcs (glowing, animated pulse travelling along) ──
     connections.forEach(([ai, bi]) => {
       const aPos = latLngTo3D(cities[ai].lat, cities[ai].lng, 1.02);
       const bPos = latLngTo3D(cities[bi].lat, cities[bi].lng, 1.02);
       const ar = rotatePoint(aPos, rotX, rotY);
       const br = rotatePoint(bPos, rotX, rotY);
-      if(ar.z < 0 || br.z < 0) return;
+      if(ar.z < -0.2 || br.z < -0.2) return;
       const ap = project(ar, cx, cy, R);
       const bp = project(br, cx, cy, R);
-      
-      // Animated dash
-      const progress = ((frame * 0.8) % 100) / 100;
-      const grad = ctx.createLinearGradient(ap.sx, ap.sy, bp.sx, bp.sy);
-      grad.addColorStop(Math.max(0, progress - 0.3), 'rgba(34,197,94,0)');
-      grad.addColorStop(progress, 'rgba(34,197,94,0.8)');
-      grad.addColorStop(Math.min(1, progress + 0.1), 'rgba(34,197,94,0)');
-      
+      const midX = (ap.sx + bp.sx) / 2;
+      const midY = (ap.sy + bp.sy) / 2 - Math.sqrt((bp.sx-ap.sx)**2+(bp.sy-ap.sy)**2)*0.18;
+
+      // Faint base arc
       ctx.beginPath();
       ctx.moveTo(ap.sx, ap.sy);
-      // Arc via midpoint elevated
-      const midX = (ap.sx + bp.sx) / 2;
-      const midY = (ap.sy + bp.sy) / 2 - Math.sqrt((bp.sx-ap.sx)**2+(bp.sy-ap.sy)**2)*0.15;
+      ctx.quadraticCurveTo(midX, midY, bp.sx, bp.sy);
+      ctx.strokeStyle = isLight ? 'rgba(20,83,45,0.10)' : 'rgba(52,211,153,0.10)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Travelling glow pulse
+      const progress = ((frame * 0.9 + ai*40 + bi*23) % 100) / 100;
+      const grad = ctx.createLinearGradient(ap.sx, ap.sy, bp.sx, bp.sy);
+      grad.addColorStop(Math.max(0, progress-0.28), 'rgba(52,211,153,0)');
+      grad.addColorStop(progress, isLight?'rgba(22,163,74,0.95)':'rgba(134,239,172,0.95)');
+      grad.addColorStop(Math.min(1, progress+0.08), 'rgba(52,211,153,0)');
+      ctx.beginPath();
+      ctx.moveTo(ap.sx, ap.sy);
       ctx.quadraticCurveTo(midX, midY, bp.sx, bp.sy);
       ctx.strokeStyle = grad;
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 2;
+      ctx.shadowColor = 'rgba(52,211,153,0.8)';
+      ctx.shadowBlur = 6;
       ctx.stroke();
+      ctx.shadowBlur = 0;
     });
 
-    // Draw city dots
-    cities.forEach((city, idx) => {
-      const p3 = latLngTo3D(city.lat, city.lng, 1.02);
-      const pr = rotatePoint(p3, rotX, rotY);
-      if(pr.z < 0.1) return;
+    // ── City markers ──
+    // Draw back hemisphere faintly first (depth), then front markers bright.
+    const ordered = cities.map((c,idx)=>{
+      const pr = rotatePoint(latLngTo3D(c.lat, c.lng, 1.02), rotX, rotY);
+      return {c, idx, pr};
+    }).sort((a,b)=> a.pr.z - b.pr.z);
+
+    ordered.forEach(({c, idx, pr}) => {
       const proj = project(pr, cx, cy, R);
-      
+      const front = pr.z >= 0;
       const isHovered = hoveredCity === idx;
       const pulse = Math.sin(frame * 0.05 + idx * 0.8) * 0.5 + 0.5;
-      
-      // Pulse ring
+
+      if(!front){
+        // Back hemisphere: tiny dim dot for depth
+        ctx.beginPath();
+        ctx.arc(proj.sx, proj.sy, 1.6, 0, Math.PI*2);
+        ctx.fillStyle = c.color + '33';
+        ctx.fill();
+        return;
+      }
+
+      // Outer glow halo
+      const halo = ctx.createRadialGradient(proj.sx, proj.sy, 0, proj.sx, proj.sy, (isHovered?22:14));
+      halo.addColorStop(0, c.color + (isHovered?'aa':'66'));
+      halo.addColorStop(1, c.color + '00');
+      ctx.fillStyle = halo;
       ctx.beginPath();
-      ctx.arc(proj.sx, proj.sy, (isHovered ? 10 : 6) + pulse * 4, 0, Math.PI*2);
-      ctx.strokeStyle = city.color + '40';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      
-      // Dot
-      ctx.beginPath();
-      ctx.arc(proj.sx, proj.sy, isHovered ? 5 : 3.5, 0, Math.PI*2);
-      ctx.fillStyle = city.color;
+      ctx.arc(proj.sx, proj.sy, (isHovered?22:14), 0, Math.PI*2);
       ctx.fill();
-      
-      // Label on hover or always for large screens
+
+      // Expanding pulse ring
+      ctx.beginPath();
+      ctx.arc(proj.sx, proj.sy, (isHovered?9:5) + pulse * 6, 0, Math.PI*2);
+      ctx.strokeStyle = c.color + Math.floor((1-pulse)*90).toString(16).padStart(2,'0');
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Core dot with white hot center
+      ctx.beginPath();
+      ctx.arc(proj.sx, proj.sy, isHovered ? 5.5 : 4, 0, Math.PI*2);
+      ctx.fillStyle = c.color;
+      ctx.shadowColor = c.color;
+      ctx.shadowBlur = 10;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.beginPath();
+      ctx.arc(proj.sx-0.8, proj.sy-0.8, isHovered?2:1.4, 0, Math.PI*2);
+      ctx.fillStyle = 'rgba(255,255,255,0.9)';
+      ctx.fill();
+
+      // Labels
       if(isHovered || W > 600){
         ctx.font = `${isHovered?600:500} ${isHovered?13:11}px -apple-system,sans-serif`;
-        ctx.fillStyle = isHovered ? (isLight?'#0a1a10':'#fff') : (isLight?'rgba(20,83,45,0.75)':'rgba(255,255,255,0.7)');
-        const labelX = proj.sx + 8;
+        const labelX = proj.sx + 10;
         const labelY = proj.sy - 6;
-        
         if(isHovered){
-          // Background pill
-          const tw = ctx.measureText(city.name).width + ctx.measureText(city.val).width + 24;
-          ctx.fillStyle = isLight ? 'rgba(255,255,255,0.92)' : 'rgba(0,0,0,0.85)';
+          const tw = ctx.measureText(city_name(c)).width + ctx.measureText(c.val).width + 24;
+          ctx.fillStyle = isLight ? 'rgba(255,255,255,0.95)' : 'rgba(4,10,6,0.9)';
           ctx.beginPath();
-          ctx.roundRect(labelX - 4, labelY - 13, tw, 32, 6);
+          ctx.roundRect(labelX - 6, labelY - 14, tw, 34, 8);
           ctx.fill();
-          if(isLight){ ctx.strokeStyle = 'rgba(20,83,45,0.2)'; ctx.lineWidth = 0.5; ctx.stroke(); }
-          ctx.fillStyle = isLight ? '#0a1a10' : '#fff';
-          ctx.fillText(city.name, labelX, labelY);
-          ctx.fillStyle = city.val.startsWith('+') ? (isLight?'#15803d':'#4ade80') : (isLight?'#c2410c':'#f87171');
-          ctx.fillText(city.val, labelX, labelY + 14);
+          ctx.strokeStyle = isLight?'rgba(20,83,45,0.25)':'rgba(52,211,153,0.35)';
+          ctx.lineWidth = 1; ctx.stroke();
+          ctx.fillStyle = isLight ? '#0a1a10' : '#eef5ee';
+          ctx.fillText(c.name, labelX, labelY);
+          ctx.fillStyle = c.val.startsWith('+') ? (isLight?'#15803d':'#4ade80') : (isLight?'#c2410c':'#f87171');
+          ctx.fillText(c.val, labelX, labelY + 15);
         } else if(W > 600) {
-          ctx.fillText(city.ticker, labelX, labelY + 4);
+          ctx.fillStyle = isLight ? 'rgba(20,83,45,0.7)' : 'rgba(190,240,205,0.65)';
+          ctx.fillText(c.ticker, labelX, labelY + 4);
         }
       }
     });
 
-    // Atmosphere rim
-    const rimGrad = ctx.createRadialGradient(cx, cy, R*0.85, cx, cy, R*1.05);
-    rimGrad.addColorStop(0, 'rgba(34,197,94,0)');
-    rimGrad.addColorStop(0.7, 'rgba(34,197,94,0.04)');
-    rimGrad.addColorStop(1, 'rgba(34,197,94,0.12)');
-    ctx.beginPath();
-    ctx.arc(cx, cy, R*1.05, 0, Math.PI*2);
-    ctx.fillStyle = rimGrad;
-    ctx.fill();
-
-    // Clip to circle
+    // Specular sheen clipped to sphere
     ctx.save();
     ctx.beginPath();
     ctx.arc(cx, cy, R, 0, Math.PI*2);
     ctx.clip();
-    // Specular highlight
-    const specGrad = ctx.createRadialGradient(cx-R*0.35, cy-R*0.35, 0, cx-R*0.2, cy-R*0.2, R*0.5);
-    specGrad.addColorStop(0, 'rgba(255,255,255,0.04)');
-    specGrad.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = specGrad;
-    ctx.fillRect(0, 0, W, H);
+    const spec = ctx.createRadialGradient(cx-R*0.4, cy-R*0.45, 0, cx-R*0.25, cy-R*0.25, R*0.7);
+    spec.addColorStop(0, isLight?'rgba(255,255,255,0.35)':'rgba(134,239,172,0.10)');
+    spec.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = spec;
+    ctx.fillRect(0,0,W,H);
     ctx.restore();
 
+    // Thin bright rim highlight on the lit edge
+    const rim = ctx.createRadialGradient(cx, cy, R*0.9, cx, cy, R*1.02);
+    rim.addColorStop(0, 'rgba(52,211,153,0)');
+    rim.addColorStop(1, isLight?'rgba(34,197,94,0.25)':'rgba(52,211,153,0.35)');
+    ctx.beginPath();
+    ctx.arc(cx, cy, R*1.01, 0, Math.PI*2);
+    ctx.strokeStyle = rim;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
     frame++;
-    if(autoRotate && !dragging) rotY += 0.003;
+    if(autoRotate && !dragging) rotY += 0.0028;
   }
+  function city_name(c){ return c.name; }
 
   let globeVisible = true, lastFrame = 0;
   function loop(ts){
