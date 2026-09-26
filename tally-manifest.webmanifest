@@ -1,0 +1,96 @@
+{
+  "id": "./",
+  "name": "Tally: subscriptions, splits & cart",
+  "short_name": "Tally",
+  "description": "Track subscriptions, split shared costs fairly and total your cart with tax. Everything stays on your device.",
+  "start_url": "./#/subscriptions",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#E9EEE8",
+  "theme_color": "#1C2B45",
+  "categories": [
+    "finance",
+    "productivity",
+    "utilities"
+  ],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "tally-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "tally-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "tally-icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "tally-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Add subscription",
+      "short_name": "Add sub",
+      "url": "./#/subscriptions/new",
+      "icons": [
+        {
+          "src": "tally-icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Log shared expense",
+      "short_name": "Log expense",
+      "url": "./#/split/new",
+      "icons": [
+        {
+          "src": "tally-icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Open cart",
+      "short_name": "Cart",
+      "url": "./#/cart",
+      "icons": [
+        {
+          "src": "tally-icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "./",
+      "accept": {
+        "text/csv": [
+          ".csv"
+        ],
+        "application/json": [
+          ".json"
+        ]
+      }
+    }
+  ],
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  }
+}
