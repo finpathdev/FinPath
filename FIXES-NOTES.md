@@ -418,3 +418,14 @@ Fixes for the low findings in the thesis-journal scan. Rebased onto main after P
 - **F5.** Escape and Cancel move focus back to that row’s Sell button before the dialog index is cleared. The dialog’s delayed focus timer does not pull focus back onto the hidden field after it has closed.
 - **F4.** No product change. Keeping the first thesis on an existing paper position is intentional. A later buy of the same symbol still stores its own note on the transaction row.
 - `sw.js` cache is `finpath-v24`.
+
+## 2026-10-25 — Cancel mid-quote paper sell (finpath-v26)
+
+Rebased onto main after PR #16 (`finpath-v25`). Stripe was not changed. Investor Moves, `F13_TERMS`, and the lesson glossary were not changed.
+
+Cancel while a paper sell was waiting on a quote closed the dialog (Escape already refused). Opening Sell on a later row stored that row’s index. When the first quote came back it still sold the original index and shifted the book, and the next Confirm sold whatever now sat at the stored index (or did nothing if that index was gone).
+
+- Cancel is ignored while `PAPER_SELLING`, same as Escape. Sell and Cancel stay disabled until the quote returns, and another row’s Sell cannot retarget the open dialog.
+- The fill is bound to the ticker the dialog was opened for. After the quote, that ticker is removed even if its index moved. Confirm does not sell a different name that now occupies the old index.
+- A finished sale still closes the dialog only when it is still that same sell.
+- `sw.js` cache is `finpath-v26`.
