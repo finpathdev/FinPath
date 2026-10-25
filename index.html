@@ -1186,6 +1186,35 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
 .chip-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
 .chip:hover{color:var(--text);border-color:var(--line-strong)}
+#paycheckEntryLearn{max-width:1200px;margin:0 auto;padding:0 5% 22px}
+.pay-lead{font-size:14px;color:var(--muted);line-height:1.55;margin:-6px 0 16px}
+.pay-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600;display:block;margin-bottom:5px}
+.pay-hint{font-size:12.5px;color:var(--muted);line-height:1.45;margin:-2px 0 14px}
+.pay-split{display:flex;flex-direction:column;gap:10px;margin:0 0 12px}
+.pay-row{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.pay-k{font-size:14px;font-weight:700}
+.pay-sub{font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px}
+.pay-amt{font-size:16px;font-weight:700;font-family:var(--font-display);color:var(--mint);white-space:nowrap}
+.pay-track{height:8px;border-radius:99px;background:rgba(134,239,172,.1);overflow:hidden;margin-top:6px}
+.pay-fill{height:100%;border-radius:99px}
+.pay-fill.needs{width:50%;background:#22c55e}
+.pay-fill.wants{width:30%;background:#f5b60b}
+.pay-fill.future{width:20%;background:#60a5fa}
+.pay-ef{background:rgba(134,239,172,.05);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin:2px 0 14px}
+.pay-ef .pay-amt{font-size:22px}
+.pay-q{font-size:13px;font-weight:700;margin:0 0 8px}
+.pay-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.pay-chips .chip[aria-checked="true"]{color:var(--text);border-color:var(--green);background:rgba(34,197,94,.16)}
+.pay-note{font-size:13px;color:var(--muted);line-height:1.5;margin:0 0 14px}
+.pay-link{background:none;border:none;padding:0;color:var(--green);font-weight:700;cursor:pointer;font-size:inherit;font-family:inherit;text-decoration:underline}
+.pay-actions{display:flex;flex-direction:column;gap:8px}
+.pay-actions .btn-secondary,.pay-actions .price-btn{width:100%}
+.pay-disclaimer{font-size:12px;color:var(--muted2);line-height:1.45;margin:12px 0 0}
+#paycheckModal .modal{max-width:520px}
+@media(max-width:640px){
+  .pay-chips .chip{min-height:44px}
+  #paycheckModal .modal{padding:22px 16px}
+}
 .pill{background:rgba(96,165,250,.15);color:#60a5fa;border-radius:999px;padding:2px 9px;font-size:10px;font-weight:800;letter-spacing:.04em;margin-left:6px}
 .cmp-table{width:100%;font-size:13px;border-collapse:collapse}
 .cmp-table td,.cmp-table th{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}
@@ -2058,6 +2087,16 @@ body.light .gs-item{background:#fff}
     </div>
     <div id="learnPath"></div>
     <div id="learnRecommend"></div>
+    <div id="paycheckEntryLearn">
+      <div class="learn-rec paycheck-entry">
+        <div>
+          <div class="lp-kicker">Money moment</div>
+          <div class="learn-rec-title">First paycheck planner</div>
+          <div class="lp-sub" style="margin:4px 0 0">A 50/30/20 split and a starter emergency fund. For anyone learning — no account needed.</div>
+        </div>
+        <button type="button" class="btn-primary" style="padding:11px 22px;font-size:14px" onclick="openPaycheckMoment()">Open planner</button>
+      </div>
+    </div>
     <div class="lessons-grid" id="lessonsGrid"></div>
     <details class="glossary-box" id="glossaryBox"><summary>📖 Glossary — plain-English money terms. The same words are dotted inside lessons.</summary><dl id="glossaryList"></dl></details>
   </div>
@@ -2180,7 +2219,15 @@ body.light .gs-item{background:#fff}
         <div id="thesisClosed"></div>
       </div>
     </div>
-    <div style="margin-top:34px">
+    <div class="learn-rec paycheck-entry" id="paycheckEntryPort" style="margin-top:34px">
+      <div>
+        <div class="lp-kicker">Money moment</div>
+        <div class="learn-rec-title">First paycheck planner</div>
+        <div class="lp-sub" style="margin:4px 0 0">See needs, wants, and future from take-home pay, then save an emergency-fund goal on this device.</div>
+      </div>
+      <button type="button" class="btn-primary" style="padding:11px 22px;font-size:14px" onclick="openPaycheckMoment()">Open planner</button>
+    </div>
+    <div id="savingsGoals" style="margin-top:18px">
       <div style="font-size:16px;font-weight:700;margin-bottom:12px;font-family:var(--font-display)">Savings goals</div>
       <div id="goalsList"></div>
       <button class="btn-secondary" style="padding:12px 22px;font-size:13px" onclick="openGoalForm()">+ New goal</button>
@@ -2534,6 +2581,49 @@ body.light .gs-item{background:#fff}
     <textarea class="modal-input" id="paperReflect" maxlength="280" rows="3" placeholder="Optional — anything you want to remember about this trade."></textarea>
     <button class="price-btn" id="paperSellConfirm" onclick="paperConfirmSell()">Sell</button>
     <button class="modal-close-btn" onclick="closePaperSell()">Cancel</button>
+  </div>
+</div>
+
+<!-- FIRST PAYCHECK PLANNER — educational 50/30/20 moment. Guests OK. Local goals only. -->
+<div class="modal-overlay" id="paycheckModal" role="dialog" aria-modal="true" aria-labelledby="paycheckTitle">
+  <div class="modal">
+    <h2 id="paycheckTitle">First paycheck planner</h2>
+    <p class="pay-lead">A simple look at where monthly take-home pay can go. For anyone learning — not a plan written for you.</p>
+    <label class="pay-label" for="payTakeHome">Monthly take-home pay</label>
+    <input class="modal-input" id="payTakeHome" type="number" inputmode="decimal" min="0" step="any" placeholder="e.g. 4000" autocomplete="off" aria-describedby="payHint" oninput="renderPaycheckMoment()">
+    <div id="payHint" class="pay-hint">Net pay, after tax — the amount that lands in your bank account.</div>
+    <div class="pay-split" id="payResults" aria-live="polite">
+      <div>
+        <div class="pay-row"><div><div class="pay-k">Needs · 50%</div><div class="pay-sub">Rent, food, and other must-pay bills</div></div><div class="pay-amt" id="payNeeds">—</div></div>
+        <div class="pay-track" aria-hidden="true"><div class="pay-fill needs"></div></div>
+      </div>
+      <div>
+        <div class="pay-row"><div><div class="pay-k">Wants · 30%</div><div class="pay-sub">Things you enjoy and could cut back</div></div><div class="pay-amt" id="payWants">—</div></div>
+        <div class="pay-track" aria-hidden="true"><div class="pay-fill wants"></div></div>
+      </div>
+      <div>
+        <div class="pay-row"><div><div class="pay-k">Future · 20%</div><div class="pay-sub">Savings, extra debt payments, and other future-you money</div></div><div class="pay-amt" id="payFuture">—</div></div>
+        <div class="pay-track" aria-hidden="true"><div class="pay-fill future"></div></div>
+      </div>
+    </div>
+    <div class="pay-ef">
+      <div class="pay-k">Emergency fund target</div>
+      <div class="pay-amt" id="payEf">—</div>
+      <div class="pay-sub">3 × Needs · starter cushion — many aim for 3–6 months of needs</div>
+    </div>
+    <div class="pay-q" id="payMatchLabel">Does your employer offer a 401(k) match?</div>
+    <div class="pay-chips" role="radiogroup" aria-labelledby="payMatchLabel">
+      <button type="button" class="chip" id="payMatchYes" role="radio" aria-checked="false" onclick="setPaycheckMatch('yes')">Yes</button>
+      <button type="button" class="chip" id="payMatchNo" role="radio" aria-checked="false" onclick="setPaycheckMatch('no')">No</button>
+      <button type="button" class="chip" id="payMatchUnsure" role="radio" aria-checked="false" onclick="setPaycheckMatch('unsure')">Not sure</button>
+    </div>
+    <p id="payMatchNote" class="pay-note" hidden></p>
+    <div class="pay-actions">
+      <button type="button" class="price-btn" id="payCreateGoal" onclick="createPaycheckGoal()">Create emergency-fund goal</button>
+      <button type="button" class="btn-secondary" id="payBudgetLesson" style="padding:12px 18px;font-size:14px" onclick="openPaycheckLesson('budget')">Read the 50/30/20 lesson</button>
+    </div>
+    <p class="pay-disclaimer">Educational only — not personal financial advice.</p>
+    <button type="button" class="modal-close-btn" onclick="closePaycheckMoment()">Close</button>
   </div>
 </div>
 
@@ -3578,6 +3668,7 @@ document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ if(typ
 
 const ROUTES=['home','portfolio','lessons','gold','markets','legal'];
 function showPage(p,fromHash){
+  if(typeof hidePaycheckModal === 'function') hidePaycheckModal();
   if(!document.getElementById('page-'+p)) p='home';
   document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
@@ -5587,6 +5678,12 @@ async function loadNews(){
 // ══ KEYBOARD NAV — Esc closes any open layer ══
 document.addEventListener('keydown', function(e){
   if(e.key !== 'Escape') return;
+  const pay = document.getElementById('paycheckModal');
+  if(pay && pay.classList.contains('open') && typeof closePaycheckMoment === 'function'){
+    e.preventDefault();
+    closePaycheckMoment();
+    return;
+  }
   const ps = document.getElementById('paperSellModal');
   // A confirm already in flight must keep its dialog. Escape does not cancel the sale.
   if(ps && ps.classList.contains('open') && typeof closePaperSell === 'function' && !PAPER_SELLING) closePaperSell();
@@ -6852,6 +6949,203 @@ function renderGoals(){
   }).join('') : '<div class="empty" style="padding:20px">No goals yet — turn the SMART-goals lesson into action.</div>';
 }
 
+// ── FIRST PAYCHECK MOMENT (#moment/paycheck) ──
+// Local teaching tool. Take-home stays in fp_moment_paycheck on this device.
+// The emergency-fund goal uses the same fp_goals shape as saveGoal.
+let paycheckMatch = '';
+let paycheckReturnFocus = null;
+function paycheckHashOn(){
+  return /^#\/?moment\/paycheck\/?$/i.test(location.hash.split(/[?#]/)[0]);
+}
+function paycheckSplit(pay){
+  const n = typeof pay === 'number' ? pay : parseFloat(pay);
+  if(!isFinite(n) || n <= 0) return null;
+  const cents = Math.round(n * 100);
+  if(cents <= 0 || cents > 100000000000) return null;
+  let needs = Math.round(cents * 50 / 100);
+  let wants = Math.round(cents * 30 / 100);
+  let future = cents - needs - wants;
+  if(future < 0){
+    const over = -future;
+    const takeW = Math.min(wants, over);
+    wants -= takeW;
+    needs -= (over - takeW);
+    future = 0;
+  }
+  return {pay: cents / 100, needs: needs / 100, wants: wants / 100, future: future / 100, ef: needs * 3 / 100};
+}
+function readPaycheckStore(){
+  try{
+    const o = JSON.parse(localStorage.getItem('fp_moment_paycheck') || 'null');
+    return (o && typeof o === 'object') ? o : null;
+  }catch(e){ return null; }
+}
+function writePaycheckStore(pay, match){
+  try{
+    const prev = readPaycheckStore() || {};
+    const next = {};
+    if(isFinite(pay) && pay > 0) next.takeHome = pay;
+    else if(isFinite(parseFloat(prev.takeHome)) && parseFloat(prev.takeHome) > 0) next.takeHome = parseFloat(prev.takeHome);
+    const m = (match === 'yes' || match === 'no' || match === 'unsure') ? match : (prev.match || '');
+    if(m) next.match = m;
+    localStorage.setItem('fp_moment_paycheck', JSON.stringify(next));
+  }catch(e){}
+}
+function paycheckGoalDate(){
+  const d = new Date();
+  d.setMonth(d.getMonth() + 12);
+  const m = d.getMonth() + 1, day = d.getDate();
+  return d.getFullYear() + '-' + (m < 10 ? '0' : '') + m + '-' + (day < 10 ? '0' : '') + day;
+}
+function syncPaycheckMatch(){
+  [['yes','payMatchYes'],['no','payMatchNo'],['unsure','payMatchUnsure']].forEach(function(pair){
+    const btn = document.getElementById(pair[1]);
+    if(btn) btn.setAttribute('aria-checked', paycheckMatch === pair[0] ? 'true' : 'false');
+  });
+  const note = document.getElementById('payMatchNote');
+  if(!note) return;
+  const show = paycheckMatch === 'yes' || paycheckMatch === 'unsure';
+  note.hidden = !show;
+  note.innerHTML = show
+    ? 'If your employer matches, contributing enough to get the full match is usually free money; check vesting. <button type="button" class="pay-link" onclick="openPaycheckLesson(\'match\')">Open the free match calculator</button>'
+    : '';
+}
+function renderPaycheckMoment(){
+  const input = document.getElementById('payTakeHome');
+  const hint = document.getElementById('payHint');
+  const raw = input ? String(input.value).trim() : '';
+  const split = raw === '' ? null : paycheckSplit(raw);
+  const bad = raw !== '' && !split;
+  if(hint){
+    hint.textContent = bad
+      ? (parseFloat(raw) > 1000000000 ? 'Enter a monthly take-home up to $1,000,000,000.' : 'Enter monthly take-home pay above $0.')
+      : 'Net pay, after tax — the amount that lands in your bank account.';
+  }
+  const needs = document.getElementById('payNeeds');
+  const wants = document.getElementById('payWants');
+  const future = document.getElementById('payFuture');
+  const ef = document.getElementById('payEf');
+  if(needs) needs.textContent = split ? fmt(split.needs) : '—';
+  if(wants) wants.textContent = split ? fmt(split.wants) : '—';
+  if(future) future.textContent = split ? fmt(split.future) : '—';
+  if(ef) ef.textContent = split ? fmt(split.ef) : '—';
+  if(split) writePaycheckStore(split.pay, paycheckMatch);
+}
+function hydratePaycheckForm(){
+  const saved = readPaycheckStore();
+  paycheckMatch = (saved && (saved.match === 'yes' || saved.match === 'no' || saved.match === 'unsure')) ? saved.match : '';
+  const input = document.getElementById('payTakeHome');
+  if(input){
+    const n = saved ? parseFloat(saved.takeHome) : NaN;
+    input.value = (isFinite(n) && n > 0) ? String(n) : '';
+  }
+  syncPaycheckMatch();
+  renderPaycheckMoment();
+}
+function setPaycheckMatch(id){
+  if(id !== 'yes' && id !== 'no' && id !== 'unsure') return;
+  paycheckMatch = id;
+  syncPaycheckMatch();
+  const input = document.getElementById('payTakeHome');
+  const split = paycheckSplit(input ? input.value : '');
+  writePaycheckStore(split ? split.pay : NaN, paycheckMatch);
+}
+function hidePaycheckModal(){
+  const modal = document.getElementById('paycheckModal');
+  if(modal) modal.classList.remove('open');
+  paycheckReturnFocus = null;
+}
+function openPaycheckMoment(fromHash){
+  const modal = document.getElementById('paycheckModal');
+  if(!modal) return;
+  if(!fromHash && !paycheckHashOn()){
+    paycheckReturnFocus = document.activeElement;
+    try{ location.hash = 'moment/paycheck'; }catch(e){ openPaycheckMoment(true); }
+    return;
+  }
+  if(modal.classList.contains('open')) return;
+  modal.classList.add('open');
+  hydratePaycheckForm();
+  setTimeout(function(){
+    const inp = document.getElementById('payTakeHome');
+    if(inp) inp.focus();
+  }, 40);
+}
+function closePaycheckMoment(){
+  const modal = document.getElementById('paycheckModal');
+  const was = !!(modal && modal.classList.contains('open'));
+  if(modal) modal.classList.remove('open');
+  const back = paycheckReturnFocus;
+  paycheckReturnFocus = null;
+  if(back && document.contains(back) && typeof back.focus === 'function' && back !== document.body){
+    try{ back.focus(); }catch(e){}
+  }
+  if(!was || !paycheckHashOn()) return;
+  const active = document.querySelector('.page.active');
+  let p = (active && active.id.indexOf('page-') === 0) ? active.id.slice(5) : 'home';
+  if(typeof ROUTES === 'undefined' || ROUTES.indexOf(p) < 0) p = 'home';
+  const want = p === 'home' ? (location.pathname + location.search) : ('#' + p);
+  try{ history.replaceState({fp:p}, '', want); }catch(e){}
+}
+function scrollSavingsGoals(){
+  const list = document.getElementById('goalsList');
+  const last = list && list.querySelector('.goal-card:last-of-type');
+  const el = last || list || document.getElementById('savingsGoals');
+  if(!el) return;
+  try{ el.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){ el.scrollIntoView(); }
+}
+function createPaycheckGoal(){
+  const input = document.getElementById('payTakeHome');
+  const split = paycheckSplit(input ? input.value : '');
+  if(!split){
+    toast('⚠️', 'Enter monthly take-home pay above $0.');
+    if(input){ try{ input.focus(); }catch(e){} }
+    return;
+  }
+  const g = getGoals();
+  const goals = Array.isArray(g) ? g : [];
+  goals.push({name:'Emergency fund', target:split.ef, date:paycheckGoalDate(), saved:0, hit:{}});
+  saveGoals(goals);
+  writePaycheckStore(split.pay, paycheckMatch);
+  if(typeof unlockAchv === 'function') unlockAchv('goal_setter');
+  if(typeof renderChecklist === 'function') renderChecklist();
+  track('moment_paycheck', {has_match: paycheckMatch === 'yes' || paycheckMatch === 'unsure'});
+  toast('🎯', 'Emergency fund goal saved on this device.');
+  showPage('portfolio');
+  setTimeout(scrollSavingsGoals, 80);
+  setTimeout(scrollSavingsGoals, 360);
+}
+function openPaycheckLesson(which){
+  const name = which === 'budget'
+    ? 'How to Actually Budget: The 50/30/20 Rule'
+    : 'Understanding Your Paycheck: Where Does the Money Go?';
+  let i = -1;
+  if(typeof LESSONS !== 'undefined'){
+    for(let n = 0; n < LESSONS.length; n++){
+      if(LESSONS[n] && LESSONS[n].name === name){ i = n; break; }
+    }
+  }
+  showPage('lessons');
+  if(i >= 0) openLesson(i);
+}
+(function(){
+  const modal = document.getElementById('paycheckModal');
+  if(!modal) return;
+  modal.addEventListener('click', function(e){ if(e.target === modal) closePaycheckMoment(); });
+  modal.addEventListener('keydown', function(e){
+    if(e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    const ids = ['payMatchYes','payMatchNo','payMatchUnsure'];
+    const keys = ['yes','no','unsure'];
+    const i0 = ids.indexOf(document.activeElement && document.activeElement.id);
+    if(i0 < 0) return;
+    e.preventDefault();
+    const i = (e.key === 'ArrowRight' || e.key === 'ArrowDown') ? (i0 + 1) % ids.length : (i0 - 1 + ids.length) % ids.length;
+    setPaycheckMatch(keys[i]);
+    const btn = document.getElementById(ids[i]);
+    if(btn) btn.focus();
+  });
+})();
+
 // ── PAPER TRADING ──
 // fp_paper: { cash, pos:[{t,sh,price,ts,thesis?}], journal:[closed trades], start, spyStart }.
 // A thesis is required on every new paper buy. Closed trades stay in journal so Reset
@@ -7799,6 +8093,7 @@ initStreak();
 startAlertLoop();
 handleSharedLink();
 // Hash router: #portfolio / #lessons / #gold / #markets / #legal / #home (or empty).
+// #lesson/N opens that lesson. #moment/paycheck opens the first-paycheck planner.
 // #p= shared links are handled above by handleSharedLink and ignored here.
 // A cold #l-* load runs while the page is still laying out. showPage scrolls to
 // the top first, and that immediate scrollIntoView is lost before the first
@@ -7819,6 +8114,8 @@ function scrollToAnchor(anchor){
 function routeFromHash(){
   const raw = location.hash.replace(/^#/,'');
   if(raw.indexOf('p=')===0) return;
+  const momentOn = /^\/?moment\/paycheck\/?$/i.test(raw.split(/[?#]/)[0]);
+  if(!momentOn && typeof hidePaycheckModal === 'function') hidePaycheckModal();
   const lesson = raw.match(/^\/?lesson\/(\d+)\/?$/i);
   if(lesson){
     const i = parseInt(lesson[1], 10);
@@ -7827,6 +8124,10 @@ function routeFromHash(){
       openLesson(i, true);
       return;
     }
+  }
+  if(momentOn){
+    openPaycheckMoment(true);
+    return;
   }
   let p = raw.replace(/^\/+|\/+$/g,'').split(/[?#]/)[0].toLowerCase();
   if(p==='') p = 'home';
