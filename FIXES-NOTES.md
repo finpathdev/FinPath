@@ -327,3 +327,13 @@ Market UI only. Stripe, 13F / MOVES, and lessons were not edited.
 5. **How to read a quote.** A collapsed tip on Market pulse and next to portfolio live prices explains price, the day’s % change, and that “last known” is a saved quote.
 
 **Verified:** node --check (3 inline scripts + sw.js). Headless Chrome checked the heat-map legend and tap-for-detail (sector names and a hostile ticker are escaped), the quote tip on Markets and Portfolio, five priced pulse tiles, missing quotes still showing the why-line and “Price unavailable”, a stale SPY price flagged “last known” next to unavailable siblings, 429/403/503 and a limit error body showing the busy-feed banner, and 401 showing the separate hard-failure banner that does not retry. Empty watchlist stays visible, search opens from it, a starred row renders, and unstarring or already owning the name returns the empty state. No horizontal overflow at 1280 or 390. Light mode keeps the legend. Stripe was not edited. `sw.js` CACHE → `finpath-v18`.
+
+## 2026-10-25 — Investor Moves UX (finpath-v19)
+
+Rebased onto the Markets learner pass (`finpath-v18`). UX and copy only. `MOVES` is still the 67 Q2 2026 rows / 9 investors. No Q3 positions were added. Stripe, pricing, auth, the Finnhub key, `COMPANIES`, `SECTORS`, and `POP` were not touched. The landing timeline init stays next to the pulse helpers (`_pulseGen`, `_pulseQuoteOk`). Cache is `finpath-v19`.
+
+- Filing-lag timeline on the Gold page (full for members, short above the upgrade gate) and a shorter one on the landing investor section. Dates come from `F13`.
+- Trust strip above the moves grid: research, do not copy; delayed up to 45 days; long U.S. stocks only; not a buy signal. The old disclaimer paragraph is now the source line (`f13SourceLine`).
+- Action filters Buy / Add / Reduce / Sold out, combined with the investor tabs and Show holds. Default is still all non-Hold moves. Puts and spin-offs stay under All actions.
+- Glossary chips and dotted terms on the moves page (13F, Buy, Add, Reduce, Sold out, % of portfolio, put/call, filing lag). Short words live in `F13_TERMS`, not in `GLOSSARY`, so lessons do not underline “Buy”. The 13F glossary sentence is a bit longer.
+- Refresh checklist: `docs/Q3-13F-REFRESH.md`.
