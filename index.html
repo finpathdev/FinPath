@@ -1087,6 +1087,26 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
 body.light .api-bar.api-bar-dead{background:#fee2e2;color:#991b1b;border-color:rgba(220,38,38,.35)}
 .api-bar-x{background:none;border:0;color:inherit;font-size:18px;line-height:1;cursor:pointer;padding:0 0 0 6px;opacity:.8}
 .price-flag{font-size:10px;font-weight:600;color:var(--muted);background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.25);border-radius:6px;padding:1px 6px;margin-left:4px;white-space:nowrap}
+/* Learner cues for live quotes: heat-map key, how to read a price, missing pulse tiles. */
+.heat-legend{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;margin:-4px 0 14px;font-size:12.5px;color:var(--muted);line-height:1.4}
+.heat-legend-item{display:inline-flex;align-items:center;gap:6px}
+.heat-swatch{width:12px;height:12px;border-radius:3px;flex-shrink:0;border:1px solid rgba(0,0,0,.25)}
+.heat-swatch-up{background:rgba(22,101,52,.95)}
+.heat-swatch-down{background:rgba(153,27,27,.95)}
+.heat-scale{width:64px;height:10px;border-radius:99px;background:linear-gradient(90deg,rgba(22,101,52,.35),rgba(22,101,52,.95));border:1px solid rgba(0,0,0,.2);flex-shrink:0}
+.quote-tip{margin:8px 0 14px;max-width:640px;background:rgba(134,239,172,.045);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.quote-tip summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--text)}
+.quote-tip summary:focus-visible{outline:2px solid var(--green);outline-offset:3px;border-radius:6px}
+.quote-tip p{margin:8px 0 2px;font-size:13px;line-height:1.55;color:var(--muted)}
+.quote-tip b{color:var(--text);font-weight:600}
+.p-unavail{font-size:13px;font-weight:600;color:var(--muted);margin-top:2px}
+.p-metric-missing{border-style:dashed}
+.watch-empty{padding:18px 16px 8px}
+.watch-empty-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px}
+.watch-empty p{font-size:13px;line-height:1.55;max-width:480px;margin:0 auto 12px;color:var(--muted)}
+.api-bar.api-bar-limit{border-radius:14px;line-height:1.45;text-align:left;max-width:min(520px,calc(100% - 32px))}
+body.light .quote-tip{background:rgba(20,83,45,.05)}
+body.light .watch-empty p{color:var(--muted)}
 .badge-sold{background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.3)}
 .badge-new{background:rgba(96,165,250,.12);color:#60a5fa;border:1px solid rgba(96,165,250,.3)}
 .badge-put{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.3)}
@@ -1963,7 +1983,7 @@ body.light .gs-item{background:#fff}
     <div class="mode-tabs" role="tablist"><button class="mode-tab active" id="tabLive" role="tab" onclick="setMode('live')">My portfolio</button><button class="mode-tab" id="tabPaper" role="tab" onclick="setMode('paper')">Paper trading<span class="pill">practice</span></button></div>
     <div id="liveWrap">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
-      <div><h1 style="font-size:28px;font-weight:800;letter-spacing:-.5px">Your Portfolio</h1><p style="font-size:14px;color:var(--muted);margin-top:4px"><span class="live-dot"></span> Live prices · Buy/hold/sell notes · Profit tracking</p></div>
+      <div><h1 style="font-size:28px;font-weight:800;letter-spacing:-.5px">Your Portfolio</h1><p style="font-size:14px;color:var(--muted);margin-top:4px"><span class="live-dot"></span> Live prices · Buy/hold/sell notes · Profit tracking</p><details class="quote-tip"><summary>How to read a quote</summary><p><b>Price</b> is the latest trade we could load. The <b>day’s % change</b> compares that price with the previous close — green means up, red means down. <b>Last known</b> means we saved that price earlier and are showing it because a live update isn’t available. It isn’t a guessed number.</p></details></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="add-btn" onclick="openSearch()">+ Add stock</button><button class="btn-secondary" style="padding:14px 20px;font-size:14px" onclick="refreshPrices()" id="refreshBtn" aria-label="Refresh live prices">↻ Refresh</button><button class="btn-secondary" style="padding:14px 20px;font-size:14px" onclick="sharePortfolio()" aria-label="Copy shareable portfolio link">Share</button></div>
     </div>
     <div class="port-top-grid">
@@ -1993,7 +2013,7 @@ body.light .gs-item{background:#fff}
       </div>
     </div>
     <div id="watchWrap" style="display:none">
-      <div style="font-size:16px;font-weight:700;margin-bottom:12px;font-family:var(--font-display)">Watchlist <span style="font-size:12px;color:var(--muted);font-weight:500">· tap a stock to add it to your portfolio</span></div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:12px;font-family:var(--font-display)">Watchlist <span id="watchHint" style="font-size:12px;color:var(--muted);font-weight:500">· tap a stock to add it to your portfolio</span></div>
       <div class="watch-grid" id="watchGrid"></div>
     </div>
     <div class="analytics-grid" id="allocWrap" style="display:none">
@@ -2075,8 +2095,8 @@ body.light .gs-item{background:#fff}
 <div id="page-markets" class="page">
   <div class="portfolio-wrap">
     <div class="page-header" style="padding:16px 0 30px"><h1>Markets</h1><p>Market pulse (live when data is available), sector heat map, stock screener, earnings calendar and a steady-rate playground. Some figures are reference snapshots, not real-time.</p></div>
-    <div class="mk-section"><div class="mk-title">Market pulse <span class="live-dot" style="margin-left:6px"></span> <span id="mkStatus" class="mk-status" aria-live="polite"></span></div><div class="mk-sub">Major index ETFs — funds that track a whole slice of the market, so you can see how “the market” did on the latest trading day. Live when market data is available.</div><div class="pulse-grid" id="pulseGrid"><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div></div><div id="pulseNote" style="font-size:13px;color:var(--muted)"></div></div>
-    <div class="mk-section"><div class="mk-title">Sector heat map</div><div class="mk-sub">Today’s performance by sector (SPDR sector ETFs). Tap a sector for detail.</div><div class="heat-grid" id="heatGrid"><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div></div><div id="heatDetail" style="margin-top:14px;font-size:13px;color:var(--muted)"></div></div>
+    <div class="mk-section"><div class="mk-title">Market pulse <span class="live-dot" style="margin-left:6px"></span> <span id="mkStatus" class="mk-status" aria-live="polite"></span></div><div class="mk-sub">Major index ETFs — funds that track a whole slice of the market, so you can see how “the market” did on the latest trading day. Live when market data is available.</div><details class="quote-tip"><summary>How to read a quote</summary><p><b>Price</b> is the latest trade we could load. The <b>day’s % change</b> compares that price with the previous close — green means up, red means down. <b>Last known</b> means we saved that price earlier and are showing it because a live update isn’t available. It isn’t a guessed number.</p></details><div class="pulse-grid" id="pulseGrid"><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div></div><div id="pulseNote" style="font-size:13px;color:var(--muted)"></div></div>
+    <div class="mk-section"><div class="mk-title">Sector heat map</div><div class="mk-sub">Today’s performance by sector (SPDR sector ETFs). Tap a sector for detail.</div><div class="heat-legend" id="heatLegend"><span class="heat-legend-item"><span class="heat-swatch heat-swatch-up" aria-hidden="true"></span>Green = up today</span><span class="heat-legend-item"><span class="heat-swatch heat-swatch-down" aria-hidden="true"></span>Red = down</span><span class="heat-legend-item"><span class="heat-scale" aria-hidden="true"></span>Stronger color ≈ a larger move</span></div><div class="heat-grid" id="heatGrid"><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div></div><div id="heatDetail" style="margin-top:14px;font-size:13px;color:var(--muted)"></div></div>
     <div class="mk-section"><div class="mk-title">Stock screener</div><div class="mk-sub">Discover stocks by fundamentals across FinPath’s tracked universe.</div>
       <div class="scr-filters">
         <div><label>Sector</label><select id="scrSector"><option value="">All sectors</option></select></div>
@@ -3927,6 +3947,8 @@ const _pendingQ = {};
 // Prices are cached in-memory AND persisted to localStorage, so if Finnhub
 // rate-limits (free tier) or the network drops, we show the last known price
 // instead of stuck skeletons, tell the user, and retry automatically.
+// 429 / 403 / 503 (or an error body about a limit) gets a "feed is busy" note.
+// HTTP 401 is a rejected key: stop retrying and say market data is unavailable.
 try{
   const saved = JSON.parse(localStorage.getItem('fp_pricecache')||'{}');
   Object.keys(saved).forEach(function(k){ if(saved[k] && typeof saved[k].c === 'number') priceCache[k] = saved[k]; });
@@ -3939,45 +3961,82 @@ function persistPriceCache(){
     try{ localStorage.setItem('fp_pricecache', JSON.stringify(priceCache)); }catch(e){}
   }, 3000);
 }
-let _apiDown = false, _apiFailStreak = 0, _apiRetryT = null;
+let _apiDown = false, _apiFailStreak = 0, _apiRetryT = null, _apiReason = '', _apiSawLimit = false;
 function _apiBar(){
   let b = document.getElementById('apiBar');
   if(!b){
     b = document.createElement('div');
     b.id = 'apiBar'; b.className = 'api-bar'; b.setAttribute('role','status'); b.setAttribute('aria-live','polite');
-    b.innerHTML = '<div class="spinner"></div><span>Live prices temporarily unavailable — showing last known prices. Retrying…</span>';
     document.body.appendChild(b);
   }
   return b;
+}
+function _paintApiBar(reason){
+  const b = _apiBar();
+  b.classList.remove('api-bar-dead');
+  if(reason === 'limit'){
+    b.classList.add('api-bar-limit');
+    b.innerHTML = '<div class="spinner"></div><span>The price feed is busy (rate limit). Last known prices may still show, and we’ll retry automatically.</span>';
+  } else {
+    b.classList.remove('api-bar-limit');
+    b.innerHTML = '<div class="spinner"></div><span>Live prices temporarily unavailable — showing last known prices. Retrying…</span>';
+  }
+  b.style.display = 'flex';
+}
+function _limitError(body){
+  return !!(body && body.error && /limit|too many/i.test(String(body.error)));
 }
 // Finnhub rejected the API key (HTTP 401). Retrying won't help, so stop hammering the
 // API, stop the WebSocket reconnect loop, and tell the user plainly instead of silent blanks.
 let _apiKeyDead = false;
 function apiKeyInvalid(){
   if(_apiKeyDead) return;
-  _apiKeyDead = true; _apiDown = true;
+  _apiKeyDead = true; _apiDown = true; _apiReason = 'dead';
   if(_apiRetryT){ clearTimeout(_apiRetryT); _apiRetryT = null; }
   const b = _apiBar();
   b.classList.add('api-bar-dead');
+  b.classList.remove('api-bar-limit');
   b.innerHTML = '<span aria-hidden="true">⚠️</span><span>Market data unavailable — live prices can\u2019t load right now. Any prices shown are last known or your cost basis.</span><button type="button" class="api-bar-x" aria-label="Dismiss" onclick="this.parentNode.style.display=\'none\'">×</button>';
   b.style.display = 'flex';
   try{ if(typeof ws !== 'undefined' && ws){ ws.onclose = null; ws.close(); ws = null; } }catch(e){}
   try{ document.querySelectorAll('.live-pill,.live-dot').forEach(function(el){ el.classList.add('is-offline'); }); }catch(e){}
 }
+// 429, 403, 503, or a limit error body: the feed is busy. Not a dead key, and not the user's fault.
+function apiRateLimited(){
+  if(_apiKeyDead) return;
+  _apiSawLimit = true;
+  _apiFailStreak++;
+  if(_apiFailStreak < 3 && !_apiDown) return;   // one stray 429 shouldn't flash the banner
+  const changed = !_apiDown || _apiReason !== 'limit';
+  _apiDown = true;
+  _apiReason = 'limit';
+  if(changed) _paintApiBar('limit');
+  scheduleApiRetry();
+}
 function apiTrouble(){
   if(_apiKeyDead) return;
+  if(_apiDown && _apiReason === 'limit') return;   // don't replace the rate-limit note with a generic outage
   _apiFailStreak++;
   if(_apiFailStreak < 3 || _apiDown) return;   // tolerate a couple of one-off misses
   _apiDown = true;
-  _apiBar().style.display = 'flex';
+  if(_apiSawLimit){
+    _apiReason = 'limit';
+    _paintApiBar('limit');
+  } else {
+    _apiReason = 'outage';
+    _paintApiBar('outage');
+  }
   scheduleApiRetry();
 }
 function apiOK(){
   _apiFailStreak = 0;
-  if(!_apiDown) return;
+  if(!_apiDown || _apiKeyDead) return;
   _apiDown = false;
+  _apiReason = '';
+  _apiSawLimit = false;
   if(_apiRetryT){ clearTimeout(_apiRetryT); _apiRetryT = null; }
-  const b = document.getElementById('apiBar'); if(b) b.style.display = 'none';
+  const b = document.getElementById('apiBar');
+  if(b){ b.style.display = 'none'; b.classList.remove('api-bar-limit'); }
   toast('✅','Live prices are back — everything is up to date.');
   // refresh whatever the user is looking at
   try{
@@ -3987,14 +4046,17 @@ function apiOK(){
   }catch(e){}
 }
 function scheduleApiRetry(){
-  if(_apiRetryT) return;
+  if(_apiRetryT || _apiKeyDead) return;
   _apiRetryT = setTimeout(async function(){
     _apiRetryT = null;
+    if(_apiKeyDead) return;
     try{
       const r = await fetch('https://finnhub.io/api/v1/quote?symbol=SPY&token='+FK);
       if(r.status === 401){ apiKeyInvalid(); return; }
+      if(r.status === 429 || r.status === 403 || r.status === 503){ apiRateLimited(); return; }
       if(r.ok){
         const d = await r.json();
+        if(_limitError(d)){ apiRateLimited(); return; }
         if(d && d.c){ priceCache['SPY'] = {c:d.c,d:d.d,dp:d.dp,o:d.o,ts:Date.now()}; persistPriceCache(); apiOK(); return; }
       }
     }catch(e){}
@@ -4011,8 +4073,9 @@ async function fetchQ(t){
     try{
       const r = await fetch('https://finnhub.io/api/v1/quote?symbol='+encodeURIComponent(finnhubSymbol(t))+'&token='+FK);
       if(r.status === 401){ apiKeyInvalid(); return cached ? {...cached, stale:true} : null; }
-      if(r.status === 429 || r.status === 403){ apiTrouble(); return cached ? {...cached, stale:true} : null; }
+      if(r.status === 429 || r.status === 403 || r.status === 503){ apiRateLimited(); return cached ? {...cached, stale:true} : null; }
       const d = await r.json();
+      if(_limitError(d)){ apiRateLimited(); return cached ? {...cached, stale:true} : null; }
       if(d && d.c){
         apiOK();
         priceCache[t] = {c:d.c,d:d.d,dp:d.dp,o:d.o,ts:Date.now()};
@@ -5017,14 +5080,23 @@ function toggleWatch(t, btn){
   if(btn) btn.textContent = i > -1 ? '☆' : '★';
   renderWatchlist();
 }
+let _watchGen = 0;
 async function renderWatchlist(){
+  const gen = ++_watchGen;
   const wrap = document.getElementById('watchWrap'), grid = document.getElementById('watchGrid');
   if(!wrap || !grid) return;
   const w = getWatch().filter(function(t){ return isValidTicker(t) && !portfolio.find(function(p){ return p.ticker === t; }); });
-  if(!w.length){ wrap.style.display = 'none'; return; }
+  const hint = document.getElementById('watchHint');
   wrap.style.display = 'block';
+  if(!w.length){
+    if(hint) hint.textContent = '· star a stock to follow it';
+    grid.innerHTML = '<div class="empty watch-empty"><div class="watch-empty-title">Your watchlist is empty</div><p>Star a stock to follow its price before you buy. Tap <b>+ Add stock</b> and press the star (☆) next to a name. You can browse names on Markets first, then star them in search. Stocks you already hold stay in Your stocks, not on this list.</p><button type="button" class="btn-secondary" style="padding:10px 16px;font-size:13px" onclick="openSearch()">Search and star a stock</button></div>';
+    return;
+  }
+  if(hint) hint.textContent = '· tap a stock to add it to your portfolio';
   grid.innerHTML = w.map(function(){ return '<div class="skel-row" style="height:66px"></div>'; }).join('');
   const qs = await Promise.all(w.map(async function(t){ return {t: t, q: await fetchQ(t)}; }));
+  if(gen !== _watchGen) return;
   grid.innerHTML = qs.map(function(x){
     const t = x.t, q = x.q;
     const safe = escapeHtml(t);
@@ -6303,32 +6375,46 @@ function initMarkets(){
 document.addEventListener('DOMContentLoaded', function(){
   try{ if(Date.now() > new Date(F13.nextDue + 'T23:59:59-05:00').getTime()){ const n = document.getElementById('landing13fNote'); if(n) n.textContent = F13.quarter + ' 13F filings (positions as of ' + F13.asOf + '). Newer ' + F13.nextQuarter + ' filings are now due — FinPath will add them after review.'; } }catch(e){}
 });
+let _pulseGen = 0;
+function _pulseHasPrice(q){ return !!(q && typeof q.c === 'number' && isFinite(q.c) && q.c > 0); }
 async function renderPulse(){
+  const gen = ++_pulseGen;
   const qs = await Promise.all(PULSE.map(async function(p){ return {p:p, q: await fetchQ(p.t)}; }));
-  if(!qs.some(function(r){ return r.q; })){
-    document.getElementById('pulseGrid').innerHTML = '<div class="empty" style="grid-column:1/-1">Market data unavailable right now — live index prices can\u2019t load. Please check back later.</div>';
-    document.getElementById('pulseNote').textContent = '';
-    return;
-  }
-  document.getElementById('pulseGrid').innerHTML = qs.map(function(r){
-    if(!r.q || !(typeof r.q.c === 'number' && isFinite(r.q.c))) return '';
+  if(gen !== _pulseGen) return;
+  const grid = document.getElementById('pulseGrid');
+  const noteEl = document.getElementById('pulseNote');
+  if(!grid || !noteEl) return;
+  grid.innerHTML = qs.map(function(r){
+    const title = escapeHtml(r.p.d || '');
+    const label = '<div class="p-label">' + escapeHtml(r.p.n) + ' <span style="opacity:.7;font-weight:500">· ' + escapeHtml(r.p.t) + '</span></div>';
+    const why = '<div class="p-desc">' + title + '</div>';
+    if(!_pulseHasPrice(r.q)){
+      return '<div class="p-metric p-metric-missing" title="' + title + '">' + label + '<div class="p-unavail">Price unavailable</div>' + why + '</div>';
+    }
     const dp = quoteDp(r.q);
     const up = dp != null && dp >= 0;
-    const chg = dp == null ? '<div style="font-size:12px;margin-top:3px;color:var(--muted)">Day change unavailable</div>'
-      : '<div style="font-size:12px;margin-top:3px" class="' + (up?'up':'down') + '">' + (up?'▲ +':'▼ ') + dp.toFixed(2) + '%' + (r.q.stale ? ' <span class="price-flag">last known</span>' : '') + '</div>';
-    return '<div class="p-metric" title="' + escapeHtml(r.p.d||'') + '"><div class="p-label">' + escapeHtml(r.p.n) + ' <span style="opacity:.7;font-weight:500">· ' + escapeHtml(r.p.t) + '</span></div><div class="p-val">' + fmt(r.q.c) + '</div>' + chg + '<div class="p-desc">' + escapeHtml(r.p.d||'') + '</div></div>';
+    const stale = r.q.stale ? ' <span class="price-flag" title="Live quote unavailable — showing the last price we saw">last known</span>' : '';
+    const chg = dp == null
+      ? '<div style="font-size:12px;margin-top:3px;color:var(--muted)">Day change unavailable</div>'
+      : '<div style="font-size:12px;margin-top:3px" class="' + (up?'up':'down') + '">' + (up?'▲ +':'▼ ') + dp.toFixed(2) + '%' + stale + '</div>';
+    return '<div class="p-metric" title="' + title + '">' + label + '<div class="p-val">' + fmt(r.q.c) + '</div>' + chg + why + '</div>';
   }).join('');
+  if(!qs.some(function(r){ return _pulseHasPrice(r.q); })){
+    noteEl.textContent = 'Live prices can\u2019t load right now. Each tile still says what that index fund tracks.';
+    renderMarketStatus();
+    return;
+  }
   const spy = qs[0].q, vix = qs[4] ? qs[4].q : null;
   let note = '';
   const mst = usMarketStatus(), live = !mst || mst.open;
   const spyDp = quoteDp(spy), vixDp = quoteDp(vix);
-  if(spy && spyDp != null) note = live
+  if(spyDp != null) note = live
     ? (spyDp >= 0.5 ? 'Broad market is having a strong day.' : spyDp <= -0.5 ? 'Broad market is under pressure today — long-term investors, this is normal.' : 'Quiet, range-bound session so far.')
     : (mst.why + ' These are the moves from the most recent session' + (spyDp >= 0.5 ? ' — a strong day for the broad market.' : spyDp <= -0.5 ? ' — a down day for the broad market (normal for long-term investors).' : ' — a fairly quiet session.'));
-  else if(spy) note = 'Day-change isn\u2019t available for the broad market right now.';
+  else if(_pulseHasPrice(spy)) note = 'Day-change isn\u2019t available for the broad market right now.';
   if(vixDp != null && vixDp > 5) note += live ? ' Volatility is spiking — markets are nervous.' : ' Volatility rose — markets were nervous.';
   renderMarketStatus();
-  document.getElementById('pulseNote').textContent = note;
+  noteEl.textContent = note;
 }
 async function renderHeatMap(){
   const qs = await Promise.all(SECTOR_ETFS.map(async function(s){ return {s:s, q: await fetchQ(s.t)}; }));
@@ -6339,10 +6425,10 @@ async function renderHeatMap(){
   document.getElementById('heatGrid').innerHTML = qs.map(function(r, i){
     if(!r.q) return '';
     const dp = quoteDp(r.q);
-    if(dp == null) return '<div class="heat-cell" style="background:rgba(90,107,92,.35)" role="button" tabindex="0"><div class="heat-name">' + r.s.n + '</div><div class="heat-pct">—</div></div>';
+    if(dp == null) return '<div class="heat-cell" style="background:rgba(90,107,92,.35)" role="button" tabindex="0"><div class="heat-name">' + escapeHtml(r.s.n) + '</div><div class="heat-pct">—</div></div>';
     const mag = Math.min(1, Math.abs(dp)/2.2);
     const bg = dp >= 0 ? 'rgba(22,101,52,' + (0.35+mag*0.6) + ')' : 'rgba(153,27,27,' + (0.35+mag*0.6) + ')';
-    return '<div class="heat-cell" style="background:' + bg + '" onclick="heatDetailShow(' + i + ',' + dp.toFixed(2) + ')" role="button" tabindex="0"><div class="heat-name">' + r.s.n + '</div><div class="heat-pct">' + (dp>=0?'▲ +':'▼ ') + dp.toFixed(2) + '%</div></div>';
+    return '<div class="heat-cell" style="background:' + bg + '" onclick="heatDetailShow(' + i + ',' + dp.toFixed(2) + ')" role="button" tabindex="0"><div class="heat-name">' + escapeHtml(r.s.n) + '</div><div class="heat-pct">' + (dp>=0?'▲ +':'▼ ') + dp.toFixed(2) + '%</div></div>';
   }).join('');
   // "your portfolio vs today's sectors" line
   if(portfolio.length){
@@ -6352,14 +6438,16 @@ async function renderHeatMap(){
     if(top && tv > 0){
       const etf = qs.find(function(r){ return r.s.n === top[0]; });
       const etfDp = etf ? quoteDp(etf.q) : null;
-      if(etf && etfDp != null) document.getElementById('heatDetail').innerHTML = 'Your portfolio is <b>' + (top[1]/tv*100).toFixed(0) + '% ' + top[0] + '</b> — that sector is <b class="' + (etfDp>=0?'up':'down') + '">' + (etfDp>=0?'+':'') + etfDp.toFixed(2) + '%</b> today.';
+      if(etf && etfDp != null) document.getElementById('heatDetail').innerHTML = 'Your portfolio is <b>' + (top[1]/tv*100).toFixed(0) + '% ' + escapeHtml(top[0]) + '</b> — that sector is <b class="' + (etfDp>=0?'up':'down') + '">' + (etfDp>=0?'+':'') + etfDp.toFixed(2) + '%</b> today.';
     }
   }
 }
 function heatDetailShow(i, dp){
   const s = SECTOR_ETFS[i];
-  const mine = portfolio.filter(function(h){ return (SECTORS[h.ticker]||'') === s.n; }).map(function(h){ return h.ticker; });
-  document.getElementById('heatDetail').innerHTML = '<b>' + s.n + '</b> (' + s.t + ') is ' + (dp>=0?'up ':'down ') + Math.abs(dp).toFixed(2) + '% today.' + (mine.length ? ' Your holdings here: <b>' + mine.join(', ') + '</b>.' : ' You hold nothing in this sector.');
+  const el = document.getElementById('heatDetail');
+  if(!s || !el || !isFinite(dp)) return;
+  const mine = portfolio.filter(function(h){ return (SECTORS[h.ticker]||'') === s.n; }).map(function(h){ return escapeHtml(h.ticker); });
+  el.innerHTML = '<b>' + escapeHtml(s.n) + '</b> (' + escapeHtml(s.t) + ') is ' + (dp>=0?'up ':'down ') + Math.abs(dp).toFixed(2) + '% today.' + (mine.length ? ' Your holdings here: <b>' + mine.join(', ') + '</b>.' : ' You hold nothing in this sector.');
 }
 // screener
 // Fundamentals barely move intraday, so cache them for 24h in localStorage to stay under Finnhub free-tier limits.

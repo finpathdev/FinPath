@@ -360,6 +360,28 @@ Follow-up to the v18 list above, against the delta audit (PR #9 notes only; that
 - Finnhub proxy / key rotation.
 - Live Stripe Payment Link, webhooks, billing, and the `gold_users` / `payments` mismatch.
 - Q3 2026 13F / MOVES refresh (nothing invented; deadline Nov 16, 2026).
-- `LESSONS[15]`, new lesson or glossary content, heat-map features, and watchlist empty-state tips.
+- `LESSONS[15]` and new lesson or glossary content.
 - Real intraday/hourly history, a bottom tab bar, real-device checks, and a pinned Supabase CDN with SRI.
 - Supabase `defer` + `bootAuth` from finpath-v17.
+
+## 2026-10-25 — Markets learner cues (finpath-v18)
+
+Shipped on main in PR #7, and kept in this branch. Market UI only. Stripe, 13F / MOVES, and lessons were not edited.
+
+**Shipped**
+1. **Sector heat map legend.** `#heatLegend` sits under the heat-map subtitle: green = up today, red = down, and a stronger swatch means a larger move. Tap-for-detail is unchanged. Sector names and holding tickers written into the detail line are escaped.
+2. **Watchlist empty state.** An empty list used to set `#watchWrap` to `display:none`. It now stays visible with a short note: star a name from search (+ Add stock); browse on Markets first if you want, then star it there. Stocks you already hold stay under Your stocks.
+3. **Pulse tiles when a quote is missing.** A failed quote no longer drops the tile. The tile still shows the index name, ticker, and the existing one-line “why this index,” plus “Price unavailable.” A saved quote still shows the number with the existing “last known” flag. No stand-in prices.
+4. **Rate-limit copy.** HTTP 429, 403, 503, or an error body about a limit uses a busy-feed banner: last known prices may show, and retry is automatic. A rejected key (401) still uses `apiKeyInvalid` and does not retry. Other outages keep the generic “temporarily unavailable” banner.
+5. **How to read a quote.** A collapsed tip on Market pulse and next to portfolio live prices explains price, the day’s % change, and that “last known” is a saved quote.
+
+## 2026-10-25 — Merged with main after PR #7 (finpath-v19)
+
+Main is `finpath-v18`. This branch stays on `finpath-v19`.
+
+The learner cues above stay. The audit guards sit inside them:
+- A pulse tile with no quote still shows the name, the why-line, and “Price unavailable.”
+- A pulse tile with a price but no numeric day-change shows that price and “Day change unavailable” instead of calling `toFixed` on null.
+- A heat-map cell with no day-change is a gray “—”. Sector names and holding tickers stay escaped. The legend stays.
+- An empty watchlist stays visible with the star-from-search note. A row with a partial quote still shows the price and omits the percent.
+- The Markets header still says “steady-rate playground,” and it keeps the quote tip and the heat-map legend.
