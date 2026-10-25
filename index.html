@@ -4025,7 +4025,12 @@ function closeHourly(){document.getElementById('hourlyModal').classList.remove('
 async function loadSearchResults(){
   document.getElementById('searchResults').innerHTML='<div class="skel-row" style="height:60px;margin-bottom:8px"></div>'.repeat(6);
   const quotes=await Promise.all(POP.map(async t=>({t,q:await fetchQ(t)})));
-  renderSearchResults(quotes.filter(x=>x.q));
+  const priced=quotes.filter(x=>x.q);
+  if(!priced.length && quotes.length){
+    document.getElementById('searchResults').innerHTML='<div class="empty">Market data unavailable right now — live prices can\u2019t load. Please check back later.</div>';
+    return;
+  }
+  renderSearchResults(priced);
 }
 
 function renderSearchResults(items){
