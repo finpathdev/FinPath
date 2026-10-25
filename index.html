@@ -31,14 +31,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <title>FinPath — The Financial Playbook Schools Skipped</title>
-<meta name="description" content="Learn investing the way schools never taught it — 34 plain-English lessons, the latest billionaire 13F trades, a real-time portfolio tracker, and risk-free paper trading with $100,000 of virtual cash.">
+<meta name="description" content="Learn investing the way schools never taught it — 34 plain-English lessons, the latest 13F filings (they lag the market by weeks), a portfolio tracker when market data is available, and risk-free paper trading with $100,000 of virtual cash.">
 <meta name="theme-color" content="#040604">
 <link rel="canonical" href="https://finpathdev.github.io/FinPath/">
 <!-- Open Graph (link previews on iMessage, WhatsApp, Discord, Facebook, LinkedIn…) -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FinPath">
 <meta property="og:title" content="FinPath — The Financial Playbook Schools Skipped">
-<meta property="og:description" content="34 plain-English investing lessons, the latest billionaire 13F trades, a real-time portfolio tracker, and $100,000 of risk-free paper trading.">
+<meta property="og:description" content="34 plain-English investing lessons, the latest 13F filings (they lag the market by weeks), a portfolio tracker when market data is available, and $100,000 of risk-free paper trading.">
 <meta property="og:url" content="https://finpathdev.github.io/FinPath/">
 <!-- NOTE: upload the og-image.png file (provided alongside this HTML) into the same folder as this page -->
 <meta property="og:image" content="https://finpathdev.github.io/FinPath/og-image.png">
@@ -48,7 +48,7 @@
 <!-- Twitter / X card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="FinPath — The Financial Playbook Schools Skipped">
-<meta name="twitter:description" content="34 plain-English investing lessons, the latest billionaire 13F trades, a real-time portfolio tracker, and $100,000 of risk-free paper trading.">
+<meta name="twitter:description" content="34 plain-English investing lessons, the latest 13F filings (they lag the market by weeks), a portfolio tracker when market data is available, and $100,000 of risk-free paper trading.">
 <meta name="twitter:image" content="https://finpathdev.github.io/FinPath/og-image.png">
 <!-- PWA — install to home screen, offline lessons, fullscreen app mode -->
 <link rel="manifest" href="manifest.json">
@@ -1855,7 +1855,7 @@ body.light .gs-item{background:#fff}
     <div class="founder-section">
       <div class="founder-badge">✨ Just launched · Early adopter</div>
       <div class="founder-title">Hi, I'm Siddharth. I built FinPath because school skipped this.</div>
-      <div class="founder-body">I'm a high school student who kept hearing "invest early" without anyone actually explaining <strong>how</strong>. So I spent months building the tool I wish existed — <strong>34 lessons in plain English, $100k of practice cash, real filings from real billionaires, and a live portfolio tracker</strong> — all free.<br><br>You're early. That means your feedback shapes what FinPath becomes next. Thanks for checking it out.</div>
+      <div class="founder-body">I'm a high school student who kept hearing "invest early" without anyone actually explaining <strong>how</strong>. So I spent months building the tool I wish existed — <strong>34 lessons in plain English and $100k of practice cash are free</strong>. Investor Moves, from recent 13F filings, are part of Gold. The portfolio tracker shows prices when market data is available.<br><br>You're early. That means your feedback shapes what FinPath becomes next. Thanks for checking it out.</div>
       <div class="founder-signature">— Siddharth<span class="founder-signature-role">Founder, FinPath</span></div>
       <div style="margin-top:26px;position:relative"><button class="btn-primary" onclick="handleAuthClick()">Get started free →</button></div>
     </div>
@@ -2205,13 +2205,13 @@ body.light .gs-item{background:#fff}
     <div class="legal-section" id="l-ai"><h2>3. Automated ("AI") Features Disclaimer</h2>
       <p>FinPath includes automated commentary, including the free portfolio Analyzer / check-up and the paid Gold "Stock Suggestions" feature (called "AI Suggestions" in earlier versions). No large language model or live AI system generates this content. These features apply <strong>rule-based algorithmic commentary</strong> using general publicly available information and educational heuristics. They are not personalized financial advice and should never be the sole basis for any investment decision.</p>
       <ul>
-        <li>AI outputs may be inaccurate, out-of-date, biased, incomplete, or contradictory</li>
-        <li>AI does not verify or fact-check its outputs and can produce false statements presented as confident</li>
+        <li>These notes may be inaccurate, out-of-date, biased, incomplete, or contradictory</li>
+        <li>The rules do not fact-check themselves and can state something outdated with a confident tone</li>
         <li>Past performance data referenced does not guarantee future results</li>
-        <li>AI does not know your goals, tax situation, or risk tolerance</li>
-        <li>You are solely responsible for any decision made after reading AI content</li>
-        <li>FinPath is not liable for any losses arising from your use of AI content</li>
-        <li>Always verify AI outputs independently against primary sources before acting</li>
+        <li>The notes do not know your goals, tax situation, or risk tolerance</li>
+        <li>You are solely responsible for any decision made after reading these notes</li>
+        <li>FinPath is not liable for any losses arising from your use of these notes</li>
+        <li>Always verify these notes independently against primary sources before acting</li>
       </ul>
     </div>
 
@@ -4309,8 +4309,8 @@ function renderAlerts(quotes){
     host.innerHTML = portfolio.map((h,i)=>{
       const q = quotes && quotes[i] ? quotes[i].q : null;
       return '<div class="alert-item">'+
-        '<div><div class="alert-ticker">'+escapeHtml(h.ticker)+' — <span style="filter:blur(4px);user-select:none;color:var(--muted)">Hold ·</span> 🔒</div>'+
-        '<div class="alert-msg" style="filter:blur(3px);user-select:none">Upgrade to Gold to see the reasoning for this position and a rule-based buy / hold / sell note.</div></div>'+
+        '<div><div class="alert-ticker">'+escapeHtml(h.ticker)+' <span style="color:var(--muted)">🔒</span></div>'+
+        '<div class="alert-msg">Upgrade to Gold for a rule-based note on this holding. Nothing is hidden behind the lock — there is no recommendation yet.</div></div>'+
         alertPctHtml(q)+
         '</div>';
     }).join('') +
