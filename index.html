@@ -31,14 +31,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <title>FinPath — The Financial Playbook Schools Skipped</title>
-<meta name="description" content="Learn investing the way schools never taught it — 34 plain-English lessons, live billionaire trades, a real-time portfolio tracker, and risk-free paper trading with $100,000 of virtual cash.">
+<meta name="description" content="Learn investing the way schools never taught it — 34 plain-English lessons, the latest billionaire 13F trades, a real-time portfolio tracker, and risk-free paper trading with $100,000 of virtual cash.">
 <meta name="theme-color" content="#040604">
 <link rel="canonical" href="https://finpathdev.github.io/FinPath/">
 <!-- Open Graph (link previews on iMessage, WhatsApp, Discord, Facebook, LinkedIn…) -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FinPath">
 <meta property="og:title" content="FinPath — The Financial Playbook Schools Skipped">
-<meta property="og:description" content="34 plain-English investing lessons, live billionaire trades, a real-time portfolio tracker, and $100,000 of risk-free paper trading.">
+<meta property="og:description" content="34 plain-English investing lessons, the latest billionaire 13F trades, a real-time portfolio tracker, and $100,000 of risk-free paper trading.">
 <meta property="og:url" content="https://finpathdev.github.io/FinPath/">
 <!-- NOTE: upload the og-image.png file (provided alongside this HTML) into the same folder as this page -->
 <meta property="og:image" content="https://finpathdev.github.io/FinPath/og-image.png">
@@ -48,7 +48,7 @@
 <!-- Twitter / X card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="FinPath — The Financial Playbook Schools Skipped">
-<meta name="twitter:description" content="34 plain-English investing lessons, live billionaire trades, a real-time portfolio tracker, and $100,000 of risk-free paper trading.">
+<meta name="twitter:description" content="34 plain-English investing lessons, the latest billionaire 13F trades, a real-time portfolio tracker, and $100,000 of risk-free paper trading.">
 <meta name="twitter:image" content="https://finpathdev.github.io/FinPath/og-image.png">
 <!-- PWA — install to home screen, offline lessons, fullscreen app mode -->
 <link rel="manifest" href="manifest.json">
@@ -1221,7 +1221,7 @@ body.light .gs-item{background:#fff}
     <div class="hero-inner">
       <div class="hero-tag">🚀 Just launched · Early access · Built by a high schooler</div>
       <h1>Money doesn't come with a manual.<br><span>Now it does.</span></h1>
-      <p>34 no-fluff lessons, the exact trades Buffett, Ackman and Tepper filed last quarter, and a live portfolio tracker with AI buy/hold/sell suggestions — built for people starting from zero.</p>
+      <p>34 no-fluff lessons, the latest SEC 13F trades from 6 legendary investors like Buffett, Ackman and Druckenmiller, and a live portfolio tracker with AI buy/hold/sell suggestions — built for people starting from zero.</p>
       <div class="hero-btns">
         <button class="btn-primary" onclick="handleAuthClick()">Get Started Free</button>
         <button class="btn-secondary" onclick="startDemoMode()">👀 Try the Demo — no sign-in</button>
@@ -1229,7 +1229,7 @@ body.light .gs-item{background:#fff}
       <div class="stats-row">
         <div class="stat"><div class="stat-num" id="heroStat1">34</div><div class="stat-label">Expert lessons</div></div>
         <div class="stat"><div class="stat-num" id="heroStat2">$100k</div><div class="stat-label">Paper trading cash · per user</div></div>
-        <div class="stat"><div class="stat-num" id="heroStat3">3</div><div class="stat-label">Billionaires you can copy</div></div>
+        <div class="stat"><div class="stat-num" id="heroStat3">6</div><div class="stat-label">Legendary investors tracked</div></div>
       </div>
       <div id="liveActivity" style="margin-top:40px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;color:var(--muted);opacity:0;transition:opacity .6s">
         <span style="width:8px;height:8px;border-radius:50%;background:var(--green);animation:blip 2s ease-in-out infinite;flex-shrink:0"></span>
@@ -1265,15 +1265,15 @@ body.light .gs-item{background:#fff}
       <div class="hiw-num">3</div>
       <div class="hiw-icon">📈</div>
       <div class="hiw-title">Follow the pros</div>
-      <div class="hiw-body">See what Buffett, Ackman, and Tepper actually bought last quarter — straight from real SEC filings.</div>
-      <div class="hiw-cta">See billionaire moves →</div>
+      <div class="hiw-body">See what 6 legendary investors — Buffett, Ackman, Tepper, Druckenmiller, Li Lu and Klarman — reported in their latest SEC 13F filings.</div>
+      <div class="hiw-cta">See investor moves →</div>
     </div>
   </div>
 </section>
 
 <!-- 3D INTERACTIVE SECTION -->
 <div id="interactive-3d" style="padding:60px 5% 20px;max-width:1200px;margin:0 auto;text-align:center">
-  <div style="font-size:11px;font-weight:600;color:#22c55e;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">Live market pulse</div>
+  <div style="font-size:11px;font-weight:600;color:#22c55e;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px">Global exchanges</div>
   <h2 style="font-size:clamp(22px,3vw,36px);font-weight:800;letter-spacing:-1px;margin-bottom:8px">The market never sleeps</h2>
   <p style="font-size:15px;color:#93a693;margin-bottom:32px" class="globe-sub">Rotate the globe to explore where the world's money flows</p>
   <div class="globe-frame" style="position:relative;width:100%;height:480px;background:#02040A;border-radius:24px;overflow:hidden;border:1px solid rgba(134,239,172,.14);box-shadow:0 30px 80px rgba(0,0,0,.5)">
@@ -1311,18 +1311,18 @@ body.light .gs-item{background:#fff}
 
   // Market cities with live-ish data
   const cities = [
-    {name:'New York',lat:40.7,lng:-74,ticker:'NYSE',color:'#22c55e',val:'+1.24%'},
-    {name:'London',lat:51.5,lng:-0.1,ticker:'LSE',color:'#4ade80',val:'+0.87%'},
-    {name:'Tokyo',lat:35.7,lng:139.7,ticker:'TSE',color:'#22c55e',val:'-0.34%'},
-    {name:'Shanghai',lat:31.2,lng:121.5,ticker:'SSE',color:'#f87171',val:'-1.12%'},
-    {name:'Frankfurt',lat:50.1,lng:8.7,ticker:'FSE',color:'#4ade80',val:'+0.56%'},
-    {name:'Sydney',lat:-33.9,lng:151.2,ticker:'ASX',color:'#22c55e',val:'+0.93%'},
-    {name:'Mumbai',lat:19.1,lng:72.9,ticker:'BSE',color:'#4ade80',val:'+1.45%'},
-    {name:'Toronto',lat:43.7,lng:-79.4,ticker:'TSX',color:'#22c55e',val:'+0.71%'},
-    {name:'Dubai',lat:25.2,lng:55.3,ticker:'DFM',color:'#fbbf24',val:'+0.23%'},
-    {name:'Singapore',lat:1.3,lng:103.8,ticker:'SGX',color:'#22c55e',val:'+0.61%'},
-    {name:'São Paulo',lat:-23.5,lng:-46.6,ticker:'B3',color:'#f87171',val:'-0.88%'},
-    {name:'Seoul',lat:37.6,lng:126.9,ticker:'KRX',color:'#4ade80',val:'+0.42%'},
+    {name:'New York',lat:40.7,lng:-74,ticker:'NYSE',color:'#22c55e',val:'—'},
+    {name:'London',lat:51.5,lng:-0.1,ticker:'LSE',color:'#4ade80',val:'—'},
+    {name:'Tokyo',lat:35.7,lng:139.7,ticker:'TSE',color:'#22c55e',val:'—'},
+    {name:'Shanghai',lat:31.2,lng:121.5,ticker:'SSE',color:'#f87171',val:'—'},
+    {name:'Frankfurt',lat:50.1,lng:8.7,ticker:'FSE',color:'#4ade80',val:'—'},
+    {name:'Sydney',lat:-33.9,lng:151.2,ticker:'ASX',color:'#22c55e',val:'—'},
+    {name:'Mumbai',lat:19.1,lng:72.9,ticker:'BSE',color:'#4ade80',val:'—'},
+    {name:'Toronto',lat:43.7,lng:-79.4,ticker:'TSX',color:'#22c55e',val:'—'},
+    {name:'Dubai',lat:25.2,lng:55.3,ticker:'DFM',color:'#fbbf24',val:'—'},
+    {name:'Singapore',lat:1.3,lng:103.8,ticker:'SGX',color:'#22c55e',val:'—'},
+    {name:'São Paulo',lat:-23.5,lng:-46.6,ticker:'B3',color:'#f87171',val:'—'},
+    {name:'Seoul',lat:37.6,lng:126.9,ticker:'KRX',color:'#4ade80',val:'—'},
   ];
 
   // Lat/lng to 3D point
@@ -1612,7 +1612,7 @@ body.light .gs-item{background:#fff}
           ctx.lineWidth = 1; ctx.stroke();
           ctx.fillStyle = isLight ? '#0a1a10' : '#eef5ee';
           ctx.fillText(c.name, labelX, labelY);
-          ctx.fillStyle = c.val.startsWith('+') ? (isLight?'#15803d':'#4ade80') : (isLight?'#c2410c':'#f87171');
+          ctx.fillStyle = c.val.startsWith('+') ? (isLight?'#15803d':'#4ade80') : c.val.startsWith('-') ? (isLight?'#c2410c':'#f87171') : (isLight?'#4b5f4f':'#93a693');
           ctx.fillText(c.val, labelX, labelY + 15);
         } else if(W > 600) {
           ctx.fillStyle = isLight ? 'rgba(20,83,45,0.7)' : 'rgba(190,240,205,0.65)';
@@ -1720,7 +1720,7 @@ body.light .gs-item{background:#fff}
     <p class="section-sub">From your first lesson to your first investment, FinPath walks you through every step.</p>
     <div class="features-grid">
       <div class="feature-card" onclick="showPage('lessons')"><div class="feature-icon">📚</div><div class="feature-title">34 Expert Lessons</div><div class="feature-desc">Everything schools skipped — from credit scores to compound interest — explained in plain English.</div></div>
-      <div class="feature-card" onclick="showPage('gold')"><div class="feature-icon">👑</div><div class="feature-title">Investor Moves — Gold</div><div class="feature-desc">See exactly what Warren Buffett, Bill Ackman, and David Tepper bought and sold this quarter — and why.</div></div>
+      <div class="feature-card" onclick="showPage('gold')"><div class="feature-icon">👑</div><div class="feature-title">Investor Moves — Gold</div><div class="feature-desc">See what 6 legendary investors (Buffett, Ackman, Tepper, Druckenmiller, Li Lu and Klarman) bought and sold in their latest 13F filings — and why.</div></div>
       <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">📈</div><div class="feature-title">Live Portfolio Tracker</div><div class="feature-desc">Track your stocks with live prices. See total profit, daily gains, and hourly breakdowns of every position.</div></div>
       <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">🤖</div><div class="feature-title">AI Suggestions — Gold</div><div class="feature-desc">Get personalised buy, hold, and sell suggestions. Give the AI specific instructions and it tailors advice to you.</div></div>
     </div>
@@ -1728,12 +1728,13 @@ body.light .gs-item{background:#fff}
   <section class="investor-section">
     <div class="investor-inner">
       <div class="section-tag">Gold feature preview</div>
-      <h2 class="section-title">What the billionaires are doing right now</h2>
-      <p class="section-sub">Q1 2026 filings — updated every quarter the moment they drop.</p>
+      <h2 class="section-title">What legendary investors just reported</h2>
+      <p class="section-sub">Q2 2026 13F filings — positions as of June 30, 2026, filed Aug 14, 2026. Next filings due after Nov 16, 2026.</p>
       <div class="investor-grid">
-        <div class="investor-card"><div style="width:44px;height:44px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0">WB</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Warren Buffett</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Alphabet Inc (GOOGL)</div><span class="inv-badge badge-add">ADD 203.99%</span><div style="font-size:12px;color:var(--muted);margin-top:6px">$15.6B — 5.93% of portfolio</div></div></div>
-        <div class="investor-card"><div style="width:44px;height:44px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0">BA</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Bill Ackman</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Microsoft Corp (MSFT)</div><span class="inv-badge badge-buy">BUY</span><div style="font-size:12px;color:var(--muted);margin-top:6px">$2.09B — 15.26% of portfolio</div></div></div>
-        <div class="investor-card"><div style="width:44px;height:44px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0">DT</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">David Tepper</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Amazon (AMZN)</div><span class="inv-badge badge-add">ADD 98.22%</span><div style="font-size:12px;color:var(--muted);margin-top:6px">$899.7M — 15.18% of portfolio</div></div></div>
+        <div class="investor-card"><div style="width:44px;height:44px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0">WB</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Warren Buffett</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Alphabet Inc (GOOGL)</div><span class="inv-badge badge-add">ADD 83%</span><div style="font-size:12px;color:var(--muted);margin-top:6px">$37.8B — 12.62% of portfolio</div></div></div>
+        <div class="investor-card"><div style="width:44px;height:44px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0">BA</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Bill Ackman</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Visa Inc (V)</div><span class="inv-badge badge-buy">BUY</span><div style="font-size:12px;color:var(--muted);margin-top:6px">$1.12B — 5.76% of portfolio</div></div></div>
+        <div class="investor-card"><div style="width:44px;height:44px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0">DT</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">David Tepper</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Amazon (AMZN)</div><span class="inv-badge badge-add">ADD 15.7%</span><div style="font-size:12px;color:var(--muted);margin-top:6px">$1.19B — 15.95% of portfolio</div></div></div>
+        <div class="investor-card"><div style="width:44px;height:44px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0">SD</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Stanley Druckenmiller</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Natera Inc (NTRA)</div><span class="inv-badge badge-add">ADD 4%</span><div style="font-size:12px;color:var(--muted);margin-top:6px">$865M — 19.86% of portfolio</div></div></div>
       </div>
     </div>
   </section>
@@ -1758,8 +1759,8 @@ body.light .gs-item{background:#fff}
           <li>20 free lessons with full content</li>
           <li>Live portfolio tracker</li>
           <li>Basic profit and loss tracking</li>
-          <li class="no">Investor Moves (Buffett, Ackman, Tepper)</li>
-          <li class="no">15 Gold lessons</li>
+          <li class="no">Investor Moves (6 legendary investors)</li>
+          <li class="no">14 Gold lessons</li>
           <li class="no">AI buy/hold/sell suggestions</li>
           <li class="no">Hourly portfolio breakdown</li>
         </ul>
@@ -1768,12 +1769,12 @@ body.light .gs-item{background:#fff}
       <div class="price-card featured">
         <div class="price-name">FinPath Gold ✦</div>
         <div class="price-amount">$4.99<span>/mo</span></div>
-        <div class="price-period">or $39.99/year — save 33%</div>
+        <div class="price-period">Billed monthly · annual plan coming soon</div>
         <ul class="price-features">
           <li>All 34 lessons including 14 Gold-only</li>
           <li>Live portfolio tracker</li>
           <li>Full profit tracking with hourly breakdown</li>
-          <li>Investor Moves — Buffett, Ackman, Tepper</li>
+          <li>Investor Moves — 6 legendary investors (13F)</li>
           <li>AI buy/hold/sell suggestions with full reasoning</li>
           <li>Give AI specific trading instructions</li>
           <li>Priority alerts and notifications</li>
@@ -1826,7 +1827,7 @@ body.light .gs-item{background:#fff}
   <div class="gold-hero">
     <div class="gold-badge">✦ Gold Plan</div>
     <h1 style="font-size:clamp(28px,4vw,56px);font-weight:800;letter-spacing:-1.5px;margin-bottom:12px">Investor Moves</h1>
-    <p style="font-size:16px;color:var(--muted);max-width:500px;margin:0 auto">See what the world's greatest investors are buying and selling this quarter — and exactly why.</p>
+    <p style="font-size:16px;color:var(--muted);max-width:500px;margin:0 auto">See what 6 legendary investors bought and sold in their latest 13F filings (Q2 2026) — and why.</p>
   </div>
   <div id="goldContent"></div>
 
@@ -1966,7 +1967,7 @@ body.light .gs-item{background:#fff}
         <div><label>Max P/E</label><input id="scrPE" type="number" placeholder="Any"></div>
         <div><label>Min dividend yield %</label><input id="scrDiv" type="number" step="0.1" placeholder="Any"></div>
         <div><label>Min market cap ($B)</label><input id="scrCap" type="number" placeholder="Any"></div>
-        <div><label>Guru-owned</label><select id="scrGuru"><option value="">Any</option><option>Warren Buffett</option><option>Bill Ackman</option><option>David Tepper</option></select></div>
+        <div><label>Guru-owned</label><select id="scrGuru"><option value="">Any</option></select></div>
       </div>
       <button class="ai-run-btn" onclick="runScreener()">Run screener</button>
       <div id="scrResults"><div class="empty">Set your filters and hit Run screener.</div></div>
@@ -2050,7 +2051,7 @@ body.light .gs-item{background:#fff}
           <div class="cs-name">The Safety Net</div>
           <div class="cs-nick">Emergency fund first</div>
           <div class="cs-desc">Before stocks, save 3–6 months of expenses in a high-yield savings account. Boring but non-negotiable — an emergency fund is what keeps a bad month from becoming a bad year.</div>
-          <div class="cs-stat"><span class="cs-stat-label">Where</span><span class="cs-stat-val">4–5% APY</span></div>
+          <div class="cs-stat"><span class="cs-stat-label">Where</span><span class="cs-stat-val">~3–5% APY (rates vary)</span></div>
           <div class="cs-try">Try in playground →</div>
         </div>
         <div class="cs-card" onclick="spPreset(100,10,0)">
@@ -2308,6 +2309,8 @@ body.light .gs-item{background:#fff}
 
 <script>
 
+// TODO(siddharth): Finnhub key is shipped client-side. Rotate it in the Finnhub dashboard and move
+// quote/candle calls behind a server proxy (e.g. Supabase Edge Function). Do NOT paste a new key here.
 const FK='d8pn5n1r01qujv4j5d70d8pn5n1r01qujv4j5d7g';
 const SBU='https://ivhhfhemcecwqadrjmwq.supabase.co';
 const SBK='sb_publishable_KoWYv1Ro5D4I83XxWmJFOg_DCB2ldw6';
@@ -2324,25 +2327,35 @@ function fmt(n){return '$'+parseFloat(n).toLocaleString('en-US',{minimumFraction
 
 let portfolio=[],selectedStock=null,pChart=null,dChart=null,priceCache={},stTimeout=null;
 
-const COMPANIES={AAPL:'Apple Inc',MSFT:'Microsoft Corp',GOOGL:'Alphabet Inc',AMZN:'Amazon',NVDA:'NVIDIA Corp',META:'Meta Platforms',TSLA:'Tesla Inc','BRK.B':'Berkshire Hathaway',JPM:'JPMorgan Chase',V:'Visa Inc',JNJ:'Johnson & Johnson',UNH:'UnitedHealth',XOM:'Exxon Mobil',KO:'Coca-Cola',DAL:'Delta Air Lines',OXY:'Occidental Petroleum',UBER:'Uber Technologies',BN:'Brookfield Corp',AXP:'American Express',SHOP:'Shopify',BTC:'Bitcoin (crypto)',ETH:'Ethereum (crypto)',SOL:'Solana (crypto)',DOGE:'Dogecoin (crypto)'};
-const POP=Object.keys(COMPANIES).slice(0,14);
+const COMPANIES={AAPL:'Apple Inc',MSFT:'Microsoft Corp',GOOGL:'Alphabet Inc (Class A)',AMZN:'Amazon',NVDA:'NVIDIA Corp',META:'Meta Platforms',TSLA:'Tesla Inc','BRK.B':'Berkshire Hathaway',JPM:'JPMorgan Chase',V:'Visa Inc',JNJ:'Johnson & Johnson',UNH:'UnitedHealth',XOM:'Exxon Mobil',KO:'Coca-Cola',DAL:'Delta Air Lines',OXY:'Occidental Petroleum',UBER:'Uber Technologies',BN:'Brookfield Corp',AXP:'American Express',SHOP:'Shopify',BTC:'Bitcoin (crypto)',ETH:'Ethereum (crypto)',SOL:'Solana (crypto)',DOGE:'Dogecoin (crypto)',
+  GOOG:'Alphabet Inc (Class C)',CVX:'Chevron Corp',BABA:'Alibaba Group',
+  AVGO:'Broadcom Inc',LLY:'Eli Lilly',WMT:'Walmart',MA:'Mastercard',COST:'Costco',AMD:'Advanced Micro Devices',MU:'Micron Technology',NFLX:'Netflix',ORCL:'Oracle',PLTR:'Palantir',PG:'Procter & Gamble',HD:'Home Depot',BAC:'Bank of America',ABBV:'AbbVie',MCD:"McDonald's",PEP:'PepsiCo',DIS:'Walt Disney',
+  NEE:'NextEra Energy',LIN:'Linde plc',PLD:'Prologis',
+  TSM:'Taiwan Semiconductor',BA:'Boeing',NTRA:'Natera Inc',STM:'STMicroelectronics',PDD:'PDD Holdings',EWBC:'East West Bancorp',ELV:'Elevance Health',GPC:'Genuine Parts',CME:'CME Group',HHH:'Howard Hughes Holdings',QSR:'Restaurant Brands Intl',SPGI:'S&P Global',LEN:'Lennar Corp',KR:'Kroger',STZ:'Constellation Brands',
+  VOO:'Vanguard S&P 500 ETF',VTI:'Vanguard Total Stock Market ETF',SPY:'SPDR S&P 500 ETF',QQQ:'Invesco QQQ (Nasdaq 100)',IWM:'iShares Russell 2000 ETF',SCHD:'Schwab US Dividend Equity ETF',VT:'Vanguard Total World ETF',BND:'Vanguard Total Bond Market ETF'};
+const ETFS=new Set(['VOO','VTI','SPY','QQQ','IWM','SCHD','VT','BND']);
+const POP=['AAPL','MSFT','NVDA','GOOGL','AMZN','META','TSLA','VOO','QQQ','SPY','BRK.B','JPM','KO','AVGO'];
 
 const AI_INSIGHT={
   AAPL:"Apple is Warren Buffett's biggest holding since 2016. Strong brand, loyal customers, and growing services revenue. One of the safest long-term bets in the market.",
-  MSFT:"Bill Ackman just bought $2 billion of Microsoft during a sell-off betting on Azure cloud and AI Copilot. Rock-solid fundamentals.",
-  GOOGL:"Buffett tripled his Google position this quarter. Ad revenue recovering, Cloud gaining share, Gemini AI is a real competitor.",
-  AMZN:"Both Ackman and Tepper are heavily buying Amazon. AWS dominates cloud and retail profitability improves every quarter.",
+  MSFT:"Bill Ackman added about 10% more Microsoft in Q2 2026 (≈$2.3B, ~12% of Pershing's 13F), betting on Azure cloud and AI Copilot. Tepper sold his small stake — big investors disagree.",
+  GOOGL:"Berkshire grew its Alphabet stake about 83% in Q2 2026, making it a top-3 holding. Li Lu has ~48% of his portfolio in it, and Druckenmiller opened a new position. Search, YouTube and Cloud all matter here.",
+  AMZN:"Tepper (+15.7%), Klarman (+20%) and Druckenmiller added Amazon in Q2 2026, while Ackman trimmed about 25%. AWS cloud plus improving retail margins drive the story.",
   NVDA:"The AI chip king. Every major AI company depends on their GPUs. Massive growth but high valuation.",
-  META:"Ackman holds Meta as a dominant AI advertising platform. Ad business printing money and AI investments paying off.",
+  META:"Ackman added ~20% and Tepper ~55% to Meta in Q2 2026, betting on AI-driven ad pricing across Facebook, Instagram and WhatsApp.",
   TSLA:"Higher risk play. EV lead being challenged but energy storage and autonomous driving could be huge.",
+  VOO:"An index fund that holds all ~500 companies in the S&P 500 for a very low fee. Instant diversification — a common core holding for long-term investors.",
+  QQQ:"Tracks the Nasdaq-100 — the 100 largest non-financial Nasdaq companies. Heavy in big tech, so it can rise and fall faster than the broad market.",
+  AVGO:"Broadcom makes networking and custom AI chips plus infrastructure software. A major AI beneficiary, but chip stocks can be cyclical and volatile.",
+  LLY:"Eli Lilly is a large drugmaker whose diabetes and weight-loss medicines have driven rapid growth. High expectations are priced in, so news can move it sharply.",
   DEFAULT:"A solid company in its sector. Check recent earnings and sector news before adding. Diversification is your best protection."
 };
 
 const AI_ADVISOR={
   AAPL:{action:'Hold',cls:'act-hold',text:"Apple is rock solid. Buffett has held it for years. The services business adds growing recurring revenue on top of hardware. If you are down short-term, do not panic — this is a multi-year play. Suggestion: hold and consider adding on any significant dip."},
   MSFT:{action:'Consider adding',cls:'act-buy',text:"Microsoft has strong AI and cloud tailwinds with Azure growing 30%+ year over year. Copilot integration is just getting started. Suggestion: if this is less than 20% of your portfolio, adding on dips toward recent support makes sense long term."},
-  GOOGL:{action:'Strong opportunity',cls:'act-buy',text:"Buffett tripled his Google position. Search dominates, YouTube grows, Cloud gains share. Reasonable valuation for its AI growth. Suggestion: a position in GOOGL looks attractive at current levels."},
-  AMZN:{action:'Hold - let it run',cls:'act-hold',text:"Tepper nearly doubled Amazon this quarter. AWS growth plus improving retail profitability is powerful. Suggestion: hold and avoid trimming — the next earnings reports could be major catalysts."},
+  GOOGL:{action:'Strong opportunity',cls:'act-buy',text:"Berkshire grew its Alphabet stake ~83% in Q2 2026 (now a top-3 holding). Search dominates, YouTube grows, Cloud gains share. Reasonable valuation for its AI growth. Suggestion: a position in GOOGL looks attractive at current levels."},
+  AMZN:{action:'Hold - let it run',cls:'act-hold',text:"Tepper, Klarman and Druckenmiller all added Amazon in Q2 2026 (Ackman trimmed). AWS growth plus improving retail profitability is powerful. Suggestion: hold and avoid trimming — the next earnings reports could be major catalysts."},
   NVDA:{action:'Hold - monitor size',cls:'act-watch',text:"You are riding the AI wave. If NVDA has grown beyond 20-25% of your portfolio, consider trimming a small portion to rebalance. Suggestion: keep your core position but manage concentration risk."},
   TSLA:{action:'Watch and wait',cls:'act-watch',text:"Tesla has been volatile. Hold your position but avoid adding without a catalyst. Suggestion: wait for the next earnings report and FSD progress before making a move."},
   DEFAULT:{action:'Hold position',cls:'act-hold',text:"Your position looks reasonable based on general market conditions. Suggestion: continue holding, monitor quarterly earnings, and ensure this position is appropriately sized in your portfolio."}
@@ -2391,13 +2404,22 @@ That is how every wealthy person in history built their fortune. Not by earning 
 {name:"What Billionaires Actually Invest In",desc:"The portfolios and strategies of the greatest investors revealed",cat:"Gold Investor Insights",plan:"gold",icon:"🏆",content:`The investing habits of the ultra wealthy are publicly reported through SEC 13F filings every quarter.
 
 WARREN BUFFETT:
-Keeps most of his portfolio in a handful of companies he understands deeply. Top holdings: Apple 22%, American Express 17%, Coca-Cola 12%. His favourite holding period is forever. He avoids anything he does not deeply understand.
+Keeps most of his portfolio in a handful of companies he understands deeply. Top holdings (Q2 2026 13F): Apple 22%, American Express 17%, Alphabet 13%, Coca-Cola 11%. His favourite holding period is forever. He avoids anything he does not deeply understand.
 
 BILL ACKMAN:
-Takes concentrated positions in companies he believes are undervalued. Current big bets: Amazon, Brookfield, Uber, Microsoft, Meta. Focuses on businesses with strong recurring revenue and pricing power.
+Takes concentrated positions in companies he believes are undervalued. Big bets in the Q2 2026 13F: Uber, Brookfield, Microsoft, Amazon, Restaurant Brands, Meta — plus new Visa, Mastercard, S&P Global and Netflix stakes. Focuses on businesses with strong recurring revenue and pricing power.
 
 DAVID TEPPER:
-Famous for massive macro calls. Bought bank stocks at the bottom of the 2008 crisis. Current positions show conviction in AI infrastructure: Amazon, Uber, Alphabet, NVIDIA.
+Famous for massive macro calls. Bought bank stocks at the bottom of the 2008 crisis. His Q2 2026 13F shows conviction in AI infrastructure: Amazon, Micron, Taiwan Semiconductor, Alphabet, Uber.
+
+STANLEY DRUCKENMILLER:
+Famously went about 30 years without a losing year at Duquesne. Bets big when confident — his largest position (Natera) is about 20% of his 13F.
+
+LI LU:
+Charlie Munger's hand-picked investor. Extremely concentrated: Alphabet is nearly half his reported portfolio.
+
+SETH KLARMAN:
+Author of 'Margin of Safety' and a deep-value investor. Top holdings include Amazon, Elevance Health and Alphabet.
 
 WHAT THEY HAVE IN COMMON:
 They concentrate on businesses they deeply understand. They hold for years not weeks. They buy more when prices drop. They ignore short-term noise. They read everything including competitor filings and industry research.
@@ -2482,7 +2504,7 @@ THE MOST POWERFUL TAX TOOLS:
 
 401k: Money goes in before tax reducing your taxable income now. Grows tax-deferred. If your employer matches contributions that is free money. Always take all of it.
 
-Roth IRA: Money goes in after tax but grows completely tax-free. Pay zero tax on withdrawals in retirement. Best for young people who expect to earn more later. Limit $7,000 per year in 2026.
+Roth IRA: Money goes in after tax but grows completely tax-free. Pay zero tax on withdrawals in retirement. Best for young people who expect to earn more later. The IRS limit is $7,500 per year in 2026 (higher if you are 50 or older).
 
 HSA: If you have a high-deductible health plan this is the most tax-advantaged account available. Triple tax benefit: contributions tax-free, growth tax-free, withdrawals for medical tax-free.
 
@@ -3041,27 +3063,74 @@ STEP 6 - REVIEW ANNUALLY NOT DAILY:
 Checking daily causes emotional decisions. Review once per year. Rebalance if allocations drifted more than 5%. Otherwise do nothing.`}
 ];
 
+// Source: SEC Form 13F-HR filings for the quarter ended June 30, 2026 (filed Aug 13–14, 2026).
+// 13F data is delayed up to 45 days and shows long U.S. positions only. Educational use — not investment advice.
+// "% of portfolio" = position value ÷ total reported 13F long-equity value (option rows excluded).
 const MOVES=[
-{investor:"Warren Buffett",stock:"Apple Inc",ticker:"AAPL",action:"Hold",amount:"$57.8B — 21.99%",date:"Q1 2026",notes:"Still his largest holding. Buffett views Apple as a consumer brand with unmatched loyalty, not just a tech company.",photo:"WB"},
-{investor:"Warren Buffett",stock:"Occidental Petroleum",ticker:"OXY",action:"Hold",amount:"$17.2B — 6.64%",date:"Q1 2026",notes:"Major energy bet. Buffett believes in long term oil demand and loves OXY's balance sheet strength.",photo:"WB"},
-{investor:"Warren Buffett",stock:"Alphabet Inc",ticker:"GOOGL",action:"Add 203.99%",amount:"$15.6B — 5.93%",date:"Q1 2026",notes:"Buffett massively tripled his Google position this quarter — big signal on AI and search dominance.",photo:"WB"},
-{investor:"Warren Buffett",stock:"American Express",ticker:"AXP",action:"Hold",amount:"$45.8B — 17.43%",date:"Q1 2026",notes:"One of his oldest holdings. Buffett loves AXP's premium customer base and consistent earnings.",photo:"WB"},
-{investor:"Warren Buffett",stock:"Coca Cola",ticker:"KO",action:"Hold",amount:"$30.4B — 11.56%",date:"Q1 2026",notes:"Held since 1988. Global brand, consistent dividends, defensive in any market.",photo:"WB"},
-{investor:"Warren Buffett",stock:"Chevron Corp",ticker:"CVX",action:"Reduce 35.17%",amount:"$17.4B — 6.64%",date:"Q1 2026",notes:"Buffett trimmed Chevron significantly this quarter.",photo:"WB"},
-{investor:"Warren Buffett",stock:"Delta Air Lines",ticker:"DAL",action:"Buy",amount:"$2.6B — 1.01%",date:"Q1 2026",notes:"New buy. Buffett sold all airlines in 2020 but is back — Delta's balance sheet strength brought him in.",photo:"WB"},
-{investor:"Bill Ackman",stock:"Microsoft Corp",ticker:"MSFT",action:"Buy",amount:"$2.09B — 15.26%",date:"Q1 2026",notes:"Ackman bought Microsoft during a sell-off betting on AI cloud growth. Sees Azure as the AI backbone.",photo:"BA"},
-{investor:"Bill Ackman",stock:"Amazon",ticker:"AMZN",action:"Add 19.19%",amount:"$2.38B — 17.39%",date:"Q1 2026",notes:"Second largest holding. Bullish on AWS dominance and Amazon AI infrastructure investments.",photo:"BA"},
-{investor:"Bill Ackman",stock:"Uber Technologies",ticker:"UBER",action:"Hold",amount:"$2.15B — 15.71%",date:"Q1 2026",notes:"One of Ackman's biggest bets. Believes Uber is an undervalued tech platform with massive global growth.",photo:"BA"},
-{investor:"Bill Ackman",stock:"Meta Platforms",ticker:"META",action:"Hold",amount:"$1.52B — 11.10%",date:"Q1 2026",notes:"Holds Meta as a dominant AI advertising platform with strong pricing power.",photo:"BA"},
-{investor:"Bill Ackman",stock:"Brookfield Corp",ticker:"BN",action:"Reduce 2.78%",amount:"$2.41B — 17.62%",date:"Q1 2026",notes:"Largest holding. Slightly trimmed but remains heavily invested in this global asset manager.",photo:"BA"},
-{investor:"David Tepper",stock:"Amazon",ticker:"AMZN",action:"Add 98.22%",amount:"$899.7M — 15.18%",date:"Q1 2026",notes:"Tepper nearly doubled Amazon — one of his strongest conviction buys. Bullish on AWS and AI.",photo:"DT"},
-{investor:"David Tepper",stock:"Alphabet Inc",ticker:"GOOG",action:"Reduce 3.03%",amount:"$497M — 8.38%",date:"Q1 2026",notes:"Slightly trimmed but still major. Remains bullish on AI search long term.",photo:"DT"},
-{investor:"David Tepper",stock:"Uber Technologies",ticker:"UBER",action:"Add 242.31%",amount:"$513M — 7.68%",date:"Q1 2026",notes:"Tripled Uber position — massive conviction buy on global expansion.",photo:"DT"},
-{investor:"David Tepper",stock:"Alibaba",ticker:"BABA",action:"Reduce 32.58%",amount:"$434.7M — 7.33%",date:"Q1 2026",notes:"Trimming after a big run. Still holds significant position on Chinese tech recovery.",photo:"DT"},
-{investor:"David Tepper",stock:"NVIDIA",ticker:"NVDA",action:"Reduce 13.44%",amount:"$256.6M — 4.33%",date:"Q1 2026",notes:"Taking profits after massive gains but still holds significant position in AI chip leader.",photo:"DT"},
-{investor:"David Tepper",stock:"Meta Platforms",ticker:"META",action:"Reduce 27.25%",amount:"$249.7M — 4.21%",date:"Q1 2026",notes:"Trimmed after strong gains. Still bullish long term on AI advertising dominance.",photo:"DT"},
-{investor:"David Tepper",stock:"Microsoft Corp",ticker:"MSFT",action:"Add 15.33%",amount:"$187.3M — 3.16%",date:"Q1 2026",notes:"Added to Microsoft. Bullish on Azure growth and Copilot AI integration.",photo:"DT"}
+// ── Warren Buffett / Berkshire Hathaway (CIK 1067983) — 13F total $299.25B ──
+{investor:"Warren Buffett",stock:"Alphabet Inc",ticker:"GOOGL",action:"Add 83%",amount:"$37.8B — 12.62%",date:"Q2 2026",notes:"Berkshire's biggest move: it grew its Alphabet stake about 83% (Class A + Class C shares combined), making Google's parent its third-largest stock holding.",photo:"WB"},
+{investor:"Warren Buffett",stock:"Apple Inc",ticker:"AAPL",action:"Hold",amount:"$66.0B — 22.04%",date:"Q2 2026",notes:"Still Berkshire's largest holding. No shares bought or sold this quarter — the value rose only because Apple's stock price went up.",photo:"WB"},
+{investor:"Warren Buffett",stock:"American Express",ticker:"AXP",action:"Hold",amount:"$51.3B — 17.14%",date:"Q2 2026",notes:"Owned since the 1990s and untouched again. A textbook example of Buffett's 'hold forever' style.",photo:"WB"},
+{investor:"Warren Buffett",stock:"Coca-Cola",ticker:"KO",action:"Hold",amount:"$32.5B — 10.86%",date:"Q2 2026",notes:"Exactly 400 million shares, held since 1988. The dividends alone pay Berkshire back many times over on its original cost.",photo:"WB"},
+{investor:"Warren Buffett",stock:"Bank of America",ticker:"BAC",action:"Reduce 5.89%",amount:"$27.5B — 9.20%",date:"Q2 2026",notes:"Berkshire kept trimming Bank of America. It's still a top-5 holding, which shows that selling some isn't the same as giving up on a company.",photo:"WB"},
+{investor:"Warren Buffett",stock:"Chevron Corp",ticker:"CVX",action:"Hold",amount:"$14.0B — 4.67%",date:"Q2 2026",notes:"No shares changed hands. The value dropped about $3.5B only because oil stocks fell, which shows how 'Hold' positions still move with the market.",photo:"WB"},
+{investor:"Warren Buffett",stock:"Occidental Petroleum",ticker:"OXY",action:"Hold",amount:"$12.9B — 4.30%",date:"Q2 2026",notes:"Same 264.9M shares as last quarter. Berkshire's long-term energy bet stays in place.",photo:"WB"},
+{investor:"Warren Buffett",stock:"Delta Air Lines",ticker:"DAL",action:"Add 44%",amount:"$5.4B — 1.79%",date:"Q2 2026",notes:"After returning to airlines in Q1, Berkshire added about 44% more Delta and now owns about 8.7% of the company.",photo:"WB"},
+{investor:"Warren Buffett",stock:"Lennar Corp",ticker:"LEN",action:"Add 29.8%",amount:"$1.2B — 0.40%",date:"Q2 2026",notes:"Part of a homebuilder theme (Lennar, NVR and a tiny new D.R. Horton stake). Later 13G filings show the Lennar stake kept growing after June.",photo:"WB"},
+{investor:"Warren Buffett",stock:"Kroger",ticker:"KR",action:"Reduce 22%",amount:"$2.2B — 0.72%",date:"Q2 2026",notes:"Sold 11 million Kroger shares. Even the world's most patient investor trims smaller positions.",photo:"WB"},
+{investor:"Warren Buffett",stock:"Constellation Brands",ticker:"STZ",action:"Sold out",amount:"$0 (was $94.9M)",date:"Q2 2026",notes:"Fully exited the Corona/Modelo beer maker only a few quarters after buying it. Great investors cut mistakes quickly.",photo:"WB"},
+
+// ── Bill Ackman / Pershing Square (Q2 filed by Pershing Square Inc., CIK 2026053) — 13F total $19.47B ──
+{investor:"Bill Ackman",stock:"Uber Technologies",ticker:"UBER",action:"Add 14.6%",amount:"$2.48B — 12.72%",date:"Q2 2026",notes:"Uber is now Pershing's largest 13F position. Ackman sees it as a global platform whose profits are only starting to show.",photo:"BA"},
+{investor:"Bill Ackman",stock:"Brookfield Corp",ticker:"BN",action:"Reduce 3.7%",amount:"$2.45B — 12.58%",date:"Q2 2026",notes:"A small trim. Still a core holding in this global alternative-asset manager.",photo:"BA"},
+{investor:"Bill Ackman",stock:"Microsoft Corp",ticker:"MSFT",action:"Add 9.8%",amount:"$2.32B — 11.89%",date:"Q2 2026",notes:"Added about 10% more Microsoft, building on the AI/Azure bet he started in Q1.",photo:"BA"},
+{investor:"Bill Ackman",stock:"Amazon",ticker:"AMZN",action:"Reduce 25.2%",amount:"$2.04B — 10.49%",date:"Q2 2026",notes:"Ackman sold about a quarter of his Amazon while Tepper and Klarman bought more. Famous investors often disagree.",photo:"BA"},
+{investor:"Bill Ackman",stock:"Meta Platforms",ticker:"META",action:"Add 20.1%",amount:"$1.80B — 9.25%",date:"Q2 2026",notes:"Added about 20% to Meta. He's betting on AI-driven ad pricing power across Facebook, Instagram and WhatsApp.",photo:"BA"},
+{investor:"Bill Ackman",stock:"Restaurant Brands Intl",ticker:"QSR",action:"Add 14.0%",amount:"$1.87B — 9.62%",date:"Q2 2026",notes:"Burger King and Tim Hortons' parent company. A long-time Ackman favourite because franchise fees produce steady cash.",photo:"BA"},
+{investor:"Bill Ackman",stock:"Visa Inc",ticker:"V",action:"Buy",amount:"$1.12B — 5.76%",date:"Q2 2026",notes:"New position. Visa earns a small fee on huge numbers of card payments, the kind of 'toll road' business Ackman likes.",photo:"BA"},
+{investor:"Bill Ackman",stock:"Mastercard",ticker:"MA",action:"Buy",amount:"$1.09B — 5.61%",date:"Q2 2026",notes:"New position bought alongside Visa. Together they make a bet on the long-term shift from cash to cards and digital payments.",photo:"BA"},
+{investor:"Bill Ackman",stock:"S&P Global",ticker:"SPGI",action:"Buy",amount:"$1.06B — 5.43%",date:"Q2 2026",notes:"New position in the company behind credit ratings and the S&P 500 index. Few competitors and lots of recurring revenue.",photo:"BA"},
+{investor:"Bill Ackman",stock:"Netflix",ticker:"NFLX",action:"Buy",amount:"$934M — 4.80%",date:"Q2 2026",notes:"New position. Ackman also named Alcon and ICE as new buys in his Aug 12 letter, but they weren't in this June 30 filing because he bought them after the quarter ended. That's the 13F time lag in action.",photo:"BA"},
+{investor:"Bill Ackman",stock:"Howard Hughes Holdings",ticker:"HHH",action:"Hold",amount:"$1.99B — 10.23%",date:"Q2 2026",notes:"Ackman's real-estate holding company. Some trackers show a +48% 'add', but that's only because a reporting entity changed. Total shares held stayed the same.",photo:"BA"},
+
+// ── David Tepper / Appaloosa (CIK 1656456) — long-equity total $7.47B (13F total $7.73B incl. puts) ──
+{investor:"David Tepper",stock:"Amazon",ticker:"AMZN",action:"Add 15.7%",amount:"$1.19B — 15.95%",date:"Q2 2026",notes:"Still Tepper's #1 holding, and he added more. He's betting on AWS and AI infrastructure.",photo:"DT"},
+{investor:"David Tepper",stock:"Micron Technology",ticker:"MU",action:"Reduce 41.4%",amount:"$1.13B — 15.06%",date:"Q2 2026",notes:"Sold about 41% of his shares, yet the position's value doubled because Micron's stock soared. He took profits on a big memory-chip winner.",photo:"DT"},
+{investor:"David Tepper",stock:"Taiwan Semiconductor",ticker:"TSM",action:"Add 24.3%",amount:"$788M — 10.55%",date:"Q2 2026",notes:"His biggest add of the quarter. TSMC manufactures the chips for Nvidia, Apple and AMD.",photo:"DT"},
+{investor:"David Tepper",stock:"Alphabet Inc",ticker:"GOOG",action:"Add 6.8%",amount:"$654M — 8.75%",date:"Q2 2026",notes:"A modest add. Tepper and Berkshire both bought more Alphabet this quarter.",photo:"DT"},
+{investor:"David Tepper",stock:"Uber Technologies",ticker:"UBER",action:"Add 21.5%",amount:"$555M — 7.43%",date:"Q2 2026",notes:"Kept building Uber, a stock he shares with Ackman.",photo:"DT"},
+{investor:"David Tepper",stock:"Meta Platforms",ticker:"META",action:"Add 54.6%",amount:"$380M — 5.09%",date:"Q2 2026",notes:"Reversed last quarter's trim and added more than 50%. Good investors change their minds when prices change.",photo:"DT"},
+{investor:"David Tepper",stock:"NVIDIA",ticker:"NVDA",action:"Add 3.6%",amount:"$305M — 4.08%",date:"Q2 2026",notes:"A small add after trimming in Q1. Still a core AI-chip holding.",photo:"DT"},
+{investor:"David Tepper",stock:"Alibaba",ticker:"BABA",action:"Reduce 42.3%",amount:"$192M — 2.57%",date:"Q2 2026",notes:"Kept cutting China exposure. He also fully sold PDD, JD.com and the KWEB China-internet ETF.",photo:"DT"},
+{investor:"David Tepper",stock:"Boeing",ticker:"BA",action:"Buy",amount:"$173M — 2.32%",date:"Q2 2026",notes:"New position, plus a new American Airlines stake. He's betting on an air-travel and aerospace recovery.",photo:"DT"},
+{investor:"David Tepper",stock:"Apple Inc",ticker:"AAPL",action:"New put (bearish)",amount:"$242M notional",date:"Q2 2026",notes:"These are PUT options, which pay off if Apple falls. They could be a bet against Apple or a hedge. Note that 13F lists the full value of the shares behind the options, not what he paid.",photo:"DT"},
+{investor:"David Tepper",stock:"Microsoft Corp",ticker:"MSFT",action:"Sold out",amount:"$0 (was $33M)",date:"Q2 2026",notes:"Fully exited a small Microsoft position, while Ackman added to his. The same stock can be a buy for one investor and a sell for another.",photo:"DT"},
+
+// ── NEW: Stanley Druckenmiller / Duquesne Family Office (CIK 1536411) — long-equity total $4.35B (13F total $5.21B incl. calls) ──
+{investor:"Stanley Druckenmiller",stock:"Natera Inc",ticker:"NTRA",action:"Add 4%",amount:"$865M — 19.86%",date:"Q2 2026",notes:"His largest position by far, in a genetic-testing company. Druckenmiller is famous for betting big when he's confident.",photo:"SD"},
+{investor:"Stanley Druckenmiller",stock:"Taiwan Semiconductor",ticker:"TSM",action:"Add 19.1%",amount:"$282M — 6.47%",date:"Q2 2026",notes:"Added to the world's leading contract chipmaker. Tepper made the same move this quarter.",photo:"SD"},
+{investor:"Stanley Druckenmiller",stock:"STMicroelectronics",ticker:"STM",action:"Add 18.8%",amount:"$232M — 5.34%",date:"Q2 2026",notes:"A European chipmaker that supplies the car and industrial markets. It's a semiconductor bet without paying AI-level prices.",photo:"SD"},
+{investor:"Stanley Druckenmiller",stock:"Amazon",ticker:"AMZN",action:"Add 1083%",amount:"$129M — 2.96%",date:"Q2 2026",notes:"Grew a tiny stake about 12x, and he also holds Amazon call options. A huge % jump on a small base can still be a small position.",photo:"SD"},
+{investor:"Stanley Druckenmiller",stock:"Alphabet Inc",ticker:"GOOGL",action:"Buy",amount:"$120M — 2.76%",date:"Q2 2026",notes:"New position. Berkshire, Tepper and Li Lu also own Alphabet.",photo:"SD"},
+{investor:"Stanley Druckenmiller",stock:"Delta Air Lines",ticker:"DAL",action:"Buy",amount:"$56.6M — 1.30%",date:"Q2 2026",notes:"New position, with United Airlines also tripled. He's betting on airlines alongside Berkshire.",photo:"SD"},
+
+// ── NEW: Li Lu / Himalaya Capital (CIK 1709323) — 13F total $3.70B ──
+{investor:"Li Lu",stock:"Alphabet Inc",ticker:"GOOGL",action:"Hold",amount:"$1.78B — 47.94%",date:"Q2 2026",notes:"Almost half the portfolio sits in one company (Class A + Class C combined). Charlie Munger's hand-picked investor shows what extreme concentration looks like.",photo:"LL"},
+{investor:"Li Lu",stock:"PDD Holdings",ticker:"PDD",action:"Add 133.5%",amount:"$821M — 22.17%",date:"Q2 2026",notes:"More than doubled his stake in the parent of Temu and Pinduoduo, the opposite of Tepper, who sold out of PDD.",photo:"LL"},
+{investor:"Li Lu",stock:"Berkshire Hathaway",ticker:"BRK.B",action:"Add 23.5%",amount:"$555M — 14.98%",date:"Q2 2026",notes:"Munger's former partner bought more Berkshire itself. This is a vote of confidence in the post-Buffett era.",photo:"LL"},
+{investor:"Li Lu",stock:"East West Bancorp",ticker:"EWBC",action:"Hold",amount:"$358M — 9.68%",date:"Q2 2026",notes:"A long-held U.S. regional bank that serves Asian-American communities and U.S.–Asia business.",photo:"LL"},
+{investor:"Li Lu",stock:"Bank of America",ticker:"BAC",action:"Sold out",amount:"$0 (was $146M)",date:"Q2 2026",notes:"One of six exits (also OXY, Moody's, S&P Global, H&R Block and MSCI). He cut the portfolio down to 8 names.",photo:"LL"},
+
+// ── NEW: Seth Klarman / Baupost Group (CIK 1061768) — 13F total $5.42B ──
+{investor:"Seth Klarman",stock:"Amazon",ticker:"AMZN",action:"Add 20%",amount:"$892M — 16.48%",date:"Q2 2026",notes:"His largest 13F holding, and he added about 20%. The 'Margin of Safety' author is a classic deep-value investor.",photo:"SK"},
+{investor:"Seth Klarman",stock:"Elevance Health",ticker:"ELV",action:"Hold",amount:"$493M — 9.11%",date:"Q2 2026",notes:"A health insurer bought when the sector was out of favor. This is contrarian value investing.",photo:"SK"},
+{investor:"Seth Klarman",stock:"Alphabet Inc",ticker:"GOOG",action:"Add 16.2%",amount:"$485M — 8.95%",date:"Q2 2026",notes:"Another famous investor adding Alphabet in Q2 2026.",photo:"SK"},
+{investor:"Seth Klarman",stock:"Restaurant Brands Intl",ticker:"QSR",action:"Reduce 16.4%",amount:"$490M — 9.04%",date:"Q2 2026",notes:"Trimmed Burger King's parent while Ackman added. Two value investors disagreed on the same stock.",photo:"SK"},
+{investor:"Seth Klarman",stock:"Genuine Parts",ticker:"GPC",action:"Add 89%",amount:"$332M — 6.13%",date:"Q2 2026",notes:"Nearly doubled his stake in the NAPA auto-parts company. Boring, steady businesses are classic Klarman.",photo:"SK"},
+{investor:"Seth Klarman",stock:"CME Group",ticker:"CME",action:"Buy",amount:"$137M — 2.52%",date:"Q2 2026",notes:"New position in the exchange operator, which earns fees on futures trading no matter which way markets move.",photo:"SK"}
 ];
+// Unique investors in MOVES, in filing order — drives filter tabs, screener guru filter and guru-alignment.
+const INVESTORS=Array.from(new Set(MOVES.map(function(m){ return m.investor; })));
 
 // ── STRIPE ──
 const STRIPE_PK = 'pk_test_51Tj5y5RvClN8iCWybxyhrisHJbJHGZHSpUSwMQVotLF1LkxawfyHoGN8qXpJVkhIqUZQkcxAGC2on2pw2Da1lQBS00z29vNVlo';
@@ -3107,8 +3176,8 @@ function updateLessonProgress(){
   const done = Object.keys(getLessonProgress()).length;
   const lbl = document.getElementById('lessonProgressLabel');
   const fill = document.getElementById('lessonProgressFill');
-  if(lbl){ const iq = (typeof financeIQ === 'function') ? financeIQ() : null; lbl.textContent = done + ' of ' + LESSONS.length + ' lessons completed' + (iq !== null ? ' · Finance IQ: ' + iq + '%' : ''); }
-  if(fill) fill.style.width = (done/LESSONS.length*100).toFixed(0) + '%';
+  if(lbl){ const iq = (typeof financeIQ === 'function') ? financeIQ() : null; lbl.textContent = done + ' of ' + LESSONS.filter(Boolean).length + ' lessons completed' + (iq !== null ? ' · Finance IQ: ' + iq + '%' : ''); }
+  if(fill) fill.style.width = (done/LESSONS.filter(Boolean).length*100).toFixed(0) + '%';
   if(typeof checkGraduate === 'function') checkGraduate();
   if(typeof checkGraduateComplete === 'function') checkGraduateComplete();
 }
@@ -3123,7 +3192,7 @@ function renderCertificateCTA(done){
   const free = LESSONS.filter(function(l){ return l.plan === 'free'; }).length;
   const milestones = [
     {n: free, label: 'Finished all free lessons', key: 'free'},
-    {n: LESSONS.length, label: 'Completed the entire Financial Playbook', key: 'all'}
+    {n: LESSONS.filter(Boolean).length, label: 'Completed the entire Financial Playbook', key: 'all'}
   ];
   const hit = milestones.filter(function(m){ return done >= m.n; }).pop();
   if(!hit){ host.innerHTML = ''; return; }
@@ -3310,7 +3379,7 @@ function openLesson(i){
       <div class="gold-lock">
         <div style="font-size:36px;margin-bottom:12px">👑</div>
         <h3>This is a Gold lesson</h3>
-        <p>Upgrade to FinPath Gold to access all 15 premium lessons, Investor Moves, and AI suggestions.</p>
+        <p>Upgrade to FinPath Gold to access all 14 premium lessons, Investor Moves, and AI suggestions.</p>
         <button class="price-btn" style="width:auto;padding:12px 28px;margin-top:8px" onclick="openGoldPayment()">Upgrade to Gold — $4.99/mo</button>
       </div>`;
   } else {
@@ -3331,7 +3400,7 @@ function renderGold(){
       <div class="gold-gate">
         <div style="font-size:36px;margin-bottom:12px">👑</div>
         <h2 style="font-size:24px;font-weight:800;margin-bottom:8px">Upgrade to Gold</h2>
-        <p style="color:var(--muted);margin-bottom:24px;font-size:15px">Get full access to all 19 investor moves from Buffett, Ackman, and Tepper — updated every quarter.</p>
+        <p style="color:var(--muted);margin-bottom:24px;font-size:15px">Get full access to all ${MOVES.length} investor moves from ${INVESTORS.length} legendary investors — refreshed each quarter after 13F filings.</p>
         <button class="price-btn" style="width:auto;padding:14px 36px;font-size:16px" onclick="openGoldPayment()">Upgrade to Gold — $4.99/mo</button>
       </div>`;
     return;
@@ -3339,11 +3408,10 @@ function renderGold(){
   document.getElementById('goldContent').innerHTML=`
     <div class="filter-tabs" id="filterTabs">
       <button class="filter-tab active" onclick="filterMoves('all',this)">All investors</button>
-      <button class="filter-tab" onclick="filterMoves('Warren Buffett',this)">Warren Buffett</button>
-      <button class="filter-tab" onclick="filterMoves('Bill Ackman',this)">Bill Ackman</button>
-      <button class="filter-tab" onclick="filterMoves('David Tepper',this)">David Tepper</button>
+      ${INVESTORS.map((n,i)=>`<button class="filter-tab" onclick="filterMoves(INVESTORS[${i}],this)">${escapeHtml(n)}</button>`).join('')}
     </div>
-    <div class="moves-grid" id="movesGrid"></div>`;
+    <div class="moves-grid" id="movesGrid"></div>
+    <p class="moves-disclaimer" style="font-size:12px;color:var(--muted);margin-top:18px;line-height:1.6;text-align:center">Source: SEC Form 13F-HR filings for the quarter ended June 30, 2026 (filed Aug 13–14, 2026). 13F data is delayed up to 45 days after quarter-end and shows long U.S. positions only — these investors may have already changed these positions. Educational use only, not investment advice.</p>`;
   renderMoves('all');
 }
 
@@ -3376,6 +3444,7 @@ function openGoldPayment(){
   track('upgrade_click');
   const confirmed = confirm('You are about to be redirected to our secure payment page powered by Stripe.\n\nFinPath Gold — $4.99/month\n\nClick OK to continue to checkout, or Cancel to go back.');
   if(confirmed){
+    // TODO(siddharth): replace test Payment Link with the LIVE Stripe Payment Link (Stripe dashboard → Payment Links).
     window.open('https://buy.stripe.com/test_14A00lbnN0Gp9dd8s1g3600', '_blank', 'noopener,noreferrer');
   }
 }
@@ -3607,14 +3676,15 @@ async function loadFromDB(){
   // Load the local copy first — instant UI, and anon users keep their data.
   try{
     const local = JSON.parse(localStorage.getItem('fp_portfolio') || '[]');
-    if(Array.isArray(local) && local.length) portfolio = local;
+    if(Array.isArray(local) && local.length) portfolio = local.filter(function(h){ return h && isValidTicker(h.ticker) && isFinite(h.shares) && h.shares>0; });
   }catch(e){}
   if(!currentUser) return;
   try{
     const { data: rows, error } = await supabaseClient
       .from('portfolio').select('*').eq('user_id', currentUser.id);
     if(!error && Array.isArray(rows) && rows.length){
-      portfolio = rows.map(r => ({ticker: r.ticker, shares: parseFloat(r.shares), buyPrice: parseFloat(r.buy_price)}));
+      portfolio = rows.map(r => ({ticker: r.ticker, shares: parseFloat(r.shares), buyPrice: parseFloat(r.buy_price)||0}))
+        .filter(h => isValidTicker(h.ticker) && isFinite(h.shares) && h.shares>0);
       savePortfolioLocal();
     } else if(!error && Array.isArray(rows) && rows.length === 0 && portfolio.length > 0){
       // Cloud is empty but this device has data (they built a portfolio while
@@ -3638,12 +3708,17 @@ async function loadSearchResults(){
 }
 
 function renderSearchResults(items){
-  document.getElementById('searchResults').innerHTML=items.slice(0,12).map(({t,q})=>`
+  if(!items.length){document.getElementById('searchResults').innerHTML='<div class="empty">No matches. Try a ticker like AAPL, UBER or BTC.</div>';return;}
+  document.getElementById('searchResults').innerHTML=items.slice(0,12).map(({t,q})=>!q?`
+    <div class="modal-result" onclick="openAddShares('${t}')"><button class="watch-star" aria-label="Toggle watchlist for ${t}" onclick="event.stopPropagation();toggleWatch('${t}',this)">${isWatched(t)?'★':'☆'}</button>
+      <div><div style="font-size:15px;font-weight:600">${t}</div><div style="font-size:12px;color:var(--muted)">${escapeHtml(COMPANIES[t]||t)}</div></div>
+      <div style="text-align:right;font-size:12px;color:var(--muted)">Price unavailable</div>
+    </div>`:`
     <div class="modal-result" onclick="openAddShares('${t}')"><button class="watch-star" aria-label="Toggle watchlist for ${t}" onclick="event.stopPropagation();toggleWatch('${t}',this)">${isWatched(t)?'★':'☆'}</button>
       <div><div style="font-size:15px;font-weight:600">${t}</div><div style="font-size:12px;color:var(--muted)">${COMPANIES[t]||t}</div></div>
       <div style="text-align:right">
         <div style="font-size:15px;font-weight:600;color:${q.dp>=0?'#4ade80':'#f87171'}">$${q.c.toFixed(2)}</div>
-        <div style="font-size:12px;color:${q.dp>=0?'#4ade80':'#f87171'}">${q.dp>=0?'+':''}${q.dp.toFixed(2)}%</div>
+        <div style="font-size:12px;color:${q.dp>=0?'#4ade80':'#f87171'}">${q.dp>=0?'+':''}${q.dp.toFixed(2)}%${q.stale?' <span style="color:var(--muted)">(last known)</span>':''}</div>
       </div>
     </div>`).join('');
 }
@@ -3652,9 +3727,19 @@ async function handleSearch(v){
   clearTimeout(stTimeout);
   if(!v){loadSearchResults();return;}
   stTimeout=setTimeout(async()=>{
-    const up=v.toUpperCase();
-    const matched=POP.filter(t=>t.startsWith(up)||(COMPANIES[t]||'').toUpperCase().includes(up));
-    if(matched.length){const qs=await Promise.all(matched.map(async t=>({t,q:await fetchQ(t)})));renderSearchResults(qs.filter(x=>x.q));}
+    const up=v.trim().toUpperCase();
+    if(!up){loadSearchResults();return;}
+    // Search every COMPANIES key (stocks, ETFs, crypto), not just POP. Exact ticker first, then prefix, then name matches.
+    const keys=Object.keys(COMPANIES);
+    const exact=keys.filter(t=>t===up);
+    const pref=keys.filter(t=>t!==up&&t.startsWith(up));
+    const byName=keys.filter(t=>!t.startsWith(up)&&(COMPANIES[t]||'').toUpperCase().includes(up));
+    let matched=[...exact,...pref,...byName].slice(0,12);
+    // Allow a typed ticker that isn't in FinPath's list (e.g. "IBM") — price comes from the live quote if available.
+    if(!exact.length&&/^[A-Z.]{1,6}$/.test(up)) matched=[up,...matched].slice(0,12);
+    if(!matched.length){renderSearchResults([]);return;}
+    const qs=await Promise.all(matched.map(async t=>({t,q:await fetchQ(t)})));
+    renderSearchResults(qs);
   },400);
 }
 
@@ -3667,7 +3752,8 @@ async function openAddShares(ticker){
   document.getElementById('sharesInput').value='';
   document.getElementById('sharesPreview').textContent='';
   const q=await fetchQ(ticker);
-  if(q){selectedStock.price=q.c;document.getElementById('sharesLabel').textContent='Current price: $'+q.c.toFixed(2)+' per share';}
+  if(q && !q.stale && isFinite(q.c) && q.c>0){selectedStock.price=q.c;document.getElementById('sharesLabel').textContent='Current price: $'+q.c.toFixed(2)+' per share';}
+  else {selectedStock.price=0;document.getElementById('sharesLabel').textContent='Live price unavailable right now — try again in a moment.';}
   document.getElementById('sharesModal').classList.add('open');
 }
 
@@ -3679,15 +3765,18 @@ function updatePreview(){
 
 async function confirmAdd(){
   const shares=parseFloat(document.getElementById('sharesInput').value)||0;
-  if(shares<=0){alert('Please enter how many shares you own');return;}
+  if(!isFinite(shares)||shares<=0){alert('Please enter how many shares you own');return;}
+  // Never record a buy at $0 / missing / stale price — it corrupts cost basis and P&L.
+  if(!selectedStock||!isFinite(selectedStock.price)||selectedStock.price<=0){toast('⚠️','Live price unavailable — can\u2019t add right now. Please try again shortly.');return;}
   if(typeof PAPER_MODE!=='undefined' && PAPER_MODE){
     const done = await paperBuy(selectedStock.ticker, shares, selectedStock.price||0);
     if(done) closeShares();
     return;
   }
   const ex=portfolio.find(p=>p.ticker===selectedStock.ticker);
-  if(ex) ex.shares+=shares;
-  else portfolio.push({ticker:selectedStock.ticker,shares,buyPrice:selectedStock.price||0});
+  // Weighted-average cost basis (same approach as paperBuy)
+  if(ex){ ex.buyPrice=((ex.buyPrice||0)*ex.shares + selectedStock.price*shares)/(ex.shares+shares); ex.shares+=shares; }
+  else portfolio.push({ticker:selectedStock.ticker,shares,buyPrice:selectedStock.price});
   try{ const ad=JSON.parse(localStorage.getItem('fp_added')||'{}'); if(!ad[selectedStock.ticker]) ad[selectedStock.ticker]=Date.now(); localStorage.setItem('fp_added',JSON.stringify(ad)); }catch(e){}
   track('add_stock', {ticker: selectedStock.ticker});
   logTxn({type:'buy', mode:'live', t:selectedStock.ticker, sh:shares, price:selectedStock.price||0});
@@ -3743,10 +3832,10 @@ async function renderPortfolio(){
     const pnlPct=h.buyPrice>0?((price-h.buyPrice)/h.buyPrice*100):0;
     const dayChg=q?q.dp:0;
     totalVal+=val; totalInvested+=invested; totalDayChg+=q?(q.d*h.shares):0;
-    return '<div class="stock-row" data-t="'+h.ticker+'" onclick="openDetail(\''+h.ticker+'\')">'+
-      '<div class="s-icon">'+h.ticker.slice(0,2)+'</div>'+
-      '<div class="s-info"><div class="s-name">'+h.ticker+' <span style="font-size:11px;color:var(--muted);font-weight:400">'+(COMPANIES[h.ticker]||'')+'</span></div>'+
-      '<div class="s-meta">'+h.shares+' shares · $'+price.toFixed(2)+'/share</div></div>'+
+    return '<div class="stock-row" data-t="'+escapeHtml(h.ticker)+'" onclick="openDetail(\''+escapeHtml(h.ticker)+'\')">'+
+      '<div class="s-icon">'+escapeHtml(h.ticker.slice(0,2))+'</div>'+
+      '<div class="s-info"><div class="s-name">'+escapeHtml(h.ticker)+' <span style="font-size:11px;color:var(--muted);font-weight:400">'+escapeHtml(COMPANIES[h.ticker]||'')+'</span></div>'+
+      '<div class="s-meta">'+escapeHtml(h.shares)+' shares · $'+price.toFixed(2)+'/share</div></div>'+
       '<div class="s-right">'+
       '<div class="s-price">$'+val.toFixed(2)+'</div>'+
       '<div class="s-pct '+(pnlPct>=0?'up':'down')+'">'+(pnlPct>=0?'▲ +':'▼ ')+pnlPct.toFixed(2)+'% total</div>'+
@@ -3787,7 +3876,7 @@ function renderAlerts(quotes){
     host.innerHTML = portfolio.map((h,i)=>{
       const q = quotes && quotes[i] ? quotes[i].q : null;
       return '<div class="alert-item">'+
-        '<div><div class="alert-ticker">'+h.ticker+' — <span style="filter:blur(4px);user-select:none;color:var(--muted)">Hold ·</span> 🔒</div>'+
+        '<div><div class="alert-ticker">'+escapeHtml(h.ticker)+' — <span style="filter:blur(4px);user-select:none;color:var(--muted)">Hold ·</span> 🔒</div>'+
         '<div class="alert-msg" style="filter:blur(3px);user-select:none">Upgrade to Gold to see the AI\u2019s reasoning for this position and personalised buy / hold / sell guidance.</div></div>'+
         (q?'<span class="alert-pct" style="'+(q.dp<0?'background:rgba(248,113,113,.1);color:#f87171':'')+'">'+(q.dp>=0?'+':'')+q.dp.toFixed(2)+'%</span>':'')+
         '</div>';
@@ -3800,8 +3889,8 @@ function renderAlerts(quotes){
     const q=quotes&&quotes[i]?quotes[i].q:null;
     const cls=adv.cls==='act-sell'?'sell':adv.cls==='act-watch'?'warn':'';
     return '<div class="alert-item '+cls+'">'+
-      '<div><div class="alert-ticker">'+h.ticker+' — '+adv.action+'</div>'+
-      '<div class="alert-msg">'+adv.text.slice(0,80)+'...</div></div>'+
+      '<div><div class="alert-ticker">'+escapeHtml(h.ticker)+' — '+escapeHtml(adv.action)+'</div>'+
+      '<div class="alert-msg">'+escapeHtml(adv.text.slice(0,80))+'...</div></div>'+
       (q?'<span class="alert-pct" style="'+(q.dp<0?'background:rgba(248,113,113,.1);color:#f87171':'')+'">'+(q.dp>=0?'+':'')+q.dp.toFixed(2)+'%</span>':'')+
       '</div>';
   }).join('');
@@ -3842,6 +3931,20 @@ function runAI(){
   },1200);
 }
 
+// Honest "no data" overlay for charts (replaces the old Math.random fallback curves).
+function chartUnavailable(canvas){
+  const wrap=canvas&&canvas.parentNode; if(!wrap) return;
+  canvas.style.display='none';
+  let m=wrap.querySelector('.chart-unavailable');
+  if(!m){ m=document.createElement('div'); m.className='chart-unavailable empty'; m.style.cssText='display:flex;align-items:center;justify-content:center;height:100%;min-height:120px;text-align:center;color:var(--muted);font-size:13px'; wrap.appendChild(m); }
+  m.textContent='Chart unavailable — historical price data isn\u2019t available right now (data plan / API limit). Current prices above are still live.';
+}
+function chartAvailable(canvas){
+  const wrap=canvas&&canvas.parentNode; if(!wrap) return;
+  canvas.style.display='';
+  const m=wrap.querySelector('.chart-unavailable'); if(m) m.remove();
+}
+
 async function renderPortfolioChart(days){
   await ensureChart();
   if(!window.Chart) return;
@@ -3859,25 +3962,11 @@ async function renderPortfolioChart(days){
     }
   }
   if(!pts){
-    // Generate a smooth, realistic-looking fallback curve appropriate to the period
-    const b=parseFloat(document.getElementById('totalValue').textContent.replace(/[$,]/g,''))||1000;
-    const pointCount = days<=1 ? 24 : days<=7 ? 28 : days<=30 ? 30 : 36;
-    const totalDriftPct = days<=1 ? 0.012 : days<=7 ? 0.035 : days<=30 ? 0.08 : 0.15;
-    const volatility = days<=1 ? 0.003 : days<=7 ? 0.006 : days<=30 ? 0.01 : 0.015;
-    const trend = (Math.random() > 0.5 ? 1 : -1) * totalDriftPct;
-    pts = [];
-    let val = b * (1 - trend);
-    // Use smoothed random walk so it looks like real price movement, not noise
-    let momentum = 0;
-    for(let i=0;i<pointCount;i++){
-      const progress = i/(pointCount-1);
-      const target = b * (1 - trend + trend*progress);
-      momentum = momentum*0.7 + (Math.random()-0.5)*volatility*b*0.7;
-      val = val*0.6 + target*0.3 + momentum*0.1;
-      pts.push(val);
-    }
-    pts[pts.length-1] = b;
+    // No real candle data (API/plan limit) — show an honest empty state, never a synthetic curve.
+    chartUnavailable(ctx);
+    return;
   }
+  chartAvailable(ctx);
   const up=pts[pts.length-1]>=pts[0];
   pChart=new Chart(c,{type:'line',data:{labels:pts.map((_,i)=>i),datasets:[{data:pts,borderColor:up?'#4ade80':'#f87171',borderWidth:2,fill:true,backgroundColor:up?'rgba(74,222,128,.06)':'rgba(248,113,113,.06)',pointRadius:0,tension:0.35}]},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(6,12,7,.95)',borderColor:'rgba(134,239,172,.25)',borderWidth:1,padding:12,cornerRadius:10,titleColor:'#86efac',bodyColor:'#eef5ee',displayColors:false,callbacks:{label:c=>'$'+c.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}}},scales:{x:{display:false},y:{ticks:{color:'#555',font:{size:10},callback:v=>'$'+parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:0})},grid:{color:'rgba(255,255,255,.04)'},border:{display:false}}}}});
@@ -3895,27 +3984,14 @@ async function openHourly(){
   const el=document.getElementById('hourlyContent');
   el.innerHTML='<div class="loading"><div class="spinner"></div>Loading hourly data...</div>';
   if(portfolio.length===0){el.innerHTML='<div class="empty">Add stocks first.</div>';return;}
+  // Real intraday (hourly) history requires candle data that isn't available on the
+  // current Finnhub data plan. Show the live snapshot honestly instead of simulated hours.
   const quotes=await Promise.all(portfolio.map(async h=>{const q=await fetchQ(h.ticker);return{h,q};}));
-  const hours=[];
-  for(let i=9;i<=16;i++){
-    const ampm=i<12?'AM':'PM';
-    const hr=i<=12?i:i-12;
-    const time=hr+':00 '+ampm;
-    let val=0;
-    quotes.forEach(({h,q})=>{if(q){const v=(Math.random()-0.5)*0.008;val+=q.c*(1+v*(16-i)/7)*h.shares;}});
-    const isNow=new Date().getHours()===i;
-    hours.push({time,val,isNow});
-  }
   const currentVal=quotes.reduce((s,{h,q})=>s+(q?q.c*h.shares:0),0);
-  hours[hours.length-1].val=currentVal;
-  const open=hours[0].val;
-  el.innerHTML=hours.map(({time,val,isNow})=>{
-    const chg=val-open;
-    return '<div class="hourly-row" style="'+(isNow?'background:rgba(34,197,94,.05);border-radius:8px;padding:12px 8px;margin:-4px;':'')+'">'+
-      '<div style="display:flex;align-items:center;gap:8px"><span class="hourly-time">'+time+'</span>'+(isNow?'<span style="font-size:10px;background:var(--green-dim);color:#fff;border-radius:4px;padding:2px 6px">NOW</span>':'')+
-      '</div><div style="text-align:right"><div class="hourly-val">$'+val.toFixed(2)+'</div>'+
-      '<div style="font-size:12px" class="'+(chg>=0?'up':'down')+'">'+(chg>=0?'+$':'-$')+Math.abs(chg).toFixed(2)+'</div></div></div>';
-  }).join('');
+  const dayChg=quotes.reduce((s,{h,q})=>s+(q&&isFinite(q.d)?q.d*h.shares:0),0);
+  el.innerHTML='<div class="empty" style="margin-bottom:14px">Hour-by-hour history isn\u2019t available on the current data plan, so FinPath won\u2019t show simulated numbers.</div>'+
+    '<div class="hourly-row"><div><span class="hourly-time">Now (live)</span></div><div style="text-align:right"><div class="hourly-val">'+fmt(currentVal)+'</div>'+
+    '<div style="font-size:12px" class="'+(dayChg>=0?'up':'down')+'">'+(dayChg>=0?'+':'-')+fmt(Math.abs(dayChg))+' today</div></div></div>';
 }
 
 async function openDetail(ticker){
@@ -3959,24 +4035,11 @@ async function renderDetailChart(ticker,days){
   if(dChart){dChart.destroy();dChart=null;}
   let pts=await fetchCandles(ticker,days);
   if(!pts || pts.length<4){
-    const q=await fetchQ(ticker);
-    const b=q?q.c:100;
-    const pointCount = days<=1 ? 24 : days<=7 ? 28 : 30;
-    const totalDriftPct = days<=1 ? 0.012 : days<=7 ? 0.035 : 0.08;
-    const volatility = days<=1 ? 0.003 : days<=7 ? 0.006 : 0.01;
-    const trend = (Math.random() > 0.5 ? 1 : -1) * totalDriftPct;
-    pts = [];
-    let val = b * (1 - trend);
-    let momentum = 0;
-    for(let i=0;i<pointCount;i++){
-      const progress = i/(pointCount-1);
-      const target = b * (1 - trend + trend*progress);
-      momentum = momentum*0.7 + (Math.random()-0.5)*volatility*b*0.7;
-      val = val*0.6 + target*0.3 + momentum*0.1;
-      pts.push(val);
-    }
-    pts[pts.length-1] = b;
+    // No real candle data — honest empty state instead of a random-walk chart.
+    chartUnavailable(canvas);
+    return;
   }
+  chartAvailable(canvas);
   const up=pts[pts.length-1]>=pts[0];
   dChart=new Chart(canvas.getContext('2d'),{type:'line',data:{labels:pts.map((_,i)=>i),datasets:[{data:pts,borderColor:up?'#4ade80':'#f87171',borderWidth:2,fill:true,backgroundColor:up?'rgba(74,222,128,.07)':'rgba(248,113,113,.07)',pointRadius:0,tension:0.35}]},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(6,12,7,.95)',borderColor:'rgba(134,239,172,.25)',borderWidth:1,padding:12,cornerRadius:10,titleColor:'#86efac',bodyColor:'#eef5ee',displayColors:false,callbacks:{label:c=>'$'+c.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}}},scales:{x:{display:false},y:{ticks:{color:'#555',font:{size:10},callback:v=>'$'+parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:0})},grid:{color:'rgba(255,255,255,.04)'},border:{display:false}}}}});
@@ -4012,16 +4075,8 @@ async function initAuth(){
       currentUser = session.user;
       onUserLoggedIn(session.user);
       closeLogin();
-      // Check if returning from magic link
-      if(event === 'SIGNED_IN'){
-        const params = new URLSearchParams(window.location.search);
-        if(params.get('gold') === 'success'){
-          IS_GOLD = true;
-          localStorage.setItem('fp_gold','true');
-          showSuccessBanner();
-          window.history.replaceState({},document.title,window.location.pathname);
-        }
-      }
+      // (Removed: ?gold=success no longer grants Gold client-side. Gold status
+      //  must come from the server-verified check only.)
     } else if(event === 'SIGNED_OUT'){
       currentUser = null;
       onUserSignedOut();
@@ -4530,7 +4585,11 @@ async function renderWatchlist(){
 }
 
 // ══ SECTOR ANALYTICS ══
-const SECTORS = {AAPL:'Technology',MSFT:'Technology',GOOGL:'Communication',AMZN:'Consumer Cyclical',NVDA:'Technology',META:'Communication',TSLA:'Consumer Cyclical','BRK.B':'Financials',JPM:'Financials',V:'Financials',JNJ:'Healthcare',UNH:'Healthcare',XOM:'Energy',KO:'Consumer Staples',DAL:'Industrials',OXY:'Energy',UBER:'Technology',BN:'Financials',AXP:'Financials',SHOP:'Technology',BTC:'Crypto',ETH:'Crypto',SOL:'Crypto',DOGE:'Crypto'};
+const SECTORS = {AAPL:'Technology',MSFT:'Technology',GOOGL:'Communication',GOOG:'Communication',AMZN:'Consumer Cyclical',NVDA:'Technology',META:'Communication',TSLA:'Consumer Cyclical','BRK.B':'Financials',JPM:'Financials',V:'Financials',JNJ:'Healthcare',UNH:'Healthcare',XOM:'Energy',CVX:'Energy',KO:'Consumer Staples',DAL:'Industrials',OXY:'Energy',UBER:'Industrials',BN:'Financials',AXP:'Financials',SHOP:'Technology',BABA:'Consumer Cyclical',
+AVGO:'Technology',AMD:'Technology',MU:'Technology',ORCL:'Technology',PLTR:'Technology',LLY:'Healthcare',ABBV:'Healthcare',WMT:'Consumer Staples',COST:'Consumer Staples',PG:'Consumer Staples',PEP:'Consumer Staples',MA:'Financials',BAC:'Financials',HD:'Consumer Cyclical',MCD:'Consumer Cyclical',NFLX:'Communication',DIS:'Communication',NEE:'Utilities',LIN:'Materials',PLD:'Real Estate',
+TSM:'Technology',STM:'Technology',BA:'Industrials',NTRA:'Healthcare',ELV:'Healthcare',PDD:'Consumer Cyclical',GPC:'Consumer Cyclical',QSR:'Consumer Cyclical',LEN:'Consumer Cyclical',EWBC:'Financials',CME:'Financials',SPGI:'Financials',HHH:'Real Estate',KR:'Consumer Staples',STZ:'Consumer Staples',
+VOO:'Index Fund',VTI:'Index Fund',SPY:'Index Fund',QQQ:'Index Fund',IWM:'Index Fund',SCHD:'Index Fund',VT:'Index Fund',BND:'Index Fund',
+BTC:'Crypto',ETH:'Crypto',SOL:'Crypto',DOGE:'Crypto'};
 const ALLOC_COLORS = ['#22c55e','#f5b60b','#60a5fa','#e879f9','#4ade80','#fb7185','#86efac','#facc15'];
 let allocChartObj = null;
 async function renderAnalytics(quotes){
@@ -4713,7 +4772,7 @@ document.addEventListener('DOMContentLoaded', function(){ setTimeout(updateLiveA
 // ══ DEMO PORTFOLIO ══
 async function loadDemoPortfolio(){
   track('demo_portfolio');
-  const picks = [{t:'AAPL',s:5},{t:'MSFT',s:3},{t:'GOOGL',s:4}];
+  const picks = [{t:'VOO',s:2},{t:'AAPL',s:3},{t:'JPM',s:2},{t:'KO',s:5},{t:'LLY',s:1}];
   document.getElementById('stocksGrid').innerHTML = '<div class="skel-row"></div>'.repeat(3);
   for(const p of picks){
     const q = await fetchQ(p.t);
@@ -5406,7 +5465,7 @@ async function renderPaper(){
     grid.innerHTML = qs.map(function(r, i){
       const price = r.q ? r.q.c : r.x.price;
       const val = price * r.x.sh, pnl = (price - r.x.price)*r.x.sh, pct = (price - r.x.price)/r.x.price*100;
-      return '<div class="stock-row"><div class="s-icon">' + r.x.t.slice(0,2) + '</div><div class="s-info"><div class="s-name">' + r.x.t + '</div><div class="s-meta">' + r.x.sh + ' sh @ ' + fmt(r.x.price) + '</div></div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" onclick="paperSell(' + i + ')">Sell</button></div></div>';
+      return '<div class="stock-row"><div class="s-icon">' + escapeHtml(r.x.t.slice(0,2)) + '</div><div class="s-info"><div class="s-name">' + escapeHtml(r.x.t) + '</div><div class="s-meta">' + escapeHtml(r.x.sh) + ' sh @ ' + fmt(r.x.price) + '</div></div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" onclick="paperSell(' + i + ')">Sell</button></div></div>';
     }).join('');
     p.pos.forEach(function(x){ wsWatch(x.t); });
   }
@@ -5428,6 +5487,8 @@ async function renderPaper(){
   } else vs.textContent = '—';
 }
 async function paperBuy(t, sh, price){
+  if(!isFinite(price) || price <= 0){ toast('⚠️', 'Live price unavailable — paper trade blocked. Try again shortly.'); return false; }
+  if(!isFinite(sh) || sh <= 0){ toast('⚠️', 'Enter a positive number of shares.'); return false; }
   const p = getPaper();
   const cost = sh * price;
   if(cost > p.cash){ toast('⚠️', 'Not enough paper cash. You have ' + fmt(p.cash) + '.'); return false; }
@@ -5443,11 +5504,15 @@ async function paperBuy(t, sh, price){
   renderPaper();
   return true;
 }
-function paperSell(i){
+async function paperSell(i){
+  const x0 = getPaper().pos[i]; if(!x0) return;
+  // Force a fresh quote so the sale isn't filled at a stale cached price.
+  if(priceCache[x0.t]) priceCache[x0.t].ts = 0;
+  const q = await fetchQ(x0.t);
+  if(!q || q.stale || !isFinite(q.c) || q.c <= 0){ toast('⚠️', 'Live price unavailable — paper sell blocked. Try again shortly.'); return; }
   const p = getPaper();
-  const x = p.pos[i]; if(!x) return;
-  const q = priceCache[x.t];
-  const price = q ? q.c : x.price;
+  const x = p.pos[i]; if(!x || x.t !== x0.t) return;
+  const price = q.c;
   p.cash += price * x.sh;
   const pnl = (price - x.price)*x.sh;
   p.pos.splice(i,1);
@@ -5583,8 +5648,10 @@ function initMarkets(){
   _marketsInit = true;
   fillCompareSelects();
   const sel = document.getElementById('scrSector');
-  const sectors = Array.from(new Set(Object.values(SECTORS))).sort();
+  const sectors = Array.from(new Set(Object.values(SECTORS))).filter(function(s){ return s !== 'Crypto' && s !== 'Index Fund'; }).sort();
   sectors.forEach(function(s){ const o = document.createElement('option'); o.textContent = s; sel.appendChild(o); });
+  const gsel = document.getElementById('scrGuru');
+  if(gsel) INVESTORS.forEach(function(n){ const o = document.createElement('option'); o.textContent = n; gsel.appendChild(o); });
 }
 async function renderPulse(){
   const qs = await Promise.all(PULSE.map(async function(p){ return {p:p, q: await fetchQ(p.t)}; }));
@@ -5625,19 +5692,24 @@ function heatDetailShow(i, dp){
   document.getElementById('heatDetail').innerHTML = '<b>' + s.n + '</b> (' + s.t + ') is ' + (dp>=0?'up ':'down ') + Math.abs(dp).toFixed(2) + '% today.' + (mine.length ? ' Your holdings here: <b>' + mine.join(', ') + '</b>.' : ' You hold nothing in this sector.');
 }
 // screener
-const _metricCache = {};
+// Fundamentals barely move intraday, so cache them for 24h in localStorage to stay under Finnhub free-tier limits.
+const METRIC_TTL = 24*3600*1000;
+const _metricCache = (function(){ try{ return JSON.parse(localStorage.getItem('fp_metric_cache')||'{}') || {}; }catch(e){ return {}; } })();
+function _saveMetricCache(){ try{ localStorage.setItem('fp_metric_cache', JSON.stringify(_metricCache)); }catch(e){} }
+function metricCached(t){ return !!(_metricCache[t] && Date.now()-_metricCache[t].ts < METRIC_TTL); }
 async function fetchMetrics(t){
-  if(_metricCache[t] && Date.now()-_metricCache[t].ts < 600000) return _metricCache[t];
+  if(metricCached(t)) return _metricCache[t];
   try{
-    const r = await fetch('https://finnhub.io/api/v1/stock/metric?symbol=' + t + '&metric=all&token=' + FK);
+    const r = await fetch('https://finnhub.io/api/v1/stock/metric?symbol=' + encodeURIComponent(t) + '&metric=all&token=' + FK);
     const d = await r.json();
-    if(d && d.metric){ _metricCache[t] = {m: d.metric, ts: Date.now()}; return _metricCache[t]; }
+    if(d && d.metric){ _metricCache[t] = {m: d.metric, ts: Date.now()}; _saveMetricCache(); return _metricCache[t]; }
   }catch(e){}
   return null;
 }
 async function runScreener(){
   const out = document.getElementById('scrResults');
-  const uni = Object.keys(COMPANIES);
+  // Stocks only — crypto and ETFs have no P/E / dividend fundamentals in the metric feed.
+  const uni = Object.keys(COMPANIES).filter(function(t){ return !CRYPTO[t] && !ETFS.has(t); });
   out.innerHTML = '<div class="skel-row" style="height:56px;margin-bottom:8px"></div>'.repeat(5) + '<div style="font-size:12px;color:var(--muted);text-align:center">Screening ' + uni.length + ' stocks…</div>';
   const sector = document.getElementById('scrSector').value;
   const maxP = parseFloat(document.getElementById('scrPrice').value) || Infinity;
@@ -5650,7 +5722,10 @@ async function runScreener(){
   for(const t of uni){
     if(sector && (SECTORS[t]||'Other') !== sector) continue;
     if(guruSet && !guruSet.has(t)) continue;
+    // Throttle uncached metric calls (~1 per 1.1s) so a full run doesn't trip the free-tier rate limit.
+    const needsNet = !metricCached(t);
     const [q, met] = await Promise.all([fetchQ(t), fetchMetrics(t)]);
+    if(needsNet) await new Promise(function(r){ setTimeout(r, 1100); });
     if(!q) continue;
     const m = met ? met.m : {};
     const pe = m.peBasicExclExtraTTM, dy = m.currentDividendYieldTTM || 0, cap = m.marketCapitalization, w52 = m['52WeekPriceReturnDaily'];
@@ -5695,7 +5770,7 @@ async function loadEarnings(){
       return '<div class="earn-row"><div><b>' + x.symbol + '</b>' + (mine ? ' <span class="guru-chip" style="background:rgba(34,197,94,.15);color:#4ade80">You own this</span>' : '') + '<div style="font-size:11px;color:var(--muted)">' + x.date + (x.hour ? ' · ' + x.hour.toUpperCase() : '') + '</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--mint)">' + (days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : 'in ' + days + ' days') + '</div><div style="font-size:11px;color:var(--muted)">EPS est: ' + (x.epsEstimate != null ? '$' + x.epsEstimate : '—') + '</div></div></div>';
     }).join('');
   }catch(e){
-    el.innerHTML = '<div class="empty">Earnings calendar isn’t available on the current data plan — showing it requires a Finnhub upgrade.</div>';
+    el.innerHTML = '<div class="empty">Earnings calendar couldn’t be loaded right now. Please try again later.</div>';
   }
 }
 // backtest (modeled)
@@ -5806,10 +5881,10 @@ function analyzePortfolio(){
   const majors = ['Technology','Healthcare','Financials','Consumer Staples','Energy'];
   const missing = majors.filter(function(m){ return !sec[m]; });
   if(missing.length) findings.push({b:'🧭 Missing sectors', t:'No exposure to: ' + missing.join(', ') + '. You don’t need all of them — but owning only one story is fragile.'});
-  const gurus = {'Warren Buffett':0,'Bill Ackman':0,'David Tepper':0};
+  const gurus = {}; INVESTORS.forEach(function(n){ gurus[n] = 0; });
   portfolio.forEach(function(h){ MOVES.forEach(function(m){ if(m.ticker === h.ticker) gurus[m.investor] = (gurus[m.investor]||0)+1; }); });
   const overlap = Object.entries(gurus).filter(function(e){ return e[1] > 0; }).map(function(e){ return e[0] + ' (' + e[1] + ')'; });
-  findings.push({b:'🏆 Guru alignment', t: overlap.length ? 'You share holdings with: ' + overlap.join(', ') + '. Check the Gold tab to see what they did with those positions last quarter.' : 'None of your holdings overlap with Buffett, Ackman or Tepper — not wrong, but worth knowing you’re fully off the beaten path.'});
+  findings.push({b:'🏆 Guru alignment', t: overlap.length ? 'You share holdings with: ' + overlap.join(', ') + '. Check the Gold tab to see what they did with those positions in their latest 13F filing.' : 'None of your holdings overlap with the 6 investors FinPath tracks — not wrong, but worth knowing you’re fully off the beaten path.'});
   if(portfolio.length < 4) findings.push({b:'📊 Position count', t:'Only ' + portfolio.length + ' holding' + (portfolio.length===1?'':'s') + '. Under ~5 positions, single-company luck dominates your results. An index ETF like VOO fixes this in one purchase.'});
   recs.innerHTML = '<div class="ai-rec"><div class="ai-rec-head"><div class="ai-rec-ticker">Deep portfolio analysis</div><span class="ai-action-badge act-hold">' + portfolio.length + ' holdings · ' + fmt(tv) + '</span></div>' +
     findings.map(function(f){ return '<div style="margin-top:12px"><b>' + f.b + '</b><div class="ai-rec-text" style="margin-top:4px">' + f.t + '</div></div>'; }).join('') +
@@ -5841,11 +5916,27 @@ function sharePortfolio(){
   }).catch(function(){ prompt('Copy your share link:', url); });
   track('portfolio_shared');
 }
+// Validate a shared/imported holdings payload: [[ticker, shares], ...]. Returns a clean list or null.
+// Function declaration (hoisted) so loadFromDB can use it before this line executes.
+function isValidTicker(t){ return typeof t === 'string' && /^[A-Z.\-]{1,10}$/.test(t); }
+function sanitizeSharedList(list){
+  if(!Array.isArray(list) || !list.length || list.length > 100) return null;
+  const out = [], seen = {};
+  for(const x of list){
+    if(!Array.isArray(x) || x.length < 2) return null;
+    const t = x[0], sh = Number(x[1]);
+    if(!isValidTicker(t)) return null;
+    if(!isFinite(sh) || sh <= 0 || sh > 1e9) return null;
+    if(seen[t]) continue; seen[t] = 1;
+    out.push([t, sh]);
+  }
+  return out.length ? out : null;
+}
 async function handleSharedLink(){
   if(location.hash.indexOf('#p=') !== 0) return;
   let list;
-  try{ list = JSON.parse(atob(location.hash.slice(3))); }catch(e){ return; }
-  if(!Array.isArray(list) || !list.length) return;
+  try{ list = sanitizeSharedList(JSON.parse(atob(location.hash.slice(3)))); }catch(e){ list = null; }
+  if(!list){ history.replaceState(null,'',location.pathname); toast('⚠️','That shared portfolio link is invalid.'); return; }
   const ov = document.createElement('div');
   ov.className = 'modal-overlay open';
   ov.setAttribute('role','dialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-label','Shared portfolio');
@@ -5856,17 +5947,23 @@ async function handleSharedLink(){
   let tot = 0;
   document.getElementById('sharedList').innerHTML = qs.map(function(r){
     const v = r.q ? r.q.c*r.sh : 0; tot += v;
-    return '<div class="modal-result" style="cursor:default"><div><b>' + r.t + '</b> <span style="color:var(--muted);font-size:12px">' + r.sh + ' shares</span></div><div style="font-weight:700">' + (r.q ? fmt(v) : '—') + '</div></div>';
+    return '<div class="modal-result" style="cursor:default"><div><b>' + escapeHtml(r.t) + '</b> <span style="color:var(--muted);font-size:12px">' + escapeHtml(r.sh) + ' shares</span></div><div style="font-weight:700">' + (r.q ? fmt(v) : '—') + '</div></div>';
   }).join('') + '<div style="text-align:right;font-weight:700;font-family:var(--font-display);margin-top:8px">Total: ' + fmt(tot) + '</div>';
 }
 async function importShared(){
-  (window._sharedData||[]).forEach(function(x){
+  const list = sanitizeSharedList(window._sharedData);
+  if(!list){ toast('⚠️','That shared portfolio link is invalid.'); return; }
+  let skipped = 0;
+  list.forEach(function(x){
     if(!portfolio.find(function(p){ return p.ticker === x[0]; })){
       const q = priceCache[x[0]];
-      portfolio.push({ticker:x[0], shares:x[1], buyPrice: q ? q.c : 0});
-      logTxn({type:'buy', mode:'live', t:x[0], sh:x[1], price:q?q.c:0});
+      // Don't import at a $0 cost basis — skip holdings with no live price.
+      if(!q || !isFinite(q.c) || q.c <= 0){ skipped++; return; }
+      portfolio.push({ticker:x[0], shares:x[1], buyPrice: q.c});
+      logTxn({type:'buy', mode:'live', t:x[0], sh:x[1], price:q.c});
     }
   });
+  if(skipped) toast('⚠️', skipped + ' holding(s) skipped — live price unavailable.');
   if(typeof renderChecklist==='function') renderChecklist();
   await saveToDB();
   document.querySelector('.modal-overlay.open').remove();

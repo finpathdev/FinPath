@@ -1,0 +1,74 @@
+# FinPath — Fixer pass notes (Agent 7)
+
+Fixer pass on 2026-10-24. **These changes are local only. Nothing has been committed or pushed.**
+I only edited `index.html`. I didn't touch `sw.js`.
+I checked the syntax of all 3 inline `<script>` blocks with `node --check`, and each one passed.
+I also ran a quick node test of `sanitizeSharedList` and `escapeHtml` against an XSS payload, negative shares, Infinity and a non-array input. Each bad input was rejected or escaped.
+
+## What changed (index.html, approximate line numbers after the patch)
+
+| # | Fix | Where |
+|---|-----|-------|
+| P0 XSS | Added `isValidTicker()` (`/^[A-Z.\-]{1,10}$/`, a hoisted function) and `sanitizeSharedList()`. These require positive, finite share counts (no more than 1e9), at most 100 rows, and no duplicate tickers. `handleSharedLink` rejects bad `#p=` payloads straight away (it cleans the hash and shows a toast). `importShared` validates the list again and skips holdings that have no live price. The shared-list modal escapes ticker and share values. | ~5831–5880 |
+| P0 XSS | `escapeHtml()` now wraps the ticker, company and share values in the portfolio rows (`renderPortfolio`), in `renderAlerts` (both the Gold and non-Gold paths, including `adv.action` and `adv.text`) and in the paper-positions list | ~3761, ~3805, ~3818, ~5390 |
+| P0 XSS (defense in depth) | `loadFromDB` drops holdings with an invalid ticker or share count, whether they come from localStorage or from Supabase rows | ~3612–3621 |
+| P0 fake charts | Removed the `Math.random` random-walk fallbacks in `renderPortfolioChart` and `renderDetailChart`. A new `chartUnavailable()`/`chartAvailable()` pair hides the canvas and shows the message "Chart unavailable — historical price data isn't available right now…" | ~3861–3895, ~3964 |
+| P0 fake charts | The Gold hourly modal (`openHourly`) no longer simulates hourly values. It says plainly that hour-by-hour data isn't available on the current data plan and shows only the live value and today's change. | ~3913 |
+| P1 Gold bypass | Deleted the `onAuthStateChange` block that set `IS_GOLD=true` on `?gold=success`. Gold is now granted only through `checkGoldStatus` (the `gold_users` table) or `verifyStripeSession` (the `payments` table). | ~4004 |
+| P1 Search | `handleSearch` now searches every key in `COMPANIES` (so BTC, ETH, SOL, DOGE, UBER, SHOP and the rest are all reachable), returning up to 12 results. A query with no results shows a "No matches" empty state. A match with no quote shows "Price unavailable" instead of disappearing. **I did not change POP, COMPANIES or SECTORS. Coder A owns those.** | ~3644–3670 |
+| P1 Price guards | `openAddShares` treats a missing, stale or zero quote as "price unavailable". `confirmAdd` blocks the add or buy when there is no valid price. Adding to an existing holding now uses a weighted-average `buyPrice`, the same way `paperBuy` does. `paperBuy` rejects a price or share count that is ≤0 or not a finite number. `paperSell` is now async: it clears the cache entry, waits for a fresh `fetchQ`, and blocks the sale if the quote is stale or missing. | ~3681–3706, ~5412–5440 |
+| P2 Counts | `LESSONS` has a sparse hole at index 15 (a stray `,` on its own line at ~2613), so `LESSONS.length` was 35 even though there are 34 real lessons (20 free and 14 Gold). The progress label, the progress bar and the certificate milestone now use `LESSONS.filter(Boolean).length`. I left the hole in place on purpose, because lesson progress is keyed by index and removing it would shift saved progress for lessons 16 and later. I changed "15 Gold lessons" and "15 premium lessons" to **14**. The "34 lessons" meta text was already correct. | ~1761, ~3112, ~3128, ~3314 |
+| TODO markers | Added `TODO(siddharth)` above `const FK` (rotate the key and move it behind a proxy) and above the Stripe **test** Payment Link (swap it for the live link). I added no new keys or URLs. | ~2311, ~3381 |
+
+## Blocked on Siddharth (dashboards only, nothing to code here)
+1. **Stripe live Payment Link.** Replace `https://buy.stripe.com/test_…` in `openGoldPayment()` with the live link. In the live Payment Link settings, set the after-payment redirect to `https://finpathdev.github.io/FinPath/?gold=success&session_id={CHECKOUT_SESSION_ID}`. Without that, `checkPaymentReturn` never sees a `session_id`, and paying users won't get Gold until `gold_users` is updated.
+2. **Finnhub key.** The current key (`d8pn…`, redacted) is public in the repo, so treat it as leaked. Rotate it in Finnhub. Ideally, proxy `/quote` and `/stock/candle` through a Supabase Edge Function so the key never ships to the browser. Candle (history) calls appear to fail on the current plan, which is why the charts now say "unavailable".
+3. **Supabase webhook and tables.** Check these in the dashboard:
+   - The Stripe webhook (Edge Function or other) writes **both** of these:
+     - `payments` (`session_id`, `user_id`, `status='paid'`), which `verifyStripeSession` reads
+     - `gold_users` (`user_id`, `active`), which `checkGoldStatus` reads
+   - One code comment mentions `profiles.is_gold`, but the code actually reads `gold_users`. Decide which table is the source of truth, then make the webhook and the code agree.
+   - **RLS:** `gold_users` and `payments` should allow SELECT only where `user_id = auth.uid()` and should allow **no** INSERT or UPDATE from the anon or authenticated roles (only the service role). `portfolio` should allow SELECT, INSERT, UPDATE and DELETE only on the user's own rows.
+   - How the webhook links a Stripe customer to a Supabase user (for example, by email or `client_reference_id`).
+
+## Hunter bugs NOT fixed in this pass
+- The Stripe live-link swap, Finnhub key rotation or proxy, and the webhook and RLS checks listed above.
+- I didn't expand COMPANIES, SECTORS or POP. That's Coder A's job, and my search fix will pick up new keys automatically.
+- The search doesn't accept arbitrary tickers that aren't in `COMPANIES` (for example, through Finnhub symbol search).
+- Other `innerHTML` sinks that render only static or trusted data (news headlines are already escaped, but `n.url` goes into `href` unvalidated, so a `javascript:` URL from the API is a theoretical risk). I didn't do a full app-wide audit of `innerHTML`.
+- `renderPortfolio` still shows a stale or `buyPrice` value when a quote fails, without labelling it as stale.
+- `fetchCandles` doesn't use the `CRYPTO` symbol map, so crypto charts always show "unavailable".
+- The stray `,` hole in `LESSONS` itself. Removing it needs a progress-index migration.
+- The share-link URL is hardcoded to the GitHub Pages origin.
+
+## Coder A — stocks
+- COMPANIES expanded (GOOG, CVX, BABA, AVGO, LLY, WMT, MA, COST, AMD, MU, NFLX, ORCL, PLTR, PG, HD, BAC, ABBV, MCD, PEP, DIS, NEE, LIN, PLD + 8 ETFs: VOO, VTI, SPY, QQQ, IWM, SCHD, VT, BND); GOOGL relabelled "Class A".
+- Added `ETFS` Set; `POP` is now an explicit array (incl. VOO/QQQ/SPY/AVGO) instead of `Object.keys(COMPANIES).slice(0,14)`.
+- SECTORS replaced: UBER → Industrials; GOOG/CVX/BABA + all new names; ETFs → "Index Fund"; new Utilities/Materials/Real Estate sectors.
+- handleSearch: searches all COMPANIES keys, ranks exact > prefix > name match, allows a typed unknown ticker matching /^[A-Z.]{1,6}$/, "No matches" empty state kept (Fixer's).
+- Search results show "(last known)" when a quote is stale.
+- AI_INSIGHT: added VOO, QQQ, AVGO, LLY (neutral, educational).
+- Copy: meta/og/twitter "live billionaire trades" → "the latest billionaire 13F trades"; globe header "Live market pulse" → "Global exchanges"; globe city fake % values → "—" (neutral colour); Gold gate "all 19 investor moves" → `${MOVES.length}`; earnings error no longer mentions a Finnhub upgrade.
+- Screener: universe = COMPANIES minus crypto/ETFs; uncached metric calls throttled 1100 ms; metric cache now 24h in localStorage (`fp_metric_cache`); sector dropdown hides Crypto/Index Fund.
+- Demo portfolio diversified: VOO×2, AAPL×3, JPM×2, KO×5, LLY×1.
+- Chart Math.random fallbacks were already removed by Fixer — not touched.
+
+## Coder B — content/pricing
+- Roth IRA lesson (Tax Basics): "Limit $7,000 per year in 2026" → "The IRS limit is $7,500 per year in 2026 (higher if you are 50 or older)." The 401(k) text gives no dollar limit, so I left it (the 2026 limit is $24,500 if one is ever added).
+- Gold pricing card: removed the "or $39.99/year — save 33%" line, which had no checkout behind it. It now says "Billed monthly · annual plan coming soon". $4.99/mo is still the only plan you can buy. I didn't add or change any Stripe URL.
+- Safety Net card: "4–5% APY" → "~3–5% APY (rates vary)".
+- Terms ("Last updated: July 2026"): not changed.
+- Added a short README.md (what FinPath is, plans, stack, how to run it locally, disclaimer, support@finpath.app).
+- TODO(siddharth): once annual Stripe checkout exists, put the annual price back on the card at index.html around line 1771, and in the README.
+
+## Coder A — 13F Q2 2026
+- `MOVES` replaced verbatim with /workspace/agent2/moves.js (with its source comment header): 50 moves, 6 investors (Buffett, Ackman, Tepper, Druckenmiller, Li Lu, Klarman), all dated Q2 2026.
+- New `INVESTORS` const (unique investors from MOVES) drives the Gold filter tabs, the screener "Guru-owned" dropdown (now populated in JS) and the deep-analysis `gurus` tally.
+- Hero: copy now says the latest 13F trades from 6 legendary investors; stat "3 Billionaires you can copy" → "6 Legendary investors tracked".
+- Landing investor preview: title → "What legendary investors just reported"; subtitle → Q2 2026, as of June 30, filed Aug 14, next after Nov 16 (dropped "the moment they drop"); cards → WB Alphabet ADD 83%, BA Visa BUY, DT Amazon ADD 15.7%, plus a 4th SD Natera ADD 4% card (grid is auto-fit).
+- Copy that named only Buffett/Ackman/Tepper (how-it-works, Gold feature card, both pricing bullets, Gold page hero, Gold gate, guru-alignment empty state) → 6 legendary investors. "See billionaire moves" CTA → "See investor moves".
+- Added a 13F disclaimer under the Investor Moves grid (45-day delay, long U.S. positions only, educational).
+- AI_INSIGHT MSFT/GOOGL/AMZN/META and AI_ADVISOR GOOGL/AMZN: replaced the stale "tripled / this quarter / just bought" lines with Q2 2026 facts.
+- "What Billionaires Actually Invest In" lesson: refreshed the Buffett/Ackman/Tepper holdings to Q2 and added short Druckenmiller, Li Lu and Klarman sections.
+- COMPANIES + SECTORS: added TSM, BA, NTRA, STM, PDD, EWBC, ELV, GPC, CME, HHH, QSR, SPGI, LEN, KR, STZ. ETFS set unchanged.
+- sw.js CACHE → finpath-v5.
