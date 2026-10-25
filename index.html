@@ -4369,10 +4369,23 @@ function agreeToTerms(){
 
 
 // ── SUPABASE AUTH ──
-const supabaseClient = supabase.createClient(SBU, SBK);
+// The CDN script can be blocked or offline. Never let a missing client abort boot
+// (routing, lessons, and the offline bar all live later in this script).
+let supabaseClient = null;
+try{
+  if(typeof supabase !== 'undefined' && supabase && typeof supabase.createClient === 'function'){
+    supabaseClient = supabase.createClient(SBU, SBK);
+  } else {
+    console.warn('Sign-in is unavailable (Supabase did not load). Lessons and saved data still work.');
+  }
+}catch(e){
+  supabaseClient = null;
+  console.warn('Sign-in is unavailable.', e);
+}
 let currentUser = null;
 
 async function initAuth(){
+  if(!supabaseClient) return;
   // Check for magic link callback
   const { data: { session }, error } = await supabaseClient.auth.getSession();
   if(session && session.user){
@@ -4703,6 +4716,7 @@ async function sendMagicLink(email){
     if(status) status.remove();
   }
   try {
+    if(!supabaseClient) throw new Error('Sign-in is unavailable right now. Lessons and your saved portfolio still work.');
     const { error } = await supabaseClient.auth.signInWithOtp({
       email: email,
       options: { emailRedirectTo: 'https://finpathdev.github.io/FinPath/' }
@@ -4746,7 +4760,7 @@ async function sendMagicLink(email){
 }
 
 async function signOut(){
-  await supabaseClient.auth.signOut();
+  try{ if(supabaseClient) await supabaseClient.auth.signOut(); }catch(e){}
   closeUserMenu();
 }
 
