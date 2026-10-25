@@ -5818,10 +5818,14 @@ function confettiBurst(){
   })();
 }
 function notify(title, body){
+  // Notification text is plain. The toast is HTML, so user-controlled strings
+  // (a ticker planted in fp_alerts) must be escaped or an onerror handler runs.
+  const safeTitle = escapeHtml(title);
+  const safeBody = escapeHtml(body);
   if('Notification' in window && Notification.permission === 'granted'){
-    try{ new Notification(title, {body: body}); }catch(e){}
+    try{ new Notification(String(title), {body: String(body)}); }catch(e){}
   }
-  toast('🔔', '<b>' + title + '</b><br>' + body);
+  toast('🔔', '<b>' + safeTitle + '</b><br>' + safeBody);
 }
 
 // ── STREAK + ACHIEVEMENTS ──
@@ -5904,7 +5908,7 @@ async function addAlertFromDetail(){
   }
   if(q && isFinite(q.c) && q.c > 0 && q.ts && Date.now() - q.ts <= 300000){
     if((dir === 'below' && q.c <= price) || (dir === 'above' && q.c >= price)){
-      toast('⚠️', t + ' is already ' + fmt(q.c) + '. Pick a target it has not reached yet.');
+      toast('⚠️', escapeHtml(t) + ' is already ' + fmt(q.c) + '. Pick a target it has not reached yet.');
       return;
     }
   }
@@ -5912,7 +5916,7 @@ async function addAlertFromDetail(){
   saveAlerts(a);
   if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
   wsWatch(t);
-  toast('🔔', 'Alert set: ' + t + ' ' + (dir === 'below' ? 'drops below' : 'rises above') + ' ' + fmt(price) + '. It only runs while this tab is open.');
+  toast('🔔', 'Alert set: ' + escapeHtml(t) + ' ' + (dir === 'below' ? 'drops below' : 'rises above') + ' ' + fmt(price) + '. It only runs while this tab is open.');
   document.getElementById('alertPrice').value = '';
 }
 function removeAlert(idx){ const a = getAlerts(); a.splice(idx,1); saveAlerts(a); }
