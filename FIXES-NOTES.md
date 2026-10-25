@@ -408,13 +408,13 @@ Investor Moves surfaces from PR #10 stay: timeline, “Research, do not copy” 
 
 **Re-checked after this merge:** `node --check` on the three inline scripts and `sw.js`. Headless Chrome 43/43, including the audit repros, the Markets learner cues, the landing trust strip, `F13_TERMS`, and the Gold action filters plus filing-lag steps.
 
-## 2026-10-25 — Paper journal lows from the v22 scan (finpath-v23)
+## 2026-10-25 — Paper journal lows from the v22 scan (finpath-v24)
 
-Fixes for the low findings in the thesis-journal scan. Stripe was not changed. Investor Moves, `F13_TERMS`, and the lesson glossary were not changed.
+Fixes for the low findings in the thesis-journal scan. Rebased onto main after PR #14 (onboarding intake), which already shipped `finpath-v23`. Stripe was not changed. Investor Moves, `F13_TERMS`, and the lesson glossary were not changed.
 
 - **F1.** Transaction history escapes the share count before it is placed in the row HTML. A planted `fp_txns[].sh` string no longer runs as markup. Ticker and thesis in that row were already escaped. Price still goes through `fmt`.
 - **F2.** `toast()` treats its message as text. Callers that intentionally pass markup (price-alert notifications, achievement unlocks, goal milestones) opt in, and those strings are escaped first. Paper buy and sell toasts can no longer run a stored ticker.
 - **F3.** Escape does nothing while a paper-sell confirm is waiting on a quote. When that sale finishes, the dialog closes only if it is still the same sell, so a later draft is left alone.
 - **F5.** Escape and Cancel move focus back to that row’s Sell button before the dialog index is cleared. The dialog’s delayed focus timer does not pull focus back onto the hidden field after it has closed.
 - **F4.** No product change. Keeping the first thesis on an existing paper position is intentional. A later buy of the same symbol still stores its own note on the transaction row.
-- `sw.js` cache is `finpath-v23`.
+- `sw.js` cache is `finpath-v24`.
