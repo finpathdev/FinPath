@@ -120,3 +120,24 @@ logic didn't cause this; it was masking the failure. Every quote came back with 
 - The Finnhub key is still client-side, as before. A Supabase Edge Function proxy is the real fix and is out of scope for a static pass.
 - Gold status checks the `gold_users` table, payment verification checks `payments`, and comments mention `profiles.is_gold`. Make sure the Stripe webhook writes the tables the client reads before going live.
 - Stripe live Payment Link: still deferred.
+
+## 2026-10-25 — 13F freshness + beginner clarity pass (finpath-v9)
+**Data review:** `MOVES` still has the latest public 13F data, for Q2 2026 (positions as of Jun 30, filed Aug 13–14). The Q3 2026 deadline is Nov 16, 2026 (45 days after Sep 30, rolled to a business day), so there are no newer filings yet. MOVES was **not** changed and nothing was invented. COMPANIES covers every MOVES ticker. When Q3 filings land, refresh `MOVES` and the new `F13` constant (quarter / asOf / filed / nextQuarter / nextDue).
+
+**Investor Moves (Gold page)**
+- Freshness line computed from `F13`: "Latest available data: Q2 2026… Q3 filings due by Nov 16, 2026 (in N days)". Once the deadline passes it switches to an honest "Q3 filings are now due/out — moves below are still Q2 until reviewed". The landing-page 13F subtitle (`#landing13fNote`) switches the same way.
+- New collapsible explainer, "How to read these investor moves": what a 13F is, BUY/NEW/ADD/REDUCE/SOLD OUT/HOLD, what "$37.8B — 12.6%" means, and why the 45-day delay means these are ideas to research, not trades to copy.
+- Fixed a dead UI piece: move cards showed a pointer cursor but did nothing on click. Clicking a card (or pressing Enter/Space) now expands it to show the full note, which was cut off at 2 lines. It has role=button and aria-expanded.
+- "+ Track TICKER" button on each card opens Add-stock search with the ticker filled in.
+
+**Markets**
+- New market-status chip next to Market pulse ("Market open / Pre-market / After hours / Market closed"), worked out in New York time with `Intl` (`usMarketStatus()`). Exchange holidays aren't modelled.
+- The pulse note no longer says "Broad market is having a strong day" on weekends or overnight. When the market is closed it says so and describes the last session in the past tense.
+- `isMarketHours()` (refresh cadence) now uses the accurate ET status instead of a fixed UTC window, which used to drift by an hour across DST.
+- Each pulse tile shows its ticker and a one-line beginner description (e.g. SPY = 500 of the largest U.S. companies). The section subtitle explains what an index ETF is.
+
+**Portfolio**
+- The empty state is now a beginner on-ramp: a short explanation plus three choices (demo portfolio, add a stock, practice with paper money), and a note that the demo is a sample, not a recommendation.
+
+- sw.js CACHE → finpath-v9. The Stripe test link was not changed.
+- Verified: `node --check` on all 3 inline scripts and on sw.js. Finnhub AAPL → 200. Headless Chrome check (Gold forced on in a temp copy only): freshness line + explainer rendered, the card expanded (aria-expanded=true), Track filled search with "KO", the Markets chip showed "Market closed" on a Sunday with ticker/description tiles, the new portfolio empty state rendered, no page errors.
