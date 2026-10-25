@@ -3599,6 +3599,9 @@ function showSuccessBanner(){
 // ── PORTFOLIO / SUPABASE ──
 const CRYPTO = {BTC:'BINANCE:BTCUSDT', ETH:'BINANCE:ETHUSDT', SOL:'BINANCE:SOLUSDT', DOGE:'BINANCE:DOGEUSDT'};
 const REV_CRYPTO = {}; Object.keys(CRYPTO).forEach(function(k){ REV_CRYPTO[CRYPTO[k]] = k; });
+// Finnhub crypto symbols are exchange pairs. The raw ticker BTC is a different listing
+// (~$36), not Bitcoin. Stocks, including BRK.B, are already valid Finnhub symbols.
+function finnhubSymbol(t){ return CRYPTO[t] || t; }
 const _pendingQ = {};
 // ── RESILIENT PRICE FETCHING ──
 // Prices are cached in-memory AND persisted to localStorage, so if Finnhub
@@ -3686,7 +3689,7 @@ async function fetchQ(t){
   if(_pendingQ[t]) return _pendingQ[t];
   _pendingQ[t] = (async function(){
     try{
-      const r = await fetch('https://finnhub.io/api/v1/quote?symbol='+encodeURIComponent(CRYPTO[t]||t)+'&token='+FK);
+      const r = await fetch('https://finnhub.io/api/v1/quote?symbol='+encodeURIComponent(finnhubSymbol(t))+'&token='+FK);
       if(r.status === 401){ apiKeyInvalid(); return cached ? {...cached, stale:true} : null; }
       if(r.status === 429 || r.status === 403){ apiTrouble(); return cached ? {...cached, stale:true} : null; }
       const d = await r.json();
@@ -3711,8 +3714,13 @@ async function fetchQ(t){
 
 async function fetchCandles(t,days){
   const to=Math.floor(Date.now()/1000),from=to-days*86400,res=days<=1?'5':'D';
+  // Crypto history is GET /crypto/candle?symbol=BINANCE:BTCUSDT (same pair quotes use).
+  // /stock/candle with the raw ticker never returns that series. Both candle routes
+  // are premium: a free-plan 403 falls through to the chart's "unavailable" state.
+  const path=CRYPTO[t]?'crypto/candle':'stock/candle';
   try{
-    const r=await fetch('https://finnhub.io/api/v1/stock/candle?symbol='+t+'&resolution='+res+'&from='+from+'&to='+to+'&token='+FK);
+    const r=await fetch('https://finnhub.io/api/v1/'+path+'?symbol='+encodeURIComponent(finnhubSymbol(t))+'&resolution='+res+'&from='+from+'&to='+to+'&token='+FK);
+    if(!r.ok) return null;
     const d=await r.json();
     if(d.c&&d.c.length>1) return d.c;
   }catch(e){}
@@ -4559,7 +4567,7 @@ function startWS(){
   if(ws || !('WebSocket' in window) || (typeof _apiKeyDead !== 'undefined' && _apiKeyDead)) return;
   try{
     ws = new WebSocket('wss://ws.finnhub.io?token=' + FK);
-    ws.onopen = function(){ wsSubs.forEach(function(t){ ws.send(JSON.stringify({type:'subscribe', symbol:(CRYPTO[t]||t)})); }); };
+    ws.onopen = function(){ wsSubs.forEach(function(t){ ws.send(JSON.stringify({type:'subscribe', symbol:finnhubSymbol(t)})); }); };
     ws.onmessage = function(e){
       try{
         const m = JSON.parse(e.data);
@@ -4586,12 +4594,12 @@ function wsUnwatch(t){
   if(!wsSubs.has(t)) return;
   if(portfolio.find(function(p){return p.ticker===t;}) || isWatched(t)) return;
   wsSubs.delete(t);
-  if(ws && ws.readyState === 1) ws.send(JSON.stringify({type:'unsubscribe', symbol:t}));
+  if(ws && ws.readyState === 1) ws.send(JSON.stringify({type:'unsubscribe', symbol:finnhubSymbol(t)}));
 }
 function wsWatch(t){
   if(wsSubs.has(t)) return;
   wsSubs.add(t);
-  if(ws && ws.readyState === 1) ws.send(JSON.stringify({type:'subscribe', symbol:(CRYPTO[t]||t)}));
+  if(ws && ws.readyState === 1) ws.send(JSON.stringify({type:'subscribe', symbol:finnhubSymbol(t)}));
   else startWS();
 }
 

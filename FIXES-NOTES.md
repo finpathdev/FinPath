@@ -141,3 +141,12 @@ logic didn't cause this; it was masking the failure. Every quote came back with 
 
 - sw.js CACHE → finpath-v9. The Stripe test link was not changed.
 - Verified: `node --check` on all 3 inline scripts and on sw.js. Finnhub AAPL → 200. Headless Chrome check (Gold forced on in a temp copy only): freshness line + explainer rendered, the card expanded (aria-expanded=true), Track filled search with "KO", the Markets chip showed "Market closed" on a Sunday with ticker/description tiles, the new portfolio empty state rendered, no page errors.
+
+## 2026-10-25 — Crypto candle symbol wiring (finpath-v10)
+Market data only. No Stripe, 13F, lesson, or pricing edits. Rebased onto the 13F freshness pass above; that pass's notes and MOVES content are unchanged.
+
+- `fetchCandles` called `/stock/candle` with the raw ticker. Quotes already remap BTC/ETH/SOL/DOGE through `CRYPTO` to `BINANCE:*USDT`; candles did not. Verified the same day: raw `BTC` quotes at ~$36 and raw `ETH` at ~$23 (different listings). `BINANCE:BTCUSDT` / `ETHUSDT` / `SOLUSDT` / `DOGEUSDT` are the live coins (~$80.6k / ~$2,355 / ~$102 / ~$0.077).
+- Finnhub crypto history is `GET /crypto/candle?symbol=BINANCE:BTCUSDT` (resolutions `1, 5, 15, 30, 60, D, W, M`), not `/stock/candle`. Docs mark both stock and crypto candles as premium. `fetchCandles` now picks `/crypto/candle` when `CRYPTO[t]` is set and otherwise `/stock/candle`, and encodes the symbol the same way `fetchQ` does. A non-OK response (the free key returns HTTP 403 `You don't have access to this resource.` for AAPL, BRK.B, and every crypto candle tried, daily and 5-minute) still returns null, so the existing "Chart unavailable" state stays. No synthetic series.
+- `BRK.B` and `BRK-B` both returned the same live quote, so nothing remaps class shares. Market pulse and the sector heat map go through `fetchQ` with plain ETF tickers (SPY, QQQ, DIA, sector ETFs) — no crypto gap. `stock/metric` and `company-news` are stock endpoints; the screener and dividend card already skip crypto, and an empty headline list stays hidden. Not remapped onto `BINANCE:*`.
+- WebSocket subscribe already sent the exchange pair; unsubscribe sent the raw ticker (`BTC`), so a crypto unwatch never left the socket. Unsubscribe now uses `finnhubSymbol` too.
+- `index.html` is a precached shell asset, so sw.js `CACHE` goes `finpath-v9` → `finpath-v10`. It is not rolled back.
