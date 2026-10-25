@@ -72,3 +72,33 @@ I also ran a quick node test of `sanitizeSharedList` and `escapeHtml` against an
 - "What Billionaires Actually Invest In" lesson: refreshed the Buffett/Ackman/Tepper holdings to Q2 and added short Druckenmiller, Li Lu and Klarman sections.
 - COMPANIES + SECTORS: added TSM, BA, NTRA, STM, PDD, EWBC, ELV, GPC, CME, HHH, QSR, SPGI, LEN, KR, STZ. ETFS set unchanged.
 - sw.js CACHE → finpath-v5.
+
+## 2026-10-24 — Live prices outage diagnosis + polish pass (finpath-v6)
+**Root cause of "no live prices":** the Finnhub key `FK` in index.html (`d8pn5n…d7g`) is rejected. Finnhub returns
+`HTTP 401 {"error":"Invalid API key."}` for AAPL, SPY and BINANCE:BTCUSDT (tested 2026-10-24 from the box with Origin
+https://finpathdev.github.io). CORS is fine (`access-control-allow-origin: *`), and symbol mapping is fine. The price-guard/stale
+logic didn't cause this; it was masking the failure. Every quote came back with no `c`, so rows fell back silently.
+- **TODO(siddharth):** create a new free key at https://finnhub.io/dashboard and replace `FK` (TODO comment added there).
+  Better: proxy it via a Supabase Edge Function. No replacement key was invented.
+
+**Outage UX**
+- New `apiKeyInvalid()`: on a 401, a red "Market data unavailable" banner (dismissible) shows right away. `fetchQ` stops
+  calling Finnhub (it serves last-known/`null`). The scheduled SPY retry stops, the WebSocket is closed and its 6s reconnect
+  loop is disabled, and the green `.live-dot`s turn grey (`.is-offline`).
+- Market pulse and sector heat map now show an explicit "Market data unavailable" message instead of an empty grid.
+  Pulse tiles show a "last known" flag on stale quotes. The Markets pulse subtitle changed to "live when market data is available".
+- Portfolio rows: a `price-flag` badge reads "no live price" (valued at cost basis) or "last known" (stale quote).
+
+**Polish**
+1. `renderMoves`: photo, investor, stock, ticker, notes, amount and date now go through `escapeHtml`. `getActionBadge` escapes its label too.
+2. Portfolio stale badge (see above).
+3. Hash router: `ROUTES = home|portfolio|lessons|gold|markets|legal`. `showPage` pushes `#page` (home → clean path) and never touches
+   `#p=` share links. `routeFromHash` runs on load, `hashchange` and `popstate`. Back/forward works, and `#p=` links still open the import modal.
+4. `renderSearchResults` priced branch: `COMPANIES[t]` is now escaped.
+5. Added `robots.txt` and `sitemap.xml` (https://finpathdev.github.io/FinPath/). Note: crawlers only read robots.txt at the domain root,
+   so for a project page submit the sitemap in Google Search Console.
+6. Markets header: "Live market pulse…" → "Market pulse (live when data is available)… Some figures are reference snapshots".
+7. New badge styles: `badge-sold` (red), `badge-put` (orange) and `badge-new`. "Sold out" and "New put (bearish)" no longer use the generic reduce style.
+- sw.js CACHE → finpath-v6. The Stripe test link was not changed.
+- Verified: `node --check` on all 3 inline scripts and on sw.js. A headless Chrome smoke test showed the banner on a 401, the pulse message,
+  the #markets deep link, pushState plus Back, hashchange, the #p= modal and the portfolio "no live price" flag, with no page errors.

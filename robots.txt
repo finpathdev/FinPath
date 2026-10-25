@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://finpathdev.github.io/FinPath/sitemap.xml

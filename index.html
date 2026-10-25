@@ -429,6 +429,7 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 .act-watch{background:var(--gold-soft);color:var(--gold);border:1px solid rgba(245,182,11,.3)}
 .ai-rec-text{font-size:14px;color:#a9bba9;line-height:1.7}
 .live-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:blip 2s infinite;display:inline-block;box-shadow:0 0 8px var(--green)}
+.live-dot.is-offline{background:#94a3b8;animation:none;box-shadow:none}
 
 /* ── ALERTS ── */
 .alerts-section{margin-bottom:26px}
@@ -983,6 +984,13 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
 /* ── API STATUS BANNER (rate-limit / outage) ── */
 .api-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:940;background:#3a2b06;color:#fde68a;border:1px solid rgba(245,182,11,.4);border-radius:999px;padding:10px 20px;font-size:13px;font-weight:600;display:none;align-items:center;gap:9px;box-shadow:0 10px 30px rgba(0,0,0,.5);max-width:calc(100% - 32px)}
 .api-bar .spinner{width:14px;height:14px;border-width:2px;flex-shrink:0}
+.api-bar.api-bar-dead{background:#3b0d0d;color:#fecaca;border-color:rgba(248,113,113,.45);border-radius:14px;text-align:left}
+body.light .api-bar.api-bar-dead{background:#fee2e2;color:#991b1b;border-color:rgba(220,38,38,.35)}
+.api-bar-x{background:none;border:0;color:inherit;font-size:18px;line-height:1;cursor:pointer;padding:0 0 0 6px;opacity:.8}
+.price-flag{font-size:10px;font-weight:600;color:var(--muted);background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.25);border-radius:6px;padding:1px 6px;margin-left:4px;white-space:nowrap}
+.badge-sold{background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.3)}
+.badge-new{background:rgba(96,165,250,.12);color:#60a5fa;border:1px solid rgba(96,165,250,.3)}
+.badge-put{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.3)}
 body.light .api-bar{background:#fef3c7;color:#92400e;border-color:rgba(180,120,7,.35)}
 
 /* ── TRANSACTION HISTORY ── */
@@ -1957,8 +1965,8 @@ body.light .gs-item{background:#fff}
 <!-- MARKETS -->
 <div id="page-markets" class="page">
   <div class="portfolio-wrap">
-    <div class="page-header" style="padding:16px 0 30px"><h1>Markets</h1><p>Live market pulse, sector heat map, stock screener, earnings calendar and a backtest tool.</p></div>
-    <div class="mk-section"><div class="mk-title">Market pulse <span class="live-dot" style="margin-left:6px"></span></div><div class="mk-sub">Major index ETFs, live.</div><div class="pulse-grid" id="pulseGrid"><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div></div><div id="pulseNote" style="font-size:13px;color:var(--muted)"></div></div>
+    <div class="page-header" style="padding:16px 0 30px"><h1>Markets</h1><p>Market pulse (live when data is available), sector heat map, stock screener, earnings calendar and a backtest tool. Some figures are reference snapshots, not real-time.</p></div>
+    <div class="mk-section"><div class="mk-title">Market pulse <span class="live-dot" style="margin-left:6px"></span></div><div class="mk-sub">Major index ETFs (live when market data is available).</div><div class="pulse-grid" id="pulseGrid"><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div></div><div id="pulseNote" style="font-size:13px;color:var(--muted)"></div></div>
     <div class="mk-section"><div class="mk-title">Sector heat map</div><div class="mk-sub">Today’s performance by sector (SPDR sector ETFs). Tap a sector for detail.</div><div class="heat-grid" id="heatGrid"><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div></div><div id="heatDetail" style="margin-top:14px;font-size:13px;color:var(--muted)"></div></div>
     <div class="mk-section"><div class="mk-title">Stock screener</div><div class="mk-sub">Discover stocks by fundamentals across FinPath’s tracked universe.</div>
       <div class="scr-filters">
@@ -2311,6 +2319,10 @@ body.light .gs-item{background:#fff}
 
 // TODO(siddharth): Finnhub key is shipped client-side. Rotate it in the Finnhub dashboard and move
 // quote/candle calls behind a server proxy (e.g. Supabase Edge Function). Do NOT paste a new key here.
+// TODO(siddharth): 2026-10-24 — this key now returns HTTP 401 "Invalid API key." from Finnhub, so ALL
+// live prices, candles, news, metrics and the WebSocket are down. Create a new free key at
+// https://finnhub.io/dashboard and replace the value below (or better, move it behind a proxy).
+// When the key is rejected the app shows a "Market data unavailable" banner (see apiKeyInvalid()).
 const FK='d8pn5n1r01qujv4j5d70d8pn5n1r01qujv4j5d7g';
 const SBU='https://ivhhfhemcecwqadrjmwq.supabase.co';
 const SBK='sb_publishable_KoWYv1Ro5D4I83XxWmJFOg_DCB2ldw6';
@@ -3141,18 +3153,31 @@ const STRIPE_PRICE = 'price_1TjBU0RvClN8iCWy4olxCqfL'; // Replace with your pric
 
 // ── HELPERS ──
 function getActionBadge(a){
-  const l=a.toLowerCase();
+  a=String(a||'');
+  const l=a.toLowerCase(), A=escapeHtml(a.toUpperCase());
+  if(l.includes('sold out')) return '<span class="inv-badge badge-sold">'+A+'</span>';
+  if(l.includes('put')) return '<span class="inv-badge badge-put">'+A+'</span>';
   if(l.includes('buy')) return '<span class="inv-badge badge-buy">BUY</span>';
-  if(l.includes('add')) return '<span class="inv-badge badge-add">'+a.toUpperCase()+'</span>';
+  if(l.startsWith('new')) return '<span class="inv-badge badge-new">'+A+'</span>';
+  if(l.includes('add')) return '<span class="inv-badge badge-add">'+A+'</span>';
   if(l.includes('hold')) return '<span class="inv-badge badge-hold">HOLD</span>';
-  return '<span class="inv-badge badge-reduce">'+a.toUpperCase()+'</span>';
+  return '<span class="inv-badge badge-reduce">'+A+'</span>';
 }
 
 function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
 
-function showPage(p){
+const ROUTES=['home','portfolio','lessons','gold','markets','legal'];
+function showPage(p,fromHash){
+  if(!document.getElementById('page-'+p)) p='home';
   document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
+  // Keep the URL in sync (#portfolio etc.) so pages are linkable and Back works.
+  // Never clobber a #p= shared-portfolio link — handleSharedLink owns that hash.
+  if(!fromHash && ROUTES.indexOf(p)>=0 && location.hash.indexOf('#p=')!==0){
+    const want = p==='home' ? location.pathname+location.search : '#'+p;
+    const cur = location.hash.replace(/^#/,'') || 'home';
+    if(cur!==p){ try{ history.pushState(null,'',want); }catch(e){} }
+  }
   document.getElementById('mobileMenu').classList.remove('open');
   window.scrollTo(0,0);
   if(p==='lessons') renderLessons();
@@ -3419,16 +3444,16 @@ function renderMoves(f){
   const filtered=f==='all'?MOVES:MOVES.filter(m=>m.investor===f);
   document.getElementById('movesGrid').innerHTML=filtered.map(m=>`
     <div class="move-card">
-      <div class="move-avatar">${m.photo}</div>
+      <div class="move-avatar">${escapeHtml(m.photo)}</div>
       <div class="move-info">
-        <div class="move-investor">${m.investor}</div>
-        <div class="move-stock">${m.stock} <span style="color:var(--muted);font-weight:400;font-size:13px">${m.ticker}</span></div>
+        <div class="move-investor">${escapeHtml(m.investor)}</div>
+        <div class="move-stock">${escapeHtml(m.stock)} <span style="color:var(--muted);font-weight:400;font-size:13px">${escapeHtml(m.ticker)}</span></div>
         <div style="margin-bottom:6px">${getActionBadge(m.action)}</div>
-        <div class="move-note">${m.notes}</div>
+        <div class="move-note">${escapeHtml(m.notes)}</div>
       </div>
       <div class="move-right">
-        <div class="move-amount">${m.amount}</div>
-        <div style="font-size:11px;color:var(--muted2);margin-top:4px">${m.date}</div>
+        <div class="move-amount">${escapeHtml(m.amount)}</div>
+        <div style="font-size:11px;color:var(--muted2);margin-top:4px">${escapeHtml(m.date)}</div>
       </div>
     </div>`).join('');
 }
@@ -3555,7 +3580,22 @@ function _apiBar(){
   }
   return b;
 }
+// Finnhub rejected the API key (HTTP 401). Retrying won't help, so stop hammering the
+// API, stop the WebSocket reconnect loop, and tell the user plainly instead of silent blanks.
+let _apiKeyDead = false;
+function apiKeyInvalid(){
+  if(_apiKeyDead) return;
+  _apiKeyDead = true; _apiDown = true;
+  if(_apiRetryT){ clearTimeout(_apiRetryT); _apiRetryT = null; }
+  const b = _apiBar();
+  b.classList.add('api-bar-dead');
+  b.innerHTML = '<span aria-hidden="true">⚠️</span><span>Market data unavailable — live prices can\u2019t load right now. Any prices shown are last known or your cost basis.</span><button type="button" class="api-bar-x" aria-label="Dismiss" onclick="this.parentNode.style.display=\'none\'">×</button>';
+  b.style.display = 'flex';
+  try{ if(typeof ws !== 'undefined' && ws){ ws.onclose = null; ws.close(); ws = null; } }catch(e){}
+  try{ document.querySelectorAll('.live-pill,.live-dot').forEach(function(el){ el.classList.add('is-offline'); }); }catch(e){}
+}
 function apiTrouble(){
+  if(_apiKeyDead) return;
   _apiFailStreak++;
   if(_apiFailStreak < 3 || _apiDown) return;   // tolerate a couple of one-off misses
   _apiDown = true;
@@ -3582,6 +3622,7 @@ function scheduleApiRetry(){
     _apiRetryT = null;
     try{
       const r = await fetch('https://finnhub.io/api/v1/quote?symbol=SPY&token='+FK);
+      if(r.status === 401){ apiKeyInvalid(); return; }
       if(r.ok){
         const d = await r.json();
         if(d && d.c){ priceCache['SPY'] = {c:d.c,d:d.d,dp:d.dp,o:d.o,ts:Date.now()}; persistPriceCache(); apiOK(); return; }
@@ -3594,10 +3635,12 @@ async function fetchQ(t){
   const cached = priceCache[t];
   // Serve cached price only if it's under 10s old (was 30s) so quotes stay live.
   if(cached && Date.now()-cached.ts < 10000) return cached;
+  if(_apiKeyDead) return cached ? {...cached, stale:true} : null;   // key rejected — don't spam the API
   if(_pendingQ[t]) return _pendingQ[t];
   _pendingQ[t] = (async function(){
     try{
       const r = await fetch('https://finnhub.io/api/v1/quote?symbol='+encodeURIComponent(CRYPTO[t]||t)+'&token='+FK);
+      if(r.status === 401){ apiKeyInvalid(); return cached ? {...cached, stale:true} : null; }
       if(r.status === 429 || r.status === 403){ apiTrouble(); return cached ? {...cached, stale:true} : null; }
       const d = await r.json();
       if(d && d.c){
@@ -3715,7 +3758,7 @@ function renderSearchResults(items){
       <div style="text-align:right;font-size:12px;color:var(--muted)">Price unavailable</div>
     </div>`:`
     <div class="modal-result" onclick="openAddShares('${t}')"><button class="watch-star" aria-label="Toggle watchlist for ${t}" onclick="event.stopPropagation();toggleWatch('${t}',this)">${isWatched(t)?'★':'☆'}</button>
-      <div><div style="font-size:15px;font-weight:600">${t}</div><div style="font-size:12px;color:var(--muted)">${COMPANIES[t]||t}</div></div>
+      <div><div style="font-size:15px;font-weight:600">${t}</div><div style="font-size:12px;color:var(--muted)">${escapeHtml(COMPANIES[t]||t)}</div></div>
       <div style="text-align:right">
         <div style="font-size:15px;font-weight:600;color:${q.dp>=0?'#4ade80':'#f87171'}">$${q.c.toFixed(2)}</div>
         <div style="font-size:12px;color:${q.dp>=0?'#4ade80':'#f87171'}">${q.dp>=0?'+':''}${q.dp.toFixed(2)}%${q.stale?' <span style="color:var(--muted)">(last known)</span>':''}</div>
@@ -3827,6 +3870,7 @@ async function renderPortfolio(){
 
   document.getElementById('stocksGrid').innerHTML=quotes.map(({h,q})=>{
     const price=q?q.c:h.buyPrice;
+    const priceFlag=!q?' <span class="price-flag" title="No market data — valued at your buy price">no live price</span>':(q.stale?' <span class="price-flag" title="Live quote unavailable — showing the last price we saw">last known</span>':'');
     const val=price*h.shares;
     const invested=h.buyPrice*h.shares;
     const pnlPct=h.buyPrice>0?((price-h.buyPrice)/h.buyPrice*100):0;
@@ -3835,7 +3879,7 @@ async function renderPortfolio(){
     return '<div class="stock-row" data-t="'+escapeHtml(h.ticker)+'" onclick="openDetail(\''+escapeHtml(h.ticker)+'\')">'+
       '<div class="s-icon">'+escapeHtml(h.ticker.slice(0,2))+'</div>'+
       '<div class="s-info"><div class="s-name">'+escapeHtml(h.ticker)+' <span style="font-size:11px;color:var(--muted);font-weight:400">'+escapeHtml(COMPANIES[h.ticker]||'')+'</span></div>'+
-      '<div class="s-meta">'+escapeHtml(h.shares)+' shares · $'+price.toFixed(2)+'/share</div></div>'+
+      '<div class="s-meta">'+escapeHtml(h.shares)+' shares · $'+price.toFixed(2)+'/share'+priceFlag+'</div></div>'+
       '<div class="s-right">'+
       '<div class="s-price">$'+val.toFixed(2)+'</div>'+
       '<div class="s-pct '+(pnlPct>=0?'up':'down')+'">'+(pnlPct>=0?'▲ +':'▼ ')+pnlPct.toFixed(2)+'% total</div>'+
@@ -4465,7 +4509,7 @@ function ensureChart(){
 let ws = null;
 const wsSubs = new Set();
 function startWS(){
-  if(ws || !('WebSocket' in window)) return;
+  if(ws || !('WebSocket' in window) || (typeof _apiKeyDead !== 'undefined' && _apiKeyDead)) return;
   try{
     ws = new WebSocket('wss://ws.finnhub.io?token=' + FK);
     ws.onopen = function(){ wsSubs.forEach(function(t){ ws.send(JSON.stringify({type:'subscribe', symbol:(CRYPTO[t]||t)})); }); };
@@ -4487,7 +4531,7 @@ function startWS(){
         }
       }catch(err){}
     };
-    ws.onclose = function(){ ws = null; setTimeout(startWS, 6000); };
+    ws.onclose = function(){ ws = null; if(!_apiKeyDead) setTimeout(startWS, 6000); };
     ws.onerror = function(){ try{ ws.close(); }catch(e){} };
   }catch(e){}
 }
@@ -5655,10 +5699,15 @@ function initMarkets(){
 }
 async function renderPulse(){
   const qs = await Promise.all(PULSE.map(async function(p){ return {p:p, q: await fetchQ(p.t)}; }));
+  if(!qs.some(function(r){ return r.q; })){
+    document.getElementById('pulseGrid').innerHTML = '<div class="empty" style="grid-column:1/-1">Market data unavailable right now — live index prices can\u2019t load. Please check back later.</div>';
+    document.getElementById('pulseNote').textContent = '';
+    return;
+  }
   document.getElementById('pulseGrid').innerHTML = qs.map(function(r){
     if(!r.q) return '';
     const up = r.q.dp >= 0;
-    return '<div class="p-metric"><div class="p-label">' + r.p.n + '</div><div class="p-val">' + fmt(r.q.c) + '</div><div style="font-size:12px;margin-top:3px" class="' + (up?'up':'down') + '">' + (up?'▲ +':'▼ ') + r.q.dp.toFixed(2) + '%</div></div>';
+    return '<div class="p-metric"><div class="p-label">' + r.p.n + '</div><div class="p-val">' + fmt(r.q.c) + '</div><div style="font-size:12px;margin-top:3px" class="' + (up?'up':'down') + '">' + (up?'▲ +':'▼ ') + r.q.dp.toFixed(2) + '%' + (r.q.stale ? ' <span class="price-flag">last known</span>' : '') + '</div></div>';
   }).join('');
   const spy = qs[0].q, vix = qs[4] ? qs[4].q : null;
   let note = '';
@@ -5668,6 +5717,10 @@ async function renderPulse(){
 }
 async function renderHeatMap(){
   const qs = await Promise.all(SECTOR_ETFS.map(async function(s){ return {s:s, q: await fetchQ(s.t)}; }));
+  if(!qs.some(function(r){ return r.q; })){
+    document.getElementById('heatGrid').innerHTML = '<div class="empty" style="grid-column:1/-1">Market data unavailable — sector moves can\u2019t load right now.</div>';
+    return;
+  }
   document.getElementById('heatGrid').innerHTML = qs.map(function(r, i){
     if(!r.q) return '';
     const dp = r.q.dp;
@@ -6081,6 +6134,20 @@ applyTheme(localStorage.getItem('fp_theme') || 'dark');
 initStreak();
 startAlertLoop();
 handleSharedLink();
+// Hash router: #portfolio / #lessons / #gold / #markets / #legal / #home (or empty).
+// #p= shared links are handled above by handleSharedLink and ignored here.
+function routeFromHash(){
+  const h = location.hash.replace(/^#/,'');
+  if(h.indexOf('p=')===0) return;
+  const p = h==='' ? 'home' : h;
+  if(ROUTES.indexOf(p)<0) return;
+  const active = document.querySelector('.page.active');
+  if(active && active.id==='page-'+p) return;
+  showPage(p,true);
+}
+window.addEventListener('hashchange', routeFromHash);
+window.addEventListener('popstate', routeFromHash);
+if(location.hash && location.hash.indexOf('#p=')!==0) routeFromHash();
 initAuth();
 checkPaymentReturn();
 renderLessons();
