@@ -421,7 +421,7 @@ Fixes for the low findings in the thesis-journal scan. Rebased onto main after P
 
 ## 2026-10-25 — Cancel mid-quote paper sell (finpath-v26)
 
-Rebased onto main after PR #16 (`finpath-v25`). Stripe was not changed. Investor Moves, `F13_TERMS`, and the lesson glossary were not changed.
+Rebased onto main after PR #17 (paycheck dismiss and scroll). Main’s cache was still `finpath-v25`; this branch is `finpath-v26`. Stripe was not changed. Investor Moves, `F13_TERMS`, and the lesson glossary were not changed.
 
 Cancel while a paper sell was waiting on a quote closed the dialog (Escape already refused). Opening Sell on a later row stored that row’s index. When the first quote came back it still sold the original index and shifted the book, and the next Confirm sold whatever now sat at the stored index (or did nothing if that index was gone).
 
