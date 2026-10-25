@@ -335,3 +335,31 @@ Small client fixes only. No Stripe, Finnhub key, Q3 13F, Legal copy, or `LESSONS
 - `LESSONS[15]` empty slot stays so saved indexes and `#lesson/N` links do not shift.
 - Real intraday/hourly portfolio history, a bottom tab bar, real-device checks, and pinning the Supabase CDN with SRI are still out of scope.
 - Supabase script `defer` + `bootAuth` from finpath-v17 is unchanged.
+
+## 2026-10-25 — Bug hunter delta vs finpath-v17 (finpath-v19)
+
+Follow-up to the v18 list above, against the delta audit (PR #9 notes only; that PR is not merged). Same branch. No Stripe Payment Link, webhook, billing, Finnhub key, Q3 13F, lesson content, glossary, heat-map features, or watchlist empty-state tips.
+
+**Already on this branch before the delta (re-checked, left as-is)**
+- **2 / 3 / 5 / 6 / 7, and the footer half of 9.** Watchlist only prints a day-change when `quoteDp` is a finite number. Price alerts ignore quotes older than five minutes, refuse a target a fresh quote has already crossed, block a duplicate that is still watching, and do not wait a fixed 2.5s. Compare does not paint Today or market cap green, escapes tickers, and formats caps as M/B/T. The playground describes a steady rate (not a historical backtest) and clamps years to 1–40, amount to $1–$50,000, and rate to 0–40%. Page footers use `var(--muted)` instead of `#5a6b5c`.
+
+**Shipped in this pass**
+1. **Lesson Back and a second `#lesson/N`.** `showPage('lessons')` no longer calls `closeLessonDetail` while the hash is already `#lesson/N`. That close used to rewrite the hash to `#lessons`, and the follow-up hash change hid the lesson Back or a pasted hash had just opened. The in-page back button still closes the detail.
+2. **Sibling `dp` guards.** Search, holding alerts, the portfolio day line, pulse, and the heat map use `quoteDp`. A stub `{c:123.45, dp:null}` shows the price and omits the percent instead of throwing.
+4. **Alert toast XSS.** `notify` escapes the title and body before the toast `innerHTML`. Setting an alert escapes the ticker the same way. The system notification still gets the raw string (plain text). Other toasts that pass trusted HTML are unchanged.
+5. **Screener caps.** The screener used `(cap/1000)+'B'`, so 3.8e6 million rendered as `$3800B`. It now uses the same `fmtMcap` as compare (`$3.80T`, `$400M`).
+8. **Light-mode green.** `#4ade80` on white is about 1.74:1. Light theme sets `.up`, `.t-up`, `.plan-free`, `.daily-up`, `.act-buy`, `.alert-pct`, and `.badge-buy` to `#15803d`. Dark mode keeps `#4ade80`.
+9. **`--muted2`.** Dark `#738675` and light `#5e7264` clear small text on the page backgrounds. `--muted` is unchanged (`#7d8f7f` / `#5a705d`). Light placeholders use `var(--muted2)` instead of `#8ba28d`.
+10. **Start with Gold.** The pricing-card button calls `openGoldPayment()`, same as the other upgrade buttons. The test Payment Link URL is unchanged.
+11. **Honesty copy.** Founder text no longer says Investor Moves and the tracker are all free. Meta, Open Graph, and Twitter descriptions say 13F filings lag by weeks and prices show when market data is available. Legal §3 bullets describe the rule-based notes instead of an LLM. A locked holding row no longer blurs a fake “Hold ·” label.
+12. **Cold `#l-*` scroll.** `routeFromHash` repeats `scrollIntoView` after layout and on `window` load, and skips the scroll if the hash has already moved on. In-app hash changes still scroll immediately.
+
+**Checks:** `node --check` on the inline scripts and `sw.js`, and headless Chrome for the toast XSS repro, a null `dp` across search / alerts / pulse / heatmap / portfolio / watchlist, lesson Back and a pasted `#lesson/N`, the Gold button target, compare and screener caps, playground clamps, light green and `--muted2`, and a cold `#l-no-fiduciary` load.
+
+**Still deferred**
+- Finnhub proxy / key rotation.
+- Live Stripe Payment Link, webhooks, billing, and the `gold_users` / `payments` mismatch.
+- Q3 2026 13F / MOVES refresh (nothing invented; deadline Nov 16, 2026).
+- `LESSONS[15]`, new lesson or glossary content, heat-map features, and watchlist empty-state tips.
+- Real intraday/hourly history, a bottom tab bar, real-device checks, and a pinned Supabase CDN with SRI.
+- Supabase `defer` + `bootAuth` from finpath-v17.
