@@ -415,6 +415,6 @@ Fixes for the low findings in the thesis-journal scan. Stripe was not changed. I
 - **F1.** Transaction history escapes the share count before it is placed in the row HTML. A planted `fp_txns[].sh` string no longer runs as markup. Ticker and thesis in that row were already escaped. Price still goes through `fmt`.
 - **F2.** `toast()` treats its message as text. Callers that intentionally pass markup (price-alert notifications, achievement unlocks, goal milestones) opt in, and those strings are escaped first. Paper buy and sell toasts can no longer run a stored ticker.
 - **F3.** Escape does nothing while a paper-sell confirm is waiting on a quote. When that sale finishes, the dialog closes only if it is still the same sell, so a later draft is left alone.
-- **F5.** Escape and Cancel move focus back to that row’s Sell button before the dialog index is cleared.
+- **F5.** Escape and Cancel move focus back to that row’s Sell button before the dialog index is cleared. The dialog’s delayed focus timer does not pull focus back onto the hidden field after it has closed.
 - **F4.** No product change. Keeping the first thesis on an existing paper position is intentional. A later buy of the same symbol still stores its own note on the transaction row.
 - `sw.js` cache is `finpath-v23`.
