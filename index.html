@@ -1998,7 +1998,8 @@ body.light .gs-item{background:#fff}
       <div id="alertsList"><div class="empty">Add stocks to see alerts.</div></div>
     </div>
     <div class="alerts-section" id="priceAlertsSection" style="display:none">
-      <div style="font-size:16px;font-weight:700;margin-bottom:12px;font-family:var(--font-display)">Price alerts</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:4px;font-family:var(--font-display)">Price alerts</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.45">These only run while this FinPath tab is open.</div>
       <div id="priceAlertsList"></div>
     </div>
     <div class="ai-section">
@@ -2407,6 +2408,7 @@ body.light .gs-item{background:#fff}
         <input id="alertPrice" type="number" step="any" class="modal-input" style="width:130px;margin:0" placeholder="$ price">
         <button class="price-btn" style="width:auto;padding:11px 20px" onclick="addAlertFromDetail()">🔔 Set alert</button>
       </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.45">Alerts only run while this FinPath tab is open. Closing the tab pauses them.</div>
     </div>
     <div id="whyMoved"></div>
     <button class="remove-btn" onclick="removeStock()">Remove from portfolio</button>
@@ -5885,17 +5887,32 @@ function checkHoldAchvs(){
 // ── PRICE ALERTS ──
 function getAlerts(){ try{ return JSON.parse(localStorage.getItem('fp_alerts')||'[]'); }catch(e){ return []; } }
 function saveAlerts(a){ localStorage.setItem('fp_alerts', JSON.stringify(a)); renderAlertsList(); }
-function addAlertFromDetail(){
+async function addAlertFromDetail(){
   if(!selectedStock) return;
   const price = parseFloat(document.getElementById('alertPrice').value);
-  if(!price || price <= 0){ toast('⚠️','Enter a valid alert price.'); return; }
+  if(!isFinite(price) || price <= 0){ toast('⚠️','Enter a valid alert price.'); return; }
   const dir = document.getElementById('alertDir').value;
+  const t = selectedStock.ticker;
   const a = getAlerts();
-  a.push({t: selectedStock.ticker, dir: dir, price: price, done: false});
+  if(a.some(function(al){ return !al.done && al.t === t && al.dir === dir && Number(al.price) === price; })){
+    toast('⚠️','You already have that alert.');
+    return;
+  }
+  let q = priceCache[t];
+  if(!q || !(q.c > 0) || !q.ts || Date.now() - q.ts > 300000){
+    try{ q = await fetchQ(t); }catch(e){ q = null; }
+  }
+  if(q && isFinite(q.c) && q.c > 0 && q.ts && Date.now() - q.ts <= 300000){
+    if((dir === 'below' && q.c <= price) || (dir === 'above' && q.c >= price)){
+      toast('⚠️', t + ' is already ' + fmt(q.c) + '. Pick a target it has not reached yet.');
+      return;
+    }
+  }
+  a.push({t: t, dir: dir, price: price, done: false});
   saveAlerts(a);
   if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
-  wsWatch(selectedStock.ticker);
-  toast('🔔', 'Alert set: ' + selectedStock.ticker + ' ' + (dir === 'below' ? 'drops below' : 'rises above') + ' ' + fmt(price));
+  wsWatch(t);
+  toast('🔔', 'Alert set: ' + t + ' ' + (dir === 'below' ? 'drops below' : 'rises above') + ' ' + fmt(price) + '. It only runs while this tab is open.');
   document.getElementById('alertPrice').value = '';
 }
 function removeAlert(idx){ const a = getAlerts(); a.splice(idx,1); saveAlerts(a); }
@@ -5911,9 +5928,12 @@ function renderAlertsList(){
 }
 function checkAlerts(){
   const a = getAlerts(); let changed = false;
+  const now = Date.now();
   a.forEach(function(al){
     if(al.done) return;
-    const q = priceCache[al.t]; if(!q) return;
+    const q = priceCache[al.t];
+    // A cached quote with no timestamp, or one older than ~5 minutes, is not a live cross.
+    if(!q || !isFinite(q.c) || q.c <= 0 || !q.ts || now - q.ts > 300000) return;
     if((al.dir === 'below' && q.c <= al.price) || (al.dir === 'above' && q.c >= al.price)){
       al.done = true; changed = true;
       notify(al.t + ' hit your target', al.t + ' is now ' + fmt(q.c) + ' (' + (al.dir === 'below' ? 'below' : 'above') + ' your ' + fmt(al.price) + ' alert).');
@@ -5924,8 +5944,8 @@ function checkAlerts(){
 function startAlertLoop(){
   setInterval(function(){
     const pending = getAlerts().filter(function(a){ return !a.done; });
-    pending.forEach(function(a){ fetchQ(a.t); });
-    setTimeout(checkAlerts, 2500);
+    if(!pending.length) return;
+    Promise.all(pending.map(function(a){ return fetchQ(a.t); })).then(function(){ checkAlerts(); }).catch(function(){});
   }, 90000);
 }
 
