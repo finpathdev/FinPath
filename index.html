@@ -5010,6 +5010,11 @@ document.addEventListener('keydown', function(e){
     ov.remove();
     if(location.hash.indexOf('#p=') === 0) history.replaceState(null,'',location.pathname);
   });
+  document.querySelectorAll('.ob-overlay').forEach(function(ov){
+    try{ localStorage.setItem('fp_onboarded','1'); }catch(err){}
+    ov.remove();
+  });
+  if(typeof closeInstallHelp === 'function') closeInstallHelp();
 });
 
 
