@@ -260,3 +260,24 @@ Highlight cards are not the full 13F. Left as-is and not treated as errors: Ackm
 
 ### Could not use as a source
 WhaleWisdom filer pages returned a JavaScript shell with no holdings table, so they were not used. Dataroma does not list Duquesne; that book was checked from the SEC info table only.
+
+## 2026-10-25 — Three more Q2 2026 investors (finpath-v15)
+
+Added 17 moves for three filers whose June 30, 2026 Form 13F-HR information tables are clean equity books. Share changes are versus each filer's own March 31, 2026 table. Weights are reported value ÷ that filer's long-equity total. None of these three tables has a put or call row. `MOVES` is now 67 rows and 9 investors. Cache is `finpath-v15`.
+
+### Added
+- **Bill Gates / Gates Foundation Trust (CIK 1166559), 5 cards, 13F total $34,424,791,932.** BRK.B reduce 13.83% (17,048,304 → 14,689,844) $7,350,651,039 / 21.35%. CAT hold, 6,353,614 shares, value $4,501,281,374 → $6,765,963,549 / 19.65%. WM reduce 3.33% (27,642,344 → 26,720,744) $5,955,519,423 / 17.30%. HD new, exactly 1,000,000 shares, $352,680,000 / 1.02%. FDXF is labeled **New spin-off**, not Buy: FedEx shares stayed 2,384,362 and FedEx Freight shares are exactly half (1,192,181), matching the June 1, 2026 one-for-two spin-off (ticker FDXF, CUSIP 314352105), value $180,019,331 / 0.52%. Berkshire + Caterpillar + Canadian National (unchanged 51,826,786 shares, 17.95%) + Waste Management = 76.25%.
+- **Chase Coleman / Tiger Global Management LLC (CIK 1167483), 6 cards, equity $23,981,506,027.** GOOGL Class A only (CUSIP 02079K305) reduce 45.39% (10,631,402 → 5,805,687) $2,074,778,363 / 8.65%. AVGO reduce 51.07% (3,584,814 → 1,754,062) $662,596,921 / 2.76%. CBRS new 2,999,000 Class A shares (CUSIP 15675D103, IPO May 2026) $662,779,000 / 2.76%. INTC add 159.52% (1,638,700 → 4,252,690) $593,803,105 / 2.48%. APP sold out; Q1 value exactly $398,000,000. AMD new 674,727 shares, $391,955,662 / 1.63%.
+- **Terry Smith / Fundsmith LLP (CIK 1569205), 6 cards, equity $13,648,923,682.** MTD sold out; Q1 value $717,012,379. UBER new 8,943,151 shares, $645,337,776 / 4.73%. MA new $639,458,194 / 4.68%. TSM new $548,464,789 / 4.02%. GOOGL Class A only reduce 40.01% (2,956,198 → 1,773,354) $633,743,519 / 4.64%. NFLX new $499,110,633 / 3.66%. The Mettler note also says Zoetis was sold; Q1 Zoetis value was $458,366,249 and it is absent in Q2.
+
+Copy that said "6 legendary investors" now says 9 and names Gates, Coleman and Smith (hero, hero stat, how-it-works, feature card, both pricing bullets, Gold hero). The Gold paywall already uses `INVESTORS.length`. The portfolio check-up empty state now uses that count too. The lesson "What Billionaires Actually Invest In" has a short Q2 paragraph for each new manager. The moves disclaimer says nine managers. No Stripe, price, auth, or Finnhub edits.
+
+### Not added to COMPANIES / SECTORS
+New tickers on the cards (FDXF, CBRS, MTD, and AMD/APP/AVGO/HD/CAT/WM/INTC where they were already absent) still render, because a card reads `MOVES` fields directly. Track search already accepts a typed symbol that is not in `COMPANIES`. The market-universe lists were left to the stocks owner.
+
+### Considered and not added
+- **Michael Burry / Scion Asset Management (CIK 1649339):** no 2026 Form 13F-HR. The newest 13F is for the quarter ended September 30, 2025, filed November 3, 2025. An EDGAR search for a 2026 Scion or Burry 13F-HR returned nothing.
+- **Ray Dalio / Bridgewater (CIK 1350694):** filed, but the Q2 table is about 997 positions and the largest lines are S&P 500 ETFs. That is not a short, concentrated story.
+- **Howard Marks / Oaktree (CIK 949509):** filed, but the table is about 145 rows of distressed names, convertibles and ETF puts. Left out rather than pick a misleading handful.
+- **Mohnish Pabrai / Dalal Street LLC (CIK 1549575):** filed August 13, 2026, and the book is real and concentrated ($326,749,980, four lines). Warrior Met Coal 1,810,831 → 1,744,050 (−3.69%, $141.5M, 43.32%), Transocean essentially unchanged (20,392,672 → 20,398,659, $99.7M, 30.53%), Alpha Metallurgical 579,738 → 517,194 (−10.79%, $85.3M, 26.11%), plus a new Kaspi stub of 1,702 shares ($150k, 0.05%). The quarter does not have four meaningful moves without padding, so he was not added.
+- **Fundsmith Investment Services Ltd (CIK 1868537)** filed its own Q2 13F of overlapping names. Cards use Fundsmith LLP only, so a second reporting entity is not counted as a fresh set of buys.
