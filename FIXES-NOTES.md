@@ -315,25 +315,95 @@ New tickers on the cards (FDXF, CBRS, MTD, and AMD/APP/AVGO/HD/CAT/WM/INTC where
 - Supabase CDN is still pinned only to `@2` with no SRI. Pinning an exact version + integrity hash should be done when someone can test sign-in end-to-end.
 - Real-device check of keyboard focus outlines on the newly focusable cards.
 
+## 2026-10-25 — Watchlist, alerts, compare, playground, contrast (finpath-v18)
+
+Small client fixes only. No Stripe, Finnhub key, Q3 13F, Legal copy, or `LESSONS[15]` edits. Lessons, glossary, the Markets heat map, and watchlist empty-state tips were left alone.
+
+**Shipped**
+1. **Watchlist no longer blanks on a partial quote.** `renderWatchlist` called `toFixed` on `q.dp` whenever a quote object existed. A missing day-change threw and the whole list stayed empty. A price is shown only when `q.c > 0` and `q.dp` is a finite number.
+2. **Price alerts.** `checkAlerts` ignores a quote with no timestamp or one older than five minutes. Setting an alert refuses a target the latest quote has already crossed, and refuses a duplicate that is still watching. The checker runs after `fetchQ` resolves instead of a fixed 2.5s wait. The detail form and the portfolio section say alerts only run while this FinPath tab is open.
+3. **Compare stocks.** Today’s move and market cap are no longer painted green as “better.” Market cap uses M / B / T (Finnhub reports millions). Ticker headers and text cells are escaped. A short line under the table explains each measure.
+4. **Strategy Playground.** Copy describes a steady yearly rate, not a historical backtest, and notes that the listed averages are hindsight. Monthly amount is clamped to $1–$50,000, years to 1–40, and the selected rate to 0–40%. A non-positive or blank input still shows the existing error.
+5. **Muted text.** Dark `--muted` is `#7d8f7f`; light `--muted` is `#5a705d`. Light-theme rules that hardcoded `#546b58` now use `var(--muted)`. Page footers that hardcoded `#5a6b5c` use `var(--muted)` so they follow the theme.
+
+**Verified:** `node --check` on the inline scripts and `sw.js`. A headless check covered the watchlist guard, alert rules, compare formatting, playground clamp and wording, and the muted CSS variables.
+
+**Still deferred (not this pass)**
+- Finnhub key stays client-side (proxy / rotation is server work).
+- Live Stripe Payment Link, and the `gold_users` / `payments` webhook mismatch, are untouched.
+- Q3 2026 13F refresh waits until after Nov 16, 2026. Nothing was invented.
+- `LESSONS[15]` empty slot stays so saved indexes and `#lesson/N` links do not shift.
+- Real intraday/hourly portfolio history, a bottom tab bar, real-device checks, and pinning the Supabase CDN with SRI are still out of scope.
+- Supabase script `defer` + `bootAuth` from finpath-v17 is unchanged.
+
+## 2026-10-25 — Bug hunter delta vs finpath-v17 (finpath-v19)
+
+Follow-up to the v18 list above, against the delta audit (PR #9 notes only; that PR is not merged). Same branch. No Stripe Payment Link, webhook, billing, Finnhub key, Q3 13F, lesson content, glossary, heat-map features, or watchlist empty-state tips.
+
+**Already on this branch before the delta (re-checked, left as-is)**
+- **2 / 3 / 5 / 6 / 7, and the footer half of 9.** Watchlist only prints a day-change when `quoteDp` is a finite number. Price alerts ignore quotes older than five minutes, refuse a target a fresh quote has already crossed, block a duplicate that is still watching, and do not wait a fixed 2.5s. Compare does not paint Today or market cap green, escapes tickers, and formats caps as M/B/T. The playground describes a steady rate (not a historical backtest) and clamps years to 1–40, amount to $1–$50,000, and rate to 0–40%. Page footers use `var(--muted)` instead of `#5a6b5c`.
+
+**Shipped in this pass**
+1. **Lesson Back and a second `#lesson/N`.** `showPage('lessons')` no longer calls `closeLessonDetail` while the hash is already `#lesson/N`. That close used to rewrite the hash to `#lessons`, and the follow-up hash change hid the lesson Back or a pasted hash had just opened. The in-page back button still closes the detail.
+2. **Sibling `dp` guards.** Search, holding alerts, the portfolio day line, pulse, and the heat map use `quoteDp`. A stub `{c:123.45, dp:null}` shows the price and omits the percent instead of throwing.
+4. **Alert toast XSS.** `notify` escapes the title and body before the toast `innerHTML`. Setting an alert escapes the ticker the same way. The system notification still gets the raw string (plain text). Other toasts that pass trusted HTML are unchanged.
+5. **Screener caps.** The screener used `(cap/1000)+'B'`, so 3.8e6 million rendered as `$3800B`. It now uses the same `fmtMcap` as compare (`$3.80T`, `$400M`).
+8. **Light-mode green.** `#4ade80` on white is about 1.74:1. Light theme sets `.up`, `.t-up`, `.plan-free`, `.daily-up`, `.act-buy`, `.alert-pct`, and `.badge-buy` to `#15803d`. Dark mode keeps `#4ade80`.
+9. **`--muted2`.** Dark `#738675` and light `#5e7264` clear small text on the page backgrounds. `--muted` is unchanged (`#7d8f7f` / `#5a705d`). Light placeholders use `var(--muted2)` instead of `#8ba28d`.
+10. **Start with Gold.** The pricing-card button calls `openGoldPayment()`, same as the other upgrade buttons. The test Payment Link URL is unchanged.
+11. **Honesty copy.** Founder text no longer says Investor Moves and the tracker are all free. Meta, Open Graph, and Twitter descriptions say 13F filings lag by weeks and prices show when market data is available. Legal §3 bullets describe the rule-based notes instead of an LLM. A locked holding row no longer blurs a fake “Hold ·” label.
+12. **Cold `#l-*` scroll.** `routeFromHash` repeats `scrollIntoView` after layout and on `window` load, and skips the scroll if the hash has already moved on. In-app hash changes still scroll. `.legal-section` has `scroll-margin-top: 100px` so the heading clears the fixed nav.
+
+**Verified:** `node --check` on the three inline scripts and `sw.js`. Headless Chrome, 35/35: toast XSS stays text (`window.__xss` stays 0), `{c:123.45, dp:null}` does not throw in search, holding alerts, pulse, heatmap, watchlist, or portfolio, lesson Back returns to `#lesson/0` and a pasted `#lesson/3` stays open, cold `#lesson/2` opens, “Start with Gold” calls `openGoldPayment()` and the test Payment Link is unchanged, compare shows `$3.80T` / `$400M` with Today and market cap not green, playground clamps years 500 / amount 1e20 / rate 100000 to 40 / $50,000 / 40% and does not say “would have”, light `.up` is `#15803d` (5.02:1 on white) while dark stays `#4ade80`, `--muted2` clears 4.5:1, a 3-day-old AAPL quote does not fire an “above $100” alert and a second add is blocked, and both a cold and an in-app `#l-no-fiduciary` land with the heading about 100px from the top.
+
+**Still deferred**
+- Finnhub proxy / key rotation.
+- Live Stripe Payment Link, webhooks, billing, and the `gold_users` / `payments` mismatch.
+- Q3 2026 13F / MOVES refresh (nothing invented; deadline Nov 16, 2026).
+- `LESSONS[15]` and new lesson or glossary content.
+- Real intraday/hourly history, a bottom tab bar, real-device checks, and a pinned Supabase CDN with SRI.
+- Supabase `defer` + `bootAuth` from finpath-v17.
+
 ## 2026-10-25 — Markets learner cues (finpath-v18)
 
-Market UI only. Stripe, 13F / MOVES, and lessons were not edited.
+Shipped on main in PR #7, and kept in this branch. Market UI only. Stripe, 13F / MOVES, and lessons were not edited.
 
 **Shipped**
 1. **Sector heat map legend.** `#heatLegend` sits under the heat-map subtitle: green = up today, red = down, and a stronger swatch means a larger move. Tap-for-detail is unchanged. Sector names and holding tickers written into the detail line are escaped.
-2. **Watchlist empty state.** An empty list used to set `#watchWrap` to `display:none`. It now stays visible with a short note: star a name from search (+ Add stock); browse on Markets first if you want, then star it there. Stocks you already hold stay under Your stocks. Rows for a non-empty list are unchanged.
+2. **Watchlist empty state.** An empty list used to set `#watchWrap` to `display:none`. It now stays visible with a short note: star a name from search (+ Add stock); browse on Markets first if you want, then star it there. Stocks you already hold stay under Your stocks.
 3. **Pulse tiles when a quote is missing.** A failed quote no longer drops the tile. The tile still shows the index name, ticker, and the existing one-line “why this index,” plus “Price unavailable.” A saved quote still shows the number with the existing “last known” flag. No stand-in prices.
 4. **Rate-limit copy.** HTTP 429, 403, 503, or an error body about a limit uses a busy-feed banner: last known prices may show, and retry is automatic. A rejected key (401) still uses `apiKeyInvalid` and does not retry. Other outages keep the generic “temporarily unavailable” banner.
 5. **How to read a quote.** A collapsed tip on Market pulse and next to portfolio live prices explains price, the day’s % change, and that “last known” is a saved quote.
 
 **Verified:** node --check (3 inline scripts + sw.js). Headless Chrome checked the heat-map legend and tap-for-detail (sector names and a hostile ticker are escaped), the quote tip on Markets and Portfolio, five priced pulse tiles, missing quotes still showing the why-line and “Price unavailable”, a stale SPY price flagged “last known” next to unavailable siblings, 429/403/503 and a limit error body showing the busy-feed banner, and 401 showing the separate hard-failure banner that does not retry. Empty watchlist stays visible, search opens from it, a starred row renders, and unstarring or already owning the name returns the empty state. No horizontal overflow at 1280 or 390. Light mode keeps the legend. Stripe was not edited. `sw.js` CACHE → `finpath-v18`.
 
+## 2026-10-25 — Merged with main after PR #7 (finpath-v19)
+
+Main was `finpath-v18`. This branch moved to `finpath-v19`, then to `finpath-v20` when PR #10 also used `finpath-v19`.
+
+The learner cues above stay. The audit guards sit inside them:
+- A pulse tile with no quote still shows the name, the why-line, and “Price unavailable.”
+- A pulse tile with a price but no numeric day-change shows that price and “Day change unavailable” instead of calling `toFixed` on null.
+- A heat-map cell with no day-change is a gray “—”. Sector names and holding tickers stay escaped. The legend stays.
+- An empty watchlist stays visible with the star-from-search note. A row with a partial quote still shows the price and omits the percent.
+- The Markets header still says “steady-rate playground,” and it keeps the quote tip and the heat-map legend.
+
+**Re-checked after the PR #7 merge:** `node --check` on the three inline scripts and `sw.js`. Headless Chrome 40/40, including the earlier audit repros plus a missing pulse quote (tile stays, “Price unavailable”), the heat-map legend, both quote tips, the visible empty watchlist, and the busy-feed rate-limit copy.
+
 ## 2026-10-25 — Investor Moves UX (finpath-v19)
 
-Rebased onto the Markets learner pass (`finpath-v18`). UX and copy only. `MOVES` is still the 67 Q2 2026 rows / 9 investors. No Q3 positions were added. Stripe, pricing, auth, the Finnhub key, `COMPANIES`, `SECTORS`, and `POP` were not touched. The landing timeline init stays next to the pulse helpers (`_pulseGen`, `_pulseQuoteOk`). Cache is `finpath-v19`.
+Shipped on main in PR #10 and kept here. UX and copy only. `MOVES` is still the 67 Q2 2026 rows / 9 investors. No Q3 positions were added. Stripe, pricing, auth, the Finnhub key, `COMPANIES`, `SECTORS`, and `POP` were not touched.
 
 - Filing-lag timeline on the Gold page (full for members, short above the upgrade gate) and a shorter one on the landing investor section. Dates come from `F13`.
 - Trust strip above the moves grid: research, do not copy; delayed up to 45 days; long U.S. stocks only; not a buy signal. The old disclaimer paragraph is now the source line (`f13SourceLine`).
 - Action filters Buy / Add / Reduce / Sold out, combined with the investor tabs and Show holds. Default is still all non-Hold moves. Puts and spin-offs stay under All actions.
 - Glossary chips and dotted terms on the moves page (13F, Buy, Add, Reduce, Sold out, % of portfolio, put/call, filing lag). Short words live in `F13_TERMS`, not in `GLOSSARY`, so lessons do not underline “Buy”. The 13F glossary sentence is a bit longer.
 - Refresh checklist: `docs/Q3-13F-REFRESH.md`.
+
+## 2026-10-25 — Merged with main after PR #10 (finpath-v20)
+
+Main’s cache is `finpath-v19`. This branch is `finpath-v20`.
+
+Investor Moves surfaces from PR #10 stay: timeline, “Research, do not copy” trust strip, action filters, `F13_TERMS` chips, and `docs/Q3-13F-REFRESH.md`. No Q3 rows were added. The landing timeline init stays next to the pulse helpers. On this branch the price check is `_pulseHasPrice` (a numeric price, day-change optional) so a partial quote does not throw. Audit honesty that does not sit on those surfaces stays: Founder “all free,” Legal §3 rule-based notes, the unlocked “Hold ·” blur, and the share-text lag line.
+
+**Re-checked after this merge:** `node --check` on the three inline scripts and `sw.js`. Headless Chrome 43/43, including the audit repros, the Markets learner cues, the landing trust strip, `F13_TERMS`, and the Gold action filters plus filing-lag steps.
