@@ -6640,12 +6640,15 @@ function buildLessonBody(l, i){
 // ══════════ MARKETS + PAPER + GOALS + ALERTS + ACHIEVEMENTS ══════════
 
 // ── TOASTS + CONFETTI + NOTIFICATIONS ──
-function toast(icon, msg){
+// msg is text. Pass true only when msg is already escaped and intentionally
+// contains markup (<b>, <br>). A stored ticker must not be able to run here.
+function toast(icon, msg, html){
   let stack = document.querySelector('.toast-stack');
   if(!stack){ stack = document.createElement('div'); stack.className = 'toast-stack'; document.body.appendChild(stack); }
   const t = document.createElement('div');
   t.className = 'toast';
-  t.innerHTML = '<span style="font-size:19px">' + icon + '</span><span>' + msg + '</span>';
+  const body = html ? String(msg == null ? '' : msg) : escapeHtml(msg == null ? '' : msg);
+  t.innerHTML = '<span style="font-size:19px">' + icon + '</span><span>' + body + '</span>';
   stack.appendChild(t);
   setTimeout(function(){ t.remove(); }, 4200);
 }
@@ -6669,7 +6672,7 @@ function notify(title, body){
   if('Notification' in window && Notification.permission === 'granted'){
     try{ new Notification(String(title), {body: String(body)}); }catch(e){}
   }
-  toast('🔔', '<b>' + safeTitle + '</b><br>' + safeBody);
+  toast('🔔', '<b>' + safeTitle + '</b><br>' + safeBody, true);
 }
 
 // ── STREAK + ACHIEVEMENTS ──
@@ -6692,7 +6695,7 @@ function unlockAchv(id){
   a[id] = Date.now();
   localStorage.setItem('fp_achv', JSON.stringify(a));
   const def = ACHVS.find(function(x){ return x.id === id; });
-  if(def){ toast(def.icon, '<b>Achievement unlocked:</b> ' + def.name); confettiBurst(); track('achievement', {id:id}); }
+  if(def){ toast(def.icon, '<b>Achievement unlocked:</b> ' + escapeHtml(def.name), true); confettiBurst(); track('achievement', {id:id}); }
   renderAchievements();
 }
 function renderAchievements(){
@@ -6752,7 +6755,7 @@ async function addAlertFromDetail(){
   }
   if(q && isFinite(q.c) && q.c > 0 && q.ts && Date.now() - q.ts <= 300000){
     if((dir === 'below' && q.c <= price) || (dir === 'above' && q.c >= price)){
-      toast('⚠️', escapeHtml(t) + ' is already ' + fmt(q.c) + '. Pick a target it has not reached yet.');
+      toast('⚠️', t + ' is already ' + fmt(q.c) + '. Pick a target it has not reached yet.');
       return;
     }
   }
@@ -6760,7 +6763,7 @@ async function addAlertFromDetail(){
   saveAlerts(a);
   if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
   wsWatch(t);
-  toast('🔔', 'Alert set: ' + escapeHtml(t) + ' ' + (dir === 'below' ? 'drops below' : 'rises above') + ' ' + fmt(price) + '. It only runs while this tab is open.');
+  toast('🔔', 'Alert set: ' + t + ' ' + (dir === 'below' ? 'drops below' : 'rises above') + ' ' + fmt(price) + '. It only runs while this tab is open.');
   document.getElementById('alertPrice').value = '';
 }
 function removeAlert(idx){ const a = getAlerts(); a.splice(idx,1); saveAlerts(a); }
@@ -6826,7 +6829,7 @@ function addToGoal(i){
   g[i].hit = g[i].hit || {};
   var pct = g[i].saved / g[i].target * 100;
   [25,50,75,100].forEach(function(m){
-    if(pct >= m && !g[i].hit[m]){ g[i].hit[m] = 1; confettiBurst(); toast('🎉', '<b>' + escapeHtml(g[i].name) + '</b>: ' + m + '% milestone reached!'); }
+    if(pct >= m && !g[i].hit[m]){ g[i].hit[m] = 1; confettiBurst(); toast('🎉', '<b>' + escapeHtml(g[i].name) + '</b>: ' + m + '% milestone reached!', true); }
   });
   saveGoals(g);
 }
