@@ -299,3 +299,18 @@ New tickers on the cards (FDXF, CBRS, MTD, and AMD/APP/AVGO/HD/CAT/WM/INTC where
 - Real intraday/hourly portfolio history (needs a data plan with candles).
 - `LESSONS[15]` is an empty slot (sparse array). Code already skips it; leaving the indices stable avoids breaking saved progress and `#lesson/N` links.
 - Gold `gold_users`/`payments` mismatch: still documented only. Stripe is untouched.
+
+## 2026-10-25 — Search, keyboard access, news, faster load (finpath-v17)
+
+**Shipped**
+1. **Lesson search actually works for phrases.** It used to match the raw lesson HTML as one exact string, so tag names (`strong`, `class`, `div`) matched almost everything, and "credit score" missed lessons that had both words apart. Now every word must appear in the title, summary, category or tag-stripped text (cached per lesson). Title hits rank first, and an `aria-live` status line reads "N lessons match …". An exact glossary term (or a prefix of 4+ letters) shows its plain-English definition above the results. No matches gets suggestions and a **Clear search** button. The input is `type="search"`.
+2. **Keyboard / screen-reader access for clickable cards.** 15 static cards (logo, How-it-works, feature cards, daily-change row, screener presets) and dynamic rows (stock, watchlist, heat-map, search results) were `<div onclick>` with no role or focus. `a11yLabelFields()` now gives any non-interactive `[onclick]` element `role="button" tabindex="0"`, skipping `.modal-overlay`. The existing global Enter/Space handler activates them. The compare dropdowns and the alert-direction select got `aria-label`s (they were the only unlabelled fields).
+3. **News: retry and a beginner cue.** The failure state explains why (offline or a busy free feed) and has a **Try again** button (resets `newsLoadedAt`). Under the grid there is a note: headlines come from outside sources via Finnhub, are not advice, and link to the existing lesson "How to Read a Financial News Article Without Being Misled".
+4. **Supabase SDK no longer blocks first paint.** The CDN `<script>` is now `defer`. The client is made by `ensureSupabase()` in a `bootAuth()` that runs on `DOMContentLoaded` (after deferred scripts), then `initAuth()` and `checkPaymentReturn()` run in the same order as before. `sendMagicLink` also calls `ensureSupabase()`. If the CDN is blocked, the app still boots with sign-in unavailable, as before.
+
+**Verified:** node --check (3 inline scripts + sw.js); Finnhub AAPL 200; headless Chrome checked that the Supabase client exists after boot, search ranking/status/glossary/clear works, 15/15 static cards have role+tabindex, no overlay got a role, Enter on a feature card navigates, and the news lesson link opens. Stripe test link unchanged. `sw.js` CACHE → `finpath-v17`.
+
+**Deferred**
+- `LESSONS[15]` empty slot: left on purpose. Every counter already uses `filter(Boolean)`/`lessonOrder()`, and compacting the array would shift `#lesson/N` links, saved progress keys and `BEGINNER_PATH`. That isn't worth the risk.
+- Supabase CDN is still pinned only to `@2` with no SRI. Pinning an exact version + integrity hash should be done when someone can test sign-in end-to-end.
+- Real-device check of keyboard focus outlines on the newly focusable cards.

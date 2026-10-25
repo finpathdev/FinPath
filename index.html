@@ -60,7 +60,7 @@
 <meta name="apple-mobile-web-app-title" content="FinPath">
 <meta name="mobile-web-app-capable" content="yes">
 <!-- Stripe.js removed 2026-10-25: Gold checkout uses a hosted Payment Link (window.open), so the SDK was unused render-blocking weight. -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ══ FINPATH DESIGN SYSTEM v2 — "Terminal Garden" ══
    Display: Space Grotesk · Body: Inter
@@ -698,6 +698,9 @@ body.light .scr-controls select,body.light .scr-controls input{background:#fff}
 .calc-row label{font-size:11px;color:var(--muted);font-weight:600;display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
 .calc-row input,.calc-row select{width:100%;background:rgba(6,12,7,.6);border:1px solid var(--line);border-radius:11px;padding:11px;color:var(--text);font-size:14px;outline:none}
 body.light .calc-row input,body.light .calc-row select{background:#fff}
+.search-status{font-size:13px;color:var(--muted);margin-top:10px;min-height:1px;line-height:1.5}
+.search-status:empty{display:none}
+.search-term{margin-top:8px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);max-width:560px}
 .calc-out{font-size:24px;font-weight:700;font-family:var(--font-display);color:var(--mint);margin-top:8px}
 /* goals */
 .goal-item{background:rgba(6,12,7,.45);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:10px}
@@ -1907,7 +1910,8 @@ body.light .gs-item{background:#fff}
     <div class="page-header"><h1>Lessons</h1><p>Everything schools never taught you about money.</p>
       <div id="lessonProgressWrap" style="margin-top:18px"><div style="font-size:13px;color:var(--muted)" id="lessonProgressLabel"></div><div class="progress-track"><div class="progress-fill" id="lessonProgressFill" style="width:0%"></div></div></div>
       <div id="certCTA"></div>
-      <input id="lessonSearch" class="modal-input" style="max-width:420px;margin-top:20px;margin-bottom:0" placeholder="Search lessons… (try “credit” or “Buffett”)" oninput="filterLessons(this.value)" aria-label="Search lessons">
+      <input id="lessonSearch" class="modal-input" style="max-width:420px;margin-top:20px;margin-bottom:0" placeholder="Search lessons… (try “credit” or “Buffett”)" oninput="filterLessons(this.value)" aria-label="Search lessons" aria-describedby="lessonSearchStatus" type="search">
+      <div id="lessonSearchStatus" class="search-status" aria-live="polite"></div>
     </div>
     <div id="learnPath"></div>
     <div class="lessons-grid" id="lessonsGrid"></div>
@@ -2007,6 +2011,7 @@ body.light .gs-item{background:#fff}
     <div class="alerts-section" id="newsSection" style="margin-top:26px">
       <div style="font-size:16px;font-weight:700;margin-bottom:12px;font-family:var(--font-display)">Market news</div>
       <div class="news-grid" id="newsGrid"><div class="skel-row"></div><div class="skel-row"></div><div class="skel-row"></div></div>
+      <div style="font-size:12px;color:var(--muted2);margin-top:10px;line-height:1.5">Headlines from outside sources via Finnhub — not advice, and often written to grab attention. New to reading financial news? <a role="button" tabindex="0" style="color:var(--green);cursor:pointer" onclick="openNewsLesson()">Read the 3-minute lesson</a>.</div>
     </div>
     </div><!-- /liveWrap -->
     <div id="paperWrap" style="display:none">
@@ -2075,8 +2080,8 @@ body.light .gs-item{background:#fff}
     </div>
     <div class="mk-section"><div class="mk-title">Compare two stocks</div><div class="mk-sub">Head-to-head on the numbers that matter.</div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
-        <select id="cmpA" class="modal-input" style="width:auto;min-width:150px;margin:0"></select>
-        <select id="cmpB" class="modal-input" style="width:auto;min-width:150px;margin:0"></select>
+        <select id="cmpA" aria-label="First stock to compare" class="modal-input" style="width:auto;min-width:150px;margin:0"></select>
+        <select id="cmpB" aria-label="Second stock to compare" class="modal-input" style="width:auto;min-width:150px;margin:0"></select>
         <button class="ai-run-btn" style="margin:0" onclick="compareStocks()">Compare</button>
       </div>
       <div id="cmpOut"></div>
@@ -2396,7 +2401,7 @@ body.light .gs-item{background:#fff}
     <div class="d-metric" style="margin-bottom:16px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px">
       <div class="d-mlabel">Price alert</div>
       <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center">
-        <select id="alertDir" class="modal-input" style="width:auto;margin:0;padding:11px">
+        <select id="alertDir" aria-label="Alert when the price" class="modal-input" style="width:auto;margin:0;padding:11px">
           <option value="below">Drops below</option><option value="above">Rises above</option>
         </select>
         <input id="alertPrice" type="number" step="any" class="modal-input" style="width:130px;margin:0" placeholder="$ price">
@@ -3557,7 +3562,7 @@ function renderLessons(filtered){
         <span class="lesson-plan ${l.plan==='free'?'plan-free':'plan-gold'}">${l.plan==='free'?'Free':'Gold ✦'}</span><span class="lesson-time">~${lessonMinutes(l)} min read</span>
       </div>
     </div>`;
-  }).join('') : '<div class="empty" style="grid-column:1/-1">No lessons match that search.</div>';
+  }).join('') : '<div class="empty" style="grid-column:1/-1">No lessons match that search. Clear it to see all lessons, or browse the glossary below.</div>';
   updateLessonProgress();
   renderLearnPath(!!filtered);
   renderGlossaryList();
@@ -3594,12 +3599,43 @@ function renderGlossaryList(){
     return '<div><dt>' + escapeHtml(t) + '</dt><dd>' + escapeHtml(GLOSSARY[t]) + '</dd></div>';
   }).join('');
 }
+// Lesson search: every word must appear somewhere (title, summary, category or the lesson text with
+// HTML tags stripped, so "div" or "strong" no longer match everything). Title hits rank first.
+let _lessonText = null;
+function lessonPlainText(i){
+  if(!_lessonText) _lessonText = {};
+  if(_lessonText[i] == null){ const d = document.createElement('div'); d.innerHTML = LESSONS[i].content; _lessonText[i] = (d.textContent || '').toLowerCase(); }
+  return _lessonText[i];
+}
 function filterLessons(q){
-  q = (q||'').trim().toLowerCase();
-  if(!q){ renderLessons(); return; }
-  renderLessons(LESSONS.map(function(l,i){ return {l:l,i:i}; }).filter(function(x){
-    return x.l.name.toLowerCase().includes(q) || x.l.desc.toLowerCase().includes(q) || x.l.cat.toLowerCase().includes(q) || x.l.content.toLowerCase().includes(q);
-  }));
+  const raw = (q||'').trim();
+  q = raw.toLowerCase();
+  const status = document.getElementById('lessonSearchStatus');
+  if(!q){ renderLessons(); if(status) status.innerHTML = ''; return; }
+  const words = q.split(/\s+/).filter(Boolean);
+  const hits = [];
+  LESSONS.forEach(function(l, i){
+    if(!l) return;
+    const name = l.name.toLowerCase(), meta = (l.desc + ' ' + l.cat).toLowerCase();
+    let score = 0;
+    for(const w of words){
+      if(name.includes(w)) score += 3;
+      else if(meta.includes(w)) score += 2;
+      else if(lessonPlainText(i).includes(w)) score += 1;
+      else return;
+    }
+    hits.push({l:l, i:i, s:score});
+  });
+  hits.sort(function(a, b){ return b.s - a.s || a.i - b.i; });
+  renderLessons(hits);
+  if(status){
+    let html = hits.length ? hits.length + (hits.length === 1 ? ' lesson matches' : ' lessons match') + ' “' + escapeHtml(raw) + '”.'
+                           : 'No lessons match “' + escapeHtml(raw) + '”. Try one simple word like “stocks”, “credit” or “budget”.';
+    const term = (typeof GLOSSARY === 'object') ? Object.keys(GLOSSARY).find(function(t){ return t.toLowerCase() === q || (q.length >= 4 && t.toLowerCase().indexOf(q) === 0); }) : null;
+    if(term) html += '<div class="search-term"><b>' + escapeHtml(term) + ':</b> ' + escapeHtml(GLOSSARY[term]) + '</div>';
+    if(!hits.length) html += ' <button class="btn-secondary" style="padding:6px 12px;font-size:12px;margin-left:6px" onclick="var s=document.getElementById(\'lessonSearch\');s.value=\'\';filterLessons(\'\');s.focus()">Clear search</button>';
+    status.innerHTML = html;
+  }
 }
 
 function openLesson(i, fromHash){
@@ -4433,16 +4469,17 @@ function agreeToTerms(){
 // ── SUPABASE AUTH ──
 // The CDN script can be blocked or offline. Never let a missing client abort boot
 // (routing, lessons, and the offline bar all live later in this script).
+// The SDK <script> is `defer`red so it no longer blocks first paint; ensureSupabase() creates the
+// client once it has loaded (bootAuth runs on DOMContentLoaded, after deferred scripts).
 let supabaseClient = null;
-try{
-  if(typeof supabase !== 'undefined' && supabase && typeof supabase.createClient === 'function'){
-    supabaseClient = supabase.createClient(SBU, SBK);
-  } else {
-    console.warn('Sign-in is unavailable (Supabase did not load). Lessons and saved data still work.');
-  }
-}catch(e){
-  supabaseClient = null;
-  console.warn('Sign-in is unavailable.', e);
+function ensureSupabase(){
+  if(supabaseClient) return supabaseClient;
+  try{
+    if(typeof supabase !== 'undefined' && supabase && typeof supabase.createClient === 'function'){
+      supabaseClient = supabase.createClient(SBU, SBK);
+    }
+  }catch(e){ supabaseClient = null; console.warn('Sign-in is unavailable.', e); }
+  return supabaseClient;
 }
 let currentUser = null;
 
@@ -4778,6 +4815,7 @@ async function sendMagicLink(email){
     if(status) status.remove();
   }
   try {
+    ensureSupabase();
     if(!supabaseClient) throw new Error('Sign-in is unavailable right now. Lessons and your saved portfolio still work.');
     const { error } = await supabaseClient.auth.signInWithOtp({
       email: email,
@@ -5020,6 +5058,10 @@ function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(c){ return
 // Only allow http(s) links/images from third-party feeds (blocks javascript:/data: URLs), HTML-escaped for attributes.
 function safeUrl(u){ try{ const x = new URL(String(u||'')); return (x.protocol==='https:'||x.protocol==='http:') ? escapeHtml(x.href) : ''; }catch(e){ return ''; } }
 function timeAgo(ts){ const m = Math.floor((Date.now()-ts)/60000); if(m < 60) return m + 'm ago'; const h = Math.floor(m/60); if(h < 24) return h + 'h ago'; return Math.floor(h/24) + 'd ago'; }
+function openNewsLesson(){
+  const i = LESSONS.findIndex(function(l){ return l && /Financial News Article/.test(l.name); });
+  showPage('lessons'); if(i >= 0) openLesson(i);
+}
 async function loadNews(){
   const grid = document.getElementById('newsGrid');
   if(!grid) return;
@@ -5039,7 +5081,7 @@ async function loadNews(){
         '<div class="news-title">' + escapeHtml(n.headline) + '</div></div></a>';
     }).join('');
   }catch(e){
-    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">News is unavailable right now. Try again in a minute.</div>';
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1">News is unavailable right now (you may be offline, or the free data feed is busy). <button class="btn-secondary" style="padding:6px 12px;font-size:12px;margin-left:6px" onclick="newsLoadedAt=0;this.closest(\'.news-grid\').innerHTML=\'<div class=&quot;skel-row&quot;></div>\';loadNews()">Try again</button></div>';
   }
 }
 
@@ -5281,6 +5323,13 @@ function a11yLabelFields(root){
       if(f.closest('label')) return;
       const ph = f.getAttribute('placeholder');
       if(ph) f.setAttribute('aria-label', ph);
+    });
+    // Clickable cards/rows built as <div onclick> can't be reached by keyboard. Make them buttons
+    // (the global Enter/Space handler then activates them). Overlays are skipped on purpose.
+    (root||document).querySelectorAll('[onclick]:not(button):not(a):not(input):not(select):not(textarea):not(label):not(option):not([role]):not(.modal-overlay)').forEach(function(el){
+      if(el === document.body) return;
+      el.setAttribute('role','button');
+      if(!el.hasAttribute('tabindex')) el.setAttribute('tabindex','0');
     });
   }catch(e){}
 }
@@ -6698,8 +6747,12 @@ function routeFromHash(){
 window.addEventListener('hashchange', routeFromHash);
 window.addEventListener('popstate', routeFromHash);
 if(location.hash && location.hash.indexOf('#p=')!==0) routeFromHash();
-initAuth();
-checkPaymentReturn();
+function bootAuth(){
+  if(!ensureSupabase()) console.warn('Sign-in is unavailable (Supabase did not load). Lessons and saved data still work.');
+  initAuth();
+  checkPaymentReturn();
+}
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootAuth); else bootAuth();
 renderLessons();
 </script>
 
