@@ -6218,11 +6218,20 @@ async function loadEarnings(){
     const mineFirst = items.filter(function(x){ return known.has(x.symbol); });
     items = (mineFirst.length ? mineFirst : items).slice(0, 12);
     if(!items.length) throw 0;
-    el.innerHTML = items.map(function(x){
-      const days = Math.max(0, Math.ceil((new Date(x.date) - Date.now())/86400000));
+    const html = items.map(function(x){
+      if(!x || typeof x.symbol !== 'string' || !x.symbol) return '';
+      const dateStr = typeof x.date === 'string' ? x.date : '';
+      const dateMs = dateStr ? new Date(dateStr).getTime() : NaN;
+      const days = isFinite(dateMs) ? Math.max(0, Math.ceil((dateMs - Date.now())/86400000)) : null;
+      const hour = typeof x.hour === 'string' && x.hour ? ' · ' + escapeHtml(x.hour.toUpperCase()) : '';
       const mine = portfolio.find(function(p){ return p.ticker === x.symbol; });
-      return '<div class="earn-row"><div><b>' + x.symbol + '</b>' + (mine ? ' <span class="guru-chip" style="background:rgba(34,197,94,.15);color:#4ade80">You own this</span>' : '') + '<div style="font-size:11px;color:var(--muted)">' + x.date + (x.hour ? ' · ' + x.hour.toUpperCase() : '') + '</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--mint)">' + (days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : 'in ' + days + ' days') + '</div><div style="font-size:11px;color:var(--muted)">EPS est: ' + (x.epsEstimate != null ? '$' + x.epsEstimate : '—') + '</div></div></div>';
+      const epsNum = typeof x.epsEstimate === 'number' ? x.epsEstimate : (typeof x.epsEstimate === 'string' ? Number(x.epsEstimate) : NaN);
+      const eps = isFinite(epsNum) ? '$' + escapeHtml(String(x.epsEstimate)) : '—';
+      const when = days === null ? '—' : (days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : 'in ' + days + ' days');
+      return '<div class="earn-row"><div><b>' + escapeHtml(x.symbol) + '</b>' + (mine ? ' <span class="guru-chip" style="background:rgba(34,197,94,.15);color:#4ade80">You own this</span>' : '') + '<div style="font-size:11px;color:var(--muted)">' + escapeHtml(dateStr) + hour + '</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--mint)">' + when + '</div><div style="font-size:11px;color:var(--muted)">EPS est: ' + eps + '</div></div></div>';
     }).join('');
+    if(!html) throw 0;
+    el.innerHTML = html;
   }catch(e){
     el.innerHTML = '<div class="empty">Earnings calendar couldn’t be loaded right now. Please try again later.</div>';
   }
