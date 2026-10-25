@@ -314,3 +314,24 @@ New tickers on the cards (FDXF, CBRS, MTD, and AMD/APP/AVGO/HD/CAT/WM/INTC where
 - `LESSONS[15]` empty slot: left on purpose. Every counter already uses `filter(Boolean)`/`lessonOrder()`, and compacting the array would shift `#lesson/N` links, saved progress keys and `BEGINNER_PATH`. That isn't worth the risk.
 - Supabase CDN is still pinned only to `@2` with no SRI. Pinning an exact version + integrity hash should be done when someone can test sign-in end-to-end.
 - Real-device check of keyboard focus outlines on the newly focusable cards.
+
+## 2026-10-25 — Watchlist, alerts, compare, playground, contrast (finpath-v18)
+
+Small client fixes only. No Stripe, Finnhub key, Q3 13F, Legal copy, or `LESSONS[15]` edits. Lessons, glossary, the Markets heat map, and watchlist empty-state tips were left alone.
+
+**Shipped**
+1. **Watchlist no longer blanks on a partial quote.** `renderWatchlist` called `toFixed` on `q.dp` whenever a quote object existed. A missing day-change threw and the whole list stayed empty. A price is shown only when `q.c > 0` and `q.dp` is a finite number.
+2. **Price alerts.** `checkAlerts` ignores a quote with no timestamp or one older than five minutes. Setting an alert refuses a target the latest quote has already crossed, and refuses a duplicate that is still watching. The checker runs after `fetchQ` resolves instead of a fixed 2.5s wait. The detail form and the portfolio section say alerts only run while this FinPath tab is open.
+3. **Compare stocks.** Today’s move and market cap are no longer painted green as “better.” Market cap uses M / B / T (Finnhub reports millions). Ticker headers and text cells are escaped. A short line under the table explains each measure.
+4. **Strategy Playground.** Copy describes a steady yearly rate, not a historical backtest, and notes that the listed averages are hindsight. Monthly amount is clamped to $1–$50,000, years to 1–40, and the selected rate to 0–40%. A non-positive or blank input still shows the existing error.
+5. **Muted text.** Dark `--muted` is `#7d8f7f`; light `--muted` is `#5a705d`. Light-theme rules that hardcoded `#546b58` now use `var(--muted)`. Page footers that hardcoded `#5a6b5c` use `var(--muted)` so they follow the theme.
+
+**Verified:** `node --check` on the inline scripts and `sw.js`. A headless check covered the watchlist guard, alert rules, compare formatting, playground clamp and wording, and the muted CSS variables.
+
+**Still deferred (not this pass)**
+- Finnhub key stays client-side (proxy / rotation is server work).
+- Live Stripe Payment Link, and the `gold_users` / `payments` webhook mismatch, are untouched.
+- Q3 2026 13F refresh waits until after Nov 16, 2026. Nothing was invented.
+- `LESSONS[15]` empty slot stays so saved indexes and `#lesson/N` links do not shift.
+- Real intraday/hourly portfolio history, a bottom tab bar, real-device checks, and pinning the Supabase CDN with SRI are still out of scope.
+- Supabase script `defer` + `bootAuth` from finpath-v17 is unchanged.
