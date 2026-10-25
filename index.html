@@ -6686,25 +6686,36 @@ async function compareStocks(){
   function gurus(t){ return Array.from(new Set(MOVES.filter(function(m){return m.ticker===t;}).map(function(m){return m.investor;}))).join(', ') || '—'; }
   function m(x, k){ return x && x.m && x.m[k] != null ? x.m[k] : null; }
   function row(label, va, vb, fmtFn, higherWins){
-    const f = fmtFn || function(v){ return v == null ? '—' : v; };
+    const f = fmtFn || function(v){ return v == null ? '—' : escapeHtml(String(v)); };
     let ca = '', cb = '';
     if(higherWins != null && va != null && vb != null && va !== vb){
       const aw = higherWins ? va > vb : va < vb;
       ca = aw ? ' style="color:#4ade80;font-weight:700"' : ''; cb = !aw ? ' style="color:#4ade80;font-weight:700"' : '';
     }
-    return '<tr><th>' + label + '</th><td' + ca + '>' + f(va) + '</td><td' + cb + '>' + f(vb) + '</td></tr>';
+    return '<tr><th>' + escapeHtml(label) + '</th><td' + ca + '>' + f(va) + '</td><td' + cb + '>' + f(vb) + '</td></tr>';
   }
-  const pct = function(v){ return v == null ? '—' : (v>=0?'+':'') + v.toFixed(1) + '%'; };
-  out.innerHTML = '<table class="cmp-table"><tr><th></th><th>' + a + '</th><th>' + b + '</th></tr>' +
+  const pct = function(v){ return v == null || !isFinite(Number(v)) ? '—' : (Number(v)>=0?'+':'') + Number(v).toFixed(1) + '%'; };
+  // Finnhub marketCapitalization is millions of USD.
+  const mcap = function(v){
+    if(v == null || !isFinite(Number(v))) return '—';
+    v = Number(v);
+    var n, u;
+    if(v >= 1e6){ n = v / 1e6; u = 'T'; }
+    else if(v >= 1e3){ n = v / 1e3; u = 'B'; }
+    else { n = v; u = 'M'; }
+    var d = n >= 100 ? 0 : (n >= 10 ? 1 : 2);
+    return '$' + n.toFixed(d) + u;
+  };
+  out.innerHTML = '<table class="cmp-table"><tr><th></th><th>' + escapeHtml(a) + '</th><th>' + escapeHtml(b) + '</th></tr>' +
     row('Price', qa && qa.c, qb && qb.c, function(v){ return v==null?'—':fmt(v); }) +
-    row('Today', qa && qa.dp, qb && qb.dp, pct, true) +
-    row('P/E ratio', m(ma,'peBasicExclExtraTTM'), m(mb,'peBasicExclExtraTTM'), function(v){ return v==null?'—':v.toFixed(1); }, false) +
-    row('Dividend yield', m(ma,'currentDividendYieldTTM'), m(mb,'currentDividendYieldTTM'), function(v){ return v==null?'—':v.toFixed(2)+'%'; }, true) +
-    row('Market cap', m(ma,'marketCapitalization'), m(mb,'marketCapitalization'), function(v){ return v==null?'—':'$'+(v/1000).toFixed(0)+'B'; }, true) +
+    row('Today', qa && qa.dp, qb && qb.dp, pct) +
+    row('P/E ratio', m(ma,'peBasicExclExtraTTM'), m(mb,'peBasicExclExtraTTM'), function(v){ return v==null?'—':Number(v).toFixed(1); }, false) +
+    row('Dividend yield', m(ma,'currentDividendYieldTTM'), m(mb,'currentDividendYieldTTM'), function(v){ return v==null?'—':Number(v).toFixed(2)+'%'; }, true) +
+    row('Market cap', m(ma,'marketCapitalization'), m(mb,'marketCapitalization'), mcap) +
     row('52-week return', m(ma,'52WeekPriceReturnDaily'), m(mb,'52WeekPriceReturnDaily'), pct, true) +
     row('Sector', SECTORS[a]||'—', SECTORS[b]||'—') +
     row('Held by gurus', gurus(a), gurus(b)) +
-    '</table><div style="font-size:11px;color:var(--muted2);margin-top:10px">Green = better on that metric (lower P/E treated as better). Educational, not advice.</div>';
+    '</table><div style="font-size:11px;color:var(--muted2);margin-top:10px;line-height:1.55">Price: latest quote. Today: move since the last close — a bigger day is not better. P/E: price ÷ earnings (lower can mean cheaper, not safer). Yield: yearly dividend as a percent of price. Market cap: company value, shown as M, B, or T. 52-week: price change over the past year. Green marks only P/E, yield, and 52-week. Educational, not advice.</div>';
   track('compare_run');
 }
 
