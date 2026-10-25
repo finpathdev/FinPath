@@ -2064,7 +2064,7 @@ body.light .gs-item{background:#fff}
 <!-- MARKETS -->
 <div id="page-markets" class="page">
   <div class="portfolio-wrap">
-    <div class="page-header" style="padding:16px 0 30px"><h1>Markets</h1><p>Market pulse (live when data is available), sector heat map, stock screener, earnings calendar and a backtest tool. Some figures are reference snapshots, not real-time.</p></div>
+    <div class="page-header" style="padding:16px 0 30px"><h1>Markets</h1><p>Market pulse (live when data is available), sector heat map, stock screener, earnings calendar and a steady-rate playground. Some figures are reference snapshots, not real-time.</p></div>
     <div class="mk-section"><div class="mk-title">Market pulse <span class="live-dot" style="margin-left:6px"></span> <span id="mkStatus" class="mk-status" aria-live="polite"></span></div><div class="mk-sub">Major index ETFs — funds that track a whole slice of the market, so you can see how “the market” did on the latest trading day. Live when market data is available.</div><div class="pulse-grid" id="pulseGrid"><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div></div><div id="pulseNote" style="font-size:13px;color:var(--muted)"></div></div>
     <div class="mk-section"><div class="mk-title">Sector heat map</div><div class="mk-sub">Today’s performance by sector (SPDR sector ETFs). Tap a sector for detail.</div><div class="heat-grid" id="heatGrid"><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div></div><div id="heatDetail" style="margin-top:14px;font-size:13px;color:var(--muted)"></div></div>
     <div class="mk-section"><div class="mk-title">Stock screener</div><div class="mk-sub">Discover stocks by fundamentals across FinPath’s tracked universe.</div>
@@ -2088,10 +2088,10 @@ body.light .gs-item{background:#fff}
       <div id="cmpOut"></div>
     </div>
     <div class="mk-section"><div class="mk-title">Earnings calendar</div><div class="mk-sub">Upcoming reports over the next two weeks — your holdings are highlighted.</div><div id="earnList"><div class="skel-row" style="height:52px"></div></div></div>
-    <div class="mk-section"><div class="mk-title">🎮 Strategy Playground</div><div class="mk-sub">See how classic investing strategies would have played out — no risk, no math homework, just answers.</div>
+    <div class="mk-section"><div class="mk-title">🎮 Strategy Playground</div><div class="mk-sub">A steady yearly rate, compounded every month. This is not a replay of real prices.</div>
       <div class="sp-hero">
-        <div class="sp-hero-title">"What if I had invested…"</div>
-        <div class="sp-hero-sub">Set a monthly amount, pick an asset, pick a timeframe. See what happens.</div>
+        <div class="sp-hero-title">If that rate never changed…</div>
+        <div class="sp-hero-sub">Set a monthly amount, a long-run average rate, and how many years. Those rates are hindsight averages — nobody knew them in advance — and the math uses the same rate every year.</div>
         <div class="sp-controls">
           <div><label>Monthly amount</label><input id="btAmt" type="number" value="100" min="1" max="50000"></div>
           <div><label>Years</label><input id="btYears" type="number" value="10" min="1" max="40"></div>
@@ -2119,7 +2119,7 @@ body.light .gs-item{background:#fff}
         <div class="sp-result" id="btOut"></div>
       </div>
     </div>
-    <div class="mk-section"><div class="mk-title">📖 Classic Strategies</div><div class="mk-sub">The playbook every generation of investor learns — explained in plain English. Tap any one to see how it would have performed.</div>
+    <div class="mk-section"><div class="mk-title">📖 Classic Strategies</div><div class="mk-sub">The playbook every generation of investor learns — explained in plain English. Tap any one to project it at a steady average rate.</div>
       <div class="cs-grid">
         <div class="cs-card" onclick="spPreset(100,10,10)">
           <div class="cs-icon">🏛️</div>
@@ -6400,7 +6400,7 @@ async function loadEarnings(){
     el.innerHTML = '<div class="empty">Earnings calendar couldn’t be loaded right now. Please try again later.</div>';
   }
 }
-// backtest (modeled)
+// Steady-rate illustration. Not a historical price backtest.
 function spPreset(amt, years, rate){
   document.getElementById('btAmt').value = amt;
   document.getElementById('btYears').value = years;
@@ -6417,13 +6417,21 @@ function spPreset(amt, years, rate){
 }
 
 function runBacktest(){
-  const amt = parseFloat(document.getElementById('btAmt').value)||0;
-  const years = parseFloat(document.getElementById('btYears').value)||0;
+  const amtEl = document.getElementById('btAmt');
+  const yearsEl = document.getElementById('btYears');
+  const amtRaw = parseFloat(amtEl.value);
+  const yearsRaw = parseFloat(yearsEl.value);
   const sel = document.getElementById('btAsset');
-  const rate = parseFloat(sel.value)||0;
+  let rate = parseFloat(sel.value);
+  if(!isFinite(rate)) rate = 0;
+  rate = Math.min(40, Math.max(0, rate));
   const assetName = sel.options[sel.selectedIndex].text.replace(/\s*\(.*/, '');
   const out = document.getElementById('btOut');
-  if(amt <= 0 || years <= 0){ out.className = 'sp-result on'; out.innerHTML = '<div style="color:#f87171">Enter a monthly amount and number of years above.</div>'; return; }
+  if(!isFinite(amtRaw) || !isFinite(yearsRaw) || amtRaw <= 0 || yearsRaw <= 0){ out.className = 'sp-result on'; out.innerHTML = '<div style="color:#f87171">Enter a monthly amount and number of years above.</div>'; return; }
+  const amt = Math.min(50000, Math.max(1, amtRaw));
+  const years = Math.min(40, Math.max(1, yearsRaw));
+  if(amt !== amtRaw) amtEl.value = String(amt);
+  if(years !== yearsRaw) yearsEl.value = String(years);
   const fv = _fv(amt, rate, years);
   const inv = amt*12*years;
   const gain = fv - inv;
@@ -6462,7 +6470,7 @@ function runBacktest(){
 
   out.className = 'sp-result on';
   out.innerHTML =
-    '<div class="sp-headline">Investing <b>' + fmt(amt) + '/month</b> in <b>' + assetName + '</b> for <b>' + years + ' years</b> would have grown to:</div>' +
+    '<div class="sp-headline">At a steady <b>' + rate + '% a year</b>, <b>' + fmt(amt) + '/month</b> in <b>' + escapeHtml(assetName) + '</b> for <b>' + years + ' years</b> grows to:</div>' +
     '<div class="sp-big">' + fmt(fv) + '</div>' +
     '<div class="sp-return-pill' + (pctGain < 0 ? ' down' : '') + '">' + (pctGain >= 0 ? '▲ +' : '▼ ') + pctGain.toFixed(0) + '% total return</div>' +
     '<div class="sp-chart-wrap"><svg viewBox="0 0 ' + w + ' ' + h + '" style="width:100%;height:auto;display:block" aria-label="Growth chart"><defs><linearGradient id="spGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#22c55e" stop-opacity=".35"/><stop offset="100%" stop-color="#22c55e" stop-opacity="0"/></linearGradient></defs>' +
@@ -6478,12 +6486,12 @@ function runBacktest(){
     '</div>' +
     '<div class="sp-insight">' + insight + '</div>' +
     '<button class="sp-share" onclick="spShare(' + amt + ',' + years + ',' + fv + ',\'' + assetName.replace(/'/g,'') + '\')">📤 Share this result</button>' +
-    '<div style="font-size:11px;color:var(--muted);margin-top:14px;line-height:1.5">Modeled with each asset\u2019s <b>historical average annual return</b> — real markets zig-zag; past performance never guarantees future returns.</div>';
+    '<div style="font-size:11px;color:var(--muted);margin-top:14px;line-height:1.5">This applies one steady rate, compounded monthly. It is not a backtest of real prices, and it ignores crashes, fees, and taxes. The rates in the list are long-run averages chosen with hindsight — you would not have known them in advance. A past average is not a forecast.</div>';
   track('playground_run', {amt:amt, years:years, rate:rate});
 }
 
 function spShare(amt, years, fv, asset){
-  const text = 'If I invested $' + amt + '/mo in ' + asset + ' for ' + years + ' years, I\u2019d have ' + fmt(fv) + ' 🤯\n\nRun your own numbers at finpathdev.github.io/FinPath';
+  const text = 'At a steady rate, $' + amt + '/mo in ' + asset + ' for ' + years + ' years grows to ' + fmt(fv) + '.\n\nThis is a smooth projection, not a real backtest.\n\nRun your own numbers at finpathdev.github.io/FinPath';
   if(navigator.share){ navigator.share({title:'FinPath', text:text}).catch(function(){}); }
   else if(navigator.clipboard){ navigator.clipboard.writeText(text).then(function(){ toast('✅','Result copied — paste it anywhere.'); }); }
   track('playground_share');
