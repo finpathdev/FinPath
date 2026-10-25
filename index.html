@@ -3347,6 +3347,7 @@ function updateLessonProgress(){
   if(fill) fill.style.width = (done/LESSONS.filter(Boolean).length*100).toFixed(0) + '%';
   if(typeof checkGraduate === 'function') checkGraduate();
   if(typeof checkGraduateComplete === 'function') checkGraduateComplete();
+  if(typeof renderCertificateCTA === 'function') renderCertificateCTA(done);
 }
 
 // ══ COMPLETION CERTIFICATE / SHARE CARD ══
@@ -3451,7 +3452,9 @@ function generateCertificate(kind){
 }
 function checkGraduateComplete(){
   const done = Object.keys(getLessonProgress()).length;
-  if(done >= LESSONS.length && !localStorage.getItem('fp_graduated')){
+  // LESSONS has an empty slot (index 15). Saved progress is keyed by index, so the hole stays;
+  // the finish check counts real lessons only.
+  if(done >= LESSONS.filter(Boolean).length && !localStorage.getItem('fp_graduated')){
     localStorage.setItem('fp_graduated','1');
     if(typeof confettiBurst === 'function') confettiBurst();
     toast('🎉','You finished the entire Financial Playbook!');
