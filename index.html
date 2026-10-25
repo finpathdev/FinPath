@@ -5792,21 +5792,67 @@ function lookupTerm(term){
   if(term && Object.prototype.hasOwnProperty.call(F13_TERMS, term)) return F13_TERMS[term];
   return '';
 }
-// Single pass over the plain-text lesson, so a term can never match inside markup inserted for another term.
-// Only the first mention of each term is underlined.
+// Surfaces that should show a canonical glossary entry (not their own row).
+// Longer phrases are tried first. A canonical key is underlined only on its first mention.
+const GLOSSARY_ALIASES = {
+  '401k': '401(k)',
+  '401ks': '401(k)',
+  'dca': 'dollar cost averaging',
+  'dollar-cost averaging': 'dollar cost averaging',
+  'price to earnings': 'P/E ratio',
+  'price-to-earnings': 'P/E ratio',
+  'price to earnings ratio': 'P/E ratio',
+  'price-to-earnings ratio': 'P/E ratio',
+  'hysa': 'high-yield savings account',
+  'credit utilisation': 'credit utilization',
+  'hard inquiries': 'hard inquiry',
+  'asset classes': 'asset class',
+  'equities': 'equity',
+  'series i savings bonds': 'I bonds',
+  'series i bonds': 'I bonds',
+  'capital gain': 'capital gains'
+};
+// Single pass over plain text, so a term can never match inside markup inserted for another term.
+function glossaryMatchers(){
+  const list = [];
+  const seen = {};
+  function add(surface, key){
+    const s = String(surface);
+    const id = s.toLowerCase();
+    if(!s || !GLOSSARY[key] || seen[id]) return;
+    seen[id] = 1;
+    list.push({surface: s, key: key});
+  }
+  Object.keys(GLOSSARY_ALIASES).forEach(function(a){ add(a, GLOSSARY_ALIASES[a]); });
+  Object.keys(GLOSSARY).forEach(function(t){
+    if(GLOSSARY_ALIASES[t.toLowerCase()]) return;
+    add(t, t);
+    // Simple plurals: stocks, bonds, dividends, ETFs, index funds, mortgages, shares.
+    if(!/s$/i.test(t) && !/[)\d]$/.test(t)) add(t + 's', t);
+  });
+  list.sort(function(a, b){ return b.surface.length - a.surface.length; });
+  return list;
+}
 function glossaryWrap(text){
-  const terms = Object.keys(GLOSSARY).sort(function(a, b){ return b.length - a.length; });
-  const byLower = {}; terms.forEach(function(t){ byLower[t.toLowerCase()] = t; });
-  const rx = new RegExp('(^|[^\\w])(' + terms.map(function(t){ return t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }).join('|') + ')(?![\\w])', 'gi');
+  const matchers = glossaryMatchers();
+  const byLower = {};
+  matchers.forEach(function(m){ byLower[m.surface.toLowerCase()] = m.key; });
+  const rx = new RegExp('(^|[^\\w])(' + matchers.map(function(m){ return m.surface.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }).join('|') + ')(?![\\w])', 'gi');
   const used = {};
   return String(text).replace(rx, function(m, pre, hit){
     const key = byLower[hit.toLowerCase()];
-    if(!key || used[key]) return m; used[key] = 1;
+    if(!key || used[key]) return m;
+    used[key] = 1;
     return pre + '<span class="term" role="button" tabindex="0" data-term="' + escapeHtml(key) + '" onclick="showTerm(event,this.dataset.term)">' + hit + '</span>';
   });
 }
+// Visible label that opens the same definition popup as a lesson term.
+function termLabel(text, term){
+  const key = term || text;
+  return '<span class="term" role="button" tabindex="0" data-term="' + escapeHtml(key) + '" onclick="showTerm(event,this.dataset.term)">' + escapeHtml(text) + '</span>';
+}
 function showTerm(ev, term){
-  if(ev && ev.stopPropagation) ev.stopPropagation();
+  if(ev){ if(ev.preventDefault) ev.preventDefault(); if(ev.stopPropagation) ev.stopPropagation(); }
   hideTerm();
   const def = lookupTerm(term);
   if(!def) return;
@@ -6012,7 +6058,7 @@ function answerQuiz(oi){
   if(oi === item.a) _quizState.correct++;
   const why = document.getElementById('quizWhy');
   why.style.display = 'block';
-  why.innerHTML = (oi === item.a ? '<b class="up">Correct.</b> ' : '<b class="down">Not quite.</b> ') + item.w +
+  why.innerHTML = (oi === item.a ? '<b class="up">Correct.</b> ' : '<b class="down">Not quite.</b> ') + glossaryWrap(item.w) +
     '<br><button class="btn-secondary" style="margin-top:12px;padding:9px 20px;font-size:13px" onclick="_quizState.idx++;renderQuizQ()">' + (_quizState.idx === QUIZZES[_quizState.name].length-1 ? 'See score' : 'Next question') + '</button>';
 }
 
