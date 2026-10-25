@@ -106,3 +106,17 @@ logic didn't cause this; it was masking the failure. Every quote came back with 
 ## 2026-10-25 — Finnhub key rotation
 - Replaced the dead (401) Finnhub key in index.html with a new free key; live quotes, candles, news and WebSocket restored.
 - sw.js CACHE → finpath-v7 so clients fetch the new HTML.
+
+## 2026-10-25 — Polish pass: speed, link safety, privacy, PWA (finpath-v8)
+- **Faster first load:** removed the render-blocking `js.stripe.com/v3` script from `<head>`. It wasn't used, because Gold checkout opens a hosted Payment Link via `window.open`. That's one less third-party script on every page view. The Stripe **test** Payment Link was not changed (live link still deferred).
+- **News link safety:** new `safeUrl()` lets through only `http(s)` URLs, HTML-escaped. It's used for news-card links and images (`loadNews`) and "Why it might be moving" headlines (`loadWhyMoved`), so a bad feed item can't inject `javascript:` URLs or break the markup. Both now check `r.ok` and drop items with no URL or headline. News images use `decoding="async"` and `referrerpolicy="no-referrer"`.
+- **Privacy:** the legacy `?user=<email>` URL param is now ignored and removed from the address bar. Before, it was saved as `fp_uid` in localStorage and stayed in any copied link. Any old `fp_uid` that looks like an email is cleared. (`UID` isn't used by cloud sync; signed-in sync uses `currentUser.id`.)
+- **Shared portfolio links:** links are built from the current origin/path, so they work on previews and localhost too (falls back to the main site). The preview modal marks holdings with no price as "no price" instead of silently counting $0, and the total says how many have no price. A plain-English note explains that links hold tickers and share counts only, and that a shared portfolio is a snapshot, not a recommendation. Esc now closes this modal (and any other id-less overlay) and clears `#p=`. Late quote responses after closing no longer throw an error.
+- **PWA manifest:** the description is honest now: "latest 13F filings… live prices when available" instead of "live billionaire trades / real-time". Also added `id`, set `orientation: any` (tablets/landscape), renamed the shortcut to "Investor Moves" (13F, 45-day delay) and added a Markets shortcut.
+- **Offline:** the SW precaches the maskable icon, apple-touch icon and logo mark (dropped og-image, which only crawlers need). Google Fonts CORS responses are now runtime-cached, so offline lessons keep their typography. `CACHE` → `finpath-v8`.
+- Verified: `node --check` on all 3 inline scripts and on sw.js, and manifest JSON parses. Finnhub AAPL quote with the current FK → HTTP 200. Headless Chrome on the `#p=` link with `?user=`: the modal rendered with the new note, with no page errors.
+
+**Deferred / for Siddharth**
+- The Finnhub key is still client-side, as before. A Supabase Edge Function proxy is the real fix and is out of scope for a static pass.
+- Gold status checks the `gold_users` table, payment verification checks `payments`, and comments mention `profiles.is_gold`. Make sure the Stripe webhook writes the tables the client reads before going live.
+- Stripe live Payment Link: still deferred.

@@ -3,14 +3,16 @@
 // Live prices, filings, and API responses are intentionally NOT cached — those
 // must always be fresh.
 
-const CACHE = 'finpath-v7';
+const CACHE = 'finpath-v8';
 const SHELL = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
-  './og-image.png'
+  './icon-512-maskable.png',
+  './icon-180.png',
+  './logo-mark.png'
 ];
 
 // Install: precache the app shell.
@@ -75,7 +77,9 @@ self.addEventListener('fetch', function(event){
       if(cached) return cached;
       return fetch(req).then(function(res){
         // opportunistically cache successful same-origin GETs (fonts, images, etc.)
-        if(res && res.ok && res.type === 'basic'){
+        // Google Fonts (CORS responses) are cached too, so lessons keep their typography offline.
+        const isFont = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
+        if(res && res.ok && (res.type === 'basic' || (isFont && res.type === 'cors'))){
           const clone = res.clone();
           caches.open(CACHE).then(function(cache){ cache.put(req, clone); });
         }

@@ -60,7 +60,7 @@
 <meta name="apple-mobile-web-app-title" content="FinPath">
 <meta name="mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap" rel="stylesheet">
-<script src="https://js.stripe.com/v3/"></script>
+<!-- Stripe.js removed 2026-10-25: Gold checkout uses a hosted Payment Link (window.open), so the SDK was unused render-blocking weight. -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ══ FINPATH DESIGN SYSTEM v2 — "Terminal Garden" ══
@@ -2325,9 +2325,11 @@ const SBU='https://ivhhfhemcecwqadrjmwq.supabase.co';
 const SBK='sb_publishable_KoWYv1Ro5D4I83XxWmJFOg_DCB2ldw6';
 const SBH={'Content-Type':'application/json','apikey':SBK,'Authorization':'Bearer '+SBK};
 const EP=new URLSearchParams(window.location.search);
-const EM=EP.get('user');
-let UID=EM||localStorage.getItem('fp_uid')||(()=>{const id='u_'+Math.random().toString(36).slice(2);localStorage.setItem('fp_uid',id);return id;})();
-if(EM)localStorage.setItem('fp_uid',EM);
+// PRIVACY: the legacy ?user=<email> param used to be copied into localStorage and left in the
+// address bar (and in any link a student copied/shared). It is now ignored and scrubbed from the URL.
+if(EP.has('user')){ try{ EP.delete('user'); const qs=EP.toString(); history.replaceState(history.state,'',location.pathname+(qs?'?'+qs:'')+location.hash); }catch(e){} }
+try{ const _old=localStorage.getItem('fp_uid'); if(_old && _old.indexOf('@')!==-1) localStorage.removeItem('fp_uid'); }catch(e){}
+let UID=localStorage.getItem('fp_uid')||(()=>{const id='u_'+Math.random().toString(36).slice(2);try{localStorage.setItem('fp_uid',id);}catch(e){}return id;})();
 // SECURITY: IS_GOLD starts false. It can only become true after the server (Supabase)
 // confirms an active Gold subscription for the logged-in user. Never trust the client.
 let IS_GOLD = false;
@@ -4670,6 +4672,8 @@ async function renderAnalytics(quotes){
 // ══ NEWS FEED ══
 let newsLoadedAt = 0;
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+// Only allow http(s) links/images from third-party feeds (blocks javascript:/data: URLs), HTML-escaped for attributes.
+function safeUrl(u){ try{ const x = new URL(String(u||'')); return (x.protocol==='https:'||x.protocol==='http:') ? escapeHtml(x.href) : ''; }catch(e){ return ''; } }
 function timeAgo(ts){ const m = Math.floor((Date.now()-ts)/60000); if(m < 60) return m + 'm ago'; const h = Math.floor(m/60); if(h < 24) return h + 'h ago'; return Math.floor(h/24) + 'd ago'; }
 async function loadNews(){
   const grid = document.getElementById('newsGrid');
@@ -4677,12 +4681,15 @@ async function loadNews(){
   if(Date.now() - newsLoadedAt < 600000) return;
   try{
     const r = await fetch('https://finnhub.io/api/v1/news?category=general&token=' + FK);
-    const items = (await r.json()).slice(0, 6);
+    if(!r.ok) throw 0;
+    const raw = await r.json();
+    const items = (Array.isArray(raw) ? raw : []).filter(function(n){ return n && safeUrl(n.url) && n.headline; }).slice(0, 6);
     if(!items.length) throw 0;
     newsLoadedAt = Date.now();
     grid.innerHTML = items.map(function(n){
-      return '<a class="news-card" href="' + n.url + '" target="_blank" rel="noopener noreferrer">' +
-        (n.image ? '<img class="news-img" src="' + n.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : '') +
+      const img = safeUrl(n.image);
+      return '<a class="news-card" href="' + safeUrl(n.url) + '" target="_blank" rel="noopener noreferrer">' +
+        (img ? '<img class="news-img" src="' + img + '" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">' : '') +
         '<div class="news-body"><div class="news-src"><span>' + escapeHtml(n.source || 'News') + '</span><time>' + timeAgo(n.datetime*1000) + '</time></div>' +
         '<div class="news-title">' + escapeHtml(n.headline) + '</div></div></a>';
     }).join('');
@@ -4706,6 +4713,11 @@ document.addEventListener('keydown', function(e){
   if(mm) mm.classList.remove('open');
   const um = document.getElementById('userMenu');
   if(um) um.style.display = 'none';
+  // Dynamically created overlays (shared-portfolio preview etc.) have no id — close them too.
+  document.querySelectorAll('.modal-overlay.open:not([id])').forEach(function(ov){
+    ov.remove();
+    if(location.hash.indexOf('#p=') === 0) history.replaceState(null,'',location.pathname);
+  });
 });
 
 
@@ -5949,10 +5961,12 @@ async function loadWhyMoved(t){
     const to = new Date().toISOString().slice(0,10);
     const from = new Date(Date.now()-3*86400000).toISOString().slice(0,10);
     const r = await fetch('https://finnhub.io/api/v1/company-news?symbol=' + t + '&from=' + from + '&to=' + to + '&token=' + FK);
-    const items = (await r.json()).slice(0,3);
+    if(!r.ok) return;
+    const raw = await r.json();
+    const items = (Array.isArray(raw) ? raw : []).filter(function(n){ return n && safeUrl(n.url) && n.headline; }).slice(0,3);
     if(!items.length) return;
     el.innerHTML = '<div class="d-metric" style="margin-bottom:16px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px"><div class="d-mlabel">Why it might be moving — latest headlines</div>' +
-      items.map(function(n){ return '<a href="' + n.url + '" target="_blank" rel="noopener noreferrer" style="display:block;color:var(--text);text-decoration:none;font-size:13px;line-height:1.5;padding:9px 0;border-bottom:1px solid var(--line)">' + escapeHtml(n.headline) + ' <span style="color:var(--muted2);font-size:11px">— ' + escapeHtml(n.source||'') + '</span></a>'; }).join('') + '</div>';
+      items.map(function(n){ return '<a href="' + safeUrl(n.url) + '" target="_blank" rel="noopener noreferrer" style="display:block;color:var(--text);text-decoration:none;font-size:13px;line-height:1.5;padding:9px 0;border-bottom:1px solid var(--line)">' + escapeHtml(n.headline) + ' <span style="color:var(--muted2);font-size:11px">— ' + escapeHtml(n.source||'') + '</span></a>'; }).join('') + '</div>';
   }catch(e){}
 }
 
@@ -5960,7 +5974,9 @@ async function loadWhyMoved(t){
 function sharePortfolio(){
   if(!portfolio.length){ toast('⚠️','Add some stocks first.'); return; }
   const data = btoa(JSON.stringify(portfolio.map(function(p){ return [p.ticker, p.shares]; })));
-  const url = 'https://finpathdev.github.io/FinPath/#p=' + data;
+  // Use the page's own address so links work on forks, previews and localhost, not just the main site.
+  const base = (location.protocol === 'http:' || location.protocol === 'https:') ? (location.origin + location.pathname) : 'https://finpathdev.github.io/FinPath/';
+  const url = base + '#p=' + data;
   (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function(){
     toast('🔗','Anonymous portfolio link copied — it shows holdings only, never your identity.');
   }).catch(function(){ prompt('Copy your share link:', url); });
@@ -5994,11 +6010,14 @@ async function handleSharedLink(){
   document.body.appendChild(ov);
   window._sharedData = list;
   const qs = await Promise.all(list.map(async function(x){ return {t:x[0], sh:x[1], q: await fetchQ(x[0])}; }));
-  let tot = 0;
-  document.getElementById('sharedList').innerHTML = qs.map(function(r){
-    const v = r.q ? r.q.c*r.sh : 0; tot += v;
-    return '<div class="modal-result" style="cursor:default"><div><b>' + escapeHtml(r.t) + '</b> <span style="color:var(--muted);font-size:12px">' + escapeHtml(r.sh) + ' shares</span></div><div style="font-weight:700">' + (r.q ? fmt(v) : '—') + '</div></div>';
-  }).join('') + '<div style="text-align:right;font-weight:700;font-family:var(--font-display);margin-top:8px">Total: ' + fmt(tot) + '</div>';
+  let tot = 0, unpriced = 0;
+  const box = document.getElementById('sharedList'); if(!box) return;   // closed while quotes loaded
+  box.innerHTML = qs.map(function(r){
+    const ok = r.q && isFinite(r.q.c) && r.q.c > 0;
+    const v = ok ? r.q.c*r.sh : 0; tot += v; if(!ok) unpriced++;
+    return '<div class="modal-result" style="cursor:default"><div><b>' + escapeHtml(r.t) + '</b> <span style="color:var(--muted);font-size:12px">' + escapeHtml(r.sh) + ' shares</span></div><div style="font-weight:700">' + (ok ? fmt(v) : '<span style="color:var(--muted2);font-weight:500;font-size:12px">no price</span>') + '</div></div>';
+  }).join('') + '<div style="text-align:right;font-weight:700;font-family:var(--font-display);margin-top:8px">Total: ' + fmt(tot) + (unpriced ? ' <span style="color:var(--muted2);font-weight:500;font-size:12px">(' + unpriced + ' without a price)</span>' : '') + '</div>' +
+    '<div style="font-size:11px;color:var(--muted2);margin-top:10px;line-height:1.5">Shared links contain tickers and share counts only — no names or emails. Valued at current prices; this is someone else’s snapshot, not a recommendation.</div>';
 }
 async function importShared(){
   const list = sanitizeSharedList(window._sharedData);
