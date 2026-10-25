@@ -6554,10 +6554,27 @@ handleSharedLink();
 // Hash router: #portfolio / #lessons / #gold / #markets / #legal / #home (or empty).
 // #p= shared links are handled above by handleSharedLink and ignored here.
 function routeFromHash(){
-  const h = location.hash.replace(/^#/,'');
-  if(h.indexOf('p=')===0) return;
-  const p = h==='' ? 'home' : h;
-  if(ROUTES.indexOf(p)<0) return;
+  const raw = location.hash.replace(/^#/,'');
+  if(raw.indexOf('p=')===0) return;
+  let p = raw.replace(/^\/+|\/+$/g,'').split(/[?#]/)[0].toLowerCase();
+  if(p==='') p = 'home';
+  if(ROUTES.indexOf(p)<0){
+    const anchorId = raw.replace(/^\/+|\/+$/g,'').split(/[?#]/)[0];
+    const anchor = anchorId && document.getElementById(anchorId);
+    const legal = document.getElementById('page-legal');
+    if(anchor && legal && legal.contains(anchor)){
+      const active = document.querySelector('.page.active');
+      if(!active || active.id!=='page-legal') showPage('legal', true);
+      try{ anchor.scrollIntoView({block:'start'}); }catch(e){}
+      return;
+    }
+    showPage('home', true);
+    if(location.hash){ try{ history.replaceState(null,'', location.pathname+location.search); }catch(e){} }
+    return;
+  }
+  if(p!==raw && !(p==='home' && raw==='')){
+    try{ history.replaceState(null,'', p==='home' ? location.pathname+location.search : '#'+p); }catch(e){}
+  }
   const active = document.querySelector('.page.active');
   if(active && active.id==='page-'+p) return;
   showPage(p,true);
