@@ -3568,8 +3568,9 @@ function filterLessons(q){
   }));
 }
 
-function openLesson(i){
+function openLesson(i, fromHash){
   const l=LESSONS[i];
+  if(!l) return;
   document.getElementById('lessons-list-view').style.display='none';
   document.getElementById('lessonDetail').classList.add('active');
   document.getElementById('detailCat').textContent=l.cat;
@@ -3597,6 +3598,14 @@ function openLesson(i){
               : '<button class="btn-secondary" onclick="closeLessonDetail();renderLessons()">Back to all lessons</button>');
   body.appendChild(nav);
   window.scrollTo(0,0);
+  if(fromHash) return;
+  try{
+    const want = '#lesson/' + i;
+    if(location.hash === want) return;
+    const cur = location.hash.replace(/^#/,'').replace(/^\/+|\/+$/g,'').split(/[?#]/)[0].toLowerCase();
+    if(cur !== 'lessons' && !/^lesson\/\d+$/.test(cur)) history.pushState({fp:'lessons'}, '', '#lessons');
+    history.pushState({fp:'lesson', i:i}, '', want);
+  }catch(e){}
 }
 
 function closeLessonDetail(){
@@ -6556,6 +6565,15 @@ handleSharedLink();
 function routeFromHash(){
   const raw = location.hash.replace(/^#/,'');
   if(raw.indexOf('p=')===0) return;
+  const lesson = raw.match(/^\/?lesson\/(\d+)\/?$/i);
+  if(lesson){
+    const i = parseInt(lesson[1], 10);
+    if(LESSONS[i]){
+      if(!document.getElementById('page-lessons').classList.contains('active')) showPage('lessons', true);
+      openLesson(i, true);
+      return;
+    }
+  }
   let p = raw.replace(/^\/+|\/+$/g,'').split(/[?#]/)[0].toLowerCase();
   if(p==='') p = 'home';
   if(ROUTES.indexOf(p)<0){
@@ -6576,6 +6594,10 @@ function routeFromHash(){
     try{ history.replaceState(null,'', p==='home' ? location.pathname+location.search : '#'+p); }catch(e){}
   }
   const active = document.querySelector('.page.active');
+  if(p==='lessons' && active && active.id==='page-lessons'){
+    if(typeof closeLessonDetail==='function') closeLessonDetail();
+    return;
+  }
   if(active && active.id==='page-'+p) return;
   showPage(p,true);
 }
