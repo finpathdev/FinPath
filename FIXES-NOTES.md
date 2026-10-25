@@ -150,3 +150,27 @@ Market data only. No Stripe, 13F, lesson, or pricing edits. Rebased onto the 13F
 - `BRK.B` and `BRK-B` both returned the same live quote, so nothing remaps class shares. Market pulse and the sector heat map go through `fetchQ` with plain ETF tickers (SPY, QQQ, DIA, sector ETFs) — no crypto gap. `stock/metric` and `company-news` are stock endpoints; the screener and dividend card already skip crypto, and an empty headline list stays hidden. Not remapped onto `BINANCE:*`.
 - WebSocket subscribe already sent the exchange pair; unsubscribe sent the raw ticker (`BTC`), so a crypto unwatch never left the socket. Unsubscribe now uses `finnhubSymbol` too.
 - `index.html` is a precached shell asset, so sw.js `CACHE` goes `finpath-v9` → `finpath-v10`. It is not rolled back.
+
+## 2026-10-25 — Bug hunt + fixes (finpath-v10)
+**Scan results:** every inline handler (`onclick` / `oninput` / …) calls a function that exists. `innerHTML` writes were checked for unescaped data.
+
+**Fixed**
+1. **Stored XSS in Savings Goals:** the goal name went into `innerHTML` raw (goal card and milestone toast). Typing `<img src=x onerror=…>` as a name ran script on every Portfolio visit. Now escaped. Also escaped tickers in the transaction history and price-alert list (they come from localStorage, so they shouldn't be trusted).
+2. **Goal validation:** rejects a target of $0 or less, a deadline in the past, or a name over 60 characters. "Add to goal" uses `isFinite`, guards a missing index, and handles older goals with no `hit` map (that used to throw). Deleting a goal now asks for confirmation first.
+3. **Gold honesty, "AI Suggestions":** the "instructions" textarea was fake. The output said "Taking into account your instruction… suggestion adjusted accordingly" while nothing changed, and the instruction was also injected unescaped. The textarea and that sentence are removed. The disclaimer now says suggestions are rule-based educational notes, not a live AI. The Gold pricing bullets "AI buy/hold/sell suggestions with full reasoning / Give AI specific trading instructions / Priority alerts and notifications" became "Buy/hold/sell suggestions with plain-English reasoning (rule-based, educational)" and "Holding alerts with the reasoning behind each suggestion". The feature-card copy was updated the same way. This now matches the Legal page, which already called it rule-based. No Stripe or payment code was touched.
+4. **NaN P&L:** `runAI`, the portfolio analytics and the deep-analysis valuation used `q.c` even when a cached quote had no price. They now fall back to cost basis unless `q.c` is a finite number > 0.
+5. **Market holidays:** `usMarketStatus()` now knows the NYSE 2026–2027 full-day holidays and 1 PM ET early closes (source: nyse.com/markets/hours-calendars). On those days it shows e.g. "Market closed — closed today for Thanksgiving" and "Open · closes 1 PM ET". `NYSE_HOLIDAYS` needs extending each year (TODO in code).
+6. **Lessons nav:** clicking "Lessons" while reading a lesson now closes the lesson and shows the list. Before, nothing visibly happened.
+7. **Accessibility:** new `a11yLabelFields()` links sibling `<label>Text</label><input id>` pairs with `for` (screener, backtest, calculators, parent-consent form). It also gives unlabeled fields an `aria-label` from their placeholder (login email, goal name/target, price alert). A debounced MutationObserver re-applies this to calculators rendered later.
+- sw.js CACHE → finpath-v10.
+- Verified: `node --check` on all 3 inline scripts and on sw.js. Finnhub AAPL → 200. Headless Chrome on a temp copy: the goal-name payload rendered as text (did not run); 13 labels linked; runAI output had no instruction text and no textarea; Thanksgiving 2026 → closed (holiday), Nov 27 2026 at 1:30 PM ET → after hours (early close), Mon Oct 26 at 11 AM ET → open; Lessons nav closes an open lesson; no page errors.
+
+**Documented, not changed — Gold backend mismatch (for Siddharth)**
+- `checkGoldStatus()` reads **`gold_users`** (`user_id`, `active`).
+- `verifyStripeSession()` reads **`payments`** (`session_id`, `user_id`, `status='paid'`), then re-checks `gold_users`.
+- Code comments say the webhook flips **`profiles.is_gold`**, but no client code reads that column.
+- So a real purchase only unlocks Gold if the Stripe webhook (server side) writes **both** a `payments` row (status `paid`, keyed by Checkout `session_id` and the Supabase `user_id`) **and** an active `gold_users` row. If it only sets `profiles.is_gold`, paying users won't get Gold. Also, a Payment Link only sends `session_id` back when its success URL includes `?gold=success&session_id={CHECKOUT_SESSION_ID}`. Check this before switching to the live link. RLS must stop clients from writing either table.
+
+**Deferred**
+- Finnhub key is still client-side (proxy out of scope). The 13F refresh waits until after Nov 16, 2026. The live Stripe link is still deferred.
+- The cached ticker-tape row can show prices up to 5 minutes old with no "last known" flag during an outage (minor).

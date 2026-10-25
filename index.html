@@ -1745,7 +1745,7 @@ body.light .gs-item{background:#fff}
       <div class="feature-card" onclick="showPage('lessons')"><div class="feature-icon">📚</div><div class="feature-title">34 Expert Lessons</div><div class="feature-desc">Everything schools skipped — from credit scores to compound interest — explained in plain English.</div></div>
       <div class="feature-card" onclick="showPage('gold')"><div class="feature-icon">👑</div><div class="feature-title">Investor Moves — Gold</div><div class="feature-desc">See what 6 legendary investors (Buffett, Ackman, Tepper, Druckenmiller, Li Lu and Klarman) bought and sold in their latest 13F filings — and why.</div></div>
       <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">📈</div><div class="feature-title">Live Portfolio Tracker</div><div class="feature-desc">Track your stocks with live prices. See total profit, daily gains, and hourly breakdowns of every position.</div></div>
-      <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">🤖</div><div class="feature-title">AI Suggestions — Gold</div><div class="feature-desc">Get personalised buy, hold, and sell suggestions. Give the AI specific instructions and it tailors advice to you.</div></div>
+      <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">🤖</div><div class="feature-title">AI Suggestions — Gold</div><div class="feature-desc">Buy, hold and sell suggestions for the stocks you own, with plain-English reasoning. Rule-based and educational — not personal advice.</div></div>
     </div>
   </section>
   <section class="investor-section">
@@ -1798,9 +1798,8 @@ body.light .gs-item{background:#fff}
           <li>Live portfolio tracker</li>
           <li>Full profit tracking with hourly breakdown</li>
           <li>Investor Moves — 6 legendary investors (13F)</li>
-          <li>AI buy/hold/sell suggestions with full reasoning</li>
-          <li>Give AI specific trading instructions</li>
-          <li>Priority alerts and notifications</li>
+          <li>Buy/hold/sell suggestions with plain-English reasoning (rule-based, educational)</li>
+          <li>Holding alerts with the reasoning behind each suggestion</li>
         </ul>
         <button class="price-btn" onclick="showPage('portfolio')">Start with Gold</button>
       </div>
@@ -1921,9 +1920,8 @@ body.light .gs-item{background:#fff}
     </div>
     <div class="ai-section">
       <div class="ai-head"><div class="ai-title">AI Suggestions</div><span class="ai-badge">Gold Plan</span></div>
-      <div class="ai-disclaimer">These suggestions are for educational purposes only and do not constitute financial advice. Always do your own research. Past performance does not guarantee future results. You are solely responsible for any investment decisions you make.</div>
-      <div style="font-size:14px;font-weight:600;margin-bottom:8px;color:#ccc">Give the AI specific instructions (optional):</div>
-      <textarea class="ai-instruction" id="aiInstruction" placeholder="e.g. Only suggest trades for tech stocks. Avoid anything I have held less than 6 months. Focus on dividend stocks. Keep suggestions conservative..."></textarea>
+      <div class="ai-disclaimer">Suggestions are rule-based educational notes written for well-known stocks (a general note is shown for others) — not a live AI reading your personal situation. These suggestions are for educational purposes only and do not constitute financial advice. Always do your own research. Past performance does not guarantee future results. You are solely responsible for any investment decisions you make.</div>
+      <!-- 2026-10-25: removed the "instructions" textarea; suggestions are rule-based and never used it (the old copy falsely said they were "adjusted accordingly"). -->
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="ai-run-btn" onclick="runAI()">Get AI suggestions</button><button class="ai-run-btn" style="background:linear-gradient(135deg,#b8860b,#f5b60b);color:#0a0a05" onclick="analyzePortfolio()">Deep portfolio analysis</button></div>
       <div id="aiRecs"><div class="empty">Add stocks and click above to get personalised suggestions.</div></div>
     </div>
@@ -3202,7 +3200,7 @@ function showPage(p,fromHash){
   }
   document.getElementById('mobileMenu').classList.remove('open');
   window.scrollTo(0,0);
-  if(p==='lessons') renderLessons();
+  if(p==='lessons'){ if(typeof closeLessonDetail==='function') closeLessonDetail(); renderLessons(); }
   if(p==='gold') renderGold();
   if(p==='portfolio'){loadFromDB().then(()=>renderPortfolio());if(typeof renderGoals==='function'){renderGoals();renderAchievements();renderAlertsList();}if(typeof renderTxns==='function')renderTxns();if(typeof renderChecklist==='function')renderChecklist();}
   if(p==='markets' && typeof initMarkets==='function') initMarkets();
@@ -4005,17 +4003,15 @@ function runAI(){
     recsEl.innerHTML='<div class="empty">Add stocks to your portfolio first, then come back for AI suggestions.</div>';
     return;
   }
-  const instructions = document.getElementById('aiInstruction') ? document.getElementById('aiInstruction').value.trim() : '';
   recsEl.innerHTML='<div class="loading"><div class="spinner"></div>Analysing your portfolio...</div>';
   setTimeout(()=>{
     const html = portfolio.map(h=>{
       const adv = AI_ADVISOR[h.ticker] || AI_ADVISOR.DEFAULT;
       const q = priceCache[h.ticker];
-      const price = q ? q.c : h.buyPrice;
+      const price = (q && isFinite(q.c) && q.c > 0) ? q.c : h.buyPrice;
       const pnl = h.buyPrice > 0 ? ((price - h.buyPrice)/h.buyPrice*100) : 0;
       const pnlText = pnl >= 0 ? '+'+pnl.toFixed(1)+'% gain' : pnl.toFixed(1)+'% loss';
       let text = adv.text;
-      if(instructions) text += ' Taking into account your instruction: "'+instructions.slice(0,80)+'" — suggestion adjusted accordingly.';
       return '<div class="ai-rec">'+
         '<div class="ai-rec-head">'+
           '<div><div class="ai-rec-ticker">'+h.ticker+'</div>'+
@@ -4615,7 +4611,7 @@ function applyLivePrices(){
   let tv = 0, ti = 0, td = 0, has = false;
   portfolio.forEach(function(h){
     const q = priceCache[h.ticker];
-    const price = q ? q.c : h.buyPrice;
+    const price = (q && isFinite(q.c) && q.c > 0) ? q.c : h.buyPrice;
     tv += price*h.shares; ti += h.buyPrice*h.shares; td += (q && q.d ? q.d : 0)*h.shares;
     if(!q) return; has = true;
     const row = document.querySelector('.stock-row[data-t="' + h.ticker + '"]');
@@ -4959,6 +4955,30 @@ function shareLesson(i){
   if(navigator.share){ navigator.share({title:'FinPath', text:text, url:url}).catch(function(){}); }
   else window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank', 'noopener');
 }
+
+// ══ A11Y: connect visual labels to their fields ══
+// Many forms (screener, calculators, goals, login) use <label>Text</label><input id=…> as siblings, which
+// screen readers don't link. This sets label[for] for an adjacent field, and falls back to aria-label = placeholder.
+function a11yLabelFields(root){
+  try{
+    (root||document).querySelectorAll('label:not([for])').forEach(function(lb){
+      if(lb.querySelector('input,select,textarea')) return;          // already wraps its field
+      const f = lb.nextElementSibling;
+      if(f && /^(INPUT|SELECT|TEXTAREA)$/.test(f.tagName) && f.id) lb.htmlFor = f.id;
+    });
+    (root||document).querySelectorAll('input:not([type=hidden]):not([aria-label]),select:not([aria-label]),textarea:not([aria-label])').forEach(function(f){
+      if(f.id && document.querySelector('label[for="' + f.id + '"]')) return;
+      if(f.closest('label')) return;
+      const ph = f.getAttribute('placeholder');
+      if(ph) f.setAttribute('aria-label', ph);
+    });
+  }catch(e){}
+}
+a11yLabelFields();
+(function(){
+  let t = null;
+  try{ new MutationObserver(function(){ clearTimeout(t); t = setTimeout(function(){ a11yLabelFields(); }, 250); }).observe(document.body, {childList:true, subtree:true}); }catch(e){}
+})();
 
 // ══ OFFLINE INDICATOR ══
 (function(){
@@ -5476,7 +5496,7 @@ function renderAlertsList(){
   if(!a.length){ sec.style.display = 'none'; return; }
   sec.style.display = 'block';
   list.innerHTML = a.map(function(al, i){
-    return '<div class="alert-item ' + (al.done ? '' : 'warn') + '"><div><div class="alert-ticker">' + al.t + ' ' + (al.dir === 'below' ? '▼ drops below' : '▲ rises above') + ' ' + fmt(al.price) + '</div><div class="alert-msg">' + (al.done ? 'Triggered ✓' : 'Watching…') + '</div></div><button class="watch-star" aria-label="Delete alert" onclick="removeAlert(' + i + ')" style="color:var(--red)">✕</button></div>';
+    return '<div class="alert-item ' + (al.done ? '' : 'warn') + '"><div><div class="alert-ticker">' + escapeHtml(al.t) + ' ' + (al.dir === 'below' ? '▼ drops below' : '▲ rises above') + ' ' + fmt(al.price) + '</div><div class="alert-msg">' + (al.done ? 'Triggered ✓' : 'Watching…') + '</div></div><button class="watch-star" aria-label="Delete alert" onclick="removeAlert(' + i + ')" style="color:var(--red)">✕</button></div>';
   }).join('');
 }
 function checkAlerts(){
@@ -5508,6 +5528,9 @@ function saveGoal(){
   const target = parseFloat(document.getElementById('gTarget').value);
   const date = document.getElementById('gDate').value;
   if(!name || !target || !date){ toast('⚠️','Fill in all three fields.'); return; }
+  if(!isFinite(target) || target <= 0){ toast('⚠️','Target amount must be more than $0.'); return; }
+  if(new Date(date + 'T23:59:59') < new Date()){ toast('⚠️','Pick a deadline in the future.'); return; }
+  if(name.length > 60){ toast('⚠️','Keep the goal name under 60 characters.'); return; }
   const g = getGoals();
   g.push({name:name, target:target, date:date, saved:0, hit:{}});
   saveGoals(g);
@@ -5518,16 +5541,18 @@ function saveGoal(){
 }
 function addToGoal(i){
   const amt = parseFloat(prompt('How much are you adding to this goal? ($)')||'0');
-  if(!amt || amt <= 0) return;
+  if(!isFinite(amt) || amt <= 0) return;
   const g = getGoals();
-  g[i].saved += amt;
+  if(!g[i]) return;
+  g[i].saved = (Number(g[i].saved) || 0) + amt;
+  g[i].hit = g[i].hit || {};
   var pct = g[i].saved / g[i].target * 100;
   [25,50,75,100].forEach(function(m){
-    if(pct >= m && !g[i].hit[m]){ g[i].hit[m] = 1; confettiBurst(); toast('🎉', '<b>' + g[i].name + '</b>: ' + m + '% milestone reached!'); }
+    if(pct >= m && !g[i].hit[m]){ g[i].hit[m] = 1; confettiBurst(); toast('🎉', '<b>' + escapeHtml(g[i].name) + '</b>: ' + m + '% milestone reached!'); }
   });
   saveGoals(g);
 }
-function deleteGoal(i){ const g = getGoals(); g.splice(i,1); saveGoals(g); }
+function deleteGoal(i){ const g = getGoals(); if(!g[i]) return; if(!confirm('Delete the goal "' + g[i].name + '"? This can\u2019t be undone.')) return; g.splice(i,1); saveGoals(g); }
 function renderGoals(){
   const list = document.getElementById('goalsList'); if(!list) return;
   const g = getGoals();
@@ -5538,7 +5563,7 @@ function renderGoals(){
     const weekly = Math.max(0, (goal.target - goal.saved)/weeksLeft);
     const elapsedPct = 100 - (daysLeft / Math.max(1,(new Date(goal.date) - new Date(goal.date).setFullYear(new Date(goal.date).getFullYear()-1))/86400000))*100;
     const pace = pct >= Math.min(99, elapsedPct) ? '' : '';
-    return '<div class="goal-card"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div style="font-weight:700;font-size:15px">' + goal.name + '</div><button class="watch-star" style="color:var(--red)" aria-label="Delete goal" onclick="deleteGoal(' + i + ')">✕</button></div>' +
+    return '<div class="goal-card"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div style="font-weight:700;font-size:15px">' + escapeHtml(goal.name) + '</div><button class="watch-star" style="color:var(--red)" aria-label="Delete goal" onclick="deleteGoal(' + i + ')">✕</button></div>' +
       '<div style="font-size:13px;color:var(--muted)">' + fmt(goal.saved) + ' of ' + fmt(goal.target) + ' · ' + daysLeft + ' days left</div>' +
       '<div class="goal-bar"><div class="goal-fill" style="width:' + pct.toFixed(1) + '%"></div></div>' +
       '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><div style="font-size:12px;color:var(--muted)">Need <b style="color:var(--mint)">' + fmt(weekly) + '</b>/week to hit it</div><button class="btn-secondary" style="padding:8px 16px;font-size:12px" onclick="addToGoal(' + i + ')">+ Add money</button></div></div>';
@@ -5681,11 +5706,11 @@ function renderTxns(){
     const total = (x.price||0) * (x.sh||0);
     const shTxt = x.sh + ' share' + (x.sh===1?'':'s') + ' @ ' + fmt(x.price||0);
     if(x.type === 'buy')
-      return '<div class="txn-row txn-buy"><div class="txn-icon">' + (x.demo?'🎓':'🟢') + '</div><div class="txn-main"><div class="txn-title">' + (x.demo?'Demo-added':'Bought') + ' <span class="tk">' + x.t + '</span>' + badge + '</div><div class="txn-sub">' + shTxt + ' · ' + when + '</div></div><div class="txn-right"><div class="txn-amt">' + fmt(total) + '</div></div></div>';
+      return '<div class="txn-row txn-buy"><div class="txn-icon">' + (x.demo?'🎓':'🟢') + '</div><div class="txn-main"><div class="txn-title">' + (x.demo?'Demo-added':'Bought') + ' <span class="tk">' + escapeHtml(x.t) + '</span>' + badge + '</div><div class="txn-sub">' + shTxt + ' · ' + when + '</div></div><div class="txn-right"><div class="txn-amt">' + fmt(total) + '</div></div></div>';
     // sell / remove
     const pnl = (typeof x.pnl === 'number') ? x.pnl : null;
     const pnlHtml = pnl === null ? '' : '<div class="txn-pnl ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ -') + fmt(Math.abs(pnl)).slice(1) + ' ' + (pnl>=0?'profit':'loss') + '</div>';
-    return '<div class="txn-row txn-sell"><div class="txn-icon">' + (x.type==='remove'?'🗑️':'🔵') + '</div><div class="txn-main"><div class="txn-title">' + (x.type==='remove'?'Removed':'Sold') + ' <span class="tk">' + x.t + '</span>' + badge + '</div><div class="txn-sub">' + shTxt + ' · ' + when + '</div></div><div class="txn-right"><div class="txn-amt">' + fmt(total) + '</div>' + pnlHtml + '</div></div>';
+    return '<div class="txn-row txn-sell"><div class="txn-icon">' + (x.type==='remove'?'🗑️':'🔵') + '</div><div class="txn-main"><div class="txn-title">' + (x.type==='remove'?'Removed':'Sold') + ' <span class="tk">' + escapeHtml(x.t) + '</span>' + badge + '</div><div class="txn-sub">' + shTxt + ' · ' + when + '</div></div><div class="txn-right"><div class="txn-amt">' + fmt(total) + '</div>' + pnlHtml + '</div></div>';
   }).join('') + '</div>' + (txns.length > 50 ? '<div style="font-size:12px;color:var(--muted);text-align:center;margin-top:10px">Showing the 50 most recent of ' + txns.length + ' — use Export for the full history.</div>' : '');
 }
 function exportTxnCSV(){
@@ -5758,16 +5783,23 @@ const PULSE = [
   {t:'VIXY',n:'Volatility',d:'Tends to rise when markets get nervous'}
 ];
 // U.S. stock market status in New York time (regular session 9:30 AM–4:00 PM ET, Mon–Fri).
-// Exchange holidays are not modelled — on those days this may say "open" while prices don't move.
+// NYSE full-day holidays and 1:00 PM ET early closes, from nyse.com/markets/hours-calendars (2026–2027).
+// TODO: extend this list each year. Dates outside the list fall back to the normal weekday schedule.
+const NYSE_HOLIDAYS = {'2026-01-01':"New Year's Day",'2026-01-19':'Martin Luther King Jr. Day','2026-02-16':"Washington's Birthday",'2026-04-03':'Good Friday','2026-05-25':'Memorial Day','2026-06-19':'Juneteenth','2026-07-03':'Independence Day (observed)','2026-09-07':'Labor Day','2026-11-26':'Thanksgiving','2026-12-25':'Christmas',
+  '2027-01-01':"New Year's Day",'2027-01-18':'Martin Luther King Jr. Day','2027-02-15':"Washington's Birthday",'2027-03-26':'Good Friday','2027-05-31':'Memorial Day','2027-06-18':'Juneteenth (observed)','2027-07-05':'Independence Day (observed)','2027-09-06':'Labor Day','2027-11-25':'Thanksgiving','2027-12-24':'Christmas (observed)'};
+const NYSE_EARLY_CLOSE = {'2026-11-27':1,'2026-12-24':1,'2027-11-26':1};
 function usMarketStatus(){
   try{
-    const parts = new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'short',hour:'numeric',minute:'numeric',hour12:false}).formatToParts(new Date());
+    const parts = new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'short',year:'numeric',month:'2-digit',day:'2-digit',hour:'numeric',minute:'numeric',hour12:false}).formatToParts(new Date());
     const g = function(k){ const x = parts.find(function(p){ return p.type===k; }); return x ? x.value : ''; };
     const wd = g('weekday'), mins = (parseInt(g('hour'),10)%24)*60 + parseInt(g('minute'),10);
+    const ymd = g('year') + '-' + g('month') + '-' + g('day');
     const weekend = wd === 'Sat' || wd === 'Sun';
-    if(!weekend && mins >= 570 && mins < 960) return {open:true, label:'Market open', why:''};
+    if(!weekend && NYSE_HOLIDAYS[ymd]) return {open:false, label:'Market closed', why:'U.S. stock markets are closed today for ' + NYSE_HOLIDAYS[ymd] + '.'};
+    const closeAt = NYSE_EARLY_CLOSE[ymd] ? 780 : 960;
+    if(!weekend && mins >= 570 && mins < closeAt) return {open:true, label: NYSE_EARLY_CLOSE[ymd] ? 'Open · closes 1 PM ET' : 'Market open', why:''};
     if(!weekend && mins >= 240 && mins < 570) return {open:false, label:'Pre-market', why:'The regular session opens at 9:30 AM ET.'};
-    if(!weekend && mins >= 960 && mins < 1200) return {open:false, label:'After hours', why:'The regular session closed at 4:00 PM ET.'};
+    if(!weekend && mins >= closeAt && mins < 1200) return {open:false, label:'After hours', why: NYSE_EARLY_CLOSE[ymd] ? 'Markets closed early today, at 1:00 PM ET.' : 'The regular session closed at 4:00 PM ET.'};
     return {open:false, label:'Market closed', why: weekend ? 'U.S. stock markets are closed on weekends.' : 'U.S. stock markets are closed overnight.'};
   }catch(e){ return null; }
 }
@@ -6141,7 +6173,7 @@ function exportCSV(){
   if(!portfolio.length){ toast('⚠️','Add some stocks first.'); return; }
   let rows = [['Ticker','Company','Shares','Buy price','Current price','Value','Profit/Loss']];
   portfolio.forEach(function(h){
-    const q = priceCache[h.ticker]; const price = q ? q.c : h.buyPrice;
+    const q = priceCache[h.ticker]; const price = (q && isFinite(q.c) && q.c > 0) ? q.c : h.buyPrice;
     rows.push([h.ticker, (COMPANIES[h.ticker]||'').replace(/,/g,' '), h.shares, h.buyPrice.toFixed(2), price.toFixed(2), (price*h.shares).toFixed(2), ((price-h.buyPrice)*h.shares).toFixed(2)]);
   });
   const blob = new Blob([rows.map(function(r){return r.join(',');}).join('\n')], {type:'text/csv'});
