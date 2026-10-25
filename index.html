@@ -7118,7 +7118,9 @@ function renderTxns(){
     if(x.type === 'reset')
       return '<div class="txn-row"><div class="txn-icon">🔄</div><div class="txn-main"><div class="txn-title">Paper account reset to $100,000' + badge + '</div><div class="txn-sub">' + when + '</div></div></div>';
     const total = (x.price||0) * (x.sh||0);
-    const shTxt = x.sh + ' share' + (x.sh===1?'':'s') + ' @ ' + fmt(x.price||0);
+    // Share count is stored text (the buy form only saves a number). Escape it
+    // before it joins the row HTML. Price goes through fmt, which parseFloats.
+    const shTxt = escapeHtml(x.sh) + ' share' + (x.sh===1?'':'s') + ' @ ' + fmt(x.price||0);
     if(x.type === 'buy'){
       const snip = (x.mode==='paper' && x.thesis) ? '<div class="txn-thesis">' + escapeHtml(clipText(x.thesis, 88)) + '</div>' : '';
       return '<div class="txn-row txn-buy"><div class="txn-icon">' + (x.demo?'🎓':'🟢') + '</div><div class="txn-main"><div class="txn-title">' + (x.demo?'Demo-added':'Bought') + ' <span class="tk">' + escapeHtml(x.t) + '</span>' + badge + '</div><div class="txn-sub">' + shTxt + ' · ' + when + '</div>' + snip + '</div><div class="txn-right"><div class="txn-amt">' + fmt(total) + '</div></div></div>';
