@@ -385,3 +385,5 @@ The learner cues above stay. The audit guards sit inside them:
 - A heat-map cell with no day-change is a gray “—”. Sector names and holding tickers stay escaped. The legend stays.
 - An empty watchlist stays visible with the star-from-search note. A row with a partial quote still shows the price and omits the percent.
 - The Markets header still says “steady-rate playground,” and it keeps the quote tip and the heat-map legend.
+
+**Re-checked after the merge:** `node --check` on the three inline scripts and `sw.js`. Headless Chrome 40/40, including the earlier audit repros plus a missing pulse quote (tile stays, “Price unavailable”), the heat-map legend, both quote tips, the visible empty watchlist, and the busy-feed rate-limit copy.
