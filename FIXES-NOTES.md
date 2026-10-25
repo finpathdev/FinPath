@@ -405,3 +405,5 @@ Shipped on main in PR #10 and kept here. UX and copy only. `MOVES` is still the 
 Main’s cache is `finpath-v19`. This branch is `finpath-v20`.
 
 Investor Moves surfaces from PR #10 stay: timeline, “Research, do not copy” trust strip, action filters, `F13_TERMS` chips, and `docs/Q3-13F-REFRESH.md`. No Q3 rows were added. The landing timeline init stays next to the pulse helpers. On this branch the price check is `_pulseHasPrice` (a numeric price, day-change optional) so a partial quote does not throw. Audit honesty that does not sit on those surfaces stays: Founder “all free,” Legal §3 rule-based notes, the unlocked “Hold ·” blur, and the share-text lag line.
+
+**Re-checked after this merge:** `node --check` on the three inline scripts and `sw.js`. Headless Chrome 43/43, including the audit repros, the Markets learner cues, the landing trust strip, `F13_TERMS`, and the Gold action filters plus filing-lag steps.
