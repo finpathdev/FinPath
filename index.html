@@ -5080,6 +5080,17 @@ let newsLoadedAt = 0;
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 // Day-change percent is optional. null >= 0 is true, and null.toFixed throws.
 function quoteDp(q){ return (q && typeof q.dp === 'number' && isFinite(q.dp)) ? q.dp : null; }
+// Finnhub marketCapitalization is millions of USD.
+function fmtMcap(v){
+  if(v == null || !isFinite(Number(v))) return '—';
+  v = Number(v);
+  var n, u;
+  if(v >= 1e6){ n = v / 1e6; u = 'T'; }
+  else if(v >= 1e3){ n = v / 1e3; u = 'B'; }
+  else { n = v; u = 'M'; }
+  var d = n >= 100 ? 0 : (n >= 10 ? 1 : 2);
+  return '$' + n.toFixed(d) + u;
+}
 // Only allow http(s) links/images from third-party feeds (blocks javascript:/data: URLs), HTML-escaped for attributes.
 function safeUrl(u){ try{ const x = new URL(String(u||'')); return (x.protocol==='https:'||x.protocol==='http:') ? escapeHtml(x.href) : ''; }catch(e){ return ''; } }
 function timeAgo(ts){ const m = Math.floor((Date.now()-ts)/60000); if(m < 60) return m + 'm ago'; const h = Math.floor(m/60); if(h < 24) return h + 'h ago'; return Math.floor(h/24) + 'd ago'; }
@@ -6390,7 +6401,7 @@ async function runScreener(){
   out.innerHTML = rows.length ? rows.map(function(r){
     return '<div class="scr-row"><div class="s-icon" style="width:38px;height:38px;font-size:11px">' + r.t.slice(0,2) + '</div>' +
       '<div style="flex:1;min-width:130px"><div style="font-weight:700;font-size:14px">' + r.t + ' <span style="font-weight:400;color:var(--muted);font-size:12px">' + (COMPANIES[r.t]||'') + '</span></div>' +
-      '<div style="font-size:11px;color:var(--muted)">' + (SECTORS[r.t]||'Other') + (r.cap ? ' · ' + (r.cap/1000).toFixed(0) + 'B cap' : '') + '</div></div>' +
+      '<div style="font-size:11px;color:var(--muted)">' + (SECTORS[r.t]||'Other') + (r.cap ? ' · ' + fmtMcap(r.cap) + ' cap' : '') + '</div></div>' +
       '<div style="font-size:12px;color:var(--muted)">P/E ' + (r.pe ? r.pe.toFixed(1) : '—') + '</div>' +
       '<div style="font-size:12px;color:var(--muted)">Yield ' + r.dy.toFixed(1) + '%</div>' +
       '<div style="font-size:12px" class="' + ((r.w52||0)>=0?'up':'down') + '">52w ' + (r.w52!=null ? (r.w52>=0?'+':'')+r.w52.toFixed(0)+'%' : '—') + '</div>' +
@@ -6734,17 +6745,7 @@ async function compareStocks(){
     return '<tr><th>' + escapeHtml(label) + '</th><td' + ca + '>' + f(va) + '</td><td' + cb + '>' + f(vb) + '</td></tr>';
   }
   const pct = function(v){ return v == null || !isFinite(Number(v)) ? '—' : (Number(v)>=0?'+':'') + Number(v).toFixed(1) + '%'; };
-  // Finnhub marketCapitalization is millions of USD.
-  const mcap = function(v){
-    if(v == null || !isFinite(Number(v))) return '—';
-    v = Number(v);
-    var n, u;
-    if(v >= 1e6){ n = v / 1e6; u = 'T'; }
-    else if(v >= 1e3){ n = v / 1e3; u = 'B'; }
-    else { n = v; u = 'M'; }
-    var d = n >= 100 ? 0 : (n >= 10 ? 1 : 2);
-    return '$' + n.toFixed(d) + u;
-  };
+  const mcap = fmtMcap;
   out.innerHTML = '<table class="cmp-table"><tr><th></th><th>' + escapeHtml(a) + '</th><th>' + escapeHtml(b) + '</th></tr>' +
     row('Price', qa && qa.c, qb && qb.c, function(v){ return v==null?'—':fmt(v); }) +
     row('Today', qa && qa.dp, qb && qb.dp, pct) +
