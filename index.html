@@ -6789,6 +6789,22 @@ startAlertLoop();
 handleSharedLink();
 // Hash router: #portfolio / #lessons / #gold / #markets / #legal / #home (or empty).
 // #p= shared links are handled above by handleSharedLink and ignored here.
+// A cold #l-* load runs while the page is still laying out. showPage scrolls to
+// the top first, and that immediate scrollIntoView is lost before the first
+// paint. Repeat it after layout, and once more when the window finishes loading.
+function scrollToAnchor(anchor){
+  function go(){
+    if(!anchor || !anchor.id) return;
+    const hash = location.hash.replace(/^#/,'').replace(/^\/+|\/+$/g,'').split(/[?#]/)[0];
+    if(hash !== anchor.id) return;
+    try{ anchor.scrollIntoView({block:'start'}); }catch(e){}
+  }
+  go();
+  requestAnimationFrame(function(){ requestAnimationFrame(go); });
+  if(document.readyState !== 'complete'){
+    window.addEventListener('load', function(){ requestAnimationFrame(go); }, {once:true});
+  }
+}
 function routeFromHash(){
   const raw = location.hash.replace(/^#/,'');
   if(raw.indexOf('p=')===0) return;
@@ -6810,7 +6826,7 @@ function routeFromHash(){
     if(anchor && legal && legal.contains(anchor)){
       const active = document.querySelector('.page.active');
       if(!active || active.id!=='page-legal') showPage('legal', true);
-      try{ anchor.scrollIntoView({block:'start'}); }catch(e){}
+      scrollToAnchor(anchor);
       return;
     }
     showPage('home', true);
