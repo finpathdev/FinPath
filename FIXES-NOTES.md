@@ -407,3 +407,14 @@ Main’s cache is `finpath-v19`. This branch is `finpath-v20`.
 Investor Moves surfaces from PR #10 stay: timeline, “Research, do not copy” trust strip, action filters, `F13_TERMS` chips, and `docs/Q3-13F-REFRESH.md`. No Q3 rows were added. The landing timeline init stays next to the pulse helpers. On this branch the price check is `_pulseHasPrice` (a numeric price, day-change optional) so a partial quote does not throw. Audit honesty that does not sit on those surfaces stays: Founder “all free,” Legal §3 rule-based notes, the unlocked “Hold ·” blur, and the share-text lag line.
 
 **Re-checked after this merge:** `node --check` on the three inline scripts and `sw.js`. Headless Chrome 43/43, including the audit repros, the Markets learner cues, the landing trust strip, `F13_TERMS`, and the Gold action filters plus filing-lag steps.
+
+## 2026-10-25 — Paper journal lows from the v22 scan (finpath-v24)
+
+Fixes for the low findings in the thesis-journal scan. Rebased onto main after PR #14 (onboarding intake), which already shipped `finpath-v23`. Stripe was not changed. Investor Moves, `F13_TERMS`, and the lesson glossary were not changed.
+
+- **F1.** Transaction history escapes the share count before it is placed in the row HTML. A planted `fp_txns[].sh` string no longer runs as markup. Ticker and thesis in that row were already escaped. Price still goes through `fmt`.
+- **F2.** `toast()` treats its message as text. Callers that intentionally pass markup (price-alert notifications, achievement unlocks, goal milestones) opt in, and those strings are escaped first. Paper buy and sell toasts can no longer run a stored ticker.
+- **F3.** Escape does nothing while a paper-sell confirm is waiting on a quote. When that sale finishes, the dialog closes only if it is still the same sell, so a later draft is left alone.
+- **F5.** Escape and Cancel move focus back to that row’s Sell button before the dialog index is cleared. The dialog’s delayed focus timer does not pull focus back onto the hidden field after it has closed.
+- **F4.** No product change. Keeping the first thesis on an existing paper position is intentional. A later buy of the same symbol still stores its own note on the transaction row.
+- `sw.js` cache is `finpath-v24`.

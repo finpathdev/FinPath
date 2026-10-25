@@ -5588,7 +5588,8 @@ async function loadNews(){
 document.addEventListener('keydown', function(e){
   if(e.key !== 'Escape') return;
   const ps = document.getElementById('paperSellModal');
-  if(ps && ps.classList.contains('open') && typeof closePaperSell === 'function') closePaperSell();
+  // A confirm already in flight must keep its dialog. Escape does not cancel the sale.
+  if(ps && ps.classList.contains('open') && typeof closePaperSell === 'function' && !PAPER_SELLING) closePaperSell();
   ['hourlyModal','searchModal','sharesModal'].forEach(function(id){
     const m = document.getElementById(id);
     if(m && m.classList.contains('open')) m.classList.remove('open');
@@ -6640,12 +6641,15 @@ function buildLessonBody(l, i){
 // ══════════ MARKETS + PAPER + GOALS + ALERTS + ACHIEVEMENTS ══════════
 
 // ── TOASTS + CONFETTI + NOTIFICATIONS ──
-function toast(icon, msg){
+// msg is text. Pass true only when msg is already escaped and intentionally
+// contains markup (<b>, <br>). A stored ticker must not be able to run here.
+function toast(icon, msg, html){
   let stack = document.querySelector('.toast-stack');
   if(!stack){ stack = document.createElement('div'); stack.className = 'toast-stack'; document.body.appendChild(stack); }
   const t = document.createElement('div');
   t.className = 'toast';
-  t.innerHTML = '<span style="font-size:19px">' + icon + '</span><span>' + msg + '</span>';
+  const body = html ? String(msg == null ? '' : msg) : escapeHtml(msg == null ? '' : msg);
+  t.innerHTML = '<span style="font-size:19px">' + icon + '</span><span>' + body + '</span>';
   stack.appendChild(t);
   setTimeout(function(){ t.remove(); }, 4200);
 }
@@ -6669,7 +6673,7 @@ function notify(title, body){
   if('Notification' in window && Notification.permission === 'granted'){
     try{ new Notification(String(title), {body: String(body)}); }catch(e){}
   }
-  toast('🔔', '<b>' + safeTitle + '</b><br>' + safeBody);
+  toast('🔔', '<b>' + safeTitle + '</b><br>' + safeBody, true);
 }
 
 // ── STREAK + ACHIEVEMENTS ──
@@ -6692,7 +6696,7 @@ function unlockAchv(id){
   a[id] = Date.now();
   localStorage.setItem('fp_achv', JSON.stringify(a));
   const def = ACHVS.find(function(x){ return x.id === id; });
-  if(def){ toast(def.icon, '<b>Achievement unlocked:</b> ' + def.name); confettiBurst(); track('achievement', {id:id}); }
+  if(def){ toast(def.icon, '<b>Achievement unlocked:</b> ' + escapeHtml(def.name), true); confettiBurst(); track('achievement', {id:id}); }
   renderAchievements();
 }
 function renderAchievements(){
@@ -6752,7 +6756,7 @@ async function addAlertFromDetail(){
   }
   if(q && isFinite(q.c) && q.c > 0 && q.ts && Date.now() - q.ts <= 300000){
     if((dir === 'below' && q.c <= price) || (dir === 'above' && q.c >= price)){
-      toast('⚠️', escapeHtml(t) + ' is already ' + fmt(q.c) + '. Pick a target it has not reached yet.');
+      toast('⚠️', t + ' is already ' + fmt(q.c) + '. Pick a target it has not reached yet.');
       return;
     }
   }
@@ -6760,7 +6764,7 @@ async function addAlertFromDetail(){
   saveAlerts(a);
   if('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
   wsWatch(t);
-  toast('🔔', 'Alert set: ' + escapeHtml(t) + ' ' + (dir === 'below' ? 'drops below' : 'rises above') + ' ' + fmt(price) + '. It only runs while this tab is open.');
+  toast('🔔', 'Alert set: ' + t + ' ' + (dir === 'below' ? 'drops below' : 'rises above') + ' ' + fmt(price) + '. It only runs while this tab is open.');
   document.getElementById('alertPrice').value = '';
 }
 function removeAlert(idx){ const a = getAlerts(); a.splice(idx,1); saveAlerts(a); }
@@ -6826,7 +6830,7 @@ function addToGoal(i){
   g[i].hit = g[i].hit || {};
   var pct = g[i].saved / g[i].target * 100;
   [25,50,75,100].forEach(function(m){
-    if(pct >= m && !g[i].hit[m]){ g[i].hit[m] = 1; confettiBurst(); toast('🎉', '<b>' + escapeHtml(g[i].name) + '</b>: ' + m + '% milestone reached!'); }
+    if(pct >= m && !g[i].hit[m]){ g[i].hit[m] = 1; confettiBurst(); toast('🎉', '<b>' + escapeHtml(g[i].name) + '</b>: ' + m + '% milestone reached!', true); }
   });
   saveGoals(g);
 }
@@ -6854,7 +6858,9 @@ function renderGoals(){
 // can wipe cash and positions and still keep the learning history. Local only — no sync.
 let PAPER_MODE = false;
 let PAPER_SELL_I = null;
+let PAPER_SELL_T = null;
 let PAPER_SELLING = false;
+let PAPER_SELL_GEN = 0;
 const NOTE_MAX = 280;
 function clampNote(s){
   s = String(s == null ? '' : s).trim();
@@ -6942,7 +6948,7 @@ async function renderPaper(){
       const price = r.q ? r.q.c : r.x.price;
       const val = price * r.x.sh, pnl = (price - r.x.price)*r.x.sh, pct = (price - r.x.price)/r.x.price*100;
       const note = r.x.thesis ? '<div class="s-thesis">' + escapeHtml(clipText(r.x.thesis, 90)) + '</div>' : '';
-      return '<div class="stock-row"><div class="s-icon">' + escapeHtml(r.x.t.slice(0,2)) + '</div><div class="s-info"><div class="s-name">' + escapeHtml(r.x.t) + '</div><div class="s-meta">' + escapeHtml(r.x.sh) + ' sh · ' + termLabel('cost basis') + ' ' + fmt(r.x.price) + '</div>' + note + '</div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" onclick="paperAskSell(' + i + ')">Sell</button></div></div>';
+      return '<div class="stock-row"><div class="s-icon">' + escapeHtml(r.x.t.slice(0,2)) + '</div><div class="s-info"><div class="s-name">' + escapeHtml(r.x.t) + '</div><div class="s-meta">' + escapeHtml(r.x.sh) + ' sh · ' + termLabel('cost basis') + ' ' + fmt(r.x.price) + '</div>' + note + '</div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" data-paper-sell="' + i + '" onclick="paperAskSell(' + i + ')">Sell</button></div></div>';
     }).join('');
     p.pos.forEach(function(x){ wsWatch(x.t); });
   }
@@ -6989,7 +6995,9 @@ async function paperBuy(t, sh, price, thesis){
 function paperAskSell(i){
   const x = getPaper().pos[i];
   if(!x) return;
+  PAPER_SELL_GEN++;
   PAPER_SELL_I = i;
+  PAPER_SELL_T = x.t;
   const title = document.getElementById('paperSellTitle');
   if(title) title.textContent = 'Sell ' + x.t + '?';
   const box = document.getElementById('paperSellThesis');
@@ -7004,12 +7012,27 @@ function paperAskSell(i){
   if(reflect) reflect.value = '';
   const modal = document.getElementById('paperSellModal');
   if(modal) modal.classList.add('open');
-  setTimeout(function(){ if(reflect) reflect.focus(); }, 60);
+  setTimeout(function(){
+    // A fast Escape can close the dialog before this runs. Don't pull focus
+    // back onto the hidden reflection field.
+    if(!modal || !modal.classList.contains('open') || PAPER_SELL_I !== i) return;
+    if(reflect) reflect.focus();
+  }, 60);
 }
 function closePaperSell(){
-  PAPER_SELL_I = null;
+  const i = PAPER_SELL_I;
+  const ticker = PAPER_SELL_T;
   const modal = document.getElementById('paperSellModal');
   if(modal) modal.classList.remove('open');
+  // Back to the Sell button that opened this dialog, before the index is cleared.
+  // After a filled sale the row is gone, so only focus when that ticker is still there.
+  const grid = document.getElementById('paperGrid');
+  const pos = (i == null) ? null : getPaper().pos[i];
+  const back = (grid && pos && pos.t === ticker) ? grid.querySelector('button[data-paper-sell="' + i + '"]') : null;
+  if(back) back.focus();
+  PAPER_SELL_GEN++;
+  PAPER_SELL_I = null;
+  PAPER_SELL_T = null;
   const reflect = document.getElementById('paperReflect');
   if(reflect) reflect.value = '';
 }
@@ -7017,13 +7040,15 @@ async function paperConfirmSell(){
   if(PAPER_SELLING) return;
   const i = PAPER_SELL_I;
   if(i == null) return;
+  const gen = PAPER_SELL_GEN;
   const reflection = clampNote(document.getElementById('paperReflect') ? document.getElementById('paperReflect').value : '');
   PAPER_SELLING = true;
   const btn = document.getElementById('paperSellConfirm');
   if(btn) btn.disabled = true;
   try{
     const ok = await paperSell(i, reflection);
-    if(ok) closePaperSell();
+    // A dismiss or a newer Sell dialog bumps the generation. Don't close that one.
+    if(ok && gen === PAPER_SELL_GEN && PAPER_SELL_I === i) closePaperSell();
   } finally {
     PAPER_SELLING = false;
     if(btn) btn.disabled = false;
@@ -7118,7 +7143,9 @@ function renderTxns(){
     if(x.type === 'reset')
       return '<div class="txn-row"><div class="txn-icon">🔄</div><div class="txn-main"><div class="txn-title">Paper account reset to $100,000' + badge + '</div><div class="txn-sub">' + when + '</div></div></div>';
     const total = (x.price||0) * (x.sh||0);
-    const shTxt = x.sh + ' share' + (x.sh===1?'':'s') + ' @ ' + fmt(x.price||0);
+    // Share count is stored text (the buy form only saves a number). Escape it
+    // before it joins the row HTML. Price goes through fmt, which parseFloats.
+    const shTxt = escapeHtml(x.sh) + ' share' + (x.sh===1?'':'s') + ' @ ' + fmt(x.price||0);
     if(x.type === 'buy'){
       const snip = (x.mode==='paper' && x.thesis) ? '<div class="txn-thesis">' + escapeHtml(clipText(x.thesis, 88)) + '</div>' : '';
       return '<div class="txn-row txn-buy"><div class="txn-icon">' + (x.demo?'🎓':'🟢') + '</div><div class="txn-main"><div class="txn-title">' + (x.demo?'Demo-added':'Bought') + ' <span class="tk">' + escapeHtml(x.t) + '</span>' + badge + '</div><div class="txn-sub">' + shTxt + ' · ' + when + '</div>' + snip + '</div><div class="txn-right"><div class="txn-amt">' + fmt(total) + '</div></div></div>';
