@@ -4891,20 +4891,21 @@ function toggleWatch(t, btn){
 async function renderWatchlist(){
   const wrap = document.getElementById('watchWrap'), grid = document.getElementById('watchGrid');
   if(!wrap || !grid) return;
-  const w = getWatch().filter(function(t){ return !portfolio.find(function(p){ return p.ticker === t; }); });
+  const w = getWatch().filter(function(t){ return isValidTicker(t) && !portfolio.find(function(p){ return p.ticker === t; }); });
   if(!w.length){ wrap.style.display = 'none'; return; }
   wrap.style.display = 'block';
   grid.innerHTML = w.map(function(){ return '<div class="skel-row" style="height:66px"></div>'; }).join('');
   const qs = await Promise.all(w.map(async function(t){ return {t: t, q: await fetchQ(t)}; }));
   grid.innerHTML = qs.map(function(x){
     const t = x.t, q = x.q, up = q && q.dp >= 0;
-    return '<div class="watch-row" data-w="' + t + '" onclick="openAddShares(\'' + t + '\')" role="button" tabindex="0" aria-label="Add ' + t + ' to portfolio">' +
-      '<div class="s-icon" style="width:36px;height:36px;font-size:11px">' + t.slice(0,2) + '</div>' +
-      '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + t + '</div>' +
-      '<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (COMPANIES[t] || '') + '</div></div>' +
+    const safe = escapeHtml(t);
+    return '<div class="watch-row" data-w="' + safe + '" onclick="openAddShares(\'' + safe + '\')" role="button" tabindex="0" aria-label="Add ' + safe + ' to portfolio">' +
+      '<div class="s-icon" style="width:36px;height:36px;font-size:11px">' + safe.slice(0,2) + '</div>' +
+      '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + safe + '</div>' +
+      '<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(COMPANIES[t] || '') + '</div></div>' +
       (q ? '<div style="text-align:right"><div style="font-size:13px;font-weight:700;font-family:var(--font-display)">' + fmt(q.c) + '</div>' +
         '<div style="font-size:11px" class="' + (up?'up':'down') + '">' + (up?'+':'') + q.dp.toFixed(2) + '%</div></div>' : '') +
-      '<button class="watch-star" aria-label="Remove ' + t + ' from watchlist" onclick="event.stopPropagation();toggleWatch(\'' + t + '\')">★</button></div>';
+      '<button class="watch-star" aria-label="Remove ' + safe + ' from watchlist" onclick="event.stopPropagation();toggleWatch(\'' + safe + '\')">★</button></div>';
   }).join('');
   w.forEach(wsWatch);
 }
@@ -6572,19 +6573,31 @@ renderLessons();
   var el = document.getElementById('tapeTrack');
   if(!el) return;
   var syms = ['AAPL','MSFT','GOOGL','AMZN','NVDA','META','TSLA','JPM','KO','V','UBER','AXP'];
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; });
+  }
   function item(s, c, dp){
+    if(typeof s !== 'string' || !/^[A-Z.]{1,6}$/.test(s)) return '';
+    c = Number(c); dp = Number(dp);
+    if(!isFinite(c) || !isFinite(dp)) return '';
     var up = dp >= 0;
-    return '<span class="tape-item"><span class="t-sym">'+s+'</span>'+
+    return '<span class="tape-item"><span class="t-sym">'+esc(s)+'</span>'+
       '<span class="t-price">$'+c.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span>'+
       '<span class="t-chg '+(up?'t-up':'t-down')+'">'+(up?'▲ +':'▼ ')+dp.toFixed(2)+'%</span></span>';
   }
+  // Cache is a JSON list of {s,c,dp}, never a stored HTML string.
+  function rowHtml(list){
+    if(!Array.isArray(list)) return '';
+    return list.map(function(x){ return x ? item(x.s, x.c, x.dp) : ''; }).join('');
+  }
   // 1) Show cached row instantly (from a previous session) — no waiting, no flicker
   try{
-    var cachedRow = localStorage.getItem('fp_tape_row');
     var cachedAt = parseInt(localStorage.getItem('fp_tape_at')||'0', 10);
-    if(cachedRow) el.innerHTML = cachedRow;
+    var cached = JSON.parse(localStorage.getItem('fp_tape_row') || 'null');
+    var cachedHtml = rowHtml(cached);
+    if(cachedHtml) el.innerHTML = cachedHtml + cachedHtml;
     // 2) Only actually hit the network if the cache is stale (>5 min old)
-    if(Date.now() - cachedAt < 300000) return;
+    if(cachedHtml && Date.now() - cachedAt < 300000) return;
   }catch(e){}
   // 3) Fetch through the cached fetchQ pipeline (respects rate limits) and throttle
   //    to 2 requests at a time so we never spam Finnhub with 12 parallel calls.
@@ -6593,9 +6606,10 @@ renderLessons();
     if(idx >= syms.length){
       var ok = results.filter(function(x){return x;});
       if(ok.length >= 4){
-        var row = ok.map(function(x){return item(x.s, x.c, x.dp);}).join('');
-        el.innerHTML = row + row;
-        try{ localStorage.setItem('fp_tape_row', row + row); localStorage.setItem('fp_tape_at', String(Date.now())); }catch(e){}
+        var data = ok.map(function(x){ return {s:x.s, c:x.c, dp:x.dp||0}; });
+        var row = rowHtml(data);
+        if(row) el.innerHTML = row + row;
+        try{ localStorage.setItem('fp_tape_row', JSON.stringify(data)); localStorage.setItem('fp_tape_at', String(Date.now())); }catch(e){}
       } else if(!el.innerHTML){
         el.parentElement.style.display = 'none';
       }
