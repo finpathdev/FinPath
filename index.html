@@ -6955,7 +6955,8 @@ function renderGoals(){
 let paycheckMatch = '';
 let paycheckReturnFocus = null;
 function paycheckHashOn(){
-  return /^#\/?moment\/paycheck\/?$/i.test(location.hash.split(/[?#]/)[0]);
+  const raw = location.hash.replace(/^#/, '').split(/[?#]/)[0];
+  return /^\/?moment\/paycheck\/?$/i.test(raw);
 }
 function paycheckSplit(pay){
   const n = typeof pay === 'number' ? pay : parseFloat(pay);
@@ -7058,10 +7059,12 @@ function hidePaycheckModal(){
 function openPaycheckMoment(fromHash){
   const modal = document.getElementById('paycheckModal');
   if(!modal) return;
-  if(!fromHash && !paycheckHashOn()){
+  if(!fromHash){
     paycheckReturnFocus = document.activeElement;
-    try{ location.hash = 'moment/paycheck'; }catch(e){ openPaycheckMoment(true); }
-    return;
+    if(!paycheckHashOn()){
+      try{ location.hash = 'moment/paycheck'; }catch(e){ openPaycheckMoment(true); }
+      return;
+    }
   }
   if(modal.classList.contains('open')) return;
   modal.classList.add('open');
@@ -7091,8 +7094,17 @@ function scrollSavingsGoals(){
   const list = document.getElementById('goalsList');
   const last = list && list.querySelector('.goal-card:last-of-type');
   const el = last || list || document.getElementById('savingsGoals');
-  if(!el) return;
-  try{ el.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){ el.scrollIntoView(); }
+  if(!el || !el.getBoundingClientRect) return;
+  const nav = document.querySelector('nav');
+  const pad = (nav && nav.offsetHeight ? nav.offsetHeight : 90) + 16;
+  const top = Math.max(0, el.getBoundingClientRect().top + window.scrollY - pad);
+  // html { scroll-behavior: smooth } would animate this and leave the new goal
+  // below the fold for a moment. Jump there.
+  const root = document.documentElement;
+  const prev = root.style.scrollBehavior;
+  root.style.scrollBehavior = 'auto';
+  try{ window.scrollTo(0, top); }catch(e){}
+  root.style.scrollBehavior = prev;
 }
 function createPaycheckGoal(){
   const input = document.getElementById('payTakeHome');
@@ -7112,8 +7124,10 @@ function createPaycheckGoal(){
   track('moment_paycheck', {has_match: paycheckMatch === 'yes' || paycheckMatch === 'unsure'});
   toast('🎯', 'Emergency fund goal saved on this device.');
   showPage('portfolio');
-  setTimeout(scrollSavingsGoals, 80);
-  setTimeout(scrollSavingsGoals, 360);
+  scrollSavingsGoals();
+  requestAnimationFrame(scrollSavingsGoals);
+  setTimeout(scrollSavingsGoals, 60);
+  setTimeout(scrollSavingsGoals, 400);
 }
 function openPaycheckLesson(which){
   const name = which === 'budget'
