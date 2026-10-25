@@ -4116,18 +4116,21 @@ async function loadSearchResults(){
 
 function renderSearchResults(items){
   if(!items.length){document.getElementById('searchResults').innerHTML='<div class="empty">No matches. Try a ticker like AAPL, UBER or BTC.</div>';return;}
-  document.getElementById('searchResults').innerHTML=items.slice(0,12).map(({t,q})=>!q?`
-    <div class="modal-result" onclick="openAddShares('${t}')"><button class="watch-star" aria-label="Toggle watchlist for ${t}" onclick="event.stopPropagation();toggleWatch('${t}',this)">${isWatched(t)?'★':'☆'}</button>
-      <div><div style="font-size:15px;font-weight:600">${t}</div><div style="font-size:12px;color:var(--muted)">${escapeHtml(COMPANIES[t]||t)}</div></div>
-      <div style="text-align:right;font-size:12px;color:var(--muted)">Price unavailable</div>
-    </div>`:`
-    <div class="modal-result" onclick="openAddShares('${t}')"><button class="watch-star" aria-label="Toggle watchlist for ${t}" onclick="event.stopPropagation();toggleWatch('${t}',this)">${isWatched(t)?'★':'☆'}</button>
-      <div><div style="font-size:15px;font-weight:600">${t}</div><div style="font-size:12px;color:var(--muted)">${escapeHtml(COMPANIES[t]||t)}</div></div>
-      <div style="text-align:right">
-        <div style="font-size:15px;font-weight:600;color:${q.dp>=0?'#4ade80':'#f87171'}">$${q.c.toFixed(2)}</div>
-        <div style="font-size:12px;color:${q.dp>=0?'#4ade80':'#f87171'}">${q.dp>=0?'+':''}${q.dp.toFixed(2)}%${q.stale?' <span style="color:var(--muted)">(last known)</span>':''}</div>
-      </div>
-    </div>`).join('');
+  document.getElementById('searchResults').innerHTML=items.slice(0,12).map(function(item){
+    const t = item.t, q = item.q, safe = escapeHtml(t);
+    const c = q && typeof q.c === 'number' && isFinite(q.c) ? q.c : null;
+    const dp = quoteDp(q);
+    const star = '<button class="watch-star" aria-label="Toggle watchlist for ' + safe + '" onclick="event.stopPropagation();toggleWatch(\'' + safe + '\',this)">' + (isWatched(t)?'★':'☆') + '</button>';
+    const name = '<div><div style="font-size:15px;font-weight:600">' + safe + '</div><div style="font-size:12px;color:var(--muted)">' + escapeHtml(COMPANIES[t]||t) + '</div></div>';
+    let right = '<div style="text-align:right;font-size:12px;color:var(--muted)">Price unavailable</div>';
+    if(c != null){
+      const col = dp == null ? 'var(--text)' : (dp>=0?'#4ade80':'#f87171');
+      right = '<div style="text-align:right"><div style="font-size:15px;font-weight:600;color:' + col + '">$' + c.toFixed(2) + '</div>' +
+        (dp == null ? '' : '<div style="font-size:12px;color:' + col + '">' + (dp>=0?'+':'') + dp.toFixed(2) + '%' + (q.stale?' <span style="color:var(--muted)">(last known)</span>':'') + '</div>') +
+        '</div>';
+    }
+    return '<div class="modal-result" onclick="openAddShares(\'' + safe + '\')">' + star + name + right + '</div>';
+  }).join('');
 }
 
 async function handleSearch(v){
@@ -4233,13 +4236,14 @@ async function renderPortfolio(){
   let totalVal=0,totalInvested=0,totalDayChg=0;
 
   document.getElementById('stocksGrid').innerHTML=quotes.map(({h,q})=>{
-    const price=q?q.c:h.buyPrice;
-    const priceFlag=!q?' <span class="price-flag" title="No market data — valued at your buy price">no live price</span>':(q.stale?' <span class="price-flag" title="Live quote unavailable — showing the last price we saw">last known</span>':'');
+    const live=q && typeof q.c==='number' && isFinite(q.c) && q.c>0;
+    const price=live?q.c:h.buyPrice;
+    const priceFlag=!live?' <span class="price-flag" title="No market data — valued at your buy price">no live price</span>':(q.stale?' <span class="price-flag" title="Live quote unavailable — showing the last price we saw">last known</span>':'');
     const val=price*h.shares;
     const invested=h.buyPrice*h.shares;
     const pnlPct=h.buyPrice>0?((price-h.buyPrice)/h.buyPrice*100):0;
-    const dayChg=q?q.dp:0;
-    totalVal+=val; totalInvested+=invested; totalDayChg+=q?(q.d*h.shares):0;
+    const dayChg=quoteDp(q);
+    totalVal+=val; totalInvested+=invested; totalDayChg+=(q && typeof q.d==='number' && isFinite(q.d))?(q.d*h.shares):0;
     return '<div class="stock-row" data-t="'+escapeHtml(h.ticker)+'" onclick="openDetail(\''+escapeHtml(h.ticker)+'\')">'+
       '<div class="s-icon">'+escapeHtml(h.ticker.slice(0,2))+'</div>'+
       '<div class="s-info"><div class="s-name">'+escapeHtml(h.ticker)+' <span style="font-size:11px;color:var(--muted);font-weight:400">'+escapeHtml(COMPANIES[h.ticker]||'')+'</span></div>'+
@@ -4247,7 +4251,7 @@ async function renderPortfolio(){
       '<div class="s-right">'+
       '<div class="s-price">$'+val.toFixed(2)+'</div>'+
       '<div class="s-pct '+(pnlPct>=0?'up':'down')+'">'+(pnlPct>=0?'▲ +':'▼ ')+pnlPct.toFixed(2)+'% total</div>'+
-      '<div class="s-today '+(dayChg>=0?'up':'down')+'">'+(dayChg>=0?'▲ +':'▼ ')+dayChg.toFixed(2)+'% today</div>'+
+      (dayChg==null?'<div class="s-today" style="color:var(--muted)">— today</div>':'<div class="s-today '+(dayChg>=0?'up':'down')+'">'+(dayChg>=0?'▲ +':'▼ ')+dayChg.toFixed(2)+'% today</div>')+
       '</div></div>';
   }).join('');
 
@@ -4274,6 +4278,11 @@ async function renderPortfolio(){
   if(typeof checkHoldAchvs==='function'){ checkHoldAchvs(); checkAlerts(); }
 }
 
+function alertPctHtml(q){
+  const dp = quoteDp(q);
+  if(dp == null) return '';
+  return '<span class="alert-pct" style="' + (dp<0?'background:rgba(248,113,113,.1);color:#f87171':'') + '">' + (dp>=0?'+':'') + dp.toFixed(2) + '%</span>';
+}
 function renderAlerts(quotes){
   const host = document.getElementById('alertsList');
   if(!host) return;
@@ -4286,7 +4295,7 @@ function renderAlerts(quotes){
       return '<div class="alert-item">'+
         '<div><div class="alert-ticker">'+escapeHtml(h.ticker)+' — <span style="filter:blur(4px);user-select:none;color:var(--muted)">Hold ·</span> 🔒</div>'+
         '<div class="alert-msg" style="filter:blur(3px);user-select:none">Upgrade to Gold to see the reasoning for this position and a rule-based buy / hold / sell note.</div></div>'+
-        (q?'<span class="alert-pct" style="'+(q.dp<0?'background:rgba(248,113,113,.1);color:#f87171':'')+'">'+(q.dp>=0?'+':'')+q.dp.toFixed(2)+'%</span>':'')+
+        alertPctHtml(q)+
         '</div>';
     }).join('') +
     (portfolio.length ? '<div style="text-align:center;margin-top:14px"><button onclick="openGoldPayment()" style="background:var(--green-dim);border:none;border-radius:10px;padding:11px 24px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">👑 Unlock holding alerts with Gold — $4.99/mo</button></div>' : '');
@@ -4299,7 +4308,7 @@ function renderAlerts(quotes){
     return '<div class="alert-item '+cls+'">'+
       '<div><div class="alert-ticker">'+escapeHtml(h.ticker)+' — '+escapeHtml(adv.action)+'</div>'+
       '<div class="alert-msg">'+escapeHtml(adv.text.slice(0,80))+'...</div></div>'+
-      (q?'<span class="alert-pct" style="'+(q.dp<0?'background:rgba(248,113,113,.1);color:#f87171':'')+'">'+(q.dp>=0?'+':'')+q.dp.toFixed(2)+'%</span>':'')+
+      alertPctHtml(q)+
       '</div>';
   }).join('');
 }
@@ -4427,8 +4436,9 @@ async function openDetail(ticker){
     const pnlPct=selectedStock.buyPrice>0?((q.c-selectedStock.buyPrice)/selectedStock.buyPrice*100):0;
     document.getElementById('dPrice').textContent=fmt(q.c);
     const te=document.getElementById('dToday');
-    te.textContent=(q.dp>=0?'▲ +':'▼ ')+q.dp.toFixed(2)+'%';
-    te.className='d-mval '+(q.dp>=0?'up':'down');
+    const dp=quoteDp(q);
+    te.textContent=dp==null?'—':((dp>=0?'▲ +':'▼ ')+dp.toFixed(2)+'%');
+    te.className='d-mval '+(dp==null?'':(dp>=0?'up':'down'));
     document.getElementById('dVal').textContent=fmt(val);
     const pe=document.getElementById('dPnl');
     pe.textContent=(pnl>=0?'▲ +':'▼ -')+fmt(Math.abs(pnl))+' ('+pnlPct.toFixed(2)+'%)';
@@ -4953,7 +4963,8 @@ function applyLivePrices(){
           st = row.querySelector('.s-today'), sm = row.querySelector('.s-meta');
     if(sp) sp.textContent = fmt(price*h.shares);
     if(pc){ pc.textContent = (pnlPct>=0?'▲ +':'▼ ') + pnlPct.toFixed(2) + '% total'; pc.className = 's-pct ' + (pnlPct>=0?'up':'down'); }
-    if(st && q.dp != null){ st.textContent = (q.dp>=0?'▲ +':'▼ ') + q.dp.toFixed(2) + '% today'; st.className = 's-today ' + (q.dp>=0?'up':'down'); }
+    const dpLive = quoteDp(q);
+    if(st && dpLive != null){ st.textContent = (dpLive>=0?'▲ +':'▼ ') + dpLive.toFixed(2) + '% today'; st.className = 's-today ' + (dpLive>=0?'up':'down'); }
     if(sm) sm.textContent = h.shares + ' shares · $' + price.toFixed(2) + '/share';
   });
   if(!has) return;
@@ -5002,14 +5013,15 @@ async function renderWatchlist(){
     const t = x.t, q = x.q;
     const safe = escapeHtml(t);
     // q.dp can be missing on a partial quote; calling toFixed threw and blanked the whole list.
-    const priceOk = !!(q && isFinite(q.c) && q.c > 0 && typeof q.dp === 'number' && isFinite(q.dp));
-    const up = priceOk && q.dp >= 0;
+    const priceOk = !!(q && isFinite(q.c) && q.c > 0);
+    const dp = quoteDp(q);
+    const up = dp != null && dp >= 0;
     return '<div class="watch-row" data-w="' + safe + '" onclick="openAddShares(\'' + safe + '\')" role="button" tabindex="0" aria-label="Add ' + safe + ' to portfolio">' +
       '<div class="s-icon" style="width:36px;height:36px;font-size:11px">' + safe.slice(0,2) + '</div>' +
       '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + safe + '</div>' +
       '<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(COMPANIES[t] || '') + '</div></div>' +
       (priceOk ? '<div style="text-align:right"><div style="font-size:13px;font-weight:700;font-family:var(--font-display)">' + fmt(q.c) + '</div>' +
-        '<div style="font-size:11px" class="' + (up?'up':'down') + '">' + (up?'+':'') + q.dp.toFixed(2) + '%</div></div>' : '') +
+        (dp == null ? '' : '<div style="font-size:11px" class="' + (up?'up':'down') + '">' + (up?'+':'') + dp.toFixed(2) + '%</div>') + '</div>' : '') +
       '<button class="watch-star" aria-label="Remove ' + safe + ' from watchlist" onclick="event.stopPropagation();toggleWatch(\'' + safe + '\')">★</button></div>';
   }).join('');
   w.forEach(wsWatch);
@@ -5060,6 +5072,8 @@ async function renderAnalytics(quotes){
 // ══ NEWS FEED ══
 let newsLoadedAt = 0;
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+// Day-change percent is optional. null >= 0 is true, and null.toFixed throws.
+function quoteDp(q){ return (q && typeof q.dp === 'number' && isFinite(q.dp)) ? q.dp : null; }
 // Only allow http(s) links/images from third-party feeds (blocks javascript:/data: URLs), HTML-escaped for attributes.
 function safeUrl(u){ try{ const x = new URL(String(u||'')); return (x.protocol==='https:'||x.protocol==='http:') ? escapeHtml(x.href) : ''; }catch(e){ return ''; } }
 function timeAgo(ts){ const m = Math.floor((Date.now()-ts)/60000); if(m < 60) return m + 'm ago'; const h = Math.floor(m/60); if(h < 24) return h + 'h ago'; return Math.floor(h/24) + 'd ago'; }
@@ -6270,17 +6284,22 @@ async function renderPulse(){
     return;
   }
   document.getElementById('pulseGrid').innerHTML = qs.map(function(r){
-    if(!r.q) return '';
-    const up = r.q.dp >= 0;
-    return '<div class="p-metric" title="' + escapeHtml(r.p.d||'') + '"><div class="p-label">' + escapeHtml(r.p.n) + ' <span style="opacity:.7;font-weight:500">· ' + escapeHtml(r.p.t) + '</span></div><div class="p-val">' + fmt(r.q.c) + '</div><div style="font-size:12px;margin-top:3px" class="' + (up?'up':'down') + '">' + (up?'▲ +':'▼ ') + r.q.dp.toFixed(2) + '%' + (r.q.stale ? ' <span class="price-flag">last known</span>' : '') + '</div><div class="p-desc">' + escapeHtml(r.p.d||'') + '</div></div>';
+    if(!r.q || !(typeof r.q.c === 'number' && isFinite(r.q.c))) return '';
+    const dp = quoteDp(r.q);
+    const up = dp != null && dp >= 0;
+    const chg = dp == null ? '<div style="font-size:12px;margin-top:3px;color:var(--muted)">Day change unavailable</div>'
+      : '<div style="font-size:12px;margin-top:3px" class="' + (up?'up':'down') + '">' + (up?'▲ +':'▼ ') + dp.toFixed(2) + '%' + (r.q.stale ? ' <span class="price-flag">last known</span>' : '') + '</div>';
+    return '<div class="p-metric" title="' + escapeHtml(r.p.d||'') + '"><div class="p-label">' + escapeHtml(r.p.n) + ' <span style="opacity:.7;font-weight:500">· ' + escapeHtml(r.p.t) + '</span></div><div class="p-val">' + fmt(r.q.c) + '</div>' + chg + '<div class="p-desc">' + escapeHtml(r.p.d||'') + '</div></div>';
   }).join('');
   const spy = qs[0].q, vix = qs[4] ? qs[4].q : null;
   let note = '';
   const mst = usMarketStatus(), live = !mst || mst.open;
-  if(spy) note = live
-    ? (spy.dp >= 0.5 ? 'Broad market is having a strong day.' : spy.dp <= -0.5 ? 'Broad market is under pressure today — long-term investors, this is normal.' : 'Quiet, range-bound session so far.')
-    : (mst.why + ' These are the moves from the most recent session' + (spy.dp >= 0.5 ? ' — a strong day for the broad market.' : spy.dp <= -0.5 ? ' — a down day for the broad market (normal for long-term investors).' : ' — a fairly quiet session.'));
-  if(vix && vix.dp > 5) note += live ? ' Volatility is spiking — markets are nervous.' : ' Volatility rose — markets were nervous.';
+  const spyDp = quoteDp(spy), vixDp = quoteDp(vix);
+  if(spy && spyDp != null) note = live
+    ? (spyDp >= 0.5 ? 'Broad market is having a strong day.' : spyDp <= -0.5 ? 'Broad market is under pressure today — long-term investors, this is normal.' : 'Quiet, range-bound session so far.')
+    : (mst.why + ' These are the moves from the most recent session' + (spyDp >= 0.5 ? ' — a strong day for the broad market.' : spyDp <= -0.5 ? ' — a down day for the broad market (normal for long-term investors).' : ' — a fairly quiet session.'));
+  else if(spy) note = 'Day-change isn\u2019t available for the broad market right now.';
+  if(vixDp != null && vixDp > 5) note += live ? ' Volatility is spiking — markets are nervous.' : ' Volatility rose — markets were nervous.';
   renderMarketStatus();
   document.getElementById('pulseNote').textContent = note;
 }
@@ -6292,7 +6311,8 @@ async function renderHeatMap(){
   }
   document.getElementById('heatGrid').innerHTML = qs.map(function(r, i){
     if(!r.q) return '';
-    const dp = r.q.dp;
+    const dp = quoteDp(r.q);
+    if(dp == null) return '<div class="heat-cell" style="background:rgba(90,107,92,.35)" role="button" tabindex="0"><div class="heat-name">' + r.s.n + '</div><div class="heat-pct">—</div></div>';
     const mag = Math.min(1, Math.abs(dp)/2.2);
     const bg = dp >= 0 ? 'rgba(22,101,52,' + (0.35+mag*0.6) + ')' : 'rgba(153,27,27,' + (0.35+mag*0.6) + ')';
     return '<div class="heat-cell" style="background:' + bg + '" onclick="heatDetailShow(' + i + ',' + dp.toFixed(2) + ')" role="button" tabindex="0"><div class="heat-name">' + r.s.n + '</div><div class="heat-pct">' + (dp>=0?'▲ +':'▼ ') + dp.toFixed(2) + '%</div></div>';
@@ -6304,7 +6324,8 @@ async function renderHeatMap(){
     const top = Object.entries(totals).sort(function(a,b){return b[1]-a[1]})[0];
     if(top && tv > 0){
       const etf = qs.find(function(r){ return r.s.n === top[0]; });
-      if(etf && etf.q) document.getElementById('heatDetail').innerHTML = 'Your portfolio is <b>' + (top[1]/tv*100).toFixed(0) + '% ' + top[0] + '</b> — that sector is <b class="' + (etf.q.dp>=0?'up':'down') + '">' + (etf.q.dp>=0?'+':'') + etf.q.dp.toFixed(2) + '%</b> today.';
+      const etfDp = etf ? quoteDp(etf.q) : null;
+      if(etf && etfDp != null) document.getElementById('heatDetail').innerHTML = 'Your portfolio is <b>' + (top[1]/tv*100).toFixed(0) + '% ' + top[0] + '</b> — that sector is <b class="' + (etfDp>=0?'up':'down') + '">' + (etfDp>=0?'+':'') + etfDp.toFixed(2) + '%</b> today.';
     }
   }
 }
