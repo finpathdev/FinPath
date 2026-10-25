@@ -108,6 +108,8 @@ body > *{position:relative;z-index:1;}
   .lessons-grid,
   .filter-tabs,
   .moves-grid,
+  .moves-toolbar,
+  .moves-disclaimer,
   .portfolio-wrap,
   #how-it-works,
   #interactive-3d,
@@ -156,6 +158,8 @@ body > *{position:relative;z-index:1;}
   .lessons-grid,
   .filter-tabs,
   .moves-grid,
+  .moves-toolbar,
+  .moves-disclaimer,
   .portfolio-wrap,
   #how-it-works,
   #interactive-3d,
@@ -191,6 +195,8 @@ body > *{position:relative;z-index:1;}
   .lessons-grid,
   .filter-tabs,
   .moves-grid,
+  .moves-toolbar,
+  .moves-disclaimer,
   .portfolio-wrap,
   #how-it-works,
   #interactive-3d,
@@ -304,6 +310,9 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 .investor-card{background:var(--panel);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:var(--radius-lg);padding:26px;display:flex;gap:16px;align-items:flex-start;transition:all .25s}
 .investor-card:hover{border-color:var(--line-strong);transform:translateY(-3px)}
 .inv-badge{display:inline-block;border-radius:8px;padding:4px 11px;font-size:11px;font-weight:700;letter-spacing:.04em}
+.inv-avatar,.move-avatar{width:44px;height:44px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;letter-spacing:.06em;font-family:var(--font-display);color:var(--green);background:radial-gradient(circle at 32% 26%,rgba(134,239,172,.45),transparent 58%),var(--green-deeper);border:1px solid rgba(34,197,94,.4);box-shadow:0 0 0 3px rgba(34,197,94,.1);user-select:none}
+.inv-size{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin-top:8px;font-size:12px;color:var(--muted)}
+.inv-size strong{font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--text);letter-spacing:-.3px}
 .badge-buy{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(74,222,128,.25)}
 .badge-hold{background:rgba(96,165,250,.12);color:var(--blue);border:1px solid rgba(96,165,250,.25)}
 .badge-add{background:var(--gold-soft);color:var(--gold);border:1px solid rgba(245,182,11,.25)}
@@ -356,20 +365,43 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 /* ── GOLD ── */
 .gold-hero{padding:70px 5% 56px;text-align:center;background:radial-gradient(ellipse 55% 70% at 50% 0%,rgba(245,182,11,.08),transparent 70%)}
 .gold-badge{display:inline-flex;align-items:center;gap:7px;background:var(--gold-soft);border:1px solid rgba(245,182,11,.35);border-radius:999px;padding:7px 18px;font-size:12px;font-weight:700;color:var(--gold);margin-bottom:22px;letter-spacing:.06em}
-.filter-tabs{display:flex;gap:8px;padding:0 5%;max-width:1200px;margin:0 auto 34px;flex-wrap:wrap}
+.filter-tabs{display:flex;gap:8px;padding:0 5%;max-width:1200px;margin:0 auto 14px;flex-wrap:wrap}
 .filter-tab{background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:999px;padding:9px 22px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .18s}
 .filter-tab:hover{color:var(--text);border-color:var(--line-strong)}
 .filter-tab.active{background:linear-gradient(135deg,var(--green-dark),var(--green));color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(34,197,94,.3)}
-.moves-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;padding:0 5% 90px;max-width:1200px;margin:0 auto}
-.move-card{background:var(--panel);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:var(--radius);padding:22px;cursor:pointer;transition:all .2s;display:flex;gap:15px;align-items:flex-start}
+.moves-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;max-width:1200px;margin:0 auto 16px;padding:0 5%}
+.moves-summary{margin:0;font-size:13px;color:var(--muted)}
+.moves-hold-toggle{background:transparent;border:1px dashed var(--line-strong);color:var(--muted);border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:var(--font-body);display:inline-flex;align-items:center;gap:8px;transition:all .15s}
+.moves-hold-toggle:hover{color:var(--text);border-style:solid;border-color:var(--blue)}
+.moves-hold-toggle[aria-pressed="true"]{background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.45);color:var(--blue)}
+.moves-hold-toggle:disabled{opacity:.4;cursor:default}
+.moves-hold-count{background:rgba(96,165,250,.16);color:var(--blue);border-radius:999px;padding:1px 7px;font-size:11px;font-weight:700}
+.moves-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:0 5% 28px;max-width:1200px;margin:0 auto;align-items:start}
+.move-card{position:relative;background:var(--panel);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:var(--radius);padding:0;cursor:default;transition:border-color .2s,transform .2s;display:flex;flex-direction:column;align-items:stretch;overflow:hidden}
+.move-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--move-accent,transparent)}
 .move-card:hover{border-color:var(--line-strong);transform:translateY(-3px)}
-.move-avatar{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--mint);background:linear-gradient(135deg,var(--deep),rgba(34,197,94,.2));border:1px solid var(--line);flex-shrink:0;font-family:var(--font-display)}
-.move-info{flex:1;min-width:0}
-.move-investor{font-size:12px;color:var(--muted);margin-bottom:3px}
-.move-stock{font-size:15px;font-weight:700;margin-bottom:7px;font-family:var(--font-display);letter-spacing:-.2px}
-.move-note{font-size:13px;color:var(--muted);line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.move-right{text-align:right;flex-shrink:0}
-.move-amount{font-size:12px;color:var(--muted);margin-top:6px}
+.move-card.act-buy{--move-accent:#4ade80}
+.move-card.act-add{--move-accent:var(--gold)}
+.move-card.act-reduce{--move-accent:#e879f9}
+.move-card.act-sold{--move-accent:#f87171}
+.move-card.act-hold{--move-accent:var(--blue)}
+.move-card.act-put{--move-accent:#fb923c}
+.move-card.act-new{--move-accent:#60a5fa}
+.move-head{display:flex;align-items:flex-start;gap:12px;padding:16px 16px 0}
+.move-who{flex:1;min-width:0}
+.move-investor{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:2px}
+.move-stockline{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px}
+.move-stock{font-size:16px;font-weight:700;margin:0;font-family:var(--font-display);letter-spacing:-.3px;line-height:1.25}
+.move-ticker{font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--green);background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.22);border-radius:6px;padding:1px 7px}
+.move-date{font-size:11px;font-weight:600;letter-spacing:.06em;color:var(--muted2);flex-shrink:0;padding-top:2px}
+.move-actionrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 16px;align-items:center;margin:14px 14px 0;padding:12px 14px;border-radius:14px;background:rgba(6,12,7,.42);border:1px solid var(--line)}
+.move-kicker{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);margin-bottom:6px}
+.move-action .inv-badge{font-size:12px;padding:6px 12px;letter-spacing:.05em}
+.move-size{text-align:right}
+.move-dollars{font-family:var(--font-display);font-size:20px;font-weight:700;letter-spacing:-.5px;line-height:1.05;color:var(--text);white-space:nowrap}
+.move-weight{font-size:12px;font-weight:600;color:var(--muted);margin-top:4px}
+.move-note{font-size:13.5px;color:var(--muted);line-height:1.6;padding:12px 16px 8px;margin:0}
+.moves-disclaimer{font-size:12px;color:var(--muted);margin:8px auto 70px;padding:0 5%;max-width:1200px;line-height:1.6;text-align:center}
 .gold-gate{background:linear-gradient(150deg,rgba(245,182,11,.08),var(--panel) 50%);border:1px solid rgba(245,182,11,.3);border-radius:var(--radius-lg);padding:64px 44px;text-align:center;max-width:600px;margin:40px auto 90px}
 
 /* ── PORTFOLIO ── */
@@ -400,7 +432,7 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 .mk-status.is-closed{background:rgba(147,166,147,.12);color:var(--muted);border:1px solid var(--line)}
 .move-card{position:relative}
 .move-card.expanded .move-note{-webkit-line-clamp:unset;display:block}
-.move-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.move-actions{display:flex;gap:8px;margin:0;padding:0 16px 16px;flex-wrap:wrap}
 .move-actions button{background:transparent;border:1px solid var(--line-strong);color:var(--mint);font:inherit;font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;cursor:pointer}
 .move-actions button:hover{background:rgba(34,197,94,.1)}
 .moves-help{max-width:1200px;margin:0 auto 22px;padding:0 5%}
@@ -605,6 +637,8 @@ body.light .t-price{color:#47604e}
 
 /* ── MOBILE-FIRST EXTRAS ── */
 @media(max-width:640px){
+  .move-actionrow{grid-template-columns:1fr}
+  .move-size{text-align:left}
   .filter-tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .filter-tabs::-webkit-scrollbar{display:none}
   .filter-tab{flex-shrink:0}
@@ -1045,6 +1079,12 @@ body.light .api-bar.api-bar-dead{background:#fee2e2;color:#991b1b;border-color:r
 .badge-new{background:rgba(96,165,250,.12);color:#60a5fa;border:1px solid rgba(96,165,250,.3)}
 .badge-put{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.3)}
 body.light .api-bar{background:#fef3c7;color:#92400e;border-color:rgba(180,120,7,.35)}
+body.light .move-actionrow{background:rgba(20,83,45,.05);border-color:rgba(20,83,45,.12)}
+body.light .moves-hold-toggle{background:#fff}
+body.light .moves-hold-toggle[aria-pressed="true"]{background:rgba(37,99,235,.1);border-color:rgba(37,99,235,.4);color:#1d4ed8}
+body.light .moves-hold-toggle[aria-pressed="true"] .moves-hold-count{background:rgba(37,99,235,.12);color:#1d4ed8}
+body.light .move-ticker{color:#15803d}
+body.light .inv-avatar,body.light .move-avatar{color:#15803d;box-shadow:0 0 0 3px rgba(21,128,61,.1)}
 
 /* ── TRANSACTION HISTORY ── */
 .txn-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
@@ -1792,10 +1832,10 @@ body.light .gs-item{background:#fff}
       <h2 class="section-title">What legendary investors just reported</h2>
       <p class="section-sub" id="landing13fNote">Q2 2026 13F filings — positions as of June 30, 2026, filed Aug 14, 2026. Next filings due by Nov 16, 2026.</p>
       <div class="investor-grid">
-        <div class="investor-card"><div style="width:44px;height:44px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0">WB</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Warren Buffett</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Alphabet Inc (GOOGL)</div><span class="inv-badge badge-add">ADD 83%</span><div style="font-size:12px;color:var(--muted);margin-top:6px">$37.8B — 12.62% of portfolio</div></div></div>
-        <div class="investor-card"><div style="width:44px;height:44px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0">BA</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Bill Ackman</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Visa Inc (V)</div><span class="inv-badge badge-buy">BUY</span><div style="font-size:12px;color:var(--muted);margin-top:6px">$1.12B — 5.76% of portfolio</div></div></div>
-        <div class="investor-card"><div style="width:44px;height:44px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0">DT</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">David Tepper</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Amazon (AMZN)</div><span class="inv-badge badge-add">ADD 15.7%</span><div style="font-size:12px;color:var(--muted);margin-top:6px">$1.19B — 15.95% of portfolio</div></div></div>
-        <div class="investor-card"><div style="width:44px;height:44px;border-radius:10px;background:var(--green-deeper);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--green);flex-shrink:0">SD</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Stanley Druckenmiller</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Natera Inc (NTRA)</div><span class="inv-badge badge-add">ADD 4%</span><div style="font-size:12px;color:var(--muted);margin-top:6px">$865M — 19.86% of portfolio</div></div></div>
+        <div class="investor-card"><div class="inv-avatar" aria-hidden="true">WB</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Warren Buffett</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Alphabet Inc (GOOGL)</div><span class="inv-badge badge-add">ADD 83%</span><div class="inv-size"><strong>$37.8B</strong><span>12.62% of portfolio</span></div></div></div>
+        <div class="investor-card"><div class="inv-avatar" aria-hidden="true">BA</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Bill Ackman</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Visa Inc (V)</div><span class="inv-badge badge-buy">BUY</span><div class="inv-size"><strong>$1.12B</strong><span>5.76% of portfolio</span></div></div></div>
+        <div class="investor-card"><div class="inv-avatar" aria-hidden="true">DT</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">David Tepper</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Amazon (AMZN)</div><span class="inv-badge badge-add">ADD 15.7%</span><div class="inv-size"><strong>$1.19B</strong><span>15.95% of portfolio</span></div></div></div>
+        <div class="investor-card"><div class="inv-avatar" aria-hidden="true">SD</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Stanley Druckenmiller</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Natera Inc (NTRA)</div><span class="inv-badge badge-add">ADD 4%</span><div class="inv-size"><strong>$865M</strong><span>19.86% of portfolio</span></div></div></div>
       </div>
     </div>
   </section>
@@ -3225,6 +3265,35 @@ function getActionBadge(a){
   return '<span class="inv-badge badge-reduce">'+A+'</span>';
 }
 
+// Same order as getActionBadge so the card accent matches the badge colour.
+function moveActionKind(a){
+  const l=String(a||'').toLowerCase();
+  if(l.includes('sold out')) return 'sold';
+  if(l.includes('put')) return 'put';
+  if(l.includes('buy')) return 'buy';
+  if(l.startsWith('new')) return 'new';
+  if(l.includes('add')) return 'add';
+  if(l.includes('hold')) return 'hold';
+  return 'reduce';
+}
+function isHoldMove(m){ return moveActionKind(m&&m.action)==='hold'; }
+
+// amount is "$37.8B — 12.62%", "$0 (was $94.9M)", or "$242M notional".
+// The dollar figure and the portfolio weight are separate so "Add 83%" is not next to a second percentage.
+function parseMoveAmount(amount){
+  const s=String(amount||'').trim();
+  let m=s.match(/^(\$[\d.,]+[KMB]?)\s*[—–-]\s*([\d.]+%)\s*$/);
+  if(m) return {value:m[1], detail:m[2]+' of portfolio'};
+  m=s.match(/^(\$0)\s*\(was\s*(\$[\d.,]+[KMB]?)\)\s*$/i);
+  if(m) return {value:m[1], detail:'exited · was '+m[2]};
+  m=s.match(/^(\$[\d.,]+[KMB]?)\s+notional\s*$/i);
+  if(m) return {value:m[1], detail:'notional · not shares owned'};
+  return {value:s, detail:''};
+}
+
+let movesFilter='all';
+let showMoveHolds=false;
+
 function toggleMenu(force){
   const m = document.getElementById('mobileMenu'); if(!m) return;
   const open = typeof force === 'boolean' ? force : !m.classList.contains('open');
@@ -3556,7 +3625,8 @@ function renderGold(){
         <li><b>13F filing</b> — a quarterly report big U.S. investment managers must file with the SEC, listing the U.S. stocks they held on the last day of the quarter.</li>
         <li><b>BUY / NEW</b> — a position they didn’t own last quarter. <b>ADD x%</b> — they increased their share count by that much.</li>
         <li><b>REDUCE x%</b> — they sold some shares. <b>SOLD OUT</b> — they sold the whole position. <b>HOLD</b> — share count unchanged (value can still move with the price).</li>
-        <li><b>“$37.8B — 12.6%”</b> — the position’s reported value and its share of that investor’s 13F portfolio.</li>
+        <li><b>Position size</b> — the dollar value, shown apart from the percent of that investor’s 13F portfolio. A large “Add %” can still be a small slice of the portfolio.</li>
+        <li><b>Holds</b> are positions whose share count did not change. They stay hidden until you turn on Show holds.</li>
         <li><b>Why it’s delayed</b> — filings arrive up to 45 days after quarter-end, so treat these as ideas to research, not live trades to copy. They exclude short positions, most non-U.S. stocks, bonds and cash.</li>
       </ul>
     </details></div>
@@ -3564,8 +3634,12 @@ function renderGold(){
       <button class="filter-tab active" onclick="filterMoves('all',this)">All investors</button>
       ${INVESTORS.map((n,i)=>`<button class="filter-tab" onclick="filterMoves(INVESTORS[${i}],this)">${escapeHtml(n)}</button>`).join('')}
     </div>
+    <div class="moves-toolbar">
+      <p class="moves-summary" id="movesSummary" aria-live="polite"></p>
+      <button type="button" class="moves-hold-toggle" id="holdsToggle" aria-pressed="false" onclick="toggleMoveHolds()">Show holds</button>
+    </div>
     <div class="moves-grid" id="movesGrid"></div>
-    <p class="moves-disclaimer" style="font-size:12px;color:var(--muted);margin-top:18px;line-height:1.6;text-align:center">Source: SEC Form 13F-HR filings for the quarter ended June 30, 2026 (filed Aug 13–14, 2026). 13F data is delayed up to 45 days after quarter-end and shows long U.S. positions only — these investors may have already changed these positions. Educational use only, not investment advice.</p>`;
+    <p class="moves-disclaimer">Source: SEC Form 13F-HR filings for the quarter ended June 30, 2026 (filed Aug 13–14, 2026). 13F data is delayed up to 45 days after quarter-end and shows long U.S. positions only — these investors may have already changed these positions. Educational use only, not investment advice. Holds are unchanged positions, hidden until you turn them on.</p>`;
   renderMoves('all');
 }
 
@@ -3583,28 +3657,72 @@ function trackFromMove(t, ev){
   if(i){ i.value = t; handleSearch(t); }
 }
 function renderMoves(f){
-  const filtered=f==='all'?MOVES:MOVES.filter(m=>m.investor===f);
-  document.getElementById('movesGrid').innerHTML=filtered.map(m=>`
-    <div class="move-card" role="button" tabindex="0" aria-expanded="false" title="Tap to read the full note" onclick="toggleMoveCard(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleMoveCard(this);}">
-      <div class="move-avatar">${escapeHtml(m.photo)}</div>
-      <div class="move-info">
-        <div class="move-investor">${escapeHtml(m.investor)}</div>
-        <div class="move-stock">${escapeHtml(m.stock)} <span style="color:var(--muted);font-weight:400;font-size:13px">${escapeHtml(m.ticker)}</span></div>
-        <div style="margin-bottom:6px">${getActionBadge(m.action)}</div>
-        <div class="move-note">${escapeHtml(m.notes)}</div>
-        ${isValidTicker(m.ticker) ? `<div class="move-actions"><button type="button" onclick="trackFromMove('${m.ticker}', event)" aria-label="Track ${escapeHtml(m.ticker)} in my portfolio">+ Track ${escapeHtml(m.ticker)}</button></div>` : ''}
-      </div>
-      <div class="move-right">
-        <div class="move-amount">${escapeHtml(m.amount)}</div>
-        <div style="font-size:11px;color:var(--muted2);margin-top:4px">${escapeHtml(m.date)}</div>
-      </div>
-    </div>`).join('');
+  if(typeof f==='string') movesFilter=f;
+  const grid=document.getElementById('movesGrid');
+  if(!grid) return;
+  const pool=movesFilter==='all'?MOVES:MOVES.filter(function(m){ return m.investor===movesFilter; });
+  const holdCount=pool.filter(isHoldMove).length;
+  const shown=showMoveHolds?pool:pool.filter(function(m){ return !isHoldMove(m); });
+  const summary=document.getElementById('movesSummary');
+  const toggle=document.getElementById('holdsToggle');
+  if(summary){
+    const moveWord=shown.length===1?'move':'moves';
+    const filingWord=shown.length===1?'filing':'filings';
+    const holdWord=holdCount===1?'hold':'holds';
+    summary.textContent=showMoveHolds
+      ? (shown.length+' '+filingWord+(holdCount?(' · including '+holdCount+' '+holdWord):''))
+      : (shown.length+' '+moveWord+(holdCount?(' · '+holdCount+' '+holdWord+' hidden'):''));
+  }
+  if(toggle){
+    toggle.disabled=holdCount===0 && !showMoveHolds;
+    toggle.setAttribute('aria-pressed', showMoveHolds?'true':'false');
+    toggle.textContent=showMoveHolds?'Hide holds':'Show holds';
+    if(holdCount){
+      const n=document.createElement('span');
+      n.className='moves-hold-count';
+      n.textContent=String(holdCount);
+      toggle.appendChild(n);
+    }
+  }
+  if(!shown.length){
+    grid.innerHTML='<div class="empty" style="grid-column:1/-1">No moves match this filter.</div>';
+    return;
+  }
+  grid.innerHTML=shown.map(function(m){
+    const size=parseMoveAmount(m.amount);
+    const kind=moveActionKind(m.action);
+    const detail=size.detail?'<div class="move-weight">'+escapeHtml(size.detail)+'</div>':'';
+    const track=isValidTicker(m.ticker)
+      ? '<div class="move-actions"><button type="button" onclick="trackFromMove(\''+m.ticker+'\', event)" aria-label="Track '+escapeHtml(m.ticker)+' in my portfolio">+ Track '+escapeHtml(m.ticker)+'</button></div>'
+      : '';
+    return '<div class="move-card act-'+kind+'">'
+      +'<div class="move-head">'
+        +'<div class="inv-avatar" aria-hidden="true">'+escapeHtml(m.photo)+'</div>'
+        +'<div class="move-who">'
+          +'<div class="move-investor">'+escapeHtml(m.investor)+'</div>'
+          +'<div class="move-stockline"><span class="move-stock">'+escapeHtml(m.stock)+'</span><span class="move-ticker">'+escapeHtml(m.ticker)+'</span></div>'
+        +'</div>'
+        +'<div class="move-date">'+escapeHtml(m.date)+'</div>'
+      +'</div>'
+      +'<div class="move-actionrow">'
+        +'<div class="move-action"><div class="move-kicker">Action</div>'+getActionBadge(m.action)+'</div>'
+        +'<div class="move-size"><div class="move-kicker">Position size</div><div class="move-dollars">'+escapeHtml(size.value)+'</div>'+detail+'</div>'
+      +'</div>'
+      +'<p class="move-note">'+escapeHtml(m.notes)+'</p>'
+      +track
+    +'</div>';
+  }).join('');
 }
 
 function filterMoves(f,btn){
-  document.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#filterTabs .filter-tab').forEach(function(b){ b.classList.remove('active'); });
   if(btn) btn.classList.add('active');
   renderMoves(f);
+}
+
+function toggleMoveHolds(){
+  showMoveHolds=!showMoveHolds;
+  renderMoves(movesFilter);
 }
 
 // ── STRIPE PAYMENT ──

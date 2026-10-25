@@ -227,3 +227,11 @@ Market data only. No Stripe, 13F, lesson, or pricing edits. Rebased onto the 13F
 - Real-device check at 320–375px with a notch (headless can't go below 500px).
 - No bottom tab bar (the hamburger menu is enough for now; adding one would be a bigger UX change).
 - Gold `gold_users`/`payments` mismatch is still documented only (Stripe untouched).
+
+## 2026-10-25 — Investor move cards (finpath-v13)
+Rebased onto the mobile/PWA pass (`finpath-v12`). The freshness line, "How to read these moves" explainer, and "+ Track" button stay.
+
+- Gold move cards split **action** (badge + colour bar) from **position size** (dollar figure) and **% of portfolio**. `parseMoveAmount` reads the existing `amount` string (`$37.8B — 12.62%`, `$0 (was $94.9M)`, `$242M notional`). `getActionBadge` styles are unchanged (sold out, put, buy, new, add, hold, reduce).
+- Initials use the shared `.inv-avatar` chip (landing preview and Gold grid). Notes render in full; `escapeHtml` still covers investor, stock, ticker, notes, size, and date.
+- Gold grid defaults to non-Hold moves. A secondary **Show holds** toggle (not an investor tab) reveals the unchanged positions still stored in `MOVES`. Landing preview still shows the same four real moves.
+- sw.js CACHE → finpath-v13 (main was already at v12). Stripe, pricing, auth, Finnhub key, COMPANIES, SECTORS, and POP were not touched.
