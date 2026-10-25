@@ -6465,7 +6465,7 @@ function runBacktest(){
   } else if(years <= 5){
     insight = '<b>Short timeframes hide compounding.</b> Most of the magic happens in the last decade. Try running this again with 20+ years and watch what happens.';
   } else {
-    insight = '<b>Time is the ingredient.</b> The same monthly amount over ' + years + ' years produced ' + fmt(gain) + ' in growth. Starting earlier matters more than starting bigger.';
+    insight = '<b>Time is the ingredient.</b> The same monthly amount over ' + years + ' years adds ' + fmt(gain) + ' at this steady rate. Starting earlier matters more than starting bigger.';
   }
 
   out.className = 'sp-result on';
