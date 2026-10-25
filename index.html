@@ -7012,7 +7012,12 @@ function paperAskSell(i){
   if(reflect) reflect.value = '';
   const modal = document.getElementById('paperSellModal');
   if(modal) modal.classList.add('open');
-  setTimeout(function(){ if(reflect) reflect.focus(); }, 60);
+  setTimeout(function(){
+    // A fast Escape can close the dialog before this runs. Don't pull focus
+    // back onto the hidden reflection field.
+    if(!modal || !modal.classList.contains('open') || PAPER_SELL_I !== i) return;
+    if(reflect) reflect.focus();
+  }, 60);
 }
 function closePaperSell(){
   const i = PAPER_SELL_I;
