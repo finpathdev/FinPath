@@ -4997,13 +4997,16 @@ async function renderWatchlist(){
   grid.innerHTML = w.map(function(){ return '<div class="skel-row" style="height:66px"></div>'; }).join('');
   const qs = await Promise.all(w.map(async function(t){ return {t: t, q: await fetchQ(t)}; }));
   grid.innerHTML = qs.map(function(x){
-    const t = x.t, q = x.q, up = q && q.dp >= 0;
+    const t = x.t, q = x.q;
     const safe = escapeHtml(t);
+    // q.dp can be missing on a partial quote; calling toFixed threw and blanked the whole list.
+    const priceOk = !!(q && isFinite(q.c) && q.c > 0 && typeof q.dp === 'number' && isFinite(q.dp));
+    const up = priceOk && q.dp >= 0;
     return '<div class="watch-row" data-w="' + safe + '" onclick="openAddShares(\'' + safe + '\')" role="button" tabindex="0" aria-label="Add ' + safe + ' to portfolio">' +
       '<div class="s-icon" style="width:36px;height:36px;font-size:11px">' + safe.slice(0,2) + '</div>' +
       '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + safe + '</div>' +
       '<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(COMPANIES[t] || '') + '</div></div>' +
-      (q ? '<div style="text-align:right"><div style="font-size:13px;font-weight:700;font-family:var(--font-display)">' + fmt(q.c) + '</div>' +
+      (priceOk ? '<div style="text-align:right"><div style="font-size:13px;font-weight:700;font-family:var(--font-display)">' + fmt(q.c) + '</div>' +
         '<div style="font-size:11px" class="' + (up?'up':'down') + '">' + (up?'+':'') + q.dp.toFixed(2) + '%</div></div>' : '') +
       '<button class="watch-star" aria-label="Remove ' + safe + ' from watchlist" onclick="event.stopPropagation();toggleWatch(\'' + safe + '\')">★</button></div>';
   }).join('');
