@@ -314,3 +314,16 @@ New tickers on the cards (FDXF, CBRS, MTD, and AMD/APP/AVGO/HD/CAT/WM/INTC where
 - `LESSONS[15]` empty slot: left on purpose. Every counter already uses `filter(Boolean)`/`lessonOrder()`, and compacting the array would shift `#lesson/N` links, saved progress keys and `BEGINNER_PATH`. That isn't worth the risk.
 - Supabase CDN is still pinned only to `@2` with no SRI. Pinning an exact version + integrity hash should be done when someone can test sign-in end-to-end.
 - Real-device check of keyboard focus outlines on the newly focusable cards.
+
+## 2026-10-25 — Markets learner cues (finpath-v18)
+
+Market UI only. Stripe, 13F / MOVES, and lessons were not edited.
+
+**Shipped**
+1. **Sector heat map legend.** `#heatLegend` sits under the heat-map subtitle: green = up today, red = down, and a stronger swatch means a larger move. Tap-for-detail is unchanged. Sector names and holding tickers written into the detail line are escaped.
+2. **Watchlist empty state.** An empty list used to set `#watchWrap` to `display:none`. It now stays visible with a short note: star a name from search (+ Add stock); browse on Markets first if you want, then star it there. Stocks you already hold stay under Your stocks. Rows for a non-empty list are unchanged.
+3. **Pulse tiles when a quote is missing.** A failed quote no longer drops the tile. The tile still shows the index name, ticker, and the existing one-line “why this index,” plus “Price unavailable.” A saved quote still shows the number with the existing “last known” flag. No stand-in prices.
+4. **Rate-limit copy.** HTTP 429, 403, 503, or an error body about a limit uses a busy-feed banner: last known prices may show, and retry is automatic. A rejected key (401) still uses `apiKeyInvalid` and does not retry. Other outages keep the generic “temporarily unavailable” banner.
+5. **How to read a quote.** A collapsed tip on Market pulse and next to portfolio live prices explains price, the day’s % change, and that “last known” is a saved quote.
+
+**Verified:** node --check (3 inline scripts + sw.js). Headless Chrome checked the heat-map legend and tap-for-detail (sector names and a hostile ticker are escaped), the quote tip on Markets and Portfolio, five priced pulse tiles, missing quotes still showing the why-line and “Price unavailable”, a stale SPY price flagged “last known” next to unavailable siblings, 429/403/503 and a limit error body showing the busy-feed banner, and 401 showing the separate hard-failure banner that does not retry. Empty watchlist stays visible, search opens from it, a starred row renders, and unstarring or already owning the name returns the empty state. No horizontal overflow at 1280 or 390. Light mode keeps the legend. Stripe was not edited. `sw.js` CACHE → `finpath-v18`.
