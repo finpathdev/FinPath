@@ -3360,7 +3360,13 @@ function showPage(p,fromHash){
   }
   toggleMenu(false);
   window.scrollTo(0,0);
-  if(p==='lessons'){ if(typeof closeLessonDetail==='function') closeLessonDetail(); renderLessons(); }
+  if(p==='lessons'){
+    // #lesson/N is about to open that lesson. Closing here while the detail is
+    // still marked active rewrites the hash to #lessons, and the follow-up
+    // hashchange hides the lesson Back or a pasted hash just restored.
+    if(!/^#\/?lesson\/\d+\/?$/i.test(location.hash) && typeof closeLessonDetail==='function') closeLessonDetail();
+    renderLessons();
+  }
   if(p==='gold') renderGold();
   if(p==='portfolio'){loadFromDB().then(()=>renderPortfolio());if(typeof renderGoals==='function'){renderGoals();renderAchievements();renderAlertsList();}if(typeof renderTxns==='function')renderTxns();if(typeof renderChecklist==='function')renderChecklist();}
   if(p==='markets' && typeof initMarkets==='function') initMarkets();
