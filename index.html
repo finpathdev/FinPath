@@ -3379,6 +3379,7 @@ function updateLessonProgress(){
   if(fill) fill.style.width = (done/LESSONS.filter(Boolean).length*100).toFixed(0) + '%';
   if(typeof checkGraduate === 'function') checkGraduate();
   if(typeof checkGraduateComplete === 'function') checkGraduateComplete();
+  if(typeof renderCertificateCTA === 'function') renderCertificateCTA(done);
 }
 
 // ══ COMPLETION CERTIFICATE / SHARE CARD ══
@@ -3483,7 +3484,9 @@ function generateCertificate(kind){
 }
 function checkGraduateComplete(){
   const done = Object.keys(getLessonProgress()).length;
-  if(done >= LESSONS.length && !localStorage.getItem('fp_graduated')){
+  // LESSONS has an empty slot (index 15). Saved progress is keyed by index, so the hole stays;
+  // the finish check counts real lessons only.
+  if(done >= LESSONS.filter(Boolean).length && !localStorage.getItem('fp_graduated')){
     localStorage.setItem('fp_graduated','1');
     if(typeof confettiBurst === 'function') confettiBurst();
     toast('🎉','You finished the entire Financial Playbook!');
@@ -3600,8 +3603,9 @@ function filterLessons(q){
   }));
 }
 
-function openLesson(i){
+function openLesson(i, fromHash){
   const l=LESSONS[i];
+  if(!l) return;
   document.getElementById('lessons-list-view').style.display='none';
   document.getElementById('lessonDetail').classList.add('active');
   document.getElementById('detailCat').textContent=l.cat;
@@ -3629,12 +3633,28 @@ function openLesson(i){
               : '<button class="btn-secondary" onclick="closeLessonDetail();renderLessons()">Back to all lessons</button>');
   body.appendChild(nav);
   window.scrollTo(0,0);
+  if(fromHash) return;
+  try{
+    const want = '#lesson/' + i;
+    if(location.hash === want) return;
+    const cur = location.hash.replace(/^#/,'').replace(/^\/+|\/+$/g,'').split(/[?#]/)[0].toLowerCase();
+    if(cur !== 'lessons' && !/^lesson\/\d+$/.test(cur)) history.pushState({fp:'lessons'}, '', '#lessons');
+    history.pushState({fp:'lesson', i:i}, '', want);
+  }catch(e){}
 }
 
 function closeLessonDetail(){
+  const detail = document.getElementById('lessonDetail');
+  const wasOpen = !!(detail && detail.classList.contains('active'));
   document.getElementById('lessons-list-view').style.display='';
-  document.getElementById('lessonDetail').classList.remove('active');
+  if(detail) detail.classList.remove('active');
   if(document.getElementById('page-lessons').classList.contains('active')){ try{ const q = document.getElementById('lessonSearch'); if(!q || !q.value.trim()) renderLessons(); }catch(e){} }
+  // The in-page back button closes the detail without a history change. Drop the
+  // lesson hash so a refresh stays on the list. Browser Back already moved the
+  // hash to #lessons before this runs, so it does not push a second entry.
+  if(wasOpen && /^#\/?lesson\/\d+\/?$/i.test(location.hash)){
+    try{ history.pushState(null,'','#lessons'); }catch(e){}
+  }
 }
 
 // ── GOLD PAGE ──
@@ -4048,7 +4068,12 @@ function closeHourly(){document.getElementById('hourlyModal').classList.remove('
 async function loadSearchResults(){
   document.getElementById('searchResults').innerHTML='<div class="skel-row" style="height:60px;margin-bottom:8px"></div>'.repeat(6);
   const quotes=await Promise.all(POP.map(async t=>({t,q:await fetchQ(t)})));
-  renderSearchResults(quotes.filter(x=>x.q));
+  const priced=quotes.filter(x=>x.q);
+  if(!priced.length && quotes.length){
+    document.getElementById('searchResults').innerHTML='<div class="empty">Market data unavailable right now — live prices can\u2019t load. Please check back later.</div>';
+    return;
+  }
+  renderSearchResults(priced);
 }
 
 function renderSearchResults(items){
@@ -4401,10 +4426,23 @@ function agreeToTerms(){
 
 
 // ── SUPABASE AUTH ──
-const supabaseClient = supabase.createClient(SBU, SBK);
+// The CDN script can be blocked or offline. Never let a missing client abort boot
+// (routing, lessons, and the offline bar all live later in this script).
+let supabaseClient = null;
+try{
+  if(typeof supabase !== 'undefined' && supabase && typeof supabase.createClient === 'function'){
+    supabaseClient = supabase.createClient(SBU, SBK);
+  } else {
+    console.warn('Sign-in is unavailable (Supabase did not load). Lessons and saved data still work.');
+  }
+}catch(e){
+  supabaseClient = null;
+  console.warn('Sign-in is unavailable.', e);
+}
 let currentUser = null;
 
 async function initAuth(){
+  if(!supabaseClient) return;
   // Check for magic link callback
   const { data: { session }, error } = await supabaseClient.auth.getSession();
   if(session && session.user){
@@ -4735,6 +4773,7 @@ async function sendMagicLink(email){
     if(status) status.remove();
   }
   try {
+    if(!supabaseClient) throw new Error('Sign-in is unavailable right now. Lessons and your saved portfolio still work.');
     const { error } = await supabaseClient.auth.signInWithOtp({
       email: email,
       options: { emailRedirectTo: 'https://finpathdev.github.io/FinPath/' }
@@ -4778,7 +4817,7 @@ async function sendMagicLink(email){
 }
 
 async function signOut(){
-  await supabaseClient.auth.signOut();
+  try{ if(supabaseClient) await supabaseClient.auth.signOut(); }catch(e){}
   closeUserMenu();
 }
 
@@ -4909,20 +4948,21 @@ function toggleWatch(t, btn){
 async function renderWatchlist(){
   const wrap = document.getElementById('watchWrap'), grid = document.getElementById('watchGrid');
   if(!wrap || !grid) return;
-  const w = getWatch().filter(function(t){ return !portfolio.find(function(p){ return p.ticker === t; }); });
+  const w = getWatch().filter(function(t){ return isValidTicker(t) && !portfolio.find(function(p){ return p.ticker === t; }); });
   if(!w.length){ wrap.style.display = 'none'; return; }
   wrap.style.display = 'block';
   grid.innerHTML = w.map(function(){ return '<div class="skel-row" style="height:66px"></div>'; }).join('');
   const qs = await Promise.all(w.map(async function(t){ return {t: t, q: await fetchQ(t)}; }));
   grid.innerHTML = qs.map(function(x){
     const t = x.t, q = x.q, up = q && q.dp >= 0;
-    return '<div class="watch-row" data-w="' + t + '" onclick="openAddShares(\'' + t + '\')" role="button" tabindex="0" aria-label="Add ' + t + ' to portfolio">' +
-      '<div class="s-icon" style="width:36px;height:36px;font-size:11px">' + t.slice(0,2) + '</div>' +
-      '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + t + '</div>' +
-      '<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (COMPANIES[t] || '') + '</div></div>' +
+    const safe = escapeHtml(t);
+    return '<div class="watch-row" data-w="' + safe + '" onclick="openAddShares(\'' + safe + '\')" role="button" tabindex="0" aria-label="Add ' + safe + ' to portfolio">' +
+      '<div class="s-icon" style="width:36px;height:36px;font-size:11px">' + safe.slice(0,2) + '</div>' +
+      '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + safe + '</div>' +
+      '<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(COMPANIES[t] || '') + '</div></div>' +
       (q ? '<div style="text-align:right"><div style="font-size:13px;font-weight:700;font-family:var(--font-display)">' + fmt(q.c) + '</div>' +
         '<div style="font-size:11px" class="' + (up?'up':'down') + '">' + (up?'+':'') + q.dp.toFixed(2) + '%</div></div>' : '') +
-      '<button class="watch-star" aria-label="Remove ' + t + ' from watchlist" onclick="event.stopPropagation();toggleWatch(\'' + t + '\')">★</button></div>';
+      '<button class="watch-star" aria-label="Remove ' + safe + ' from watchlist" onclick="event.stopPropagation();toggleWatch(\'' + safe + '\')">★</button></div>';
   }).join('');
   w.forEach(wsWatch);
 }
@@ -5018,6 +5058,11 @@ document.addEventListener('keydown', function(e){
     ov.remove();
     if(location.hash.indexOf('#p=') === 0) history.replaceState(null,'',location.pathname);
   });
+  document.querySelectorAll('.ob-overlay').forEach(function(ov){
+    try{ localStorage.setItem('fp_onboarded','1'); }catch(err){}
+    ov.remove();
+  });
+  if(typeof closeInstallHelp === 'function') closeInstallHelp();
 });
 
 
@@ -5268,13 +5313,18 @@ function announcePortfolio(tv, td){
 
 // ══ KEYBOARD SHORTCUT: "/" opens stock search or lesson search ══
 document.addEventListener('keydown', function(e){
-  if(e.key !== '/' || e.ctrlKey || e.metaKey) return;
+  if(e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
   const tag = (document.activeElement && document.activeElement.tagName) || '';
-  if(tag === 'INPUT' || tag === 'TEXTAREA') return;
-  e.preventDefault();
-  if(document.getElementById('page-portfolio').classList.contains('active')) openSearch();
-  else if(document.getElementById('page-lessons').classList.contains('active')){
-    const s = document.getElementById('lessonSearch'); if(s) s.focus();
+  if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (document.activeElement && document.activeElement.isContentEditable)) return;
+  const detail = document.getElementById('lessonDetail');
+  if(detail && detail.classList.contains('active')) return;
+  if(document.getElementById('page-portfolio').classList.contains('active')){
+    e.preventDefault();
+    openSearch();
+  } else if(document.getElementById('page-lessons').classList.contains('active')){
+    const s = document.getElementById('lessonSearch');
+    const list = document.getElementById('lessons-list-view');
+    if(s && list && list.style.display !== 'none'){ e.preventDefault(); s.focus(); }
   }
 });
 
@@ -6235,11 +6285,20 @@ async function loadEarnings(){
     const mineFirst = items.filter(function(x){ return known.has(x.symbol); });
     items = (mineFirst.length ? mineFirst : items).slice(0, 12);
     if(!items.length) throw 0;
-    el.innerHTML = items.map(function(x){
-      const days = Math.max(0, Math.ceil((new Date(x.date) - Date.now())/86400000));
+    const html = items.map(function(x){
+      if(!x || typeof x.symbol !== 'string' || !x.symbol) return '';
+      const dateStr = typeof x.date === 'string' ? x.date : '';
+      const dateMs = dateStr ? new Date(dateStr).getTime() : NaN;
+      const days = isFinite(dateMs) ? Math.max(0, Math.ceil((dateMs - Date.now())/86400000)) : null;
+      const hour = typeof x.hour === 'string' && x.hour ? ' · ' + escapeHtml(x.hour.toUpperCase()) : '';
       const mine = portfolio.find(function(p){ return p.ticker === x.symbol; });
-      return '<div class="earn-row"><div><b>' + x.symbol + '</b>' + (mine ? ' <span class="guru-chip" style="background:rgba(34,197,94,.15);color:#4ade80">You own this</span>' : '') + '<div style="font-size:11px;color:var(--muted)">' + x.date + (x.hour ? ' · ' + x.hour.toUpperCase() : '') + '</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--mint)">' + (days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : 'in ' + days + ' days') + '</div><div style="font-size:11px;color:var(--muted)">EPS est: ' + (x.epsEstimate != null ? '$' + x.epsEstimate : '—') + '</div></div></div>';
+      const epsNum = typeof x.epsEstimate === 'number' ? x.epsEstimate : (typeof x.epsEstimate === 'string' ? Number(x.epsEstimate) : NaN);
+      const eps = isFinite(epsNum) ? '$' + escapeHtml(String(x.epsEstimate)) : '—';
+      const when = days === null ? '—' : (days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : 'in ' + days + ' days');
+      return '<div class="earn-row"><div><b>' + escapeHtml(x.symbol) + '</b>' + (mine ? ' <span class="guru-chip" style="background:rgba(34,197,94,.15);color:#4ade80">You own this</span>' : '') + '<div style="font-size:11px;color:var(--muted)">' + escapeHtml(dateStr) + hour + '</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--mint)">' + when + '</div><div style="font-size:11px;color:var(--muted)">EPS est: ' + eps + '</div></div></div>';
     }).join('');
+    if(!html) throw 0;
+    el.innerHTML = html;
   }catch(e){
     el.innerHTML = '<div class="empty">Earnings calendar couldn’t be loaded right now. Please try again later.</div>';
   }
@@ -6482,10 +6541,12 @@ async function renderDividends(quotes, tv){
   const el = document.getElementById('divCard'); if(!el) return;
   const payers = [];
   let annual = 0;
+  let failed = false;
   for(const x of quotes){
     if((SECTORS[x.h.ticker]||'') === 'Crypto') continue;
     const met = await fetchMetrics(x.h.ticker);
-    const y = met && met.m ? (met.m.currentDividendYieldTTM || 0) : 0;
+    if(!met){ failed = true; continue; }
+    const y = met.m ? (met.m.currentDividendYieldTTM || 0) : 0;
     if(y > 0){
       const v = (x.q ? x.q.c : x.h.buyPrice) * x.h.shares;
       const inc = v * y / 100;
@@ -6493,7 +6554,12 @@ async function renderDividends(quotes, tv){
       payers.push({t: x.h.ticker, inc: inc, y: y});
     }
   }
-  if(!annual){ el.innerHTML = '<div style="font-size:13px;color:var(--muted);line-height:1.7">None of your holdings pay a dividend yet. The "Understanding Dividends" lesson covers how to add income to a portfolio.</div>'; return; }
+  if(!annual){
+    el.innerHTML = failed
+      ? '<div style="font-size:13px;color:var(--muted);line-height:1.7">Dividend data unavailable right now. Please try again later.</div>'
+      : '<div style="font-size:13px;color:var(--muted);line-height:1.7">None of your holdings pay a dividend yet. The "Understanding Dividends" lesson covers how to add income to a portfolio.</div>';
+    return;
+  }
   payers.sort(function(a,b){ return b.inc - a.inc; });
   el.innerHTML = '<div style="font-size:26px;font-weight:700;font-family:var(--font-display);color:var(--mint)">' + fmt(annual) + '<span style="font-size:13px;color:var(--muted);font-weight:400"> /year</span></div>' +
     '<div style="font-size:12px;color:var(--muted);margin-bottom:12px">≈ ' + fmt(annual/12) + ' per month, just for holding</div>' +
@@ -6562,11 +6628,41 @@ handleSharedLink();
 // Hash router: #portfolio / #lessons / #gold / #markets / #legal / #home (or empty).
 // #p= shared links are handled above by handleSharedLink and ignored here.
 function routeFromHash(){
-  const h = location.hash.replace(/^#/,'');
-  if(h.indexOf('p=')===0) return;
-  const p = h==='' ? 'home' : h;
-  if(ROUTES.indexOf(p)<0) return;
+  const raw = location.hash.replace(/^#/,'');
+  if(raw.indexOf('p=')===0) return;
+  const lesson = raw.match(/^\/?lesson\/(\d+)\/?$/i);
+  if(lesson){
+    const i = parseInt(lesson[1], 10);
+    if(LESSONS[i]){
+      if(!document.getElementById('page-lessons').classList.contains('active')) showPage('lessons', true);
+      openLesson(i, true);
+      return;
+    }
+  }
+  let p = raw.replace(/^\/+|\/+$/g,'').split(/[?#]/)[0].toLowerCase();
+  if(p==='') p = 'home';
+  if(ROUTES.indexOf(p)<0){
+    const anchorId = raw.replace(/^\/+|\/+$/g,'').split(/[?#]/)[0];
+    const anchor = anchorId && document.getElementById(anchorId);
+    const legal = document.getElementById('page-legal');
+    if(anchor && legal && legal.contains(anchor)){
+      const active = document.querySelector('.page.active');
+      if(!active || active.id!=='page-legal') showPage('legal', true);
+      try{ anchor.scrollIntoView({block:'start'}); }catch(e){}
+      return;
+    }
+    showPage('home', true);
+    if(location.hash){ try{ history.replaceState(null,'', location.pathname+location.search); }catch(e){} }
+    return;
+  }
+  if(p!==raw && !(p==='home' && raw==='')){
+    try{ history.replaceState(null,'', p==='home' ? location.pathname+location.search : '#'+p); }catch(e){}
+  }
   const active = document.querySelector('.page.active');
+  if(p==='lessons' && active && active.id==='page-lessons'){
+    if(typeof closeLessonDetail==='function') closeLessonDetail();
+    return;
+  }
   if(active && active.id==='page-'+p) return;
   showPage(p,true);
 }
@@ -6590,19 +6686,31 @@ renderLessons();
   var el = document.getElementById('tapeTrack');
   if(!el) return;
   var syms = ['AAPL','MSFT','GOOGL','AMZN','NVDA','META','TSLA','JPM','KO','V','UBER','AXP'];
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; });
+  }
   function item(s, c, dp){
+    if(typeof s !== 'string' || !/^[A-Z.]{1,6}$/.test(s)) return '';
+    c = Number(c); dp = Number(dp);
+    if(!isFinite(c) || !isFinite(dp)) return '';
     var up = dp >= 0;
-    return '<span class="tape-item"><span class="t-sym">'+s+'</span>'+
+    return '<span class="tape-item"><span class="t-sym">'+esc(s)+'</span>'+
       '<span class="t-price">$'+c.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span>'+
       '<span class="t-chg '+(up?'t-up':'t-down')+'">'+(up?'▲ +':'▼ ')+dp.toFixed(2)+'%</span></span>';
   }
+  // Cache is a JSON list of {s,c,dp}, never a stored HTML string.
+  function rowHtml(list){
+    if(!Array.isArray(list)) return '';
+    return list.map(function(x){ return x ? item(x.s, x.c, x.dp) : ''; }).join('');
+  }
   // 1) Show cached row instantly (from a previous session) — no waiting, no flicker
   try{
-    var cachedRow = localStorage.getItem('fp_tape_row');
     var cachedAt = parseInt(localStorage.getItem('fp_tape_at')||'0', 10);
-    if(cachedRow) el.innerHTML = cachedRow;
+    var cached = JSON.parse(localStorage.getItem('fp_tape_row') || 'null');
+    var cachedHtml = rowHtml(cached);
+    if(cachedHtml) el.innerHTML = cachedHtml + cachedHtml;
     // 2) Only actually hit the network if the cache is stale (>5 min old)
-    if(Date.now() - cachedAt < 300000) return;
+    if(cachedHtml && Date.now() - cachedAt < 300000) return;
   }catch(e){}
   // 3) Fetch through the cached fetchQ pipeline (respects rate limits) and throttle
   //    to 2 requests at a time so we never spam Finnhub with 12 parallel calls.
@@ -6611,9 +6719,10 @@ renderLessons();
     if(idx >= syms.length){
       var ok = results.filter(function(x){return x;});
       if(ok.length >= 4){
-        var row = ok.map(function(x){return item(x.s, x.c, x.dp);}).join('');
-        el.innerHTML = row + row;
-        try{ localStorage.setItem('fp_tape_row', row + row); localStorage.setItem('fp_tape_at', String(Date.now())); }catch(e){}
+        var data = ok.map(function(x){ return {s:x.s, c:x.c, dp:x.dp||0}; });
+        var row = rowHtml(data);
+        if(row) el.innerHTML = row + row;
+        try{ localStorage.setItem('fp_tape_row', JSON.stringify(data)); localStorage.setItem('fp_tape_at', String(Date.now())); }catch(e){}
       } else if(!el.innerHTML){
         el.parentElement.style.display = 'none';
       }
