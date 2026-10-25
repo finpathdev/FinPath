@@ -108,6 +108,9 @@ body > *{position:relative;z-index:1;}
   .filter-tabs,
   .moves-grid,
   .moves-toolbar,
+  .moves-trust,
+  .moves-terms,
+  .f13-lag,
   .moves-disclaimer,
   .portfolio-wrap,
   #how-it-works,
@@ -158,6 +161,9 @@ body > *{position:relative;z-index:1;}
   .filter-tabs,
   .moves-grid,
   .moves-toolbar,
+  .moves-trust,
+  .moves-terms,
+  .f13-lag,
   .moves-disclaimer,
   .portfolio-wrap,
   #how-it-works,
@@ -195,6 +201,9 @@ body > *{position:relative;z-index:1;}
   .filter-tabs,
   .moves-grid,
   .moves-toolbar,
+  .moves-trust,
+  .moves-terms,
+  .f13-lag,
   .moves-disclaimer,
   .portfolio-wrap,
   #how-it-works,
@@ -434,11 +443,58 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 .move-actions{display:flex;gap:8px;margin:0;padding:0 16px 16px;flex-wrap:wrap}
 .move-actions button{background:transparent;border:1px solid var(--line-strong);color:var(--mint);font:inherit;font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;cursor:pointer}
 .move-actions button:hover{background:rgba(34,197,94,.1)}
-.moves-help{max-width:1200px;margin:0 auto 22px;padding:0 5%}
+.moves-help{max-width:1200px;margin:0 auto 14px;padding:0 5%}
 .moves-help details{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 18px}
 .moves-help summary{cursor:pointer;font-weight:600;font-size:14px}
 .moves-help ul{margin:10px 0 0 18px;font-size:13px;color:var(--muted);line-height:1.7}
 .moves-fresh{font-size:12px;color:var(--gold);text-align:center;margin:0 auto 14px;max-width:760px}
+/* Filing-lag timeline — quarter-end, the 45-day wait, then a snapshot that can already be old. */
+.f13-lag{max-width:1200px;margin:0 auto 18px;padding:0 5%}
+.f13-lag-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px 14px}
+.f13-lag-kicker{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.f13-lag-title{font-family:var(--font-display);font-size:16px;font-weight:700;letter-spacing:-.3px;margin-bottom:14px;line-height:1.25}
+.f13-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px 0;list-style:none;margin:0;padding:0}
+.f13-step{position:relative;padding:0 14px 0 0}
+.f13-step:not(:last-child)::after{content:'';position:absolute;top:7px;left:16px;right:-2px;height:2px;background:linear-gradient(90deg,var(--green),rgba(245,182,11,.85));z-index:0}
+.f13-dot{width:16px;height:16px;border-radius:50%;background:var(--bg);border:2px solid var(--green);position:relative;z-index:1;margin-bottom:8px}
+.f13-step.is-now .f13-dot{background:var(--gold);border-color:var(--gold);box-shadow:0 0 0 4px var(--gold-soft)}
+.f13-step.is-stale .f13-dot{background:rgba(248,113,113,.18);border-color:var(--red)}
+.f13-step-when{font-size:11px;font-weight:700;color:var(--mint);letter-spacing:.02em}
+.f13-step-what{font-family:var(--font-display);font-size:13.5px;font-weight:700;letter-spacing:-.2px;margin:2px 0;line-height:1.25}
+.f13-step-why{font-size:12px;color:var(--muted);line-height:1.45}
+.f13-lag-foot{margin:12px 0 0;font-size:12.5px;color:var(--muted);line-height:1.55}
+.f13-lag-lite{margin:18px 0 0;padding:0}
+.f13-lag-lite .f13-lag-title{font-size:15px}
+.landing-trust{margin:12px 0 0;max-width:680px;font-size:13.5px;color:var(--muted);line-height:1.55}
+.investor-section .investor-grid{margin-top:22px}
+.moves-terms{max-width:1200px;margin:0 auto 16px;padding:0 5%;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.moves-terms-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);margin-right:2px}
+.term-chip{background:rgba(134,239,172,.05);border:1px solid var(--line);color:var(--mint);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit}
+.term-chip:hover{border-color:var(--green);background:rgba(34,197,94,.1)}
+button.term{background:none;border:none;border-bottom:1.5px dotted var(--green);padding:0;font:inherit;font-weight:700;color:var(--mint);cursor:help}
+.action-filters{align-items:center;margin-top:0;margin-bottom:14px}
+.af-label{flex-shrink:0;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);padding:0 4px 0 0}
+.action-filters .filter-tab{padding:7px 14px;font-size:12.5px}
+.action-filters .filter-tab.active{background:rgba(34,197,94,.12);color:var(--mint);border-color:rgba(34,197,94,.45);box-shadow:none}
+.action-filters .filter-tab[data-act="buy"].active{background:rgba(34,197,94,.16);color:#4ade80;border-color:rgba(74,222,128,.45)}
+.action-filters .filter-tab[data-act="add"].active{background:var(--gold-soft);color:var(--gold);border-color:rgba(245,182,11,.45)}
+.action-filters .filter-tab[data-act="reduce"].active{background:rgba(232,121,249,.12);color:#e879f9;border-color:rgba(232,121,249,.45)}
+.action-filters .filter-tab[data-act="sold"].active{background:rgba(248,113,113,.12);color:#f87171;border-color:rgba(248,113,113,.45)}
+.af-count{margin-left:5px;font-size:11px;font-weight:700;opacity:.8}
+.moves-trust{max-width:1200px;margin:0 auto 14px;padding:0 5%}
+.moves-trust-card{display:flex;gap:14px;align-items:flex-start;background:rgba(245,182,11,.08);border:1px solid rgba(245,182,11,.32);border-left:3px solid var(--gold);border-radius:14px;padding:14px 16px}
+.moves-trust-mark{flex-shrink:0;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--gold-soft);border:1px solid rgba(245,182,11,.28);font-size:16px}
+.moves-trust-title{font-family:var(--font-display);font-size:15px;font-weight:700;letter-spacing:-.2px;line-height:1.3}
+.moves-trust-body{font-size:13px;color:var(--muted);line-height:1.55;margin-top:3px}
+.moves-trust-points{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.moves-trust-points span{font-size:11.5px;font-weight:700;color:var(--text);background:rgba(6,12,7,.35);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+@media(max-width:720px){
+  .f13-steps{display:flex;flex-direction:column;gap:0}
+  .f13-step{padding:0 0 16px 26px}
+  .f13-step:not(:last-child)::after{top:16px;left:7px;right:auto;bottom:0;width:2px;height:auto;background:linear-gradient(180deg,var(--green),rgba(245,182,11,.85))}
+  .f13-dot{position:absolute;left:0;top:1px;margin:0}
+  .moves-trust-card{flex-direction:column;gap:8px}
+}
 .p-val{font-size:21px;font-weight:700;font-family:var(--font-display);letter-spacing:-.5px}
 .stocks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-bottom:26px}
 .stock-row{background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:var(--radius);padding:17px;display:flex;align-items:center;gap:13px;cursor:pointer;transition:all .18s}
@@ -894,6 +950,15 @@ body.light .period-tab.active{
   color:#ffffff !important;
   border-color:transparent !important;
 }
+body.light .action-filters .filter-tab.active{background:rgba(21,128,61,.12) !important;color:#15803d !important;border-color:rgba(21,128,61,.45) !important;box-shadow:none !important}
+body.light .action-filters .filter-tab[data-act="buy"].active{background:rgba(21,128,61,.14) !important;color:#15803d !important;border-color:rgba(21,128,61,.45) !important}
+body.light .action-filters .filter-tab[data-act="add"].active{background:rgba(180,120,7,.14) !important;color:#92600a !important;border-color:rgba(180,120,7,.45) !important}
+body.light .action-filters .filter-tab[data-act="reduce"].active{background:rgba(162,28,175,.1) !important;color:#a21caf !important;border-color:rgba(162,28,175,.4) !important}
+body.light .action-filters .filter-tab[data-act="sold"].active{background:rgba(220,38,38,.1) !important;color:#b91c1c !important;border-color:rgba(220,38,38,.4) !important}
+body.light .term-chip,body.light button.term{color:#15803d}
+body.light .moves-trust-points span{background:rgba(20,83,45,.06)}
+body.light .f13-dot{background:#fff}
+body.light .f13-step.is-stale .f13-dot{background:rgba(220,38,38,.12)}
 
 /* Progress bars need a visible track */
 body.light .progress-bar,
@@ -1055,7 +1120,7 @@ body{padding-left:env(safe-area-inset-left, 0px);padding-right:env(safe-area-ins
 .mobile-menu a{min-height:44px;display:flex;align-items:center}
 @media (max-width:640px){
   input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px!important}
-  .period-tab,.chip,.filter-tab,.mode-tab{min-height:40px}
+  .period-tab,.chip,.filter-tab,.mode-tab,.term-chip{min-height:40px}
   .theme-btn{width:42px;height:42px}
   .toast-stack{left:12px;right:12px;max-width:none}
   .modal-overlay{padding-top:calc(90px + env(safe-area-inset-top, 0px))}
@@ -1863,6 +1928,8 @@ body.light .gs-item{background:#fff}
       <div class="section-tag">Gold feature preview</div>
       <h2 class="section-title">What legendary investors just reported</h2>
       <p class="section-sub" id="landing13fNote">Q2 2026 13F filings — positions as of June 30, 2026, filed Aug 14, 2026. Next filings due by Nov 16, 2026.</p>
+      <div id="landing13fLag" class="f13-lag f13-lag-lite"></div>
+      <p class="landing-trust">Research the filing. Do not copy the trade — a 13F is delayed, and it only lists long U.S. stocks.</p>
       <div class="investor-grid">
         <div class="investor-card"><div class="inv-avatar" aria-hidden="true">WB</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Warren Buffett</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Alphabet Inc (GOOGL)</div><span class="inv-badge badge-add">ADD 83%</span><div class="inv-size"><strong>$37.8B</strong><span>12.62% of portfolio</span></div></div></div>
         <div class="investor-card"><div class="inv-avatar" aria-hidden="true">BA</div><div><div style="font-size:15px;font-weight:700;margin-bottom:2px">Bill Ackman</div><div style="font-size:13px;color:var(--muted);margin-bottom:8px">Visa Inc (V)</div><span class="inv-badge badge-buy">BUY</span><div class="inv-size"><strong>$1.12B</strong><span>5.76% of portfolio</span></div></div></div>
@@ -3315,11 +3382,55 @@ const STRIPE_PRICE = 'price_1TjBU0RvClN8iCWy4olxCqfL'; // Replace with your pric
 // ── HELPERS ──
 // 13F freshness — update these when MOVES is refreshed to a new quarter.
 const F13 = {quarter:'Q2 2026', asOf:'June 30, 2026', filed:'Aug 13–14, 2026', nextQuarter:'Q3 2026', nextDue:'2026-11-16'};
-function f13FreshnessNote(){
+function f13DueInfo(){
   const due = new Date(F13.nextDue + 'T23:59:59-05:00');
-  const days = Math.ceil((due - Date.now())/86400000);
-  if(days > 0) return 'Latest available data: ' + F13.quarter + ' filings. ' + F13.nextQuarter + ' filings are due by ' + due.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ' (in ' + days + ' day' + (days===1?'':'s') + ').';
+  return {due:due, label:due.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}), overdue:Date.now()>due.getTime()};
+}
+function f13FreshnessNote(){
+  const d = f13DueInfo();
+  const days = Math.ceil((d.due - Date.now())/86400000);
+  if(days > 0) return 'Latest available data: ' + F13.quarter + ' filings. ' + F13.nextQuarter + ' filings are due by ' + d.label + ' (in ' + days + ' day' + (days===1?'':'s') + ').';
   return 'Heads up: ' + F13.nextQuarter + ' 13F filings are now due/out. The moves below are still from ' + F13.quarter + ' until FinPath reviews and adds the new filings.';
+}
+function f13SourceLine(){
+  const n = INVESTORS.length;
+  return 'Source: SEC Form 13F-HR filings for ' + n + ' manager' + (n===1?'':'s') + ', quarter ended ' + F13.asOf + ' (filed ' + F13.filed + '). Holds stay hidden until you turn them on.';
+}
+// Visual quarter-end → filing window → what you see → already stale. Dates come from F13 only.
+function f13TimelineHtml(compact){
+  const d = f13DueInfo();
+  const steps = [
+    {when:F13.asOf, title:'Quarter ends', body:compact ? 'Share counts are frozen on this day.' : 'Managers list the U.S. stocks they owned on this day. Nothing after it is in the filing.'},
+    {when:'Up to 45 days', title:'They file', body:compact ? ('These ' + F13.quarter + ' reports were filed ' + F13.filed + '.') : ('Form 13F is due within 45 days. The ' + F13.quarter + ' reports here were filed ' + F13.filed + '.')},
+    {when:'What you see', title:'A filing, not a live trade', body:compact ? 'FinPath shows that report.' : 'Each card is that SEC report. It is not a live feed of what they are buying today.', now:true},
+    {when:'Often already', title:'It may be stale', body:compact ? 'They can trade again before you read it.' : 'By the time you read a card, the investor may have bought or sold more.', stale:true}
+  ];
+  const foot = d.overdue
+    ? (F13.nextQuarter + ' filings were due ' + d.label + '. This page still shows ' + F13.quarter + ' until those filings are reviewed. Nothing here is filled in early.')
+    : (F13.nextQuarter + ' ended after this snapshot. Those filings are not due until ' + d.label + ', so this page still shows ' + F13.quarter + ' on purpose.');
+  return '<div class="f13-lag-card">'
+    + '<div class="f13-lag-kicker">Filing lag</div>'
+    + '<div class="f13-lag-title">' + escapeHtml(compact ? 'What you see is already a few weeks old' : 'Why these moves are not live trades') + '</div>'
+    + '<ol class="f13-steps" aria-label="How a 13F filing reaches you">'
+    + steps.map(function(s){
+        return '<li class="f13-step' + (s.now?' is-now':'') + (s.stale?' is-stale':'') + '">'
+          + '<div class="f13-dot" aria-hidden="true"></div>'
+          + '<div class="f13-step-when">' + escapeHtml(s.when) + '</div>'
+          + '<div class="f13-step-what">' + escapeHtml(s.title) + '</div>'
+          + '<div class="f13-step-why">' + escapeHtml(s.body) + '</div>'
+        + '</li>';
+      }).join('')
+    + '</ol><p class="f13-lag-foot">' + escapeHtml(foot) + '</p></div>';
+}
+function renderLanding13F(){
+  const lag = document.getElementById('landing13fLag');
+  if(lag) lag.innerHTML = f13TimelineHtml(true);
+  try{
+    if(f13DueInfo().overdue){
+      const n = document.getElementById('landing13fNote');
+      if(n) n.textContent = F13.quarter + ' 13F filings (positions as of ' + F13.asOf + '). Newer ' + F13.nextQuarter + ' filings are now due — FinPath will add them after review.';
+    }
+  }catch(e){}
 }
 function getActionBadge(a){
   a=String(a||'');
@@ -3360,6 +3471,7 @@ function parseMoveAmount(amount){
 }
 
 let movesFilter='all';
+let movesAction='all';
 let showMoveHolds=false;
 
 function toggleMenu(force){
@@ -3374,7 +3486,7 @@ document.addEventListener('click', function(e){
   const m = document.getElementById('mobileMenu');
   if(m && m.classList.contains('open') && !m.contains(e.target) && !e.target.closest('.hamburger')) toggleMenu(false);
 });
-document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ const m = document.getElementById('mobileMenu'); if(m && m.classList.contains('open')) toggleMenu(false); } });
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ if(typeof hideTerm==='function') hideTerm(); const m = document.getElementById('mobileMenu'); if(m && m.classList.contains('open')) toggleMenu(false); } });
 
 const ROUTES=['home','portfolio','lessons','gold','markets','legal'];
 function showPage(p,fromHash){
@@ -3735,6 +3847,8 @@ function closeLessonDetail(){
 function renderGold(){
   if(!IS_GOLD){
     document.getElementById('goldContent').innerHTML=`
+      <div class="f13-lag">${f13TimelineHtml(true)}</div>
+      <p class="landing-trust" style="margin:0 auto 18px;text-align:center">Research the filing. Do not copy the trade — a 13F is delayed, and it only lists long U.S. stocks.</p>
       <div class="gold-gate">
         <div style="font-size:36px;margin-bottom:12px">👑</div>
         <h2 style="font-size:24px;font-weight:800;margin-bottom:8px">Upgrade to Gold</h2>
@@ -3743,30 +3857,61 @@ function renderGold(){
       </div>`;
     return;
   }
+  movesAction='all';
   document.getElementById('goldContent').innerHTML=`
     <p class="moves-fresh">${escapeHtml(f13FreshnessNote())}</p>
+    <div class="f13-lag">${f13TimelineHtml(false)}</div>
+    <div class="moves-terms" aria-label="13F glossary">
+      <span class="moves-terms-label">Tap a term</span>
+      ${termChip('13F','What is a 13F?')}${termChip('Buy')}${termChip('Add')}${termChip('Reduce')}${termChip('Sold out')}${termChip('% of portfolio')}${termChip('Put / call')}${termChip('Filing lag')}
+    </div>
     <div class="moves-help"><details>
       <summary>New to this? How to read these investor moves</summary>
       <ul>
-        <li><b>13F filing</b> — a quarterly report big U.S. investment managers must file with the SEC, listing the U.S. stocks they held on the last day of the quarter.</li>
-        <li><b>BUY / NEW</b> — a position they didn’t own last quarter. <b>ADD x%</b> — they increased their share count by that much.</li>
-        <li><b>REDUCE x%</b> — they sold some shares. <b>SOLD OUT</b> — they sold the whole position. <b>HOLD</b> — share count unchanged (value can still move with the price).</li>
-        <li><b>Position size</b> — the dollar value, shown apart from the percent of that investor’s 13F portfolio. A large “Add %” can still be a small slice of the portfolio.</li>
-        <li><b>Holds</b> are positions whose share count did not change. They stay hidden until you turn on Show holds.</li>
-        <li><b>Why it’s delayed</b> — filings arrive up to 45 days after quarter-end, so treat these as ideas to research, not live trades to copy. They exclude short positions, most non-U.S. stocks, bonds and cash.</li>
+        <li>${termBtn('13F','13F filing')} — a quarterly SEC report. It lists the U.S. stocks a large manager held on the last day of the quarter.</li>
+        <li>${termBtn('Buy','Buy')} — a stock they did not report last quarter. ${termBtn('Add','Add x%')} — they increased the share count by that much. The add percent is not the portfolio weight.</li>
+        <li>${termBtn('Reduce','Reduce x%')} — they sold some shares. ${termBtn('Sold out','Sold out')} — they sold the whole position. <b>Hold</b> — share count unchanged (the dollar value can still move with the price).</li>
+        <li>${termBtn('% of portfolio','% of portfolio')} — position value divided by that investor’s long U.S. stocks in this 13F. A large “Add %” can still be a small slice.</li>
+        <li><b>Holds</b> stay hidden until you turn on Show holds. The Buy, Add, Reduce and Sold out filters combine with the investor tabs. Puts and spin-offs stay under All actions.</li>
+        <li>${termBtn('Put / call','Put / call')} are options, not shares. ${termBtn('Filing lag','Filing lag')} is the wait of up to 45 days. Shorts, most non-U.S. stocks, bonds and cash are not in a 13F. Study the idea. Do not copy the trade.</li>
       </ul>
     </details></div>
-    <div class="filter-tabs" id="filterTabs">
+    <div class="filter-tabs" id="filterTabs" role="group" aria-label="Filter by investor">
       <button class="filter-tab active" onclick="filterMoves('all',this)">All investors</button>
       ${INVESTORS.map((n,i)=>`<button class="filter-tab" onclick="filterMoves(INVESTORS[${i}],this)">${escapeHtml(n)}</button>`).join('')}
+    </div>
+    <div class="filter-tabs action-filters" id="actionFilters" role="group" aria-label="Filter by action">
+      <span class="af-label">Action</span>
+      ${actionFilterButtons()}
     </div>
     <div class="moves-toolbar">
       <p class="moves-summary" id="movesSummary" aria-live="polite"></p>
       <button type="button" class="moves-hold-toggle" id="holdsToggle" aria-pressed="false" onclick="toggleMoveHolds()">Show holds</button>
     </div>
+    <div class="moves-trust"><div class="moves-trust-card" role="note">
+      <div class="moves-trust-mark" aria-hidden="true">🔎</div>
+      <div>
+        <div class="moves-trust-title">Research these moves. Do not copy them.</div>
+        <p class="moves-trust-body">A 13F is a late list of long U.S. stocks. Use it to study what a famous investor reported, then decide for yourself. It is not a signal to buy what they bought.</p>
+        <div class="moves-trust-points"><span>Delayed up to 45 days</span><span>Long U.S. stocks only</span><span>Not a buy signal</span></div>
+      </div>
+    </div></div>
     <div class="moves-grid" id="movesGrid"></div>
-    <p class="moves-disclaimer">Source: SEC Form 13F-HR filings for nine managers for the quarter ended June 30, 2026 (filed Aug 13–14, 2026). 13F data is delayed up to 45 days after quarter-end and shows long U.S. positions only — these investors may have already changed these positions. Educational use only, not investment advice. Holds are unchanged positions, hidden until you turn them on.</p>`;
+    <p class="moves-disclaimer">${escapeHtml(f13SourceLine())}</p>`;
   renderMoves('all');
+}
+
+function termBtn(term, label){
+  return '<button type="button" class="term" data-term="' + escapeHtml(term) + '" onclick="showTerm(event, this.getAttribute(\'data-term\'))">' + escapeHtml(label || term) + '</button>';
+}
+function termChip(term, label){
+  return '<button type="button" class="term-chip" data-term="' + escapeHtml(term) + '" onclick="showTerm(event, this.getAttribute(\'data-term\'))">' + escapeHtml(label || term) + '</button>';
+}
+function actionFilterButtons(){
+  return [['all','All actions'],['buy','Buy'],['add','Add'],['reduce','Reduce'],['sold','Sold out']].map(function(it){
+    const on = movesAction===it[0];
+    return '<button type="button" class="filter-tab' + (on?' active':'') + '" data-act="' + it[0] + '" aria-pressed="' + (on?'true':'false') + '" onclick="filterMoveAction(\'' + it[0] + '\')">' + it[1] + '</button>';
+  }).join('');
 }
 
 function toggleMoveCard(el){
@@ -3782,22 +3927,54 @@ function trackFromMove(t, ev){
   const i = document.getElementById('searchInput');
   if(i){ i.value = t; handleSearch(t); }
 }
+function updateActionCounts(byInvestor){
+  const counts={all:0,buy:0,add:0,reduce:0,sold:0};
+  byInvestor.forEach(function(m){
+    if(isHoldMove(m)) return;
+    counts.all++;
+    const k=moveActionKind(m.action);
+    if(Object.prototype.hasOwnProperty.call(counts,k)) counts[k]++;
+  });
+  document.querySelectorAll('#actionFilters .filter-tab').forEach(function(b){
+    const k=b.getAttribute('data-act');
+    let n=b.querySelector('.af-count');
+    if(!n){ n=document.createElement('span'); n.className='af-count'; b.appendChild(n); }
+    n.textContent=String(counts[k]||0);
+  });
+}
+function syncActionTabs(){
+  document.querySelectorAll('#actionFilters .filter-tab').forEach(function(b){
+    const on=b.getAttribute('data-act')===movesAction;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', on?'true':'false');
+  });
+}
 function renderMoves(f){
   if(typeof f==='string') movesFilter=f;
   const grid=document.getElementById('movesGrid');
   if(!grid) return;
-  const pool=movesFilter==='all'?MOVES:MOVES.filter(function(m){ return m.investor===movesFilter; });
+  const byInvestor=movesFilter==='all'?MOVES:MOVES.filter(function(m){ return m.investor===movesFilter; });
+  updateActionCounts(byInvestor);
+  syncActionTabs();
+  const pool=movesAction==='all'?byInvestor:byInvestor.filter(function(m){ return moveActionKind(m.action)===movesAction; });
   const holdCount=pool.filter(isHoldMove).length;
   const shown=showMoveHolds?pool:pool.filter(function(m){ return !isHoldMove(m); });
   const summary=document.getElementById('movesSummary');
   const toggle=document.getElementById('holdsToggle');
   if(summary){
-    const moveWord=shown.length===1?'move':'moves';
-    const filingWord=shown.length===1?'filing':'filings';
-    const holdWord=holdCount===1?'hold':'holds';
-    summary.textContent=showMoveHolds
-      ? (shown.length+' '+filingWord+(holdCount?(' · including '+holdCount+' '+holdWord):''))
-      : (shown.length+' '+moveWord+(holdCount?(' · '+holdCount+' '+holdWord+' hidden'):''));
+    const who=movesFilter==='all'?'':(' for '+movesFilter);
+    if(movesAction==='all'){
+      const moveWord=shown.length===1?'move':'moves';
+      const filingWord=shown.length===1?'filing':'filings';
+      const holdWord=holdCount===1?'hold':'holds';
+      summary.textContent=showMoveHolds
+        ? (shown.length+' '+filingWord+who+(holdCount?(' · including '+holdCount+' '+holdWord):''))
+        : (shown.length+' '+moveWord+who+(holdCount?(' · '+holdCount+' '+holdWord+' hidden'):''));
+    } else {
+      const labels={buy:'buy',add:'add',reduce:'reduce',sold:'sold-out'};
+      const word=labels[movesAction]||'matching';
+      summary.textContent=shown.length+' '+(shown.length===1?word+' move':word+' moves')+who;
+    }
   }
   if(toggle){
     toggle.disabled=holdCount===0 && !showMoveHolds;
@@ -3811,7 +3988,12 @@ function renderMoves(f){
     }
   }
   if(!shown.length){
-    grid.innerHTML='<div class="empty" style="grid-column:1/-1">No moves match this filter.</div>';
+    const labels={all:'moves',buy:'Buy moves',add:'Add moves',reduce:'Reduce moves',sold:'Sold out moves'};
+    const who=movesFilter==='all'?'this view':movesFilter;
+    let msg='No '+(labels[movesAction]||'moves')+' for '+who+'.';
+    if(movesAction!=='all') msg+=' Puts and spin-offs stay under All actions.';
+    else if(!showMoveHolds && holdCount) msg+=' Turn on Show holds to see unchanged positions.';
+    grid.innerHTML='<div class="empty" style="grid-column:1/-1">'+escapeHtml(msg)+'</div>';
     return;
   }
   grid.innerHTML=shown.map(function(m){
@@ -3844,6 +4026,10 @@ function filterMoves(f,btn){
   document.querySelectorAll('#filterTabs .filter-tab').forEach(function(b){ b.classList.remove('active'); });
   if(btn) btn.classList.add('active');
   renderMoves(f);
+}
+function filterMoveAction(a){
+  movesAction=a;
+  renderMoves(movesFilter);
 }
 
 function toggleMoveHolds(){
@@ -5589,8 +5775,23 @@ const GLOSSARY = {
   'bond':'A loan you make to a government or company. They pay you interest and return your money on a set date. Usually steadier than stocks, with lower long-run returns.',
   'credit score':'A number (usually 300–850 in the U.S.) lenders use to judge how likely you are to repay. Paying on time and keeping card balances low matter most.',
   'net worth':'What you own minus what you owe.',
-  '13F':'A quarterly report big U.S. investment managers file with the SEC listing the U.S. stocks they held at quarter-end. It arrives up to 45 days late.'
+  '13F':'A quarterly SEC report. Large U.S. investment managers list the U.S. stocks they owned on the last day of the quarter. It is filed up to 45 days later, and it leaves out shorts, most foreign stocks, bonds and cash.'
 };
+// Moves-page terms. Kept out of GLOSSARY so words like Buy are not underlined inside every lesson.
+const F13_TERMS = {
+  'Buy':'A new stock they did not report owning last quarter. A card that says New (a spin-off, for example) is not always a cash purchase. Those stay under All actions.',
+  'Add':'They already owned the stock and bought more shares. The percent, such as Add 83%, is how much the share count grew. It is not the percent of the portfolio.',
+  'Reduce':'They sold some shares and still hold the rest. Selling a little is not the same as giving up on the company.',
+  'Sold out':'They sold the whole position. The card shows $0 and, when we know it, what the stake was worth the quarter before.',
+  '% of portfolio':'The reported value of this position divided by that investor\u2019s long U.S. stocks in the same 13F. Option rows are left out of the total. It is not a share of their cash, house, or whole fortune.',
+  'Put / call':'Options, not shares. A put pays off if the stock falls (a bet against it, or a hedge). A call pays off if it rises. The dollar figure is the value of the shares behind the contract, not the premium they paid.',
+  'Filing lag':'The gap between quarter-end and the day the 13F is public — up to 45 days. By the time you read a move, the investor may already have changed it.'
+};
+function lookupTerm(term){
+  if(term && Object.prototype.hasOwnProperty.call(GLOSSARY, term)) return GLOSSARY[term];
+  if(term && Object.prototype.hasOwnProperty.call(F13_TERMS, term)) return F13_TERMS[term];
+  return '';
+}
 // Single pass over the plain-text lesson, so a term can never match inside markup inserted for another term.
 // Only the first mention of each term is underlined.
 function glossaryWrap(text){
@@ -5605,16 +5806,25 @@ function glossaryWrap(text){
   });
 }
 function showTerm(ev, term){
-  ev.stopPropagation();
+  if(ev && ev.stopPropagation) ev.stopPropagation();
   hideTerm();
+  const def = lookupTerm(term);
+  if(!def) return;
   const pop = document.createElement('div');
   pop.className = 'term-pop'; pop.id = 'termPop';
-  if(!GLOSSARY[term]) return;
-  pop.innerHTML = '<b style="color:var(--mint)">' + escapeHtml(term) + '</b><br>' + escapeHtml(GLOSSARY[term]);
+  pop.innerHTML = '<b style="color:var(--mint)">' + escapeHtml(term) + '</b><br>' + escapeHtml(def);
   document.body.appendChild(pop);
-  const x = Math.min(ev.clientX, window.innerWidth - 300);
-  const y = Math.min(ev.clientY + 14, window.innerHeight - 140);
-  pop.style.left = Math.max(10,x) + 'px'; pop.style.top = y + 'px';
+  let x = 24, y = 80;
+  const anchor = ev && (ev.currentTarget || ev.target);
+  const fromPointer = ev && typeof ev.clientX === 'number' && (ev.clientX > 1 || ev.clientY > 1);
+  if(!fromPointer && anchor && anchor.getBoundingClientRect){
+    const r = anchor.getBoundingClientRect();
+    x = r.left; y = r.bottom + 8;
+  } else if(fromPointer){
+    x = ev.clientX; y = ev.clientY + 14;
+  }
+  pop.style.left = Math.max(10, Math.min(x, window.innerWidth - 300)) + 'px';
+  pop.style.top = Math.max(10, Math.min(y, window.innerHeight - 160)) + 'px';
   setTimeout(function(){ document.addEventListener('click', hideTerm, {once:true}); }, 10);
 }
 function hideTerm(){ const p = document.getElementById('termPop'); if(p) p.remove(); }
@@ -6371,10 +6581,9 @@ function initMarkets(){
   const gsel = document.getElementById('scrGuru');
   if(gsel) INVESTORS.forEach(function(n){ const o = document.createElement('option'); o.textContent = n; gsel.appendChild(o); });
 }
-// Keep the landing-page 13F note honest once the next filing deadline passes.
-document.addEventListener('DOMContentLoaded', function(){
-  try{ if(Date.now() > new Date(F13.nextDue + 'T23:59:59-05:00').getTime()){ const n = document.getElementById('landing13fNote'); if(n) n.textContent = F13.quarter + ' 13F filings (positions as of ' + F13.asOf + '). Newer ' + F13.nextQuarter + ' filings are now due — FinPath will add them after review.'; } }catch(e){}
-});
+// Landing filing-lag timeline. The note switches once the next deadline passes; the cards stay on the reviewed quarter.
+if(document.getElementById('landing13fLag')) renderLanding13F();
+document.addEventListener('DOMContentLoaded', renderLanding13F);
 let _pulseGen = 0;
 function _pulseHasPrice(q){ return !!(q && typeof q.c === 'number' && isFinite(q.c) && q.c > 0); }
 async function renderPulse(){
