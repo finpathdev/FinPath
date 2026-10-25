@@ -174,3 +174,37 @@ Market data only. No Stripe, 13F, lesson, or pricing edits. Rebased onto the 13F
 **Deferred**
 - Finnhub key is still client-side (proxy out of scope). The 13F refresh waits until after Nov 16, 2026. The live Stripe link is still deferred.
 - The cached ticker-tape row can show prices up to 5 minutes old with no "last known" flag during an outage (minor).
+
+## 2026-10-25 — Beginner learning pass (finpath-v11)
+1. **Beginner path:** a "New to investing? Start here" card at the top of Lessons. It's a fixed order of 6 existing free lessons: stock market basics → compound interest → emergency fund → budgeting → inflation → money psychology. It shows a done count, ✓ marks and a "Continue: …" button, and hides while you search. No new lesson content was written.
+2. **Lesson UX:**
+   - Each lesson card shows an estimated read time (about 200 words per minute).
+   - Lesson pages show "Lesson N of 34 · ~X min read · Free/Gold" at the top and Previous/Next buttons at the bottom. Free users skip past Gold lessons. Next turns primary once the lesson is marked complete.
+   - Closing a lesson refreshes the list, so checkmarks and the path update.
+   - Lesson cards and glossary terms now open with the keyboard (role=button + tabindex + a global Enter/Space handler).
+3. **Glossary:**
+   - 15 beginner terms added (stock, ticker, portfolio, brokerage account, expense ratio, dollar cost averaging, Roth IRA, 401(k), emergency fund, inflation, bond, credit score, net worth, 13F), for 28 in total.
+   - A browsable "📖 Glossary" section sits under the lesson grid.
+   - `glossaryWrap` now makes a single pass over the text, so one term can no longer match inside the markup added for another. Popups escape their text.
+4. **Onboarding:**
+   - New 4th card, "Good to know": not advice, notes are rule-based, 13F filings are weeks old, paper trading is virtual.
+   - The last button changed from "Browse lessons" to "Start the beginner path", which opens path lesson 1.
+5. **Paper trading and demo clarity:**
+   - A "Practice mode" note on Paper Trading: virtual money, no brokerage, instant fills at the latest quote with no fees, taxes or slippage.
+   - The demo portfolio now shows a toast explaining the holdings are samples "bought" at today's price and are not a recommendation.
+6. **Honesty: removed the remaining "AI" overclaims.** The app has no LLM or AI API calls. Everything is rule-based, so user-facing labels changed:
+   - "AI Suggestions" → "Stock Suggestions (rule-based)"
+   - "AI analyzer" → "Portfolio check-up"
+   - "AI Alerts" → "Holding alerts"
+   - "AI insight" → "Quick take (general info, not advice)"
+   - "AI SUGGESTION" → "RULE-BASED SUGGESTION"
+   - The landing, pricing and upgrade copy dropped "personalised AI".
+   - Legal §3 is renamed "Automated ("AI") Features Disclaimer". It now says no LLM generates the content and notes the old feature name. The liability bullets are unchanged.
+- sw.js CACHE → finpath-v11.
+- Verified: `node --check` on all 3 inline scripts and on sw.js. Finnhub AAPL → 200. Headless Chrome on a temp copy confirmed:
+  - The path card renders, then shows "1 of 6 done" after completing a lesson.
+  - 28 glossary entries; no nested terms; Enter on a term opens its popup.
+  - Lesson meta and the Previous/Next nav are correct; the practice note shows; the new labels appear.
+  - No horizontal overflow at the narrowest headless width (500px) on home, lessons, a lesson page and portfolio. No page errors.
+
+**Deferred:** real-device check at 320–375px (headless Chrome can't go below 500px). Per-lesson glossary links in the Gold lesson content. The 13F refresh waits until after Nov 16, 2026. Stripe live link and Finnhub proxy are still out of scope.

@@ -976,6 +976,26 @@ body.light .scr-filters input,body.light .scr-filters select{background:#fff}
 .quiz-opt.wrong{background:rgba(248,113,113,.14);border-color:var(--red)}
 /* ── GLOSSARY TERMS ── */
 .term{border-bottom:1.5px dotted var(--green);cursor:help;color:var(--mint)}
+.learn-path{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 20px;margin:0 0 22px}
+.learn-path h3{font-size:16px;font-weight:700;font-family:var(--font-display);margin-bottom:4px}
+.lp-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+.lp-steps{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.lp-step{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(134,239,172,.04);color:var(--text);cursor:pointer;font-family:inherit;max-width:100%;text-align:left}
+.lp-step:hover{border-color:var(--green)}
+.lp-step .n{flex-shrink:0;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:rgba(134,239,172,.12);color:var(--mint)}
+.lp-step.done .n{background:var(--green);color:#04120a}
+.lp-step.next{border-color:var(--green);box-shadow:0 0 0 1px var(--green) inset}
+.lesson-time{display:inline-block;margin-left:8px;font-size:11px;color:var(--muted)}
+.lesson-meta{font-size:13px;color:var(--muted);margin:-12px 0 22px}
+.lesson-nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:28px;padding-top:20px;border-top:1px solid var(--line)}
+.lesson-nav button{max-width:100%;white-space:normal;text-align:left}
+.glossary-box{margin-top:30px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:16px 20px}
+.glossary-box summary{cursor:pointer;font-weight:700;font-size:15px}
+.glossary-box dl{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px 22px}
+.glossary-box dt{font-weight:700;color:var(--mint);font-size:13.5px}
+.glossary-box dd{margin:2px 0 0;font-size:13px;color:var(--muted);line-height:1.55}
+.practice-note{font-size:12.5px;line-height:1.6;color:var(--muted);background:rgba(245,182,11,.06);border:1px solid rgba(245,182,11,.25);border-radius:12px;padding:10px 14px;margin:0 0 20px}
+@media (max-width:600px){.lesson-nav button{width:100%}.lp-step{font-size:12px}}
 .term-pop{position:fixed;z-index:950;max-width:280px;background:var(--panel-solid);border:1px solid var(--line-strong);border-radius:14px;padding:14px 16px;font-size:13px;line-height:1.6;box-shadow:0 16px 48px rgba(0,0,0,.55);color:var(--text)}
 /* ── CALCULATORS ── */
 .calc-box{background:linear-gradient(150deg,rgba(34,197,94,.09),var(--panel) 55%);border:1px solid var(--line-strong);border-radius:var(--radius-lg);padding:24px;margin-top:30px}
@@ -1244,7 +1264,7 @@ body.light .gs-item{background:#fff}
     <div class="hero-inner">
       <div class="hero-tag">🚀 Just launched · Early access · Built by a high schooler</div>
       <h1>Money doesn't come with a manual.<br><span>Now it does.</span></h1>
-      <p>34 no-fluff lessons, the latest SEC 13F trades from 6 legendary investors like Buffett, Ackman and Druckenmiller, and a live portfolio tracker with AI buy/hold/sell suggestions — built for people starting from zero.</p>
+      <p>34 no-fluff lessons, the latest SEC 13F trades from 6 legendary investors like Buffett, Ackman and Druckenmiller, and a live portfolio tracker with rule-based buy/hold/sell notes — built for people starting from zero.</p>
       <div class="hero-btns">
         <button class="btn-primary" onclick="handleAuthClick()">Get Started Free</button>
         <button class="btn-secondary" onclick="startDemoMode()">👀 Try the Demo — no sign-in</button>
@@ -1745,7 +1765,7 @@ body.light .gs-item{background:#fff}
       <div class="feature-card" onclick="showPage('lessons')"><div class="feature-icon">📚</div><div class="feature-title">34 Expert Lessons</div><div class="feature-desc">Everything schools skipped — from credit scores to compound interest — explained in plain English.</div></div>
       <div class="feature-card" onclick="showPage('gold')"><div class="feature-icon">👑</div><div class="feature-title">Investor Moves — Gold</div><div class="feature-desc">See what 6 legendary investors (Buffett, Ackman, Tepper, Druckenmiller, Li Lu and Klarman) bought and sold in their latest 13F filings — and why.</div></div>
       <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">📈</div><div class="feature-title">Live Portfolio Tracker</div><div class="feature-desc">Track your stocks with live prices. See total profit, daily gains, and hourly breakdowns of every position.</div></div>
-      <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">🤖</div><div class="feature-title">AI Suggestions — Gold</div><div class="feature-desc">Buy, hold and sell suggestions for the stocks you own, with plain-English reasoning. Rule-based and educational — not personal advice.</div></div>
+      <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">🧭</div><div class="feature-title">Stock Suggestions — Gold</div><div class="feature-desc">Buy, hold and sell suggestions for the stocks you own, with plain-English reasoning. Rule-based and educational — not personal advice.</div></div>
     </div>
   </section>
   <section class="investor-section">
@@ -1784,7 +1804,7 @@ body.light .gs-item{background:#fff}
           <li>Basic profit and loss tracking</li>
           <li class="no">Investor Moves (6 legendary investors)</li>
           <li class="no">14 Gold lessons</li>
-          <li class="no">AI buy/hold/sell suggestions</li>
+          <li class="no">Buy/hold/sell suggestions (rule-based)</li>
           <li class="no">Hourly portfolio breakdown</li>
         </ul>
         <button class="price-btn outline" onclick="handleAuthClick()">Get started free</button>
@@ -1832,7 +1852,9 @@ body.light .gs-item{background:#fff}
       <div id="certCTA"></div>
       <input id="lessonSearch" class="modal-input" style="max-width:420px;margin-top:20px;margin-bottom:0" placeholder="Search lessons… (try “credit” or “Buffett”)" oninput="filterLessons(this.value)" aria-label="Search lessons">
     </div>
+    <div id="learnPath"></div>
     <div class="lessons-grid" id="lessonsGrid"></div>
+    <details class="glossary-box" id="glossaryBox"><summary>📖 Glossary — plain-English money terms</summary><dl id="glossaryList"></dl></details>
   </div>
   <div class="lesson-detail" id="lessonDetail">
     <button class="back-btn" onclick="closeLessonDetail()">← Back to lessons</button>
@@ -1864,13 +1886,13 @@ body.light .gs-item{background:#fff}
       <button class="chip" id="chipAchv" onclick="document.getElementById('achvGrid').scrollIntoView({behavior:'smooth'})">🏅 0 achievements</button>
       <button class="chip" id="chipStreak" onclick="document.getElementById('achvGrid').scrollIntoView({behavior:'smooth'})">🔥 1-day streak</button>
       <button class="chip" onclick="sharePortfolio()">🔗 Share portfolio</button>
-      <button class="chip" onclick="setMode('live');analyzePortfolio();document.getElementById('aiRecs').scrollIntoView({behavior:'smooth'})">🧠 AI analyzer</button>
+      <button class="chip" onclick="setMode('live');analyzePortfolio();document.getElementById('aiRecs').scrollIntoView({behavior:'smooth'})">🧠 Portfolio check-up</button>
       <button class="chip" onclick="exportCSV()">📥 Export CSV</button>
     </div>
     <div class="mode-tabs" role="tablist"><button class="mode-tab active" id="tabLive" role="tab" onclick="setMode('live')">My portfolio</button><button class="mode-tab" id="tabPaper" role="tab" onclick="setMode('paper')">Paper trading<span class="pill">practice</span></button></div>
     <div id="liveWrap">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
-      <div><h1 style="font-size:28px;font-weight:800;letter-spacing:-.5px">Your Portfolio</h1><p style="font-size:14px;color:var(--muted);margin-top:4px"><span class="live-dot"></span> Live prices · AI suggestions · Profit tracking</p></div>
+      <div><h1 style="font-size:28px;font-weight:800;letter-spacing:-.5px">Your Portfolio</h1><p style="font-size:14px;color:var(--muted);margin-top:4px"><span class="live-dot"></span> Live prices · Buy/hold/sell notes · Profit tracking</p></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="add-btn" onclick="openSearch()">+ Add stock</button><button class="btn-secondary" style="padding:14px 20px;font-size:14px" onclick="refreshPrices()" id="refreshBtn" aria-label="Refresh live prices">↻ Refresh</button><button class="btn-secondary" style="padding:14px 20px;font-size:14px" onclick="sharePortfolio()" aria-label="Copy shareable portfolio link">Share</button></div>
     </div>
     <div class="port-top-grid">
@@ -1911,7 +1933,7 @@ body.light .gs-item{background:#fff}
     <div style="font-size:16px;font-weight:700;margin-bottom:12px">Your stocks</div>
     <div class="stocks-grid" id="stocksGrid"><div class="empty empty-start" style="grid-column:1/-1"><div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px">Your portfolio is empty — pick a way to start</div><div style="font-size:13px;line-height:1.6;max-width:520px;margin:0 auto 16px">New to investing? Load a demo to see how tracking works, add a stock you already own (or are curious about), or practice risk-free with $100,000 of virtual cash.</div><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button class="btn-primary" style="padding:12px 22px;font-size:14px" onclick="loadDemoPortfolio()">Try a demo portfolio</button> <button class="btn-secondary" style="padding:12px 22px;font-size:14px" onclick="openSearch()">+ Add a stock</button> <button class="btn-secondary" style="padding:12px 22px;font-size:14px" onclick="setMode('paper')">Practice with paper money</button></div><div style="font-size:11px;color:var(--muted2);margin-top:12px">The demo is a sample mix of well-known companies and an index fund — not a recommendation.</div></div></div>
     <div class="alerts-section">
-      <div style="font-size:16px;font-weight:700;margin-bottom:12px">AI Alerts</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:12px">Holding alerts</div>
       <div id="alertsList"><div class="empty">Add stocks to see alerts.</div></div>
     </div>
     <div class="alerts-section" id="priceAlertsSection" style="display:none">
@@ -1919,11 +1941,11 @@ body.light .gs-item{background:#fff}
       <div id="priceAlertsList"></div>
     </div>
     <div class="ai-section">
-      <div class="ai-head"><div class="ai-title">AI Suggestions</div><span class="ai-badge">Gold Plan</span></div>
+      <div class="ai-head"><div class="ai-title">Stock Suggestions <span style="font-size:12px;font-weight:500;color:var(--muted)">(rule-based)</span></div><span class="ai-badge">Gold Plan</span></div>
       <div class="ai-disclaimer">Suggestions are rule-based educational notes written for well-known stocks (a general note is shown for others) — not a live AI reading your personal situation. These suggestions are for educational purposes only and do not constitute financial advice. Always do your own research. Past performance does not guarantee future results. You are solely responsible for any investment decisions you make.</div>
       <!-- 2026-10-25: removed the "instructions" textarea; suggestions are rule-based and never used it (the old copy falsely said they were "adjusted accordingly"). -->
-      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="ai-run-btn" onclick="runAI()">Get AI suggestions</button><button class="ai-run-btn" style="background:linear-gradient(135deg,#b8860b,#f5b60b);color:#0a0a05" onclick="analyzePortfolio()">Deep portfolio analysis</button></div>
-      <div id="aiRecs"><div class="empty">Add stocks and click above to get personalised suggestions.</div></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="ai-run-btn" onclick="runAI()">Get suggestions</button><button class="ai-run-btn" style="background:linear-gradient(135deg,#b8860b,#f5b60b);color:#0a0a05" onclick="analyzePortfolio()">Deep portfolio analysis</button></div>
+      <div id="aiRecs"><div class="empty">Add stocks and click above to get a suggestion for each holding.</div></div>
     </div>
     <div class="alerts-section" id="newsSection" style="margin-top:26px">
       <div style="font-size:16px;font-weight:700;margin-bottom:12px;font-family:var(--font-display)">Market news</div>
@@ -1935,6 +1957,7 @@ body.light .gs-item{background:#fff}
         <div><h2 style="font-size:24px;font-weight:800;letter-spacing:-.5px">Paper Trading</h2><p style="font-size:13px;color:var(--muted);margin-top:4px">Practice with $100,000 of virtual cash — real live prices, zero risk.</p></div>
         <div style="display:flex;gap:10px"><button class="add-btn" onclick="paperOpenBuy()">+ Buy stock</button><button class="btn-secondary" style="padding:14px 18px;font-size:13px" onclick="paperReset()">Reset</button></div>
       </div>
+      <div class="practice-note" role="note"><b>Practice mode.</b> This is virtual money — nothing is actually bought or sold, and it isn’t linked to any brokerage. Trades fill instantly at the latest quote with no fees, taxes or slippage, so real results will differ. Tip: start with an amount you could realistically invest, not the full $100k.</div>
       <div class="pulse-grid" style="margin-bottom:22px">
         <div class="p-metric"><div class="p-label">Cash</div><div class="p-val" id="ppCash">$100,000.00</div></div>
         <div class="p-metric"><div class="p-label">Positions value</div><div class="p-val" id="ppEquity">$0.00</div></div>
@@ -2106,8 +2129,8 @@ body.light .gs-item{background:#fff}
       <p>Nothing on FinPath is a solicitation to buy or sell any security, offer of securities, or a recommendation that any security, transaction, or investment strategy is suitable for any specific person.</p>
     </div>
 
-    <div class="legal-section" id="l-ai"><h2>3. AI Features Disclaimer</h2>
-      <p>FinPath includes AI-generated content, including the free portfolio Analyzer and the paid Gold "AI Suggestions" feature. These features apply <strong>rule-based algorithmic commentary</strong> using general publicly available information and educational heuristics. They are not personalized financial advice and should never be the sole basis for any investment decision.</p>
+    <div class="legal-section" id="l-ai"><h2>3. Automated ("AI") Features Disclaimer</h2>
+      <p>FinPath includes automated commentary, including the free portfolio Analyzer / check-up and the paid Gold "Stock Suggestions" feature (called "AI Suggestions" in earlier versions). No large language model or live AI system generates this content. These features apply <strong>rule-based algorithmic commentary</strong> using general publicly available information and educational heuristics. They are not personalized financial advice and should never be the sole basis for any investment decision.</p>
       <ul>
         <li>AI outputs may be inaccurate, out-of-date, biased, incomplete, or contradictory</li>
         <li>AI does not verify or fact-check its outputs and can produce false statements presented as confident</li>
@@ -2272,7 +2295,7 @@ body.light .gs-item{background:#fff}
   <div class="modal">
     <h2 id="sharesTitle">Add shares</h2>
     <div style="background:var(--green-deeper);border-radius:12px;padding:16px;margin-bottom:20px;border:1px solid var(--green-dim)">
-      <div style="font-size:12px;color:#86efac;margin-bottom:6px;font-weight:600">AI insight</div>
+      <div style="font-size:12px;color:#86efac;margin-bottom:6px;font-weight:600">Quick take (general info, not advice)</div>
       <div style="font-size:14px;color:#d1fae5;line-height:1.6" id="sharesInsight">Loading...</div>
     </div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:8px" id="sharesLabel">How many shares do you own?</div>
@@ -2308,7 +2331,7 @@ body.light .gs-item{background:#fff}
       <button class="period-tab" onclick="setDetailPeriod(this,30)">1M</button>
     </div>
     <div class="detail-ai-box">
-      <div style="font-size:12px;font-weight:600;color:#86efac;margin-bottom:4px">AI SUGGESTION - GOLD PLAN</div>
+      <div style="font-size:12px;font-weight:600;color:#86efac;margin-bottom:4px">RULE-BASED SUGGESTION · GOLD PLAN</div>
       <div style="font-size:11px;color:rgba(134,239,172,.6);margin-bottom:12px">For educational purposes only. Not financial advice.</div>
       <div class="detail-ai-action" id="dAiAction">Analysing...</div>
       <div class="detail-ai-text" id="dAiText">Loading...</div>
@@ -3391,18 +3414,52 @@ function renderLessons(filtered){
   document.getElementById('lessonsGrid').innerHTML = items.length ? items.map(function(x){
     const l = x.l, i = x.i;
     return `
-    <div class="lesson-card" style="position:relative" onclick="openLesson(${i})">
+    <div class="lesson-card" style="position:relative" role="button" tabindex="0" aria-label="${escapeHtml(l.name)}${prog[i] ? ' (completed)' : ''}" onclick="openLesson(${i})">
       ${prog[i] ? '<div class="lesson-done" aria-label="Completed">✓</div>' : ''}
       <div class="lesson-img">${l.icon}</div>
       <div class="lesson-body">
         <div class="lesson-cat">${l.cat}</div>
         <div class="lesson-title">${l.name}</div>
         <div class="lesson-desc">${l.desc}</div>
-        <span class="lesson-plan ${l.plan==='free'?'plan-free':'plan-gold'}">${l.plan==='free'?'Free':'Gold ✦'}</span>
+        <span class="lesson-plan ${l.plan==='free'?'plan-free':'plan-gold'}">${l.plan==='free'?'Free':'Gold ✦'}</span><span class="lesson-time">~${lessonMinutes(l)} min read</span>
       </div>
     </div>`;
   }).join('') : '<div class="empty" style="grid-column:1/-1">No lessons match that search.</div>';
   updateLessonProgress();
+  renderLearnPath(!!filtered);
+  renderGlossaryList();
+}
+// ── Beginner path: a fixed order through existing free lessons for someone starting from zero ──
+const BEGINNER_PATH = [12, 6, 9, 3, 16, 25]; // stock market basics → compound interest → emergency fund → budget → inflation → money psychology
+function lessonMinutes(l){ const w = String((l && l.content) || '').split(/\s+/).length; return Math.max(1, Math.round(w / 200)); }
+function lessonOrder(){ const o = []; LESSONS.forEach(function(l, i){ if(l) o.push(i); }); return o; }
+function adjacentLesson(i, dir){
+  const ord = lessonOrder(); let k = ord.indexOf(i) + dir;
+  while(k >= 0 && k < ord.length){ const j = ord[k]; if(IS_GOLD || LESSONS[j].plan === 'free') return j; k += dir; }
+  return -1;
+}
+function renderLearnPath(hidden){
+  const el = document.getElementById('learnPath'); if(!el) return;
+  const path = BEGINNER_PATH.filter(function(i){ return LESSONS[i]; });
+  if(hidden || !path.length){ el.innerHTML = ''; return; }
+  const prog = getLessonProgress();
+  const doneN = path.filter(function(i){ return prog[i]; }).length;
+  const next = path.find(function(i){ return !prog[i]; });
+  el.innerHTML = '<div class="learn-path"><h3>' + (doneN ? 'Your beginner path' : 'New to investing? Start here') + '</h3>' +
+    '<div class="lp-sub">' + path.length + ' short free lessons in a sensible order — about ' + path.reduce(function(a, i){ return a + lessonMinutes(LESSONS[i]); }, 0) + ' minutes total. ' + doneN + ' of ' + path.length + ' done.</div>' +
+    '<div class="lp-steps">' + path.map(function(i, k){
+      return '<button class="lp-step' + (prog[i] ? ' done' : '') + (i === next ? ' next' : '') + '" onclick="openLesson(' + i + ')"><span class="n">' + (prog[i] ? '✓' : (k + 1)) + '</span>' + escapeHtml(LESSONS[i].name) + '</button>';
+    }).join('') + '</div>' +
+    (next !== undefined
+      ? '<button class="btn-primary" style="padding:11px 22px;font-size:14px" onclick="openLesson(' + next + ')">' + (doneN ? 'Continue: ' : 'Start: ') + escapeHtml(LESSONS[next].name) + ' →</button>'
+      : '<div style="font-size:13px;color:var(--mint)">🎉 Path complete. Next, try the paper-trading practice account on the Portfolio page, or pick any lesson below.</div>') +
+    '</div>';
+}
+function renderGlossaryList(){
+  const dl = document.getElementById('glossaryList'); if(!dl || typeof GLOSSARY === 'undefined' || dl.childElementCount) return;
+  dl.innerHTML = Object.keys(GLOSSARY).sort(function(a, b){ return a.toLowerCase().localeCompare(b.toLowerCase()); }).map(function(t){
+    return '<div><dt>' + escapeHtml(t) + '</dt><dd>' + escapeHtml(GLOSSARY[t]) + '</dd></div>';
+  }).join('');
 }
 function filterLessons(q){
   q = (q||'').trim().toLowerCase();
@@ -3424,18 +3481,29 @@ function openLesson(i){
       <div class="gold-lock">
         <div style="font-size:36px;margin-bottom:12px">👑</div>
         <h3>This is a Gold lesson</h3>
-        <p>Upgrade to FinPath Gold to access all 14 premium lessons, Investor Moves, and AI suggestions.</p>
+        <p>Upgrade to FinPath Gold to access all 14 premium lessons, Investor Moves, and buy/hold/sell suggestions.</p>
         <button class="price-btn" style="width:auto;padding:12px 28px;margin-top:8px" onclick="openGoldPayment()">Upgrade to Gold — $4.99/mo</button>
       </div>`;
   } else {
     document.getElementById('detailBody').innerHTML = buildLessonBody(l, i);
   }
+  const ord = lessonOrder(), pos = ord.indexOf(i) + 1;
+  const meta = document.createElement('div'); meta.className = 'lesson-meta';
+  meta.textContent = 'Lesson ' + pos + ' of ' + ord.length + ' · ~' + lessonMinutes(l) + ' min read · ' + (l.plan === 'free' ? 'Free' : 'Gold');
+  const body = document.getElementById('detailBody'); body.insertBefore(meta, body.firstChild);
+  const prev = adjacentLesson(i, -1), nxt = adjacentLesson(i, 1), isDone = !!getLessonProgress()[i];
+  const nav = document.createElement('div'); nav.className = 'lesson-nav';
+  nav.innerHTML = (prev >= 0 ? '<button class="btn-secondary" onclick="openLesson(' + prev + ')">← ' + escapeHtml(LESSONS[prev].name) + '</button>' : '<span></span>') +
+    (nxt >= 0 ? '<button class="' + (isDone ? 'btn-primary' : 'btn-secondary') + '" onclick="openLesson(' + nxt + ')">Next: ' + escapeHtml(LESSONS[nxt].name) + ' →</button>'
+              : '<button class="btn-secondary" onclick="closeLessonDetail();renderLessons()">Back to all lessons</button>');
+  body.appendChild(nav);
   window.scrollTo(0,0);
 }
 
 function closeLessonDetail(){
   document.getElementById('lessons-list-view').style.display='';
   document.getElementById('lessonDetail').classList.remove('active');
+  if(document.getElementById('page-lessons').classList.contains('active')){ try{ const q = document.getElementById('lessonSearch'); if(!q || !q.value.trim()) renderLessons(); }catch(e){} }
 }
 
 // ── GOLD PAGE ──
@@ -3910,7 +3978,7 @@ async function renderPortfolio(){
     document.getElementById('pReturn').textContent='0.00%';
     document.getElementById('stocksGrid').innerHTML=empty;
     document.getElementById('alertsList').innerHTML='<div class="empty">Add stocks to see alerts.</div>';
-    document.getElementById('aiRecs').innerHTML='<div class="empty">Add stocks then click Get AI Suggestions.</div>';
+    document.getElementById('aiRecs').innerHTML='<div class="empty">Add stocks then click Get suggestions.</div>';
     renderPortfolioChart(1);
     renderWatchlist();
     var _aw=document.getElementById('allocWrap'); if(_aw)_aw.style.display='none';
@@ -3974,11 +4042,11 @@ function renderAlerts(quotes){
       const q = quotes && quotes[i] ? quotes[i].q : null;
       return '<div class="alert-item">'+
         '<div><div class="alert-ticker">'+escapeHtml(h.ticker)+' — <span style="filter:blur(4px);user-select:none;color:var(--muted)">Hold ·</span> 🔒</div>'+
-        '<div class="alert-msg" style="filter:blur(3px);user-select:none">Upgrade to Gold to see the AI\u2019s reasoning for this position and personalised buy / hold / sell guidance.</div></div>'+
+        '<div class="alert-msg" style="filter:blur(3px);user-select:none">Upgrade to Gold to see the reasoning for this position and a rule-based buy / hold / sell note.</div></div>'+
         (q?'<span class="alert-pct" style="'+(q.dp<0?'background:rgba(248,113,113,.1);color:#f87171':'')+'">'+(q.dp>=0?'+':'')+q.dp.toFixed(2)+'%</span>':'')+
         '</div>';
     }).join('') +
-    (portfolio.length ? '<div style="text-align:center;margin-top:14px"><button onclick="openGoldPayment()" style="background:var(--green-dim);border:none;border-radius:10px;padding:11px 24px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">👑 Unlock AI Alerts with Gold — $4.99/mo</button></div>' : '');
+    (portfolio.length ? '<div style="text-align:center;margin-top:14px"><button onclick="openGoldPayment()" style="background:var(--green-dim);border:none;border-radius:10px;padding:11px 24px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">👑 Unlock holding alerts with Gold — $4.99/mo</button></div>' : '');
     return;
   }
   host.innerHTML=portfolio.map((h,i)=>{
@@ -3996,11 +4064,11 @@ function renderAlerts(quotes){
 function runAI(){
   const recsEl = document.getElementById('aiRecs');
   if(!IS_GOLD){
-    recsEl.innerHTML='<div style="background:linear-gradient(135deg,rgba(5,46,22,.6),var(--surface));border:1px solid var(--green-dim);border-radius:16px;padding:40px;text-align:center"><div style="font-size:32px;margin-bottom:12px">👑</div><div style="font-size:18px;font-weight:700;margin-bottom:8px">Gold Plan Required</div><p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6">Upgrade to FinPath Gold to unlock personalised AI suggestions with detailed reasoning for every stock in your portfolio.</p><button onclick="openGoldPayment()" style="background:var(--green-dim);border:none;border-radius:10px;padding:12px 28px;color:#fff;font-size:14px;font-weight:600;cursor:pointer">Upgrade to Gold — $4.99/mo</button></div>';
+    recsEl.innerHTML='<div style="background:linear-gradient(135deg,rgba(5,46,22,.6),var(--surface));border:1px solid var(--green-dim);border-radius:16px;padding:40px;text-align:center"><div style="font-size:32px;margin-bottom:12px">👑</div><div style="font-size:18px;font-weight:700;margin-bottom:8px">Gold Plan Required</div><p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6">Upgrade to FinPath Gold to unlock rule-based suggestions with plain-English reasoning for every stock in your portfolio.</p><button onclick="openGoldPayment()" style="background:var(--green-dim);border:none;border-radius:10px;padding:12px 28px;color:#fff;font-size:14px;font-weight:600;cursor:pointer">Upgrade to Gold — $4.99/mo</button></div>';
     return;
   }
   if(portfolio.length===0){
-    recsEl.innerHTML='<div class="empty">Add stocks to your portfolio first, then come back for AI suggestions.</div>';
+    recsEl.innerHTML='<div class="empty">Add stocks to your portfolio first, then come back for suggestions.</div>';
     return;
   }
   recsEl.innerHTML='<div class="loading"><div class="spinner"></div>Analysing your portfolio...</div>';
@@ -4891,6 +4959,7 @@ async function loadDemoPortfolio(){
   await saveToDB();
   if(typeof renderChecklist==='function') renderChecklist();
   renderPortfolio();
+  toast('🧪', 'Demo loaded: 5 sample holdings “bought” at today’s price, so gains start at $0. Not a recommendation — remove any stock from its detail view.');
 }
 
 // ══ DEMO / GUEST MODE ══
@@ -4955,6 +5024,16 @@ function shareLesson(i){
   if(navigator.share){ navigator.share({title:'FinPath', text:text, url:url}).catch(function(){}); }
   else window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank', 'noopener');
 }
+
+// ══ A11Y: Enter / Space activates non-<button> elements that declare role="button" ══
+document.addEventListener('keydown', function(e){
+  const t = e.target;
+  if((e.key === 'Enter' || e.key === ' ') && t && t.getAttribute && t.getAttribute('role') === 'button' && !/^(BUTTON|A|INPUT|TEXTAREA|SELECT)$/.test(t.tagName)){
+    e.preventDefault();
+    if(t.classList.contains('term')){ const r = t.getBoundingClientRect(); showTerm({stopPropagation:function(){}, clientX:r.left, clientY:r.bottom}, t.dataset.term); }
+    else t.click();
+  }
+});
 
 // ══ A11Y: connect visual labels to their fields ══
 // Many forms (screener, calculators, goals, login) use <label>Text</label><input id=…> as siblings, which
@@ -5034,7 +5113,8 @@ function initOnboarding(){
   const steps = [
     {icon:'👋', title:'Welcome to FinPath', body:'The financial playbook schools skipped. Three small steps and you\u2019ll have the hang of it — this takes about a minute.'},
     {icon:'📈', title:'Step 1 — Add your first stock', body:'Track a real stock with live prices, or practice risk-free with $100,000 of virtual paper-trading cash. Not sure where to start? Try the one-tap demo portfolio.'},
-    {icon:'🎯', title:'Step 2 — Set a goal, then learn', body:'Set a concrete savings goal (like a $1,000 emergency fund), then try your first 5-minute lesson. A checklist on your Portfolio page tracks all three steps for you.'}
+    {icon:'🎯', title:'Step 2 — Set a goal, then learn', body:'Set a concrete savings goal (like a $1,000 emergency fund), then start the beginner path: 6 short free lessons, about 1–2 minutes each. A checklist on your Portfolio page tracks your progress.'},
+    {icon:'🧭', title:'Good to know', body:'FinPath is for learning, not financial advice. Buy/hold/sell notes are rule-based, investor moves come from SEC filings that are weeks old, and paper trading uses virtual money only.'}
   ];
   let step = 0;
   const ov = document.createElement('div');
@@ -5051,7 +5131,7 @@ function initOnboarding(){
       '<p style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:26px">' + s.body + '</p>' +
       '<div style="display:flex;gap:10px;justify-content:center">' +
       (isLast
-        ? '<button class="btn-primary" style="padding:13px 26px;font-size:14px" onclick="obFinish(\'portfolio\')">Start step 1 →</button><button class="btn-secondary" style="padding:13px 26px;font-size:14px" onclick="obFinish(\'lessons\')">Browse lessons</button>'
+        ? '<button class="btn-primary" style="padding:13px 26px;font-size:14px" onclick="obFinish(\'portfolio\')">Start step 1 →</button><button class="btn-secondary" style="padding:13px 26px;font-size:14px" onclick="obFinish(\'learn\')">Start the beginner path</button>'
         : '<button class="btn-primary" style="padding:13px 30px;font-size:14px" onclick="obNext()">Next</button><button class="btn-secondary" style="padding:13px 22px;font-size:14px" onclick="obFinish()">Skip</button>') +
       '</div></div>';
   }
@@ -5060,6 +5140,7 @@ function initOnboarding(){
     localStorage.setItem('fp_onboarded','1');
     ov.remove();
     track('onboarding_done', {dest: dest||'skip'});
+    if(dest === 'learn'){ showPage('lessons'); setTimeout(function(){ openLesson(BEGINNER_PATH[0]); }, 150); return; }
     if(dest){ showPage(dest); if(dest==='portfolio') setTimeout(openSearch, 600); }
   };
   render();
@@ -5085,26 +5166,42 @@ const GLOSSARY = {
   'capital gains':'Profit from selling something for more than you paid. Held over a year = taxed at lower rates.',
   'liquidity':'How fast you can turn an asset into cash without losing value. Stocks: seconds. A house: months.',
   'bear market':'A drop of 20%+ from recent highs. Painful, normal, and historically always temporary.',
-  'bull market':'A sustained period of rising prices — markets spend most of their time here.'
+  'bull market':'A sustained period of rising prices — markets spend most of their time here.',
+  'stock':'A small slice of ownership in a company (also called a share). If the company grows its profits, the slice usually becomes worth more.',
+  'ticker':'The short code a stock or fund trades under — AAPL is Apple, VOO is Vanguard’s S&P 500 ETF.',
+  'portfolio':'Everything you’ve invested in, viewed together.',
+  'brokerage account':'An account at a broker (for example Fidelity, Schwab or Vanguard) that lets you buy and sell stocks, ETFs and bonds.',
+  'expense ratio':'The yearly fee a fund charges, as a % of what you have in it. 0.03% means about $3 a year for every $10,000 invested.',
+  'dollar cost averaging':'Investing a fixed amount on a regular schedule (say $100 every month) no matter what prices are doing, so you never have to time the market.',
+  'Roth IRA':'A U.S. retirement account you fund with after-tax money; growth and qualified withdrawals in retirement are tax-free. You need earned income, and yearly contribution limits apply.',
+  '401(k)':'A U.S. retirement plan offered through an employer. Money comes straight out of your paycheck, and many employers add a “match” — free money worth getting.',
+  'emergency fund':'Cash set aside for surprises like a job loss or car repair — commonly 3–6 months of essential expenses, kept somewhere safe and easy to reach.',
+  'inflation':'Prices rising over time, so each dollar buys a little less. Cash earning less than inflation slowly loses buying power.',
+  'bond':'A loan you make to a government or company. They pay you interest and return your money on a set date. Usually steadier than stocks, with lower long-run returns.',
+  'credit score':'A number (usually 300–850 in the U.S.) lenders use to judge how likely you are to repay. Paying on time and keeping card balances low matter most.',
+  'net worth':'What you own minus what you owe.',
+  '13F':'A quarterly report big U.S. investment managers file with the SEC listing the U.S. stocks they held at quarter-end. It arrives up to 45 days late.'
 };
+// Single pass over the plain-text lesson, so a term can never match inside markup inserted for another term.
+// Only the first mention of each term is underlined.
 function glossaryWrap(text){
-  let out = text;
-  Object.keys(GLOSSARY).forEach(function(term){
-    const rx = new RegExp('(^|[^\\w])(' + term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')(?![\\w])','i');
-    let done = false;
-    out = out.replace(rx, function(m, pre, hit){
-      if(done) return m; done = true;
-      return pre + '<span class="term" role="button" tabindex="0" onclick="showTerm(event,\'' + term.replace(/'/g,"\\'") + '\')">' + hit + '</span>';
-    });
+  const terms = Object.keys(GLOSSARY).sort(function(a, b){ return b.length - a.length; });
+  const byLower = {}; terms.forEach(function(t){ byLower[t.toLowerCase()] = t; });
+  const rx = new RegExp('(^|[^\\w])(' + terms.map(function(t){ return t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }).join('|') + ')(?![\\w])', 'gi');
+  const used = {};
+  return String(text).replace(rx, function(m, pre, hit){
+    const key = byLower[hit.toLowerCase()];
+    if(!key || used[key]) return m; used[key] = 1;
+    return pre + '<span class="term" role="button" tabindex="0" data-term="' + escapeHtml(key) + '" onclick="showTerm(event,this.dataset.term)">' + hit + '</span>';
   });
-  return out;
 }
 function showTerm(ev, term){
   ev.stopPropagation();
   hideTerm();
   const pop = document.createElement('div');
   pop.className = 'term-pop'; pop.id = 'termPop';
-  pop.innerHTML = '<b style="color:var(--mint)">' + term + '</b><br>' + GLOSSARY[term];
+  if(!GLOSSARY[term]) return;
+  pop.innerHTML = '<b style="color:var(--mint)">' + escapeHtml(term) + '</b><br>' + escapeHtml(GLOSSARY[term]);
   document.body.appendChild(pop);
   const x = Math.min(ev.clientX, window.innerWidth - 300);
   const y = Math.min(ev.clientY + 14, window.innerHeight - 140);

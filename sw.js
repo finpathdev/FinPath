@@ -3,7 +3,7 @@
 // Live prices, filings, and API responses are intentionally NOT cached — those
 // must always be fresh.
 
-const CACHE = 'finpath-v10';
+const CACHE = 'finpath-v11';
 const SHELL = [
   './',
   './index.html',
