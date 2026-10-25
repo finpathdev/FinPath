@@ -1087,6 +1087,8 @@ body.light .scr-filters input,body.light .scr-filters select{background:#fff}
 .quiz-opt.wrong{background:rgba(248,113,113,.14);border-color:var(--red)}
 /* ── GLOSSARY TERMS ── */
 .term{border-bottom:1.5px dotted var(--green);cursor:help;color:var(--mint)}
+.term:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:2px}
+.cmp-table th .term,.p-label .term,.port-label .term,.d-mlabel .term{color:var(--mint)}
 .learn-path{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 20px;margin:0 0 22px}
 .learn-path h3{font-size:16px;font-weight:700;font-family:var(--font-display);margin-bottom:4px}
 .lp-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5}
@@ -2012,7 +2014,7 @@ body.light .gs-item{background:#fff}
     </div>
     <div id="learnPath"></div>
     <div class="lessons-grid" id="lessonsGrid"></div>
-    <details class="glossary-box" id="glossaryBox"><summary>📖 Glossary — plain-English money terms</summary><dl id="glossaryList"></dl></details>
+    <details class="glossary-box" id="glossaryBox"><summary>📖 Glossary — plain-English money terms. The same words are dotted inside lessons.</summary><dl id="glossaryList"></dl></details>
   </div>
   <div class="lesson-detail" id="lessonDetail">
     <button class="back-btn" onclick="closeLessonDetail()">← Back to lessons</button>
@@ -2075,7 +2077,7 @@ body.light .gs-item{background:#fff}
           <div class="p-metric"><div class="p-label">Total invested</div><div class="p-val" id="pInvested">$0.00</div></div>
           <div class="p-metric"><div class="p-label">Current value</div><div class="p-val" id="pCurrent">$0.00</div></div>
           <div class="p-metric"><div class="p-label">Total profit/loss</div><div class="p-val" id="pPnl">$0.00</div></div>
-          <div class="p-metric"><div class="p-label">Return %</div><div class="p-val" id="pReturn">0.00%</div></div>
+          <div class="p-metric"><div class="p-label"><span class="term" role="button" tabindex="0" data-term="returns" onclick="showTerm(event,this.dataset.term)">Return %</span></div><div class="p-val" id="pReturn">0.00%</div></div>
         </div>
       </div>
     </div>
@@ -2084,7 +2086,7 @@ body.light .gs-item{background:#fff}
       <div class="watch-grid" id="watchGrid"></div>
     </div>
     <div class="analytics-grid" id="allocWrap" style="display:none">
-      <div class="port-card"><div class="port-label">Sector allocation</div><div style="position:relative;height:200px;margin-top:12px"><canvas id="allocChart" role="img" aria-label="Portfolio sector allocation chart"></canvas></div><div class="alloc-legend" id="allocLegend"></div></div>
+      <div class="port-card"><div class="port-label"><span class="term" role="button" tabindex="0" data-term="sector allocation" onclick="showTerm(event,this.dataset.term)">Sector allocation</span></div><div style="position:relative;height:200px;margin-top:12px"><canvas id="allocChart" role="img" aria-label="Portfolio sector allocation chart"></canvas></div><div class="alloc-legend" id="allocLegend"></div></div>
       <div class="port-card"><div class="port-label">Top holdings</div><div id="holdList" style="margin-top:16px"></div></div>
       <div class="port-card"><div class="port-label">Dividend income (projected)</div><div id="divCard" style="margin-top:16px"><div class="skel-row" style="height:60px"></div></div></div>
     </div>
@@ -2120,7 +2122,7 @@ body.light .gs-item{background:#fff}
       <div class="practice-note" role="note"><b>Practice mode.</b> This is virtual money — nothing is actually bought or sold, and it isn’t linked to any brokerage. Trades fill instantly at the latest quote with no fees, taxes or slippage, so real results will differ. Tip: start with an amount you could realistically invest, not the full $100k.</div>
       <div class="pulse-grid" style="margin-bottom:22px">
         <div class="p-metric"><div class="p-label">Cash</div><div class="p-val" id="ppCash">$100,000.00</div></div>
-        <div class="p-metric"><div class="p-label">Positions value</div><div class="p-val" id="ppEquity">$0.00</div></div>
+        <div class="p-metric"><div class="p-label"><span class="term" role="button" tabindex="0" data-term="positions value" onclick="showTerm(event,this.dataset.term)">Positions value</span></div><div class="p-val" id="ppEquity">$0.00</div></div>
         <div class="p-metric"><div class="p-label">Total</div><div class="p-val" id="ppTotal">$100,000.00</div></div>
         <div class="p-metric"><div class="p-label">You vs S&amp;P 500</div><div class="p-val" id="ppVs">—</div></div>
       </div>
@@ -2166,12 +2168,12 @@ body.light .gs-item{background:#fff}
     <div class="mk-section"><div class="mk-title">Sector heat map</div><div class="mk-sub">Today’s performance by sector (SPDR sector ETFs). Tap a sector for detail.</div><div class="heat-legend" id="heatLegend"><span class="heat-legend-item"><span class="heat-swatch heat-swatch-up" aria-hidden="true"></span>Green = up today</span><span class="heat-legend-item"><span class="heat-swatch heat-swatch-down" aria-hidden="true"></span>Red = down</span><span class="heat-legend-item"><span class="heat-scale" aria-hidden="true"></span>Stronger color ≈ a larger move</span></div><div class="heat-grid" id="heatGrid"><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div></div><div id="heatDetail" style="margin-top:14px;font-size:13px;color:var(--muted)"></div></div>
     <div class="mk-section"><div class="mk-title">Stock screener</div><div class="mk-sub">Discover stocks by fundamentals across FinPath’s tracked universe.</div>
       <div class="scr-filters">
-        <div><label>Sector</label><select id="scrSector"><option value="">All sectors</option></select></div>
+        <div><label><span class="term" role="button" tabindex="0" data-term="sector" onclick="showTerm(event,this.dataset.term)">Sector</span></label><select id="scrSector"><option value="">All sectors</option></select></div>
         <div><label>Max price ($)</label><input id="scrPrice" type="number" placeholder="Any"></div>
-        <div><label>Max P/E</label><input id="scrPE" type="number" placeholder="Any"></div>
-        <div><label>Min dividend yield %</label><input id="scrDiv" type="number" step="0.1" placeholder="Any"></div>
-        <div><label>Min market cap ($B)</label><input id="scrCap" type="number" placeholder="Any"></div>
-        <div><label>Guru-owned</label><select id="scrGuru"><option value="">Any</option></select></div>
+        <div><label><span class="term" role="button" tabindex="0" data-term="P/E ratio" onclick="showTerm(event,this.dataset.term)">Max P/E</span></label><input id="scrPE" type="number" placeholder="Any"></div>
+        <div><label><span class="term" role="button" tabindex="0" data-term="dividend yield" onclick="showTerm(event,this.dataset.term)">Min dividend yield %</span></label><input id="scrDiv" type="number" step="0.1" placeholder="Any"></div>
+        <div><label><span class="term" role="button" tabindex="0" data-term="market cap" onclick="showTerm(event,this.dataset.term)">Min market cap ($B)</span></label><input id="scrCap" type="number" placeholder="Any"></div>
+        <div><label><span class="term" role="button" tabindex="0" data-term="Guru-owned" onclick="showTerm(event,this.dataset.term)">Guru-owned</span></label><select id="scrGuru"><option value="">Any</option></select></div>
       </div>
       <button class="ai-run-btn" onclick="runScreener()">Run screener</button>
       <div id="scrResults"><div class="empty">Set your filters and hit Run screener.</div></div>
@@ -2206,6 +2208,7 @@ body.light .gs-item{background:#fff}
           </div>
           <button class="sp-run" onclick="runBacktest()">Run it →</button>
         </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;margin:-6px 0 14px">Tap a term: <span class="term" role="button" tabindex="0" data-term="S&amp;P 500" onclick="showTerm(event,this.dataset.term)">S&amp;P 500</span> · <span class="term" role="button" tabindex="0" data-term="Nasdaq 100" onclick="showTerm(event,this.dataset.term)">Nasdaq 100</span> · <span class="term" role="button" tabindex="0" data-term="APY" onclick="showTerm(event,this.dataset.term)">APY</span></div>
         <div class="sp-quick">
           <span style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;align-self:center;margin-right:4px">Try:</span>
           <button class="sp-quick-btn" onclick="spPreset(50,10,10)">$50/mo · S&amp;P · 10yr</button>
@@ -2246,7 +2249,7 @@ body.light .gs-item{background:#fff}
           <div class="cs-icon">🚀</div>
           <div class="cs-name">The Growth Tilt</div>
           <div class="cs-nick">Nasdaq-heavy portfolio</div>
-          <div class="cs-desc">Overweight tech and innovation via the Nasdaq 100. Higher highs, deeper lows. If you can stomach a 40% drop without selling, you get the tech premium.</div>
+          <div class="cs-desc">Overweight tech and innovation via the <span class="term" role="button" tabindex="0" data-term="Nasdaq 100" onclick="showTerm(event,this.dataset.term)">Nasdaq 100</span>. Higher highs, deeper lows. If you can stomach a 40% drop without selling, you get the tech premium.</div>
           <div class="cs-stat"><span class="cs-stat-label">Avg return</span><span class="cs-stat-val">~18%/yr</span></div>
           <div class="cs-try">Try in playground →</div>
         </div>
@@ -2255,7 +2258,7 @@ body.light .gs-item{background:#fff}
           <div class="cs-name">The Safety Net</div>
           <div class="cs-nick">Emergency fund first</div>
           <div class="cs-desc">Before stocks, save 3–6 months of expenses in a high-yield savings account. Boring but non-negotiable — an emergency fund is what keeps a bad month from becoming a bad year.</div>
-          <div class="cs-stat"><span class="cs-stat-label">Where</span><span class="cs-stat-val">~3–5% APY (rates vary)</span></div>
+          <div class="cs-stat"><span class="cs-stat-label">Where</span><span class="cs-stat-val">~3–5% <span class="term" role="button" tabindex="0" data-term="APY" onclick="showTerm(event,this.dataset.term)">APY</span> (rates vary)</span></div>
           <div class="cs-try">Try in playground →</div>
         </div>
         <div class="cs-card" onclick="spPreset(100,10,0)">
@@ -2477,7 +2480,7 @@ body.light .gs-item{background:#fff}
     <div class="d-metrics">
       <div class="d-metric"><div class="d-mlabel">Live price</div><div class="d-mval" id="dPrice">--</div></div>
       <div class="d-metric"><div class="d-mlabel">Today</div><div class="d-mval" id="dToday">--</div></div>
-      <div class="d-metric"><div class="d-mlabel">Shares</div><div class="d-mval" id="dShares">--</div><button class="btn-secondary" style="padding:5px 12px;font-size:11px;margin-top:8px" onclick="editBuyPrice()">✎ Edit buy price</button></div>
+      <div class="d-metric"><div class="d-mlabel">Shares</div><div class="d-mval" id="dShares">--</div><div class="d-mlabel" style="margin-top:10px"><span class="term" role="button" tabindex="0" data-term="cost basis" onclick="showTerm(event,this.dataset.term)">Cost basis</span> / share</div><div class="d-mval" id="dCost">--</div><button class="btn-secondary" style="padding:5px 12px;font-size:11px;margin-top:8px" onclick="editBuyPrice()">✎ Edit buy price</button></div>
       <div class="d-metric"><div class="d-mlabel">Position value</div><div class="d-mval" id="dVal">--</div></div>
     </div>
     <div class="d-metric" style="margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
@@ -2584,10 +2587,10 @@ Assets put money in your pocket. Liabilities take money out. A rental property i
 Before paying any bill, move money into savings or investments. The wealthy save first and spend what remains.
 
 4. TIME IS YOUR MOST VALUABLE ASSET
-$200 per month invested from age 18 grows to over $1 million by 65. The same amount starting at 30 grows to only $350,000. Same money. The only difference is time.
+$200 per month invested in a broad stock index fund from age 18 grows to over $1 million by 65. The same amount starting at 30 grows to only $350,000. Same money. The only difference is time. That speed-up is compound interest: your returns earn their own returns.
 
 5. THE TAX GAME
-The wealthy pay lower effective tax rates than most workers by understanding how the tax code works. Investment income is taxed lower than earned income.
+The wealthy pay a lower effective tax rate than most workers by understanding how the tax code works. Investment income — dividends and capital gains — is often taxed less than wages.
 
 6. MULTIPLE INCOME STREAMS
 The average millionaire has 7 income streams. The average person has one. The more streams you have, the more resilient your financial life becomes.`},
@@ -2646,13 +2649,13 @@ The greatest investors tell you what they are buying every quarter. You just nee
 {name:"How to Actually Budget: The 50/30/20 Rule",desc:"A simple system to control your money",cat:"Saving & Budgeting",plan:"free",icon:"💳",content:`Most people fail at budgeting because they use systems that are too complicated.
 
 THE 50/30/20 RULE:
-Take your monthly income after tax and split it three ways.
+Take your monthly net pay — what lands in the bank after tax — and split it three ways.
 
 50% NEEDS: Rent, food, utilities, transport, minimum debt payments.
 
 30% WANTS: Going out, clothes, subscriptions, hobbies. You are allowed to enjoy your life but this category has a ceiling.
 
-20% FUTURE: Emergency fund, investments, extra debt payments, retirement savings. This is the entire difference between building wealth and running in place.
+20% FUTURE: Emergency fund, investments, extra debt payments, retirement savings. Park the cash part in a high-yield savings account, not the checking account you spend from. This slice is the difference between building wealth and running in place.
 
 THE KEY INSIGHT:
 The 20% future category leaves first before you spend anything else. Then spend the rest however you like. The less you think about it after that the better.
@@ -2695,38 +2698,50 @@ Measures market volatility expectations. Above 30 means fear. Historically one o
 
 HOW TO USE THESE:
 No single signal is reliable alone. Look for multiple signals pointing the same direction. One indicator is a hint. Three pointing the same way is a conviction.`},
-{name:"The Power of Compound Interest",desc:"Why starting at 16 beats starting at 30 by hundreds of thousands",cat:"Saving & Budgeting",plan:"free",icon:"📈",content:`When your money earns returns, those returns then earn returns. The longer this continues the more dramatically it accelerates.
+{name:"The Power of Compound Interest",desc:"Why starting at 16 beats starting at 30 by hundreds of thousands",cat:"Saving & Budgeting",plan:"free",icon:"📈",content:`Compound interest means your returns earn their own returns. Leave it alone and the growth speeds up. Starting later costs more than it looks.
 
-THE NUMBERS:
-Person A invests $200 per month at 18 at 8% per year. By 65 they have $1,068,000.
-Person B waits until 30. Same $200, same return. By 65 they have $349,000.
+THE NUMBERS (AN ILLUSTRATION, NOT A PROMISE):
+Person A invests $200 per month from age 18 and earns 8% a year. By 65 they have about $1,068,000.
+Person B waits until 30. Same $200, same 8%. By 65 they have about $349,000.
 
-Same monthly investment. $719,000 difference. Just because of a 12-year head start.
+Same monthly investment. About $719,000 less, from a 12-year head start.
 
-Person A only invested for the first 10 years then stopped completely. By 65 they STILL have more than Person B who invested every year from 30 to 65. Time is doing the work not the contribution.
+That 8% is a rough long-run average for a broad U.S. stock portfolio, not a guarantee. Some years are negative. Some are much higher. The lesson is the shape of the curve, not the exact dollar.
+
+If Person A invests only for the first 10 years and then stops, they can still end up with more at 65 than Person B, who invests every year from 30 to 65. Early compounding does the heavy lifting.
 
 THE RULE OF 72:
-Divide 72 by your expected annual return to find how many years to double your money.
-At 8% return money doubles every 9 years.
-At 10% return money doubles every 7.2 years.
+Divide 72 by your yearly return to estimate how many years money takes to double.
+At 8%, about every 9 years.
+At 10%, about every 7.2 years.
+It is a shortcut, not a contract.
 
-HOW TO START TODAY:
-Open a brokerage account. Set up automatic monthly contributions of even $50. Buy VOO or a similar S&P 500 index fund. Do nothing else.`},
-{name:"The Truth About Taxes",desc:"How to legally keep more of your money",cat:"Hidden Financial Knowledge",plan:"free",icon:"🏛️",content:`Taxes are one of your biggest lifetime expenses yet nobody teaches you how to reduce them legally.
+HOW TO START THIS WEEK:
+1. Open a brokerage account at a well-known broker such as Fidelity, Schwab, or Vanguard. Have an ID and a bank account ready.
+2. Schedule an automatic transfer on payday, even $50. Automating beats waiting until you feel ready.
+3. Buy a broad S&P 500 index fund such as VOO, then leave it alone. The fund’s job is to own the big U.S. companies for you.
+
+The best day to start was earlier. The next best day is this payday.`},
+{name:"The Truth About Taxes",desc:"How to legally keep more of your money",cat:"Hidden Financial Knowledge",plan:"free",icon:"🏛️",content:`Taxes are one of the biggest expenses of your life. The legal way to pay less is to use the accounts the tax code already rewards.
 
 HOW BRACKETS WORK:
-You do NOT pay your top rate on all income. A $50,000 earner pays 10% on the first chunk then 12% on the next. Your effective rate is much lower than your bracket.
+You do not pay your top tax bracket on all of your income. Brackets are slices. A $50,000 earner pays 10% on the first slice and 12% on the next. Your effective tax rate — tax divided by income — is lower than the top bracket you touch.
+
+Wages are ordinary income. Profit from selling an investment is a capital gain, and the rate depends on how long you held it.
+
+SHORT-TERM VS LONG-TERM
+Sell in a year or less and the profit is short-term: taxed like ordinary income.
+Hold more than a year and it is long-term: 0%, 15%, or 20%, based on taxable income, not your paycheck brackets. For 2026, a single filer’s 0% band goes up to $49,450 of taxable income (about $98,900 if you are married filing jointly). Taxable income is after deductions, and the gain itself counts toward that total. The IRS updates these bands, so check the current year before you plan a sale.
 
 THE MOST POWERFUL TAX TOOLS:
 
-401k: Money goes in before tax reducing your taxable income now. Grows tax-deferred. If your employer matches contributions that is free money. Always take all of it.
+401(k): money goes in pre-tax, which lowers the income you are taxed on this year. Growth is tax-deferred — you pay tax when you withdraw it in retirement. If your employer adds an employer match, contribute at least enough to get all of it. That match is extra pay. Ask about vesting if you might leave soon: some matches become yours only after you stay a set number of years.
 
-Roth IRA: Money goes in after tax but grows completely tax-free. Pay zero tax on withdrawals in retirement. Best for young people who expect to earn more later. The IRS limit is $7,500 per year in 2026 (higher if you are 50 or older).
+Roth IRA: money goes in after-tax, then qualified withdrawals in retirement are tax-free. Useful when you expect a higher bracket later. You need earned income. The IRS limit is $7,500 in 2026 ($8,600 if you are 50 or older). A traditional IRA can work the other way: the contribution may lower taxes now, and withdrawals later are taxed. The same yearly limit covers both kinds of IRA combined.
 
-HSA: If you have a high-deductible health plan this is the most tax-advantaged account available. Triple tax benefit: contributions tax-free, growth tax-free, withdrawals for medical tax-free.
+HSA: if you are on a high-deductible health plan, this is the most tax-advantaged account most people can open. Contributions are pre-tax, growth is tax-free, and withdrawals for medical bills are tax-free.
 
-CAPITAL GAINS:
-Investments held over a year are taxed at maximum 20% and 0% if you earn under about $45,000. This is why investors pay lower rates than workers. Use this to your advantage.`},
+These are not secret loopholes. They are accounts written into the law so people will save. Use the ones you qualify for.`},
 {name:"How to Build Multiple Streams of Income",desc:"Creating income that works while you sleep",cat:"Gold Investor Insights",plan:"gold",icon:"💰",content:`The average millionaire has seven income streams. Here is how to build them.
 
 STREAM 1 - EARNED INCOME: Trade time for money. The starting point but not the destination.
@@ -2799,21 +2814,21 @@ Keep your emergency fund in cash so you never have to sell investments during a 
 
 WHAT NOT TO DO:
 Do not try to time the market. You need to be right twice. Missing just the 10 best days over 20 years cuts your returns roughly in half. The best investors made their largest fortunes buying during crashes not avoiding them.`},
-{name:"How the Stock Market Actually Works",desc:"Demystifying the market so you can start investing",cat:"Hidden Financial Knowledge",plan:"free",icon:"📉",content:`When you buy a stock you are buying a small ownership stake in a real company. One share of Apple means you own a tiny piece of Apple Inc and its future profits.
+{name:"How the Stock Market Actually Works",desc:"Demystifying the market so you can start investing",cat:"Hidden Financial Knowledge",plan:"free",icon:"📉",content:`When you buy a share of stock, you buy a small piece of a real company. One share of Apple means you own a tiny slice of Apple and of the profits it earns later. The short code you type to buy it is the ticker — AAPL for Apple.
 
 WHY PRICES MOVE:
-In the short term prices move based on emotion and speculation. In the long term they track actual business performance. Patient investors win.
+In the short term, prices move on emotion and guesses. Over many years they tend to follow the business. Patient owners have usually beaten people who trade every headline.
 
 THE S&P 500:
-An index of the 500 largest US companies. Has averaged about 10% per year for a century. Has never had a negative 20-year period in history.
+The S&P 500 is an index: a list of about 500 of the largest U.S. companies, often used as a stand-in for “the stock market.” It has averaged about 10% a year over many decades, dividends included, with ugly drops along the way. It has not had a negative 20-year stretch in the modern record. That average is history, not a promise about next year.
 
 HOW TO START:
-You do not need to pick stocks. Buy VOO which tracks the S&P 500. It costs 0.03% in fees and gives you ownership of all 500 companies.
+You do not need to pick individual stocks. Buy VOO, an index fund and an ETF, inside a brokerage account. It copies the S&P 500. Its expense ratio — the yearly fee — is about 0.03%, roughly $3 a year for every $10,000 you invest. One purchase owns a slice of those 500 companies.
 
 DOLLAR COST AVERAGING:
-Invest a fixed amount every month regardless of price. When prices drop your money buys more shares. When prices rise it buys fewer. Over time this beats almost every other strategy for regular investors.
+Invest a fixed amount on a schedule, no matter the price. When prices drop, that amount buys more shares. When prices rise, it buys fewer. For most people investing from a paycheck, this beats guessing the perfect day.
 
-The most important rule: time in the market beats timing the market. Buy a little every month and hold for decades.`},
+The rule that matters: time in the market beats timing the market. Buy a little every month and hold for decades.`},
 {name:"The Difference Between Rich and Wealthy",desc:"Why high income alone will never make you free",cat:"Hidden Financial Knowledge",plan:"free",icon:"👑",content:`Rich means high income. Wealthy means assets that generate income whether you work or not.
 
 A doctor making $400,000 is rich. But if they spend $390,000 they are one lost job away from disaster.
@@ -2883,10 +2898,10 @@ Every financial goal needs to be:
 
 EXAMPLES OF REAL GOALS:
 Vague: I want to invest more
-SMART: I will invest $300 per month in VOO starting September 1 and reach $10,000 by December 2026
+SMART: I will invest $300 per month in VOO starting September 1 and reach $10,000 by December 2027
 
 Vague: I want to pay off debt
-SMART: I will pay $500 extra per month on my $6,000 credit card balance and be debt-free by March 2026
+SMART: I will pay $500 extra per month on my $6,000 credit card balance and be debt-free by March 2027
 
 THE THREE-GOAL SYSTEM:
 At any given time have exactly three financial goals:
@@ -2919,55 +2934,63 @@ STEP 6 - SET A TARGET PRICE:
 What price would you be excited to pay? What price is too expensive? A target price removes emotion from the decision.
 
 Great companies at bad prices make bad investments. Mediocre companies at great prices can make excellent investments.`},
-{name:"How to Choose Your First Credit Card",desc:"The right card at the right time can save you thousands — here is how to pick",cat:"Hidden Financial Knowledge",plan:"free",icon:"💳",content:`Your first credit card is one of the most important financial tools you will ever use. Used right it builds your credit score, earns you rewards, and costs you nothing. Used wrong it can trap you in debt for years.
+{name:"How to Choose Your First Credit Card",desc:"The right card at the right time can save you thousands — here is how to pick",cat:"Hidden Financial Knowledge",plan:"free",icon:"💳",content:`Your first credit card can build a credit score, return a little cash, and cost you nothing. Used carelessly, the same card becomes expensive debt.
 
 WHAT TO LOOK FOR:
-No annual fee: your first card should be completely free to hold. There are excellent no-fee cards that build credit just as fast as fee cards.
+No annual fee. Your first card should be free to hold. Plenty of no-fee cards build credit as fast as cards that charge a fee.
 
-Low interest rate: you should never carry a balance, but if you ever do, a lower rate limits damage.
+The APR, or annual percentage rate. This is the interest rate you pay if you do not pay the statement balance in full. Many cards charge 20% or more. Plan to pay in full every month. A lower APR only limits the damage if you slip.
 
-Rewards that match your spending: if you spend mostly on food and transport, get a card that rewards those categories. Cash back is the simplest and most flexible reward.
+Rewards that match your spending. If you mostly buy food and transit, pick a card that pays more there. Cash back — a percent of spending returned as money — is the simplest reward.
 
-No foreign transaction fees: especially important if you travel or shop on international websites.
+No foreign transaction fee if you travel or buy from overseas sites. That fee is often about 3%.
 
-BEST FIRST CARDS (no annual fee):
+If you have no credit history yet, a secured credit card is the usual start. You put down a refundable deposit, and that deposit is your credit limit.
+
+BEST FIRST CARDS (no annual fee) — examples, not ads:
 - Chase Freedom Unlimited: 1.5% cash back on everything
-- Discover it Student: 5% rotating categories, matches first year rewards
-- Capital One Quicksilver: 1.5% unlimited cash back, no foreign fees
+- Discover it Student: 5% rotating categories, and it matches your first-year rewards
+- Capital One Quicksilver: 1.5% unlimited cash back, no foreign transaction fees
 
-THE GOLDEN RULES:
-1. Use it for one or two small recurring purchases (streaming, groceries)
-2. Pay the full balance every single month before the due date
-3. Never use more than 30% of your credit limit
-4. Set up autopay for at least the minimum as a safety net
-5. Check your statement monthly for any fraudulent charges
+THE RULES THAT KEEP THE CARD CHEAP:
+1. Use it for one or two small recurring purchases.
+2. Pay the statement balance — the full amount on the monthly bill — before the due date. That is what keeps the APR from applying. The minimum payment only avoids a late fee. The unpaid rest keeps charging interest.
+3. Stay under 30% of your credit limit, and under 10% if you can. Owing $300 on a $1,000 limit is 30% credit utilization. High utilization can drop your score even when you pay on time.
+4. Turn on autopay for at least the minimum so a busy month is not a missed payment. If autopay is only the minimum, still pay the statement balance yourself.
+5. Read the statement for charges you do not recognize.
 
-One well-managed credit card used for 12 months will build a solid credit foundation that benefits you for life.`},
-{name:"Understanding Your Paycheck: Where Does the Money Go?",desc:"Breaking down every deduction so you know exactly what you are actually earning",cat:"Hidden Financial Knowledge",plan:"free",icon:"💼",content:`Most people look at their paycheck and feel confused or cheated. Here is exactly where every dollar goes and what you can do about it.
+One card, paid in full for 12 months, is enough to start a credit history.`},
+{name:"Understanding Your Paycheck: Where Does the Money Go?",desc:"Breaking down every deduction so you know exactly what you are actually earning",cat:"Hidden Financial Knowledge",plan:"free",icon:"💼",content:`Most people look at a paycheck and feel lost. Every line has a name. Here is what the names mean, and a checklist for the first one you receive.
 
-GROSS VS NET:
-Your gross salary is what your employer pays. Your net (take-home) pay is what you actually receive. The difference goes to taxes and benefits. For most people the difference is 20-35%.
+GROSS PAY VS NET PAY:
+Gross pay is what your employer owes you before anything comes out. Net pay, or take-home pay, is what lands in the bank. For most people the gap is about 20–35%. It is not a mystery fee. It is withholding plus benefits you chose.
 
-THE DEDUCTIONS EXPLAINED:
+Read it on your pay stub, the slip or online statement for that paycheck. Keep one. You will want it when a number looks wrong.
 
-Federal Income Tax: withheld based on your W-4 form and tax bracket. This is an estimate — you settle up in April when you file your return.
+THE LINES, IN PLAIN ENGLISH:
 
-State Income Tax: varies by state. Nine states have no income tax at all including Texas, Florida, and Nevada.
+Federal income tax: withholding is an estimate your employer sends to the IRS. The W-4 you filled out tells them how much to hold back. You settle the difference when you file. Your tax bracket is a slice of income, not a rate on every dollar. A big tax refund means too much was withheld all year — that was your money. Adjust the W-4. Each January your employer sends a W-2 showing what you earned and what was withheld. You need it to file.
 
-Social Security (6.2%): goes to the Social Security fund. Your employer pays another 6.2% on top.
+State income tax: depends on where you live. Nine states have no wage income tax, including Texas, Florida, and Nevada.
 
-Medicare (1.45%): funds Medicare health coverage for seniors. Employer also matches this.
+Social Security (6.2%): a tax that funds retirement and disability benefits. Your employer pays another 6.2%. You see only your half.
 
-401k contribution: if you have elected to contribute to your workplace retirement plan, this comes out pre-tax reducing your taxable income.
+Medicare (1.45%): a tax that funds health coverage for people 65 and older. Your employer matches this too.
 
-Health insurance premium: your portion of employer-sponsored health coverage.
+401(k) contribution: if you opted in, this comes out pre-tax, which lowers the income taxed this year. Growth is tax-deferred. If there is an employer match, contribute at least enough to get all of it — that match is extra pay. Ask about vesting. Some matches become fully yours only after you stay a set number of years. Your own contributions are yours right away.
 
-HOW TO INCREASE YOUR TAKE-HOME:
-1. Increase your 401k contribution (counterintuitive — reduces taxable income so the net reduction in take-home is smaller than the contribution)
-2. Contribute to an FSA for medical or dependent care expenses (pre-tax)
-3. Check your W-4 — if you consistently get a large tax refund you are overpaying all year. Adjust withholding to get that money monthly instead.
+Health insurance premium: what you pay each paycheck to keep the plan active, whether or not you see a doctor. If the plan is a high-deductible health plan, you may be able to open an HSA. Money goes in pre-tax, can be invested, and comes out tax-free for medical bills.
 
-Your paycheck is the starting point. Understanding every line means you can optimize every line.`},
+FSA: a flexible spending account. Pre-tax money for medical or childcare costs. Most plans are use-it-or-lose-it by year end, so contribute only what you will spend.
+
+YOUR FIRST PAYCHECK, 5 STEPS:
+1. Find gross pay and net pay. The lines between them are the whole story.
+2. Check that the W-4 matches what you meant. A huge refund means you are waiting until tax time for your own wages.
+3. Confirm you are getting the full employer match, and write down the vesting rule.
+4. If you have a high-deductible health plan, see whether an HSA is open. If you have an FSA, note the deadline to spend it.
+5. Save the pay stub. In January, save the W-2.
+
+Once you can name every line, you can change the ones that are actually choices.`},
 {name:"ETFs vs Individual Stocks",desc:"Understanding the difference and when to use each",cat:"Gold Investor Insights",plan:"gold",icon:"📊",content:`One of the most important decisions you will make as an investor.
 
 WHAT IS AN ETF:
@@ -2987,37 +3010,34 @@ THE SMART APPROACH - CORE SATELLITE:
 {name:"Renting vs Buying a Home: The Real Math",desc:"The honest financial comparison most people never do before making the biggest purchase of their life",cat:"Assets & Liabilities",plan:"free",icon:"🏡",content:`Everyone says buying is always better than renting. The reality is more nuanced and depends entirely on your specific numbers.
 
 THE CASE FOR BUYING:
-- You build equity with each mortgage payment
-- Property values tend to appreciate over time
-- Fixed mortgage payment (unlike rent which rises)
-- Tax deductions on mortgage interest
-- Freedom to renovate and customize
-- Forced savings mechanism
+- Each mortgage payment builds equity: the home’s value minus what you still owe. Early payments are mostly interest. Only a few hundred dollars a month pays the loan down at the start.
+- Homes have often shown appreciation — a rise in price — over long periods. They can also fall. Appreciation is not rent you can spend.
+- A fixed mortgage payment does not reset every year the way rent can.
+- You may be able to deduct mortgage interest. The rules are specific. This is not a filing guide.
+- You can change the place, within the rules of any HOA. An HOA is the group that charges a monthly fee in many condos and neighborhoods.
+- The payment is a forced savings habit.
 
 THE CASE FOR RENTING:
-- No maintenance costs or unexpected repair bills
-- Geographic flexibility to move for opportunities
-- Down payment and closing costs kept invested can grow significantly
-- No property tax, HOA fees, or insurance at homeowner rates
-- In expensive markets rent can be substantially cheaper than buying
+- You do not get the repair bill, and you do not pay property tax or homeowner insurance directly.
+- You can move for a job without selling.
+- The down payment and closing costs stay available to invest. Closing costs are the one-time lender, title, and legal fees, often 2–5% of the price, on top of the cash you put down.
+- In expensive cities, rent can be much cheaper than the full monthly cost of owning.
 
-THE BREAK-EVEN CALCULATION:
-The key question is: how long until buying becomes cheaper than renting?
+A WORKED EXAMPLE, NOT A RULE:
+$400,000 home, 20% down payment ($80,000 you could otherwise invest).
+Mortgage: about $2,000 a month at 6.5%.
+Property tax: about $400 a month.
+Insurance: about $150 a month.
+Maintenance, using a rough 1% of the price per year: about $333 a month.
+Cash cost to own: about $2,883 a month.
 
-Example: $400,000 home with 20% down ($80,000)
-Monthly mortgage: ~$2,000 at 6.5%
-Plus property tax: $400/month
-Plus insurance: $150/month
-Plus maintenance (1% annually): $333/month
-Total monthly cost of ownership: ~$2,883
+If a similar home rents for $2,200, owning costs about $683 more cash each month. In the first year only about $300 of the mortgage payment reduces the loan. The rest is interest. Buying comes out ahead only if you stay long enough for appreciation, rising rent, and that slow paydown to cover the extra cash, the down payment, and closing costs. Many sketches land around 4–7 years. Your city can be shorter or much longer.
 
-If renting equivalent home costs $2,200/month, buying costs $683 more per month.
-But you build equity of ~$800/month in early years.
-Break-even: roughly 4-5 years.
+WHEN BUYING TENDS TO MAKE SENSE: you expect to stay more than about 5 years, you can put 20% down (or you have priced in the extra insurance lenders often charge when you put down less), your income is stable, and the price is reasonable next to rent.
 
-WHEN BUYING MAKES SENSE: you plan to stay 5+ years, have 20% down, stable income, and local prices are reasonable relative to rents.
+WHEN RENTING TENDS TO MAKE SENSE: you might move within 5 years, prices are very high relative to rents, or the down payment would earn more, with diversification, than it would locked in the house.
 
-WHEN RENTING MAKES SENSE: you might move within 5 years, the local price-to-rent ratio is very high, or your down payment would generate better returns invested elsewhere.`},
+Run your own numbers before you treat a house as an automatic win.`},
 {name:"How to Negotiate Your Salary (And Why Most People Never Do)",desc:"The conversation that can add hundreds of thousands to your lifetime earnings",cat:"Hidden Financial Knowledge",plan:"free",icon:"🤝",content:`Studies consistently show that people who negotiate their starting salary earn significantly more over their careers than those who accept the first offer. Yet most people never negotiate because they are afraid.
 
 THE NUMBERS THAT MATTER:
@@ -3810,7 +3830,8 @@ function openLesson(i, fromHash){
   }
   const ord = lessonOrder(), pos = ord.indexOf(i) + 1;
   const meta = document.createElement('div'); meta.className = 'lesson-meta';
-  meta.textContent = 'Lesson ' + pos + ' of ' + ord.length + ' · ~' + lessonMinutes(l) + ' min read · ' + (l.plan === 'free' ? 'Free' : 'Gold');
+  meta.innerHTML = 'Lesson ' + pos + ' of ' + ord.length + ' · ~' + lessonMinutes(l) + ' min read · ' + (l.plan === 'free' ? 'Free' : 'Gold') +
+    ((l.plan === 'gold' && !IS_GOLD) ? '' : '<div style="margin-top:6px">Dotted words are defined. Tap or click one, or press Enter.</div>');
   const body = document.getElementById('detailBody'); body.insertBefore(meta, body.firstChild);
   const prev = adjacentLesson(i, -1), nxt = adjacentLesson(i, 1), isDone = !!getLessonProgress()[i];
   const nav = document.createElement('div'); nav.className = 'lesson-nav';
@@ -4687,6 +4708,7 @@ async function openDetail(ticker){
   document.getElementById('dTicker').textContent=ticker;
   document.getElementById('dCompany').textContent=COMPANIES[ticker]||ticker;
   document.getElementById('dShares').textContent=selectedStock.shares;
+  const costEl = document.getElementById('dCost'); if(costEl) costEl.textContent = fmt(selectedStock.buyPrice);
   document.getElementById('dPrice').textContent='Loading...';
   document.getElementById('dToday').textContent='--';
   document.getElementById('dVal').textContent='--';
@@ -5775,7 +5797,107 @@ const GLOSSARY = {
   'bond':'A loan you make to a government or company. They pay you interest and return your money on a set date. Usually steadier than stocks, with lower long-run returns.',
   'credit score':'A number (usually 300–850 in the U.S.) lenders use to judge how likely you are to repay. Paying on time and keeping card balances low matter most.',
   'net worth':'What you own minus what you owe.',
-  '13F':'A quarterly SEC report. Large U.S. investment managers list the U.S. stocks they owned on the last day of the quarter. It is filed up to 45 days later, and it leaves out shorts, most foreign stocks, bonds and cash.'
+  '13F':'A quarterly SEC report. Large U.S. investment managers list the U.S. stocks they owned on the last day of the quarter. It is filed up to 45 days later, and it leaves out shorts, most foreign stocks, bonds and cash.',
+  // Paycheck, jobs & taxes
+  'gross pay':'Your full pay before anything is taken out.',
+  'net pay':'Your take-home pay — what actually lands in your bank after taxes and deductions.',
+  'withholding':'Tax your employer takes out of each paycheck and sends to the government for you, as an estimate of what you’ll owe.',
+  'W-4':'The form you fill out for your employer that decides how much federal tax is withheld from each paycheck.',
+  'W-2':'The yearly form your employer sends showing what you earned and what tax was withheld — you need it to file your taxes.',
+  'pay stub':'The receipt for one paycheck. It lists gross pay, each deduction, and net pay.',
+  'tax refund':'Money the government gives back when too much tax was withheld during the year. It’s your own money, not a bonus.',
+  'tax bracket':'A slice of income taxed at a certain rate. Only the dollars inside each slice get that rate — not your whole income.',
+  'effective tax rate':'The share of your total income you actually pay in tax — usually much lower than your top bracket.',
+  'pre-tax':'Money taken out of your pay before income tax is calculated, which lowers your taxable income today.',
+  'after-tax':'Money that has already been taxed — like what’s in your bank account from your paycheck.',
+  'tax-deferred':'You don’t pay tax on the growth now; you pay it later when you withdraw the money.',
+  'employer match':'Extra money your employer adds to your 401(k) when you contribute — for example, 50 cents for every dollar up to 6% of your pay. Free money.',
+  'vesting':'The waiting period before employer money (like a 401(k) match or stock) is fully yours. Leave early and you may lose the unvested part.',
+  'traditional IRA':'A retirement account where contributions may lower your taxes now, but withdrawals in retirement are taxed.',
+  'IRA':'Individual Retirement Account — a retirement account you open yourself (not through work) that gets tax breaks.',
+  'HSA':'Health Savings Account — for people on a high-deductible health plan. Money goes in tax-free, grows tax-free, and comes out tax-free for medical costs.',
+  'high-deductible health plan':'Health insurance with lower monthly costs but a bigger amount you pay yourself before insurance kicks in. Required for an HSA.',
+  'FSA':'Flexible Spending Account — pre-tax money from your paycheck for medical or childcare costs. Usually use-it-or-lose-it each year.',
+  'Social Security':'A U.S. retirement and disability program funded by a 6.2% tax on your pay (your employer pays another 6.2%).',
+  'Medicare':'U.S. health insurance for people 65+, funded by a 1.45% tax on your pay.',
+  'premium':'The regular amount you pay to keep insurance active, whether or not you use it.',
+  'ordinary income':'Regular income like wages and interest, taxed at your normal bracket rates.',
+  'stock options':'A job perk giving you the right to buy company stock at a set price later. Usually vests over several years.',
+  'signing bonus':'A one-time cash payment for accepting a job offer.',
+  'PTO':'Paid time off — vacation or sick days you get paid for.',
+  // Banking, credit & borrowing
+  'interest rate':'The price of borrowing money (or the reward for saving it), shown as a yearly percentage.',
+  'APR':'Annual Percentage Rate — the yearly cost of borrowing, including some fees. Credit cards often charge 20%+ APR.',
+  'APY':'Annual Percentage Yield — what your savings actually earn in a year, including interest on your interest.',
+  'checking account':'A bank account for everyday spending and bills. Usually earns little or no interest.',
+  'high-yield savings account':'A savings account (often online) paying much more interest than a regular bank savings account, still FDIC-insured.',
+  'HYSA':'Short for high-yield savings account — a savings account paying much more interest than a regular one.',
+  'FDIC':'U.S. government insurance that protects up to $250,000 per depositor, per bank, if the bank fails.',
+  'CD':'Certificate of deposit — a savings account that locks your money for a set time in exchange for a fixed interest rate.',
+  'money market fund':'A very low-risk fund holding short-term government and company debt — like a savings account inside your brokerage.',
+  'credit union':'A member-owned, not-for-profit alternative to a bank, often with lower fees and loan rates.',
+  'credit report':'Your borrowing history — accounts, balances, on-time or late payments. Your credit score is calculated from it.',
+  'credit limit':'The most you’re allowed to owe on a credit card at once.',
+  'credit utilization':'How much of your credit limit you’re using. $300 owed on a $1,000 limit = 30%. Lower is better.',
+  'statement balance':'What you owed when your monthly bill was generated. Pay this in full and you pay zero interest.',
+  'minimum payment':'The smallest amount you can pay to avoid a late fee — but the rest keeps charging interest.',
+  'annual fee':'A yearly charge just for having a credit card. Most good first cards have none.',
+  'secured credit card':'A starter card backed by a refundable deposit that becomes your limit — built for people with no credit history.',
+  'authorized user':'Someone added to another person’s credit card. The account’s history can help build their credit.',
+  'hard inquiry':'A credit check when you apply for a loan or card. Too many at once can dip your score a little.',
+  'buy now pay later':'Splitting a purchase into installments at checkout. Easy to overspend, and missed payments can bring fees.',
+  'student loan':'Money borrowed for school. Federal loans have fixed rates and flexible repayment; private loans usually don’t.',
+  'mortgage':'A loan to buy a home, usually paid back monthly over 15–30 years. The home is collateral.',
+  'down payment':'The cash you pay upfront when buying a home; the rest is borrowed through the mortgage.',
+  'closing costs':'One-time fees when you buy a home (lender, title, legal) — often 2–5% of the price.',
+  'equity':'Ownership value. Home equity = home value minus what you still owe; company equity = a share of ownership.',
+  'property tax':'A yearly local tax on the value of a home or land.',
+  'HOA':'Homeowners association — a group that runs a condo or neighborhood and charges monthly fees.',
+  'appreciation':'When something rises in value over time.',
+  'depreciation':'When something loses value over time — like a car the moment you drive it off the lot.',
+  // Investing basics
+  'share':'One unit of ownership in a company or fund.',
+  'returns':'What your money earns — gains plus any dividends or interest — usually shown as a % per year.',
+  'S&P 500':'An index of about 500 of the largest U.S. companies. People use it as shorthand for “the stock market.”',
+  'index':'A list that tracks a group of investments, like the S&P 500, so you can measure (or copy) how that group performs.',
+  'mutual fund':'A pooled fund run by a manager that you buy at the end-of-day price. Common in 401(k)s; fees vary a lot.',
+  'dividend yield':'Yearly dividends divided by the stock price. $2 a year on a $100 stock = a 2% yield.',
+  'earnings':'A company’s profit — what’s left after all its costs.',
+  'revenue':'All the money a company brings in from sales, before any costs.',
+  'profit margin':'How many cents of profit a company keeps from each dollar of sales.',
+  'EPS':'Earnings per share — company profit divided by its number of shares.',
+  'fundamentals':'The real business numbers behind a stock: revenue, profit, debt, growth.',
+  'sector':'A group of companies in the same kind of business, like tech, energy or healthcare.',
+  'sector allocation':'How your portfolio is split across sectors. A huge slice in one sector means one industry’s bad year hits you harder.',
+  '52-week return':'How much a stock’s price changed over the past year.',
+  'cost basis':'What you originally paid for an investment. Your profit or loss is measured from here.',
+  'asset allocation':'How you split your money between stocks, bonds and cash.',
+  'asset class':'A broad type of investment — stocks, bonds, cash, real estate.',
+  'rebalancing':'Selling a bit of what grew and buying what lagged to get back to your target mix.',
+  'time horizon':'How long until you need the money. Longer horizons can handle more ups and downs.',
+  'risk tolerance':'How big a drop you can sit through without panic-selling.',
+  'passive income':'Money that keeps coming in without you trading hours for it — dividends, interest, rent.',
+  'royalties':'Payments you earn whenever someone uses something you created, like a song, book or patent.',
+  'Rule of 72':'72 ÷ your yearly return ≈ years for your money to double.',
+  'purchasing power':'How much stuff your money can actually buy. Inflation shrinks it.',
+  'CPI':'Consumer Price Index — the main U.S. measure of how fast everyday prices are rising (inflation).',
+  'Treasury':'A bond issued by the U.S. government — considered one of the safest investments.',
+  'TIPS':'Treasury Inflation-Protected Securities — U.S. government bonds whose value rises with inflation.',
+  'I bonds':'U.S. savings bonds whose interest rate adjusts with inflation. Bought directly from the government.',
+  'commodities':'Raw materials like gold, oil or wheat that can be bought and sold as investments.',
+  'Federal Reserve':'The U.S. central bank. It sets short-term interest rates to fight inflation or support the economy.',
+  'moat':'A lasting advantage that protects a company from competitors — brand, network, low costs.',
+  'PEG ratio':'P/E divided by expected yearly earnings growth. Around 1 or below can mean the price is reasonable for the growth.',
+  'leverage':'Using borrowed money to invest. It magnifies gains — and losses.',
+  'REIT':'Real Estate Investment Trust — a company that owns properties; you can buy its shares like a stock.',
+  'margin debt':'Money investors borrow from their broker to buy more stock. Fast growth in it can signal a frothy market.',
+  'wash sale':'Selling at a loss and buying the same (or nearly identical) investment within 30 days — the IRS won’t let you claim that loss.',
+  '10-K':'The detailed annual report every U.S. public company files with the SEC.',
+  'free cash flow':'Cash a business generates after paying to run and maintain itself — money it could actually hand back or reinvest.',
+  'emerging markets':'Developing economies like India, Brazil or China — more growth potential, more risk.',
+  'Nasdaq 100':'An index of 100 of the largest non-financial companies on the Nasdaq exchange. It is heavy in big technology firms, so it can rise and fall faster than the S&P 500. QQQ is an ETF that tracks it.',
+  'Guru-owned':'Held by at least one famous investor FinPath tracks, based on their latest public quarterly filing. The filing is weeks old and is not a recommendation to copy the trade.',
+  'positions value':'What your shares are worth at the latest price. Cash you have not invested yet is not included.'
 };
 // Moves-page terms. Kept out of GLOSSARY so words like Buy are not underlined inside every lesson.
 const F13_TERMS = {
@@ -5792,21 +5914,67 @@ function lookupTerm(term){
   if(term && Object.prototype.hasOwnProperty.call(F13_TERMS, term)) return F13_TERMS[term];
   return '';
 }
-// Single pass over the plain-text lesson, so a term can never match inside markup inserted for another term.
-// Only the first mention of each term is underlined.
+// Surfaces that should show a canonical glossary entry (not their own row).
+// Longer phrases are tried first. A canonical key is underlined only on its first mention.
+const GLOSSARY_ALIASES = {
+  '401k': '401(k)',
+  '401ks': '401(k)',
+  'dca': 'dollar cost averaging',
+  'dollar-cost averaging': 'dollar cost averaging',
+  'price to earnings': 'P/E ratio',
+  'price-to-earnings': 'P/E ratio',
+  'price to earnings ratio': 'P/E ratio',
+  'price-to-earnings ratio': 'P/E ratio',
+  'hysa': 'high-yield savings account',
+  'credit utilisation': 'credit utilization',
+  'hard inquiries': 'hard inquiry',
+  'asset classes': 'asset class',
+  'equities': 'equity',
+  'series i savings bonds': 'I bonds',
+  'series i bonds': 'I bonds',
+  'capital gain': 'capital gains'
+};
+// Single pass over plain text, so a term can never match inside markup inserted for another term.
+function glossaryMatchers(){
+  const list = [];
+  const seen = {};
+  function add(surface, key){
+    const s = String(surface);
+    const id = s.toLowerCase();
+    if(!s || !GLOSSARY[key] || seen[id]) return;
+    seen[id] = 1;
+    list.push({surface: s, key: key});
+  }
+  Object.keys(GLOSSARY_ALIASES).forEach(function(a){ add(a, GLOSSARY_ALIASES[a]); });
+  Object.keys(GLOSSARY).forEach(function(t){
+    if(GLOSSARY_ALIASES[t.toLowerCase()]) return;
+    add(t, t);
+    // Simple plurals: stocks, bonds, dividends, ETFs, index funds, mortgages, shares.
+    if(!/s$/i.test(t) && !/[)\d]$/.test(t)) add(t + 's', t);
+  });
+  list.sort(function(a, b){ return b.surface.length - a.surface.length; });
+  return list;
+}
 function glossaryWrap(text){
-  const terms = Object.keys(GLOSSARY).sort(function(a, b){ return b.length - a.length; });
-  const byLower = {}; terms.forEach(function(t){ byLower[t.toLowerCase()] = t; });
-  const rx = new RegExp('(^|[^\\w])(' + terms.map(function(t){ return t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }).join('|') + ')(?![\\w])', 'gi');
+  const matchers = glossaryMatchers();
+  const byLower = {};
+  matchers.forEach(function(m){ byLower[m.surface.toLowerCase()] = m.key; });
+  const rx = new RegExp('(^|[^\\w])(' + matchers.map(function(m){ return m.surface.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }).join('|') + ')(?![\\w])', 'gi');
   const used = {};
   return String(text).replace(rx, function(m, pre, hit){
     const key = byLower[hit.toLowerCase()];
-    if(!key || used[key]) return m; used[key] = 1;
+    if(!key || used[key]) return m;
+    used[key] = 1;
     return pre + '<span class="term" role="button" tabindex="0" data-term="' + escapeHtml(key) + '" onclick="showTerm(event,this.dataset.term)">' + hit + '</span>';
   });
 }
+// Visible label that opens the same definition popup as a lesson term.
+function termLabel(text, term){
+  const key = term || text;
+  return '<span class="term" role="button" tabindex="0" data-term="' + escapeHtml(key) + '" onclick="showTerm(event,this.dataset.term)">' + escapeHtml(text) + '</span>';
+}
 function showTerm(ev, term){
-  if(ev && ev.stopPropagation) ev.stopPropagation();
+  if(ev){ if(ev.preventDefault) ev.preventDefault(); if(ev.stopPropagation) ev.stopPropagation(); }
   hideTerm();
   const def = lookupTerm(term);
   if(!def) return;
@@ -6012,7 +6180,7 @@ function answerQuiz(oi){
   if(oi === item.a) _quizState.correct++;
   const why = document.getElementById('quizWhy');
   why.style.display = 'block';
-  why.innerHTML = (oi === item.a ? '<b class="up">Correct.</b> ' : '<b class="down">Not quite.</b> ') + item.w +
+  why.innerHTML = (oi === item.a ? '<b class="up">Correct.</b> ' : '<b class="down">Not quite.</b> ') + glossaryWrap(item.w) +
     '<br><button class="btn-secondary" style="margin-top:12px;padding:9px 20px;font-size:13px" onclick="_quizState.idx++;renderQuizQ()">' + (_quizState.idx === QUIZZES[_quizState.name].length-1 ? 'See score' : 'Next question') + '</button>';
 }
 
@@ -6358,7 +6526,7 @@ async function renderPaper(){
     grid.innerHTML = qs.map(function(r, i){
       const price = r.q ? r.q.c : r.x.price;
       const val = price * r.x.sh, pnl = (price - r.x.price)*r.x.sh, pct = (price - r.x.price)/r.x.price*100;
-      return '<div class="stock-row"><div class="s-icon">' + escapeHtml(r.x.t.slice(0,2)) + '</div><div class="s-info"><div class="s-name">' + escapeHtml(r.x.t) + '</div><div class="s-meta">' + escapeHtml(r.x.sh) + ' sh @ ' + fmt(r.x.price) + '</div></div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" onclick="paperSell(' + i + ')">Sell</button></div></div>';
+      return '<div class="stock-row"><div class="s-icon">' + escapeHtml(r.x.t.slice(0,2)) + '</div><div class="s-info"><div class="s-name">' + escapeHtml(r.x.t) + '</div><div class="s-meta">' + escapeHtml(r.x.sh) + ' sh · ' + termLabel('cost basis') + ' ' + fmt(r.x.price) + '</div></div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" onclick="paperSell(' + i + ')">Sell</button></div></div>';
     }).join('');
     p.pos.forEach(function(x){ wsWatch(x.t); });
   }
@@ -6741,7 +6909,7 @@ async function loadEarnings(){
       const epsNum = typeof x.epsEstimate === 'number' ? x.epsEstimate : (typeof x.epsEstimate === 'string' ? Number(x.epsEstimate) : NaN);
       const eps = isFinite(epsNum) ? '$' + escapeHtml(String(x.epsEstimate)) : '—';
       const when = days === null ? '—' : (days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : 'in ' + days + ' days');
-      return '<div class="earn-row"><div><b>' + escapeHtml(x.symbol) + '</b>' + (mine ? ' <span class="badge-buy">You own this</span>' : '') + '<div style="font-size:11px;color:var(--muted)">' + escapeHtml(dateStr) + hour + '</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--mint)">' + when + '</div><div style="font-size:11px;color:var(--muted)">EPS est: ' + eps + '</div></div></div>';
+      return '<div class="earn-row"><div><b>' + escapeHtml(x.symbol) + '</b>' + (mine ? ' <span class="badge-buy">You own this</span>' : '') + '<div style="font-size:11px;color:var(--muted)">' + escapeHtml(dateStr) + hour + '</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--mint)">' + when + '</div><div style="font-size:11px;color:var(--muted)">' + termLabel('EPS est', 'EPS') + ': ' + eps + '</div></div></div>';
     }).join('');
     if(!html) throw 0;
     el.innerHTML = html;
@@ -7049,17 +7217,18 @@ async function compareStocks(){
       const aw = higherWins ? va > vb : va < vb;
       ca = aw ? ' class="up" style="font-weight:700"' : ''; cb = !aw ? ' class="up" style="font-weight:700"' : '';
     }
-    return '<tr><th>' + escapeHtml(label) + '</th><td' + ca + '>' + f(va) + '</td><td' + cb + '>' + f(vb) + '</td></tr>';
+    const labelHtml = (typeof label === 'string' && label.indexOf('class="term"') !== -1) ? label : escapeHtml(String(label));
+    return '<tr><th>' + labelHtml + '</th><td' + ca + '>' + f(va) + '</td><td' + cb + '>' + f(vb) + '</td></tr>';
   }
   const pct = function(v){ return v == null || !isFinite(Number(v)) ? '—' : (Number(v)>=0?'+':'') + Number(v).toFixed(1) + '%'; };
   const mcap = fmtMcap;
   out.innerHTML = '<table class="cmp-table"><tr><th></th><th>' + escapeHtml(a) + '</th><th>' + escapeHtml(b) + '</th></tr>' +
     row('Price', qa && qa.c, qb && qb.c, function(v){ return v==null?'—':fmt(v); }) +
     row('Today', qa && qa.dp, qb && qb.dp, pct) +
-    row('P/E ratio', m(ma,'peBasicExclExtraTTM'), m(mb,'peBasicExclExtraTTM'), function(v){ return v==null?'—':Number(v).toFixed(1); }, false) +
-    row('Dividend yield', m(ma,'currentDividendYieldTTM'), m(mb,'currentDividendYieldTTM'), function(v){ return v==null?'—':Number(v).toFixed(2)+'%'; }, true) +
-    row('Market cap', m(ma,'marketCapitalization'), m(mb,'marketCapitalization'), mcap) +
-    row('52-week return', m(ma,'52WeekPriceReturnDaily'), m(mb,'52WeekPriceReturnDaily'), pct, true) +
+    row(termLabel('P/E ratio'), m(ma,'peBasicExclExtraTTM'), m(mb,'peBasicExclExtraTTM'), function(v){ return v==null?'—':Number(v).toFixed(1); }, false) +
+    row(termLabel('Dividend yield', 'dividend yield'), m(ma,'currentDividendYieldTTM'), m(mb,'currentDividendYieldTTM'), function(v){ return v==null?'—':Number(v).toFixed(2)+'%'; }, true) +
+    row(termLabel('Market cap', 'market cap'), m(ma,'marketCapitalization'), m(mb,'marketCapitalization'), mcap) +
+    row(termLabel('52-week return'), m(ma,'52WeekPriceReturnDaily'), m(mb,'52WeekPriceReturnDaily'), pct, true) +
     row('Sector', SECTORS[a]||'—', SECTORS[b]||'—') +
     row('Held by gurus', gurus(a), gurus(b)) +
     '</table><div style="font-size:11px;color:var(--muted2);margin-top:10px;line-height:1.55">Price: latest quote. Today: move since the last close — a bigger day is not better. P/E: price ÷ earnings (lower can mean cheaper, not safer). Yield: yearly dividend as a percent of price. Market cap: company value, shown as M, B, or T. 52-week: price change over the past year. Green marks only P/E, yield, and 52-week. Educational, not advice.</div>';
