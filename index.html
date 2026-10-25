@@ -1087,6 +1087,8 @@ body.light .scr-filters input,body.light .scr-filters select{background:#fff}
 .quiz-opt.wrong{background:rgba(248,113,113,.14);border-color:var(--red)}
 /* ── GLOSSARY TERMS ── */
 .term{border-bottom:1.5px dotted var(--green);cursor:help;color:var(--mint)}
+.term:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:2px}
+.cmp-table th .term,.p-label .term,.port-label .term,.d-mlabel .term{color:var(--mint)}
 .learn-path{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 20px;margin:0 0 22px}
 .learn-path h3{font-size:16px;font-weight:700;font-family:var(--font-display);margin-bottom:4px}
 .lp-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5}
@@ -2012,7 +2014,7 @@ body.light .gs-item{background:#fff}
     </div>
     <div id="learnPath"></div>
     <div class="lessons-grid" id="lessonsGrid"></div>
-    <details class="glossary-box" id="glossaryBox"><summary>📖 Glossary — plain-English money terms</summary><dl id="glossaryList"></dl></details>
+    <details class="glossary-box" id="glossaryBox"><summary>📖 Glossary — plain-English money terms. The same words are dotted inside lessons.</summary><dl id="glossaryList"></dl></details>
   </div>
   <div class="lesson-detail" id="lessonDetail">
     <button class="back-btn" onclick="closeLessonDetail()">← Back to lessons</button>
@@ -2075,7 +2077,7 @@ body.light .gs-item{background:#fff}
           <div class="p-metric"><div class="p-label">Total invested</div><div class="p-val" id="pInvested">$0.00</div></div>
           <div class="p-metric"><div class="p-label">Current value</div><div class="p-val" id="pCurrent">$0.00</div></div>
           <div class="p-metric"><div class="p-label">Total profit/loss</div><div class="p-val" id="pPnl">$0.00</div></div>
-          <div class="p-metric"><div class="p-label">Return %</div><div class="p-val" id="pReturn">0.00%</div></div>
+          <div class="p-metric"><div class="p-label"><span class="term" role="button" tabindex="0" data-term="returns" onclick="showTerm(event,this.dataset.term)">Return %</span></div><div class="p-val" id="pReturn">0.00%</div></div>
         </div>
       </div>
     </div>
@@ -2084,7 +2086,7 @@ body.light .gs-item{background:#fff}
       <div class="watch-grid" id="watchGrid"></div>
     </div>
     <div class="analytics-grid" id="allocWrap" style="display:none">
-      <div class="port-card"><div class="port-label">Sector allocation</div><div style="position:relative;height:200px;margin-top:12px"><canvas id="allocChart" role="img" aria-label="Portfolio sector allocation chart"></canvas></div><div class="alloc-legend" id="allocLegend"></div></div>
+      <div class="port-card"><div class="port-label"><span class="term" role="button" tabindex="0" data-term="sector allocation" onclick="showTerm(event,this.dataset.term)">Sector allocation</span></div><div style="position:relative;height:200px;margin-top:12px"><canvas id="allocChart" role="img" aria-label="Portfolio sector allocation chart"></canvas></div><div class="alloc-legend" id="allocLegend"></div></div>
       <div class="port-card"><div class="port-label">Top holdings</div><div id="holdList" style="margin-top:16px"></div></div>
       <div class="port-card"><div class="port-label">Dividend income (projected)</div><div id="divCard" style="margin-top:16px"><div class="skel-row" style="height:60px"></div></div></div>
     </div>
@@ -2120,7 +2122,7 @@ body.light .gs-item{background:#fff}
       <div class="practice-note" role="note"><b>Practice mode.</b> This is virtual money — nothing is actually bought or sold, and it isn’t linked to any brokerage. Trades fill instantly at the latest quote with no fees, taxes or slippage, so real results will differ. Tip: start with an amount you could realistically invest, not the full $100k.</div>
       <div class="pulse-grid" style="margin-bottom:22px">
         <div class="p-metric"><div class="p-label">Cash</div><div class="p-val" id="ppCash">$100,000.00</div></div>
-        <div class="p-metric"><div class="p-label">Positions value</div><div class="p-val" id="ppEquity">$0.00</div></div>
+        <div class="p-metric"><div class="p-label"><span class="term" role="button" tabindex="0" data-term="positions value" onclick="showTerm(event,this.dataset.term)">Positions value</span></div><div class="p-val" id="ppEquity">$0.00</div></div>
         <div class="p-metric"><div class="p-label">Total</div><div class="p-val" id="ppTotal">$100,000.00</div></div>
         <div class="p-metric"><div class="p-label">You vs S&amp;P 500</div><div class="p-val" id="ppVs">—</div></div>
       </div>
@@ -2166,12 +2168,12 @@ body.light .gs-item{background:#fff}
     <div class="mk-section"><div class="mk-title">Sector heat map</div><div class="mk-sub">Today’s performance by sector (SPDR sector ETFs). Tap a sector for detail.</div><div class="heat-legend" id="heatLegend"><span class="heat-legend-item"><span class="heat-swatch heat-swatch-up" aria-hidden="true"></span>Green = up today</span><span class="heat-legend-item"><span class="heat-swatch heat-swatch-down" aria-hidden="true"></span>Red = down</span><span class="heat-legend-item"><span class="heat-scale" aria-hidden="true"></span>Stronger color ≈ a larger move</span></div><div class="heat-grid" id="heatGrid"><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div></div><div id="heatDetail" style="margin-top:14px;font-size:13px;color:var(--muted)"></div></div>
     <div class="mk-section"><div class="mk-title">Stock screener</div><div class="mk-sub">Discover stocks by fundamentals across FinPath’s tracked universe.</div>
       <div class="scr-filters">
-        <div><label>Sector</label><select id="scrSector"><option value="">All sectors</option></select></div>
+        <div><label><span class="term" role="button" tabindex="0" data-term="sector" onclick="showTerm(event,this.dataset.term)">Sector</span></label><select id="scrSector"><option value="">All sectors</option></select></div>
         <div><label>Max price ($)</label><input id="scrPrice" type="number" placeholder="Any"></div>
-        <div><label>Max P/E</label><input id="scrPE" type="number" placeholder="Any"></div>
-        <div><label>Min dividend yield %</label><input id="scrDiv" type="number" step="0.1" placeholder="Any"></div>
-        <div><label>Min market cap ($B)</label><input id="scrCap" type="number" placeholder="Any"></div>
-        <div><label>Guru-owned</label><select id="scrGuru"><option value="">Any</option></select></div>
+        <div><label><span class="term" role="button" tabindex="0" data-term="P/E ratio" onclick="showTerm(event,this.dataset.term)">Max P/E</span></label><input id="scrPE" type="number" placeholder="Any"></div>
+        <div><label><span class="term" role="button" tabindex="0" data-term="dividend yield" onclick="showTerm(event,this.dataset.term)">Min dividend yield %</span></label><input id="scrDiv" type="number" step="0.1" placeholder="Any"></div>
+        <div><label><span class="term" role="button" tabindex="0" data-term="market cap" onclick="showTerm(event,this.dataset.term)">Min market cap ($B)</span></label><input id="scrCap" type="number" placeholder="Any"></div>
+        <div><label><span class="term" role="button" tabindex="0" data-term="Guru-owned" onclick="showTerm(event,this.dataset.term)">Guru-owned</span></label><select id="scrGuru"><option value="">Any</option></select></div>
       </div>
       <button class="ai-run-btn" onclick="runScreener()">Run screener</button>
       <div id="scrResults"><div class="empty">Set your filters and hit Run screener.</div></div>
@@ -2206,6 +2208,7 @@ body.light .gs-item{background:#fff}
           </div>
           <button class="sp-run" onclick="runBacktest()">Run it →</button>
         </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;margin:-6px 0 14px">Tap a term: <span class="term" role="button" tabindex="0" data-term="S&amp;P 500" onclick="showTerm(event,this.dataset.term)">S&amp;P 500</span> · <span class="term" role="button" tabindex="0" data-term="Nasdaq 100" onclick="showTerm(event,this.dataset.term)">Nasdaq 100</span> · <span class="term" role="button" tabindex="0" data-term="APY" onclick="showTerm(event,this.dataset.term)">APY</span></div>
         <div class="sp-quick">
           <span style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;align-self:center;margin-right:4px">Try:</span>
           <button class="sp-quick-btn" onclick="spPreset(50,10,10)">$50/mo · S&amp;P · 10yr</button>
@@ -2246,7 +2249,7 @@ body.light .gs-item{background:#fff}
           <div class="cs-icon">🚀</div>
           <div class="cs-name">The Growth Tilt</div>
           <div class="cs-nick">Nasdaq-heavy portfolio</div>
-          <div class="cs-desc">Overweight tech and innovation via the Nasdaq 100. Higher highs, deeper lows. If you can stomach a 40% drop without selling, you get the tech premium.</div>
+          <div class="cs-desc">Overweight tech and innovation via the <span class="term" role="button" tabindex="0" data-term="Nasdaq 100" onclick="showTerm(event,this.dataset.term)">Nasdaq 100</span>. Higher highs, deeper lows. If you can stomach a 40% drop without selling, you get the tech premium.</div>
           <div class="cs-stat"><span class="cs-stat-label">Avg return</span><span class="cs-stat-val">~18%/yr</span></div>
           <div class="cs-try">Try in playground →</div>
         </div>
@@ -2255,7 +2258,7 @@ body.light .gs-item{background:#fff}
           <div class="cs-name">The Safety Net</div>
           <div class="cs-nick">Emergency fund first</div>
           <div class="cs-desc">Before stocks, save 3–6 months of expenses in a high-yield savings account. Boring but non-negotiable — an emergency fund is what keeps a bad month from becoming a bad year.</div>
-          <div class="cs-stat"><span class="cs-stat-label">Where</span><span class="cs-stat-val">~3–5% APY (rates vary)</span></div>
+          <div class="cs-stat"><span class="cs-stat-label">Where</span><span class="cs-stat-val">~3–5% <span class="term" role="button" tabindex="0" data-term="APY" onclick="showTerm(event,this.dataset.term)">APY</span> (rates vary)</span></div>
           <div class="cs-try">Try in playground →</div>
         </div>
         <div class="cs-card" onclick="spPreset(100,10,0)">
@@ -2477,7 +2480,7 @@ body.light .gs-item{background:#fff}
     <div class="d-metrics">
       <div class="d-metric"><div class="d-mlabel">Live price</div><div class="d-mval" id="dPrice">--</div></div>
       <div class="d-metric"><div class="d-mlabel">Today</div><div class="d-mval" id="dToday">--</div></div>
-      <div class="d-metric"><div class="d-mlabel">Shares</div><div class="d-mval" id="dShares">--</div><button class="btn-secondary" style="padding:5px 12px;font-size:11px;margin-top:8px" onclick="editBuyPrice()">✎ Edit buy price</button></div>
+      <div class="d-metric"><div class="d-mlabel">Shares</div><div class="d-mval" id="dShares">--</div><div class="d-mlabel" style="margin-top:10px"><span class="term" role="button" tabindex="0" data-term="cost basis" onclick="showTerm(event,this.dataset.term)">Cost basis</span> / share</div><div class="d-mval" id="dCost">--</div><button class="btn-secondary" style="padding:5px 12px;font-size:11px;margin-top:8px" onclick="editBuyPrice()">✎ Edit buy price</button></div>
       <div class="d-metric"><div class="d-mlabel">Position value</div><div class="d-mval" id="dVal">--</div></div>
     </div>
     <div class="d-metric" style="margin-bottom:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
@@ -4705,6 +4708,7 @@ async function openDetail(ticker){
   document.getElementById('dTicker').textContent=ticker;
   document.getElementById('dCompany').textContent=COMPANIES[ticker]||ticker;
   document.getElementById('dShares').textContent=selectedStock.shares;
+  const costEl = document.getElementById('dCost'); if(costEl) costEl.textContent = fmt(selectedStock.buyPrice);
   document.getElementById('dPrice').textContent='Loading...';
   document.getElementById('dToday').textContent='--';
   document.getElementById('dVal').textContent='--';
@@ -6522,7 +6526,7 @@ async function renderPaper(){
     grid.innerHTML = qs.map(function(r, i){
       const price = r.q ? r.q.c : r.x.price;
       const val = price * r.x.sh, pnl = (price - r.x.price)*r.x.sh, pct = (price - r.x.price)/r.x.price*100;
-      return '<div class="stock-row"><div class="s-icon">' + escapeHtml(r.x.t.slice(0,2)) + '</div><div class="s-info"><div class="s-name">' + escapeHtml(r.x.t) + '</div><div class="s-meta">' + escapeHtml(r.x.sh) + ' sh @ ' + fmt(r.x.price) + '</div></div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" onclick="paperSell(' + i + ')">Sell</button></div></div>';
+      return '<div class="stock-row"><div class="s-icon">' + escapeHtml(r.x.t.slice(0,2)) + '</div><div class="s-info"><div class="s-name">' + escapeHtml(r.x.t) + '</div><div class="s-meta">' + escapeHtml(r.x.sh) + ' sh · ' + termLabel('cost basis') + ' ' + fmt(r.x.price) + '</div></div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" onclick="paperSell(' + i + ')">Sell</button></div></div>';
     }).join('');
     p.pos.forEach(function(x){ wsWatch(x.t); });
   }
@@ -6905,7 +6909,7 @@ async function loadEarnings(){
       const epsNum = typeof x.epsEstimate === 'number' ? x.epsEstimate : (typeof x.epsEstimate === 'string' ? Number(x.epsEstimate) : NaN);
       const eps = isFinite(epsNum) ? '$' + escapeHtml(String(x.epsEstimate)) : '—';
       const when = days === null ? '—' : (days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : 'in ' + days + ' days');
-      return '<div class="earn-row"><div><b>' + escapeHtml(x.symbol) + '</b>' + (mine ? ' <span class="badge-buy">You own this</span>' : '') + '<div style="font-size:11px;color:var(--muted)">' + escapeHtml(dateStr) + hour + '</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--mint)">' + when + '</div><div style="font-size:11px;color:var(--muted)">EPS est: ' + eps + '</div></div></div>';
+      return '<div class="earn-row"><div><b>' + escapeHtml(x.symbol) + '</b>' + (mine ? ' <span class="badge-buy">You own this</span>' : '') + '<div style="font-size:11px;color:var(--muted)">' + escapeHtml(dateStr) + hour + '</div></div><div style="text-align:right"><div style="font-weight:700;color:var(--mint)">' + when + '</div><div style="font-size:11px;color:var(--muted)">' + termLabel('EPS est', 'EPS') + ': ' + eps + '</div></div></div>';
     }).join('');
     if(!html) throw 0;
     el.innerHTML = html;
@@ -7213,17 +7217,18 @@ async function compareStocks(){
       const aw = higherWins ? va > vb : va < vb;
       ca = aw ? ' class="up" style="font-weight:700"' : ''; cb = !aw ? ' class="up" style="font-weight:700"' : '';
     }
-    return '<tr><th>' + escapeHtml(label) + '</th><td' + ca + '>' + f(va) + '</td><td' + cb + '>' + f(vb) + '</td></tr>';
+    const labelHtml = (typeof label === 'string' && label.indexOf('class="term"') !== -1) ? label : escapeHtml(String(label));
+    return '<tr><th>' + labelHtml + '</th><td' + ca + '>' + f(va) + '</td><td' + cb + '>' + f(vb) + '</td></tr>';
   }
   const pct = function(v){ return v == null || !isFinite(Number(v)) ? '—' : (Number(v)>=0?'+':'') + Number(v).toFixed(1) + '%'; };
   const mcap = fmtMcap;
   out.innerHTML = '<table class="cmp-table"><tr><th></th><th>' + escapeHtml(a) + '</th><th>' + escapeHtml(b) + '</th></tr>' +
     row('Price', qa && qa.c, qb && qb.c, function(v){ return v==null?'—':fmt(v); }) +
     row('Today', qa && qa.dp, qb && qb.dp, pct) +
-    row('P/E ratio', m(ma,'peBasicExclExtraTTM'), m(mb,'peBasicExclExtraTTM'), function(v){ return v==null?'—':Number(v).toFixed(1); }, false) +
-    row('Dividend yield', m(ma,'currentDividendYieldTTM'), m(mb,'currentDividendYieldTTM'), function(v){ return v==null?'—':Number(v).toFixed(2)+'%'; }, true) +
-    row('Market cap', m(ma,'marketCapitalization'), m(mb,'marketCapitalization'), mcap) +
-    row('52-week return', m(ma,'52WeekPriceReturnDaily'), m(mb,'52WeekPriceReturnDaily'), pct, true) +
+    row(termLabel('P/E ratio'), m(ma,'peBasicExclExtraTTM'), m(mb,'peBasicExclExtraTTM'), function(v){ return v==null?'—':Number(v).toFixed(1); }, false) +
+    row(termLabel('Dividend yield', 'dividend yield'), m(ma,'currentDividendYieldTTM'), m(mb,'currentDividendYieldTTM'), function(v){ return v==null?'—':Number(v).toFixed(2)+'%'; }, true) +
+    row(termLabel('Market cap', 'market cap'), m(ma,'marketCapitalization'), m(mb,'marketCapitalization'), mcap) +
+    row(termLabel('52-week return'), m(ma,'52WeekPriceReturnDaily'), m(mb,'52WeekPriceReturnDaily'), pct, true) +
     row('Sector', SECTORS[a]||'—', SECTORS[b]||'—') +
     row('Held by gurus', gurus(a), gurus(b)) +
     '</table><div style="font-size:11px;color:var(--muted2);margin-top:10px;line-height:1.55">Price: latest quote. Today: move since the last close — a bigger day is not better. P/E: price ÷ earnings (lower can mean cheaper, not safer). Yield: yearly dividend as a percent of price. Market cap: company value, shown as M, B, or T. 52-week: price change over the past year. Green marks only P/E, yield, and 52-week. Educational, not advice.</div>';
