@@ -105,6 +105,8 @@ body > *{position:relative;z-index:1;}
   .pricing,
   .page-header,
   .lessons-grid,
+  #learnPath,
+  #learnRecommend,
   .filter-tabs,
   .moves-grid,
   .moves-toolbar,
@@ -158,6 +160,8 @@ body > *{position:relative;z-index:1;}
   .pricing,
   .page-header,
   .lessons-grid,
+  #learnPath,
+  #learnRecommend,
   .filter-tabs,
   .moves-grid,
   .moves-toolbar,
@@ -198,6 +202,8 @@ body > *{position:relative;z-index:1;}
   .pricing,
   .page-header,
   .lessons-grid,
+  #learnPath,
+  #learnRecommend,
   .filter-tabs,
   .moves-grid,
   .moves-toolbar,
@@ -722,6 +728,16 @@ body.light .t-price{color:#47604e}
 .ob-dot{width:8px;height:8px;border-radius:50%;background:rgba(134,239,172,.2);transition:all .25s}
 .ob-dot.on{background:var(--green);width:24px;border-radius:99px}
 body.light .ob-card{background:#fff}
+.intake-q{font-size:16px;font-weight:700;margin:0 0 14px;font-family:var(--font-display);letter-spacing:-.2px}
+.intake-chips{display:flex;flex-direction:column;gap:8px;margin:0 0 18px;text-align:left}
+.intake-chip{display:block;width:100%;text-align:left;background:rgba(134,239,172,.04);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--text);font-size:14px;cursor:pointer;font-family:inherit;line-height:1.4;transition:border-color .15s,background .15s}
+.intake-chip:hover{border-color:var(--line-strong)}
+.intake-chip[aria-checked="true"]{background:rgba(34,197,94,.16);border-color:var(--green)}
+.intake-note{font-size:12px;color:var(--muted);line-height:1.5;margin:0 0 16px}
+.intake-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.ob-card .btn-primary:disabled{opacity:.45;cursor:default;box-shadow:none}
+.ob-card .btn-primary:disabled:hover{transform:none}
+body.light .intake-chip{background:rgba(20,83,45,.04)}
 
 /* markets */
 .mk-section{max-width:1200px;margin:0 auto;padding:0 5% 44px}
@@ -1089,8 +1105,14 @@ body.light .scr-filters input,body.light .scr-filters select{background:#fff}
 .term{border-bottom:1.5px dotted var(--green);cursor:help;color:var(--mint)}
 .term:focus-visible{outline:2px solid var(--green);outline-offset:2px;border-radius:2px}
 .cmp-table th .term,.p-label .term,.port-label .term,.d-mlabel .term{color:var(--mint)}
+#learnPath,#learnRecommend{max-width:1200px;margin:0 auto;padding:0 5%}
+#learnPath:empty,#learnRecommend:empty{display:none}
 .learn-path{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px 20px;margin:0 0 22px}
 .learn-path h3{font-size:16px;font-weight:700;font-family:var(--font-display);margin-bottom:4px}
+.lp-kicker{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mint);margin-bottom:6px}
+.learn-rec{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:linear-gradient(150deg,rgba(34,197,94,.08),var(--panel) 55%);border:1px solid var(--line-strong);border-radius:var(--radius-lg);padding:16px 18px;margin:0 0 22px}
+.learn-rec-title{font-size:15px;font-weight:700;font-family:var(--font-display);line-height:1.35}
+.learn-rec .btn-primary{flex-shrink:0}
 .lp-sub{font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5}
 .lp-steps{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .lp-step{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(134,239,172,.04);color:var(--text);cursor:pointer;font-family:inherit;max-width:100%;text-align:left}
@@ -2035,6 +2057,7 @@ body.light .gs-item{background:#fff}
       <div id="lessonSearchStatus" class="search-status" aria-live="polite"></div>
     </div>
     <div id="learnPath"></div>
+    <div id="learnRecommend"></div>
     <div class="lessons-grid" id="lessonsGrid"></div>
     <details class="glossary-box" id="glossaryBox"><summary>📖 Glossary — plain-English money terms. The same words are dotted inside lessons.</summary><dl id="glossaryList"></dl></details>
   </div>
@@ -3577,6 +3600,7 @@ function showPage(p,fromHash){
   if(p==='gold') renderGold();
   if(p==='portfolio'){loadFromDB().then(()=>renderPortfolio());if(typeof renderGoals==='function'){renderGoals();renderAchievements();renderAlertsList();}if(typeof renderTxns==='function')renderTxns();if(typeof renderChecklist==='function')renderChecklist();}
   if(p==='markets' && typeof initMarkets==='function') initMarkets();
+  if((p==='lessons' || p==='portfolio') && typeof maybeOfferIntake==='function') maybeOfferIntake();
 }
 
 // ── LESSONS ──
@@ -3782,8 +3806,60 @@ function renderLessons(filtered){
   renderLearnPath(!!filtered);
   renderGlossaryList();
 }
-// ── Beginner path: a fixed order through existing free lessons for someone starting from zero ──
-const BEGINNER_PATH = [12, 6, 9, 3, 16, 25]; // stock market basics → compound interest → emergency fund → budget → inflation → money psychology
+// ── Beginner path: free lessons only. Default order is someone starting from zero.
+// Index 15 is an empty hole — never use it. Free ids referenced below:
+// 3 budget, 6 compound, 9 emergency fund, 12 market, 16 inflation,
+// 17 goals, 20 paycheck, 25 psychology.
+// A finished fp_profile reorders these. "comfortable" keeps the first 4.
+// time "5" still stores the full list; the Learn card only surfaces the first 2.
+const BEGINNER_PATH = [12, 6, 9, 3, 16, 25]; // market → compound → emergency fund → budget → inflation → psychology
+const PATH_BY_GOAL = {
+  learn: [12, 6, 9, 3, 16, 25],
+  invest: [12, 25, 9, 6, 3, 16],
+  job: [20, 3, 17, 9, 6, 12],
+  debt: [3, 9, 17, 25, 6, 12]
+};
+const PROFILE_GOAL = {learn:1, invest:1, job:1, debt:1};
+const PROFILE_EXP = {new:1, some:1, comfortable:1};
+const PROFILE_TIME = {'5':1, '15':1, '30':1};
+const GOAL_PATH_LABEL = {
+  learn: 'Learn-the-basics path',
+  invest: 'Practice-first path',
+  job: 'First-paycheck path',
+  debt: 'Pay-down-debt path'
+};
+function getProfile(){
+  try{
+    const raw = JSON.parse(localStorage.getItem('fp_profile') || 'null');
+    if(!raw || typeof raw !== 'object') return null;
+    if(raw.skipped === true) return {skipped:true, ts: raw.ts || 0};
+    const time = String(raw.time);
+    if(!PROFILE_GOAL[raw.goal] || !PROFILE_EXP[raw.experience] || !PROFILE_TIME[time]) return null;
+    return {goal:raw.goal, experience:raw.experience, time:time, ts: raw.ts || 0};
+  }catch(e){ return null; }
+}
+function profileActive(p){
+  if(p === undefined) p = getProfile();
+  return !!(p && !p.skipped && PROFILE_GOAL[p.goal]);
+}
+function learnPathIds(p){
+  if(p === undefined) p = getProfile();
+  const src = (profileActive(p) && PATH_BY_GOAL[p.goal]) ? PATH_BY_GOAL[p.goal] : BEGINNER_PATH;
+  const seen = {};
+  const ids = src.filter(function(i){
+    if(seen[i] || !LESSONS[i] || LESSONS[i].plan !== 'free') return false;
+    seen[i] = 1;
+    return true;
+  });
+  if(profileActive(p) && p.experience === 'comfortable') return ids.slice(0, 4);
+  return ids;
+}
+function learnPathShown(p){
+  if(p === undefined) p = getProfile();
+  const ids = learnPathIds(p);
+  if(profileActive(p) && p.time === '5') return ids.slice(0, 2);
+  return ids;
+}
 function lessonMinutes(l){ const w = String((l && l.content) || '').split(/\s+/).length; return Math.max(1, Math.round(w / 200)); }
 function lessonOrder(){ const o = []; LESSONS.forEach(function(l, i){ if(l) o.push(i); }); return o; }
 function adjacentLesson(i, dir){
@@ -3791,22 +3867,57 @@ function adjacentLesson(i, dir){
   while(k >= 0 && k < ord.length){ const j = ord[k]; if(IS_GOLD || LESSONS[j].plan === 'free') return j; k += dir; }
   return -1;
 }
+function renderLearnRecommend(p, hidden){
+  const el = document.getElementById('learnRecommend'); if(!el) return;
+  if(hidden || !profileActive(p)){ el.innerHTML = ''; return; }
+  const prog = getLessonProgress();
+  const next = learnPathIds(p).find(function(i){ return !prog[i]; });
+  if(next === undefined || !LESSONS[next]){ el.innerHTML = ''; return; }
+  const title = escapeHtml(LESSONS[next].name);
+  el.innerHTML = '<div class="learn-rec"><div><div class="lp-kicker">Up next</div><div class="learn-rec-title">' + title + '</div></div>' +
+    '<button type="button" class="btn-primary" style="padding:11px 22px;font-size:14px" aria-label="Open ' + title + '" onclick="openLesson(' + next + ')">Open</button></div>';
+}
 function renderLearnPath(hidden){
   const el = document.getElementById('learnPath'); if(!el) return;
-  const path = BEGINNER_PATH.filter(function(i){ return LESSONS[i]; });
-  if(hidden || !path.length){ el.innerHTML = ''; return; }
+  const p = getProfile();
+  const active = profileActive(p);
+  const full = learnPathIds(p);
+  const shown = hidden ? [] : learnPathShown(p);
+  if(hidden || !shown.length){
+    el.innerHTML = '';
+    renderLearnRecommend(p, true);
+    return;
+  }
   const prog = getLessonProgress();
-  const doneN = path.filter(function(i){ return prog[i]; }).length;
-  const next = path.find(function(i){ return !prog[i]; });
-  el.innerHTML = '<div class="learn-path"><h3>' + (doneN ? 'Your beginner path' : 'New to investing? Start here') + '</h3>' +
-    '<div class="lp-sub">' + path.length + ' short free lessons in a sensible order — about ' + path.reduce(function(a, i){ return a + lessonMinutes(LESSONS[i]); }, 0) + ' minutes total. ' + doneN + ' of ' + path.length + ' done.</div>' +
-    '<div class="lp-steps">' + path.map(function(i, k){
-      return '<button class="lp-step' + (prog[i] ? ' done' : '') + (i === next ? ' next' : '') + '" onclick="openLesson(' + i + ')"><span class="n">' + (prog[i] ? '✓' : (k + 1)) + '</span>' + escapeHtml(LESSONS[i].name) + '</button>';
-    }).join('') + '</div>' +
-    (next !== undefined
-      ? '<button class="btn-primary" style="padding:11px 22px;font-size:14px" onclick="openLesson(' + next + ')">' + (doneN ? 'Continue: ' : 'Start: ') + escapeHtml(LESSONS[next].name) + ' →</button>'
-      : '<div style="font-size:13px;color:var(--mint)">🎉 Path complete. Next, try the paper-trading practice account on the Portfolio page, or pick any lesson below.</div>') +
-    '</div>';
+  const doneN = shown.filter(function(i){ return prog[i]; }).length;
+  const shownNext = shown.find(function(i){ return !prog[i]; });
+  const fullNext = full.find(function(i){ return !prog[i]; });
+  const mins = shown.reduce(function(a, i){ return a + lessonMinutes(LESSONS[i]); }, 0);
+  let head, sub;
+  if(active){
+    head = '<div class="lp-kicker">Recommended for you</div><h3>Your path</h3>';
+    const label = escapeHtml(GOAL_PATH_LABEL[p.goal] || 'Your path');
+    sub = p.time === '5'
+      ? label + ' — 2 quick reads, about ' + mins + ' minutes. Saved on this device.'
+      : label + ' — ' + shown.length + ' free lessons, about ' + mins + ' minutes. ' + doneN + ' of ' + shown.length + ' done. Saved on this device.';
+  } else {
+    head = '<h3>' + (doneN ? 'Your beginner path' : 'New to investing? Start here') + '</h3>';
+    sub = shown.length + ' short free lessons in a sensible order — about ' + mins + ' minutes total. ' + doneN + ' of ' + shown.length + ' done.';
+  }
+  let foot;
+  if(shownNext !== undefined){
+    foot = '<button type="button" class="btn-primary" style="padding:11px 22px;font-size:14px" onclick="openLesson(' + shownNext + ')">' + (doneN ? 'Continue: ' : 'Start: ') + escapeHtml(LESSONS[shownNext].name) + ' →</button>';
+  } else if(fullNext !== undefined){
+    foot = '<div style="font-size:13px;color:var(--mint)">Those quick reads are done. The next lesson is just below.</div>';
+  } else {
+    foot = '<div style="font-size:13px;color:var(--mint)">🎉 Path complete. Next, try the paper-trading practice account on the Portfolio page, or pick any lesson below.</div>';
+  }
+  el.innerHTML = '<div class="learn-path">' + head +
+    '<div class="lp-sub">' + sub + '</div>' +
+    '<div class="lp-steps">' + shown.map(function(i, k){
+      return '<button type="button" class="lp-step' + (prog[i] ? ' done' : '') + (i === shownNext ? ' next' : '') + '" onclick="openLesson(' + i + ')"><span class="n">' + (prog[i] ? '✓' : (k + 1)) + '</span>' + escapeHtml(LESSONS[i].name) + '</button>';
+    }).join('') + '</div>' + foot + '</div>';
+  renderLearnRecommend(p, false);
 }
 function renderGlossaryList(){
   const dl = document.getElementById('glossaryList'); if(!dl || typeof GLOSSARY === 'undefined' || dl.childElementCount) return;
@@ -5496,8 +5607,13 @@ document.addEventListener('keydown', function(e){
     if(location.hash.indexOf('#p=') === 0) history.replaceState(null,'',location.pathname);
   });
   document.querySelectorAll('.ob-overlay').forEach(function(ov){
+    if(ov.classList.contains('intake-overlay')){
+      if(typeof closeIntake === 'function') closeIntake('skip');
+      return;
+    }
     try{ localStorage.setItem('fp_onboarded','1'); }catch(err){}
     ov.remove();
+    if(typeof maybeOfferIntake === 'function') maybeOfferIntake();
   });
   if(typeof closeInstallHelp === 'function') closeInstallHelp();
 });
@@ -5776,7 +5892,8 @@ document.addEventListener('keydown', function(e){
 // ══ FOCUS TRAP for open dialogs ══
 document.addEventListener('keydown', function(e){
   if(e.key !== 'Tab') return;
-  let m = document.querySelector('.modal-overlay.open .modal') ||
+  let m = document.querySelector('.intake-overlay .ob-card') ||
+          document.querySelector('.modal-overlay.open .modal') ||
           document.querySelector('.detail-modal.open .detail-inner');
   const lm = document.getElementById('loginModal');
   if(!m && lm && lm.style.display === 'flex') m = lm.firstElementChild;
@@ -5821,13 +5938,185 @@ function initOnboarding(){
     localStorage.setItem('fp_onboarded','1');
     ov.remove();
     track('onboarding_done', {dest: dest||'skip'});
-    if(dest === 'learn'){ showPage('lessons'); setTimeout(function(){ openLesson(BEGINNER_PATH[0]); }, 150); return; }
-    if(dest){ showPage(dest); if(dest==='portfolio') setTimeout(openSearch, 600); }
+    const cont = function(){
+      if(dest === 'learn'){
+        showPage('lessons');
+        setTimeout(function(){
+          const first = learnPathIds()[0];
+          if(first !== undefined) openLesson(first);
+        }, 150);
+        return;
+      }
+      if(dest){ showPage(dest); if(dest==='portfolio') setTimeout(openSearch, 600); }
+    };
+    if(!getProfile()) openIntake(cont);
+    else cont();
   };
   render();
   ov.style.display = 'flex';
 }
 setTimeout(initOnboarding, 700);
+
+// ══ OPTIONAL 3-QUESTION INTAKE (local beginner profile) ══
+// Saved only on Finish. Skip / Esc stores {skipped:true} so it never asks again.
+// Nothing here is synced — guest and signed-in both stay on this device.
+const INTAKE_STEPS = [
+  {key:'goal', q:'What\u2019s your main goal right now?', options:[
+    {id:'learn', label:'Learn the basics'},
+    {id:'invest', label:'Start investing (practice first)'},
+    {id:'job', label:'First job / first paycheck'},
+    {id:'debt', label:'Pay down debt / get organized'}
+  ]},
+  {key:'experience', q:'How much investing experience?', options:[
+    {id:'new', label:'Brand new'},
+    {id:'some', label:'Know a few terms'},
+    {id:'comfortable', label:'Comfortable, want structure'}
+  ]},
+  {key:'time', q:'How much time do you have this week?', options:[
+    {id:'5', label:'~5 minutes'},
+    {id:'15', label:'~15 minutes'},
+    {id:'30', label:'30+ minutes'}
+  ]}
+];
+let intakeStep = 0;
+let intakeAnswers = {goal:'', experience:'', time:''};
+let intakeReturnFocus = null;
+let intakeAfter = null;
+let intakeClosed = false;
+function maybeOfferIntake(){
+  try{
+    if(intakeClosed || document.getElementById('intakeOverlay')) return;
+    if(!localStorage.getItem('fp_onboarded')) return;
+    if(getProfile()) return;
+    const lessons = document.getElementById('page-lessons');
+    const port = document.getElementById('page-portfolio');
+    const here = (lessons && lessons.classList.contains('active')) || (port && port.classList.contains('active'));
+    if(!here) return;
+    if(document.querySelector('.ob-overlay:not(.intake-overlay)')) return;
+    openIntake();
+  }catch(e){}
+}
+function openIntake(after){
+  if(document.getElementById('intakeOverlay')){
+    if(after) intakeAfter = after;
+    return;
+  }
+  if(getProfile() || intakeClosed){
+    if(after) after();
+    return;
+  }
+  intakeStep = 0;
+  intakeAnswers = {goal:'', experience:'', time:''};
+  intakeAfter = after || null;
+  const prev = document.activeElement;
+  intakeReturnFocus = (prev && prev !== document.body && document.body.contains(prev)) ? prev : null;
+  const ov = document.createElement('div');
+  ov.id = 'intakeOverlay';
+  ov.className = 'ob-overlay intake-overlay';
+  ov.setAttribute('role', 'dialog');
+  ov.setAttribute('aria-modal', 'true');
+  ov.setAttribute('aria-labelledby', 'intakeTitle');
+  document.body.appendChild(ov);
+  renderIntake();
+  ov.style.display = 'flex';
+  focusIntake();
+}
+function renderIntake(){
+  const ov = document.getElementById('intakeOverlay'); if(!ov) return;
+  const step = INTAKE_STEPS[intakeStep];
+  const selected = intakeAnswers[step.key];
+  const last = intakeStep === INTAKE_STEPS.length - 1;
+  const chips = step.options.map(function(o){
+    const on = o.id === selected;
+    return '<button type="button" class="intake-chip" role="radio" aria-checked="' + (on ? 'true' : 'false') + '" data-id="' + o.id + '" onclick="intakePick(\'' + o.id + '\')" onkeydown="intakeChipKey(event,\'' + o.id + '\')">' + escapeHtml(o.label) + '</button>';
+  }).join('');
+  ov.innerHTML = '<div class="ob-card">' +
+    '<div class="ob-dots" aria-hidden="true">' + INTAKE_STEPS.map(function(_, i){ return '<div class="ob-dot' + (i === intakeStep ? ' on' : '') + '"></div>'; }).join('') + '</div>' +
+    '<h2 id="intakeTitle" style="font-size:21px;font-weight:700;margin:0 0 6px;font-family:var(--font-display)">Quick setup (optional)</h2>' +
+    '<p class="sr-only">Question ' + (intakeStep + 1) + ' of ' + INTAKE_STEPS.length + '</p>' +
+    '<p class="intake-note">Three questions. Skip anytime. Saved on this device.</p>' +
+    '<div class="intake-q" id="intakeQuestion">' + escapeHtml(step.q) + '</div>' +
+    '<div class="intake-chips" role="radiogroup" aria-labelledby="intakeQuestion">' + chips + '</div>' +
+    '<div class="intake-actions">' +
+      '<button type="button" class="btn-secondary" style="padding:13px 22px;font-size:14px" onclick="intakeSkip()">Skip</button>' +
+      (intakeStep > 0 ? '<button type="button" class="btn-secondary" style="padding:13px 22px;font-size:14px" onclick="intakeBack()">Back</button>' : '') +
+      '<button type="button" class="btn-primary" style="padding:13px 26px;font-size:14px" onclick="intakeAdvance()"' + (selected ? '' : ' disabled') + '>' + (last ? 'Finish' : 'Next') + '</button>' +
+    '</div></div>';
+}
+function focusIntake(){
+  const ov = document.getElementById('intakeOverlay'); if(!ov) return;
+  const picked = ov.querySelector('.intake-chip[aria-checked="true"]') || ov.querySelector('.intake-chip') || ov.querySelector('button');
+  if(picked){ try{ picked.focus(); }catch(e){} }
+}
+function intakePick(id){
+  const step = INTAKE_STEPS[intakeStep];
+  if(!step || !step.options.some(function(o){ return o.id === id; })) return;
+  intakeAnswers[step.key] = id;
+  renderIntake();
+  const btn = document.querySelector('#intakeOverlay [data-id="' + id + '"]');
+  if(btn){ try{ btn.focus(); }catch(e){} }
+}
+function intakeChipKey(e, id){
+  if(!e || (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' && e.key !== 'ArrowRight' && e.key !== 'ArrowLeft')) return;
+  e.preventDefault();
+  const opts = INTAKE_STEPS[intakeStep].options;
+  let i = 0;
+  for(; i < opts.length; i++){ if(opts[i].id === id) break; }
+  if(e.key === 'ArrowDown' || e.key === 'ArrowRight') i = (i + 1) % opts.length;
+  else i = (i - 1 + opts.length) % opts.length;
+  intakePick(opts[i].id);
+}
+function intakeBack(){
+  if(intakeStep < 1) return;
+  intakeStep--;
+  renderIntake();
+  focusIntake();
+}
+function intakeAdvance(){
+  const step = INTAKE_STEPS[intakeStep];
+  if(!step || !intakeAnswers[step.key]) return;
+  if(intakeStep < INTAKE_STEPS.length - 1){
+    intakeStep++;
+    renderIntake();
+    focusIntake();
+    return;
+  }
+  intakeFinish();
+}
+function intakeFinish(){
+  const a = intakeAnswers;
+  if(!PROFILE_GOAL[a.goal] || !PROFILE_EXP[a.experience] || !PROFILE_TIME[a.time]) return;
+  try{
+    localStorage.setItem('fp_profile', JSON.stringify({goal:a.goal, experience:a.experience, time:a.time, ts:Date.now()}));
+  }catch(e){}
+  closeIntake('finish');
+}
+function intakeSkip(){ closeIntake('skip'); }
+function closeIntake(reason){
+  const ov = document.getElementById('intakeOverlay');
+  if(!ov) return;
+  intakeClosed = true;
+  if(reason === 'skip'){
+    try{ localStorage.setItem('fp_profile', JSON.stringify({skipped:true, ts:Date.now()})); }catch(e){}
+  }
+  ov.remove();
+  const back = intakeReturnFocus;
+  intakeReturnFocus = null;
+  if(back && document.contains(back) && typeof back.focus === 'function'){
+    try{ back.focus(); }catch(e){}
+  }
+  const after = intakeAfter;
+  intakeAfter = null;
+  if(reason === 'finish'){
+    toast('\u2705', 'Got it \u2014 here\u2019s a path for you');
+    const saved = getProfile();
+    if(saved && !saved.skipped) track('onboarding_intake', {goal:saved.goal, experience:saved.experience, time:saved.time});
+    if(typeof renderChecklist === 'function') renderChecklist();
+    const search = document.getElementById('lessonSearch');
+    if(!search || !search.value.trim()){ if(typeof renderLearnPath === 'function') renderLearnPath(false); }
+  }
+  if(after) after();
+}
 
 
 // ══════════ EDUCATION LAYER: glossary, quizzes, calculators, audio ══════════
@@ -6862,11 +7151,38 @@ function gsSteps(){
   try{ if(!hasStock) hasStock = getPaper().pos.length > 0; }catch(e){}
   let hasGoal = false; try{ hasGoal = (typeof getGoals==='function' ? getGoals() : JSON.parse(localStorage.getItem('fp_goals')||'[]')).length > 0; }catch(e){}
   let hasLesson = false; try{ hasLesson = Object.keys(JSON.parse(localStorage.getItem('fp_lessons')||'{}')).length > 0; }catch(e){}
-  return [
-    {done:hasStock, icon:'📈', title:'Add your first stock', sub:'Track a real stock — or paper-trade with virtual cash', act:"openSearch()"},
-    {done:hasGoal, icon:'🎯', title:'Set a savings goal', sub:'Something concrete, like a $1,000 emergency fund', act:"document.getElementById('goalsList').scrollIntoView({behavior:'smooth'});openGoalForm()"},
-    {done:hasLesson, icon:'📚', title:'Try your first lesson', sub:'5-minute reads, in plain English', act:"showPage('lessons')"}
-  ];
+  const stock = {done:hasStock, icon:'📈', title:'Add your first stock', sub:'Track a real stock — or paper-trade with virtual cash', act:"openSearch()"};
+  const goal = {done:hasGoal, icon:'🎯', title:'Set a savings goal', sub:'Something concrete, like a $1,000 emergency fund', act:"document.getElementById('goalsList').scrollIntoView({behavior:'smooth'});openGoalForm()"};
+  const lesson = {done:hasLesson, icon:'📚', title:'Try your first lesson', sub:'5-minute reads, in plain English', act:"showPage('lessons')"};
+  const p = (typeof getProfile === 'function') ? getProfile() : null;
+  const g = (p && !p.skipped && p.goal) || '';
+  if(g === 'job'){
+    return [
+      goal,
+      lesson,
+      {done:hasStock, icon:'📈', title:'Add a stock or paper-trade', sub:'Once your paycheck plan is in place', act:"openSearch()"}
+    ];
+  }
+  if(g === 'invest'){
+    return [
+      {done:hasStock, icon:'📈', title:'Paper-trade or add a stock', sub:'Practice with virtual cash, or track a stock you are curious about', act:"openSearch()"},
+      lesson,
+      goal
+    ];
+  }
+  if(g === 'debt' || g === 'learn'){
+    return [
+      lesson,
+      goal,
+      {done:hasStock, icon:'📈', title:'Add a stock or paper-trade', sub: g === 'debt' ? 'Optional for now — getting organized comes first' : 'Optional — whenever you want to practice', act:"openSearch()"}
+    ];
+  }
+  return [stock, goal, lesson];
+}
+function checklistBlurb(){
+  const p = (typeof getProfile === 'function') ? getProfile() : null;
+  if(!p || p.skipped || !GOAL_PATH_LABEL[p.goal]) return 'Three small steps and you\u2019ll have the hang of FinPath.';
+  return GOAL_PATH_LABEL[p.goal] + '. Saved on this device.';
 }
 function renderChecklist(){
   const el = document.getElementById('startChecklist'); if(!el) return;
@@ -6887,10 +7203,10 @@ function renderChecklist(){
   el.innerHTML = '<div class="gs-card">' +
     '<div class="gs-head"><div class="gs-title">🚀 Getting started — ' + done + ' of ' + steps.length + '</div>' +
     '<button class="gs-dismiss" onclick="dismissChecklist()" aria-label="Dismiss getting started checklist">Dismiss ✕</button></div>' +
-    '<div class="gs-sub">Three small steps and you\u2019ll have the hang of FinPath.</div>' +
+    '<div class="gs-sub">' + escapeHtml(checklistBlurb()) + '</div>' +
     '<div class="gs-items">' + steps.map(function(s){
       return '<button class="gs-item' + (s.done?' done':'') + '"' + (s.done?' disabled':' onclick="' + s.act.replace(/"/g,'&quot;') + '"') + '>' +
-        '<div class="gs-check">✓</div><div><div class="gs-item-title">' + s.icon + ' ' + s.title + '</div><div class="gs-item-sub">' + s.sub + '</div></div>' +
+        '<div class="gs-check">✓</div><div><div class="gs-item-title">' + s.icon + ' ' + escapeHtml(s.title) + '</div><div class="gs-item-sub">' + escapeHtml(s.sub) + '</div></div>' +
         '<div class="gs-arrow">→</div></button>';
     }).join('') + '</div>' +
     '<div class="gs-bar"><div class="gs-bar-fill" style="width:' + (done/steps.length*100) + '%"></div></div></div>';
