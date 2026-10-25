@@ -29,7 +29,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <title>FinPath — The Financial Playbook Schools Skipped</title>
 <meta name="description" content="Learn investing the way schools never taught it — 34 plain-English lessons, the latest billionaire 13F trades, a real-time portfolio tracker, and risk-free paper trading with $100,000 of virtual cash.">
 <meta name="theme-color" content="#040604">
@@ -59,7 +59,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FinPath">
 <meta name="mobile-web-app-capable" content="yes">
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <!-- Stripe.js removed 2026-10-25: Gold checkout uses a hosted Payment Link (window.open), so the SDK was unused render-blocking weight. -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -1822,7 +1821,7 @@ body.light .gs-item{background:#fff}
     <div class="features-grid">
       <div class="feature-card" onclick="showPage('lessons')"><div class="feature-icon">📚</div><div class="feature-title">34 Expert Lessons</div><div class="feature-desc">Everything schools skipped — from credit scores to compound interest — explained in plain English.</div></div>
       <div class="feature-card" onclick="showPage('gold')"><div class="feature-icon">👑</div><div class="feature-title">Investor Moves — Gold</div><div class="feature-desc">See what 9 legendary investors (Buffett, Ackman, Tepper, Druckenmiller, Li Lu, Klarman, Gates, Coleman and Smith) bought and sold in their latest 13F filings — and why.</div></div>
-      <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">📈</div><div class="feature-title">Live Portfolio Tracker</div><div class="feature-desc">Track your stocks with live prices. See total profit, daily gains, and hourly breakdowns of every position.</div></div>
+      <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">📈</div><div class="feature-title">Live Portfolio Tracker</div><div class="feature-desc">Track your stocks with live prices. See total profit, daily gains, and (with Gold) which holdings drove today’s move.</div></div>
       <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">🧭</div><div class="feature-title">Stock Suggestions — Gold</div><div class="feature-desc">Buy, hold and sell suggestions for the stocks you own, with plain-English reasoning. Rule-based and educational — not personal advice.</div></div>
     </div>
   </section>
@@ -1863,7 +1862,7 @@ body.light .gs-item{background:#fff}
           <li class="no">Investor Moves (9 legendary investors)</li>
           <li class="no">14 Gold lessons</li>
           <li class="no">Buy/hold/sell suggestions (rule-based)</li>
-          <li class="no">Hourly portfolio breakdown</li>
+          <li class="no">Today’s-change breakdown per holding</li>
         </ul>
         <button class="price-btn outline" onclick="handleAuthClick()">Get started free</button>
       </div>
@@ -1874,7 +1873,7 @@ body.light .gs-item{background:#fff}
         <ul class="price-features">
           <li>All 34 lessons including 14 Gold-only</li>
           <li>Live portfolio tracker</li>
-          <li>Full profit tracking with hourly breakdown</li>
+          <li>Today’s-change breakdown per holding (hour-by-hour history isn’t available on our data plan yet)</li>
           <li>Investor Moves — 9 legendary investors (13F)</li>
           <li>Buy/hold/sell suggestions with plain-English reasoning (rule-based, educational)</li>
           <li>Holding alerts with the reasoning behind each suggestion</li>
@@ -1956,10 +1955,10 @@ body.light .gs-item{background:#fff}
     <div class="port-top-grid">
       <div class="port-card green-card">
         <div class="port-label">Total portfolio value</div>
-        <div class="port-value" id="totalValue" aria-live="polite" role="button" tabindex="0" onclick="openHourly()" title="Click for hourly breakdown (Gold)">$0.00</div>
+        <div class="port-value" id="totalValue" aria-live="polite" role="button" tabindex="0" onclick="openHourly()" title="See which holdings moved today (Gold)">$0.00</div>
         <div class="daily-change-row" onclick="openHourly()">
           <span class="daily-badge daily-up" id="dailyBadge" aria-live="polite">+$0.00 today</span>
-          <span style="font-size:12px;color:var(--muted)">▸ hourly view (Gold)</span>
+          <span style="font-size:12px;color:var(--muted)">▸ today’s movers (Gold)</span>
         </div>
         <div class="chart-wrap"><canvas id="portfolioChart"></canvas></div>
         <div class="period-tabs">
@@ -2330,9 +2329,9 @@ body.light .gs-item{background:#fff}
 </div>
 
 <!-- HOURLY MODAL -->
-<div class="modal-overlay" id="hourlyModal" role="dialog" aria-modal="true" aria-label="Hourly portfolio breakdown">
+<div class="modal-overlay" id="hourlyModal" role="dialog" aria-modal="true" aria-label="Today’s change by holding">
   <div class="modal">
-    <h2>Portfolio — Hourly Breakdown <span style="font-size:13px;color:var(--gold);margin-left:8px">Gold</span></h2>
+    <h2>Today’s change by holding <span style="font-size:13px;color:var(--gold);margin-left:8px">Gold</span></h2>
     <div id="hourlyContent"></div>
     <button class="modal-close-btn" onclick="closeHourly()">Close</button>
   </div>
@@ -3621,6 +3620,7 @@ function openLesson(i, fromHash){
       </div>`;
   } else {
     document.getElementById('detailBody').innerHTML = buildLessonBody(l, i);
+    runLessonCalc();
   }
   const ord = lessonOrder(), pos = ord.indexOf(i) + 1;
   const meta = document.createElement('div'); meta.className = 'lesson-meta';
@@ -4347,10 +4347,10 @@ function setPeriod(btn,days){
 }
 
 async function openHourly(){
-  if(!IS_GOLD){alert('Hourly portfolio breakdown is a Gold feature. Upgrade to FinPath Gold to access this.');return;}
+  if(!IS_GOLD){toast('👑','The today’s-change breakdown is a Gold feature — see what Gold includes.');showPage('gold');return;}
   document.getElementById('hourlyModal').classList.add('open');
   const el=document.getElementById('hourlyContent');
-  el.innerHTML='<div class="loading"><div class="spinner"></div>Loading hourly data...</div>';
+  el.innerHTML='<div class="loading"><div class="spinner"></div>Loading today’s prices…</div>';
   if(portfolio.length===0){el.innerHTML='<div class="empty">Add stocks first.</div>';return;}
   // Real intraday (hourly) history requires candle data that isn't available on the
   // current Finnhub data plan. Show the live snapshot honestly instead of simulated hours.
@@ -4359,7 +4359,12 @@ async function openHourly(){
   const dayChg=quotes.reduce((s,{h,q})=>s+(q&&isFinite(q.d)?q.d*h.shares:0),0);
   el.innerHTML='<div class="empty" style="margin-bottom:14px">Hour-by-hour history isn\u2019t available on the current data plan, so FinPath won\u2019t show simulated numbers.</div>'+
     '<div class="hourly-row"><div><span class="hourly-time">Now (live)</span></div><div style="text-align:right"><div class="hourly-val">'+fmt(currentVal)+'</div>'+
-    '<div style="font-size:12px" class="'+(dayChg>=0?'up':'down')+'">'+(dayChg>=0?'+':'-')+fmt(Math.abs(dayChg))+' today</div></div></div>';
+    '<div style="font-size:12px" class="'+(dayChg>=0?'up':'down')+'">'+(dayChg>=0?'+':'-')+fmt(Math.abs(dayChg))+' today</div></div></div>'+
+    quotes.map(function(x){ const ok=x.q&&isFinite(x.q.d)&&isFinite(x.q.c)&&x.q.c>0; return {t:x.h.ticker, sh:x.h.shares, ok:ok, d: ok? x.q.d*x.h.shares : 0, pct: ok&&isFinite(x.q.dp)? x.q.dp : null}; })
+      .sort(function(a,b){ return Math.abs(b.d)-Math.abs(a.d); })
+      .map(function(r){ return '<div class="hourly-row"><div><span class="hourly-time">'+escapeHtml(r.t)+'</span> <span style="font-size:11px;color:var(--muted2)">'+escapeHtml(r.sh)+' sh</span></div><div style="text-align:right">'+
+        (r.ok ? '<div class="hourly-val '+(r.d>=0?'up':'down')+'">'+(r.d>=0?'+':'-')+fmt(Math.abs(r.d))+'</div>'+(r.pct!=null?'<div style="font-size:11px;color:var(--muted)">'+(r.pct>=0?'+':'')+r.pct.toFixed(2)+'%</div>':'') : '<div style="font-size:12px;color:var(--muted2)">no price</div>')+'</div></div>'; }).join('')+
+    '<div style="font-size:11px;color:var(--muted2);margin-top:10px;line-height:1.5">Sorted by how many dollars each holding moved your total today. One day’s move says little about a long-term investment.</div>';
 }
 
 async function openDetail(ticker){
@@ -5245,7 +5250,8 @@ function exitDemoMode(){
 function shareLesson(i){
   const l = LESSONS[i];
   const text = 'I just read "' + l.name + '" on FinPath — the financial playbook schools skipped.';
-  const url = 'https://finpathdev.github.io/FinPath/';
+  const base = (location.protocol === 'http:' || location.protocol === 'https:') ? (location.origin + location.pathname) : 'https://finpathdev.github.io/FinPath/';
+  const url = base + '#lesson/' + i;   // opens this lesson directly (Gold lessons show their preview)
   if(navigator.share){ navigator.share({title:'FinPath', text:text, url:url}).catch(function(){}); }
   else window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank', 'noopener');
 }
@@ -5635,46 +5641,65 @@ function answerQuiz(oi){
 
 // ── INTERACTIVE CALCULATORS (auto-embedded in matching lessons) ──
 function calculatorFor(name){
-  if(name.indexOf('Compound Interest') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">🧮 Compound interest calculator</div><label>Monthly investment ($)</label><input id="ciAmt" type="number" value="200" oninput="calcCI()"><label>Annual return (%)</label><input id="ciRate" type="number" value="8" oninput="calcCI()"><label>Years</label><input id="ciYears" type="number" value="30" oninput="calcCI()"><div class="calc-out" id="ciOut"></div></div>';
-  if(name.indexOf('Renting vs Buying') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">🏡 Rent vs buy quick check</div><label>Home price ($)</label><input id="rbPrice" type="number" value="400000" oninput="calcRB()"><label>Equivalent monthly rent ($)</label><input id="rbRent" type="number" value="2200" oninput="calcRB()"><label>Mortgage rate (%)</label><input id="rbRate" type="number" value="6.5" step="0.1" oninput="calcRB()"><div class="calc-out" id="rbOut"></div></div>';
-  if(name.indexOf('Understanding Your Paycheck') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">💼 401k match calculator</div><label>Annual salary ($)</label><input id="mSal" type="number" value="60000" oninput="calcMatch()"><label>Employer match (% of salary)</label><input id="mPct" type="number" value="4" step="0.5" oninput="calcMatch()"><label>Years until retirement</label><input id="mYears" type="number" value="35" oninput="calcMatch()"><div class="calc-out" id="mOut"></div></div>';
-  if(name === 'How Credit Scores Work') return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">📊 Credit score simulator <span style="font-size:11px;color:var(--muted);font-weight:400">(educational estimate)</span></div><label>On-time payment streak (months)</label><input id="csMonths" type="number" value="12" oninput="calcCS()"><label>Credit utilisation (%)</label><input id="csUtil" type="number" value="25" oninput="calcCS()"><label>Age of oldest account (years)</label><input id="csAge" type="number" value="2" step="0.5" oninput="calcCS()"><div class="calc-out" id="csOut"></div></div>';
-  if(name.indexOf('Understanding Dividends') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">💵 Dividend reinvestment (DRIP) calculator</div><label>Starting amount ($)</label><input id="drAmt" type="number" value="10000" oninput="calcDR()"><label>Dividend yield (%)</label><input id="drYield" type="number" value="3" step="0.1" oninput="calcDR()"><label>Price growth (%/yr)</label><input id="drGrow" type="number" value="7" step="0.1" oninput="calcDR()"><label>Years</label><input id="drYears" type="number" value="30" oninput="calcDR()"><div class="calc-out" id="drOut"></div></div>';
+  if(name.indexOf('Compound Interest') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">🧮 Compound interest calculator</div><label>Monthly investment ($)</label><input id="ciAmt" type="number" min="0" inputmode="decimal" value="200" oninput="calcCI()"><label>Annual return (%)</label><input id="ciRate" type="number" value="8" oninput="calcCI()"><label>Years</label><input id="ciYears" type="number" min="0" inputmode="decimal" value="30" oninput="calcCI()"><div class="calc-out" id="ciOut"></div></div>';
+  if(name.indexOf('Renting vs Buying') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">🏡 Rent vs buy quick check</div><label>Home price ($)</label><input id="rbPrice" type="number" min="0" inputmode="decimal" value="400000" oninput="calcRB()"><label>Equivalent monthly rent ($)</label><input id="rbRent" type="number" min="0" inputmode="decimal" value="2200" oninput="calcRB()"><label>Mortgage rate (%)</label><input id="rbRate" type="number" min="0" inputmode="decimal" value="6.5" step="0.1" oninput="calcRB()"><div class="calc-out" id="rbOut"></div></div>';
+  if(name.indexOf('Understanding Your Paycheck') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">💼 401k match calculator</div><label>Annual salary ($)</label><input id="mSal" type="number" min="0" inputmode="decimal" value="60000" oninput="calcMatch()"><label>Employer match (% of salary)</label><input id="mPct" type="number" min="0" inputmode="decimal" value="4" step="0.5" oninput="calcMatch()"><label>Years until retirement</label><input id="mYears" type="number" min="0" inputmode="decimal" value="35" oninput="calcMatch()"><div class="calc-out" id="mOut"></div></div>';
+  if(name === 'How Credit Scores Work') return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">📊 Credit score simulator <span style="font-size:11px;color:var(--muted);font-weight:400">(educational estimate)</span></div><label>On-time payment streak (months)</label><input id="csMonths" type="number" min="0" inputmode="decimal" value="12" oninput="calcCS()"><label>Credit utilisation (%)</label><input id="csUtil" type="number" min="0" inputmode="decimal" value="25" oninput="calcCS()"><label>Age of oldest account (years)</label><input id="csAge" type="number" min="0" inputmode="decimal" value="2" step="0.5" oninput="calcCS()"><div class="calc-out" id="csOut"></div></div>';
+  if(name.indexOf('Understanding Dividends') > -1) return '<div class="calc-box"><div class="mk-title" style="margin-bottom:14px">💵 Dividend reinvestment (DRIP) calculator</div><label>Starting amount ($)</label><input id="drAmt" type="number" min="0" inputmode="decimal" value="10000" oninput="calcDR()"><label>Dividend yield (%)</label><input id="drYield" type="number" min="0" inputmode="decimal" value="3" step="0.1" oninput="calcDR()"><label>Price growth (%/yr)</label><input id="drGrow" type="number" value="7" step="0.1" oninput="calcDR()"><label>Years</label><input id="drYears" type="number" min="0" inputmode="decimal" value="30" oninput="calcDR()"><div class="calc-out" id="drOut"></div></div>';
   return '';
 }
 function _fv(monthly, annualPct, years){
   const r = annualPct/100/12, n = years*12;
   return r === 0 ? monthly*n : monthly * ((Math.pow(1+r, n) - 1) / r);
 }
+// Read a calculator input as a number clamped to [lo, hi]; blank/invalid becomes lo.
+function _cv(id, lo, hi){
+  const el = document.getElementById(id); let v = el ? parseFloat(el.value) : NaN;
+  if(!isFinite(v)) v = lo;
+  return Math.min(hi, Math.max(lo, v));
+}
+function _calcNote(t){ return '<div style="font-size:11.5px;color:var(--muted);line-height:1.5;margin-top:10px">' + t + '</div>'; }
+// Fill in a lesson calculator's result as soon as the lesson opens (it used to stay blank until you typed).
+function runLessonCalc(){
+  [['ciOut',calcCI],['rbOut',calcRB],['mOut',calcMatch],['csOut',calcCS],['drOut',calcDR]].forEach(function(x){
+    if(document.getElementById(x[0])){ try{ x[1](); }catch(e){} }
+  });
+}
 function calcCI(){
-  const a = +document.getElementById('ciAmt').value||0, r = +document.getElementById('ciRate').value||0, y = +document.getElementById('ciYears').value||0;
-  const fv = _fv(a, r, y), inv = a*12*y;
-  document.getElementById('ciOut').innerHTML = 'Total invested: <b>' + fmt(inv) + '</b><br>Final value: <b style="color:var(--mint)">' + fmt(fv) + '</b><br>Growth from compounding alone: <b>' + fmt(fv-inv) + '</b>';
+  const a = _cv('ciAmt',0,1e6), r = _cv('ciRate',-20,30), y = _cv('ciYears',0,70);
+  const fv = _fv(a, r, y), inv = a*12*y, real = fv/Math.pow(1.03, y);
+  document.getElementById('ciOut').innerHTML = 'Total you put in: <b>' + fmt(inv) + '</b><br>Final value: <b style="color:var(--mint)">' + fmt(fv) + '</b><br>Growth from compounding: <b>' + fmt(fv-inv) + '</b><br>In today’s dollars (after ~3%/yr inflation): <b>' + fmt(real) + '</b>' +
+    _calcNote('Assumes the same return every year. Real markets go up and down — the long-run US stock average has been roughly 7–10%/yr before inflation, but no return is guaranteed. Ignores fees and taxes.');
 }
 function calcRB(){
-  const p = +document.getElementById('rbPrice').value||0, rent = +document.getElementById('rbRent').value||0, rate = +document.getElementById('rbRate').value||0;
+  const p = _cv('rbPrice',0,1e8), rent = _cv('rbRent',0,1e6), rate = _cv('rbRate',0,25);
   const loan = p*0.8, r = rate/100/12, n = 360;
   const mort = r ? loan*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1) : loan/n;
   const own = mort + p*0.012/12 + p*0.0035/12 + p*0.01/12;
   const diff = own - rent;
-  document.getElementById('rbOut').innerHTML = 'Est. monthly cost to own (mortgage+tax+insurance+maintenance): <b>' + fmt(own) + '</b><br>Renting: <b>' + fmt(rent) + '</b><br>' + (diff > 0 ? 'Owning costs <b>' + fmt(diff) + '</b>/mo more — but builds equity. Break-even is typically 4–5+ years.' : 'Owning is <b>' + fmt(-diff) + '</b>/mo cheaper here — strong buy signal if you’ll stay 5+ years.');
+  document.getElementById('rbOut').innerHTML = 'Est. monthly cost to own (mortgage + tax + insurance + maintenance): <b>' + fmt(own) + '</b><br>Renting: <b>' + fmt(rent) + '</b><br>' +
+    (diff > 0 ? 'Owning costs about <b>' + fmt(diff) + '</b>/mo more, though part of each payment builds equity.' : 'Owning is about <b>' + fmt(-diff) + '</b>/mo cheaper on these numbers — worth a closer look if you expect to stay 5+ years.') +
+    _calcNote('Rough check only. Assumes 20% down (' + fmt(p*0.2) + ' you could otherwise invest), a 30-year fixed loan, ~1.2% property tax, ~0.35% insurance and ~1% maintenance per year. Ignores closing costs, HOA fees, PMI and home-price changes.');
 }
 function calcMatch(){
-  const s = +document.getElementById('mSal').value||0, p = +document.getElementById('mPct').value||0, y = +document.getElementById('mYears').value||0;
-  const yearly = s*p/100, fv = _fv(yearly/12, 8, y);
-  document.getElementById('mOut').innerHTML = 'Free money per year: <b>' + fmt(yearly) + '</b><br>Skipping the match for ' + y + ' years costs you roughly <b style="color:var(--red)">' + fmt(fv) + '</b> at retirement (8%/yr growth).';
+  const sal = _cv('mSal',0,1e7), p = _cv('mPct',0,25), y = _cv('mYears',0,60);
+  const yearly = sal*p/100, fv = _fv(yearly/12, 8, y);
+  document.getElementById('mOut').innerHTML = 'Employer match per year: <b>' + fmt(yearly) + '</b><br>Skipping it for ' + y + ' years could cost roughly <b style="color:var(--red)">' + fmt(fv) + '</b> by retirement.' +
+    _calcNote('Assumes you contribute enough to get the full match, your salary stays the same, and 8%/yr growth. Check your plan’s vesting schedule — some matches only become yours after a few years.');
 }
 function calcCS(){
-  const m = +document.getElementById('csMonths').value||0, u = +document.getElementById('csUtil').value||0, a = +document.getElementById('csAge').value||0;
+  const m = _cv('csMonths',0,600), u = _cv('csUtil',0,100), a = _cv('csAge',0,80);
   let score = 480 + Math.min(m,48)*3.2 + Math.max(0, 30-u)*2.6 - Math.max(0, u-30)*1.8 + Math.min(a,10)*8;
   score = Math.max(300, Math.min(850, Math.round(score)));
   const band = score >= 740 ? 'Excellent' : score >= 670 ? 'Good' : score >= 580 ? 'Fair' : 'Building';
-  document.getElementById('csOut').innerHTML = 'Estimated score: <b style="color:var(--mint);font-size:22px">' + score + '</b> · ' + band + '<br><span style="font-size:12px">Biggest levers: never miss a payment, keep utilisation under 30% (under 10% is ideal), let accounts age.</span>';
+  document.getElementById('csOut').innerHTML = 'Estimated score: <b style="color:var(--mint);font-size:22px">' + score + '</b> · ' + band + '<br><span style="font-size:12px">Biggest levers: never miss a payment, keep utilisation under 30% (under 10% is ideal), let accounts age.</span>' +
+    _calcNote('A teaching model, not FICO or VantageScore. Real scores also weigh credit mix, new applications and any negative marks. Check your actual score free through your bank or card issuer.');
 }
 function calcDR(){
-  const amt = +document.getElementById('drAmt').value||0, y = +document.getElementById('drYield').value||0, g = +document.getElementById('drGrow').value||0, yrs = +document.getElementById('drYears').value||0;
+  const amt = _cv('drAmt',0,1e9), y = _cv('drYield',0,20), g = _cv('drGrow',-20,30), yrs = _cv('drYears',0,70);
   const withD = amt*Math.pow(1+(y+g)/100, yrs), noD = amt*Math.pow(1+g/100, yrs);
-  document.getElementById('drOut').innerHTML = 'With dividends reinvested: <b style="color:var(--mint)">' + fmt(withD) + '</b><br>Without reinvesting: <b>' + fmt(noD) + '</b><br>Reinvestment added: <b>' + fmt(withD-noD) + '</b>';
+  document.getElementById('drOut').innerHTML = 'With dividends reinvested: <b style="color:var(--mint)">' + fmt(withD) + '</b><br>Price growth only (dividends spent): <b>' + fmt(noD) + '</b><br>Reinvesting added: <b>' + fmt(withD-noD) + '</b>' +
+    _calcNote('Assumes a steady yield and growth rate every year. Ignores taxes on dividends (in a taxable account), fees and dividend cuts.');
 }
 
 // ── AUDIO MODE (Web Speech API) ──
@@ -6445,10 +6470,14 @@ function sharePortfolio(){
   // Use the page's own address so links work on forks, previews and localhost, not just the main site.
   const base = (location.protocol === 'http:' || location.protocol === 'https:') ? (location.origin + location.pathname) : 'https://finpathdev.github.io/FinPath/';
   const url = base + '#p=' + data;
+  track('portfolio_shared');
+  if(navigator.share && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)){
+    navigator.share({title:'My FinPath portfolio', text:'My practice portfolio on FinPath (tickers and share counts only):', url:url}).catch(function(){});
+    return;
+  }
   (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function(){
     toast('🔗','Anonymous portfolio link copied — it shows holdings only, never your identity.');
   }).catch(function(){ prompt('Copy your share link:', url); });
-  track('portfolio_shared');
 }
 // Validate a shared/imported holdings payload: [[ticker, shares], ...]. Returns a clean list or null.
 // Function declaration (hoisted) so loadFromDB can use it before this line executes.
@@ -6506,7 +6535,7 @@ async function importShared(){
   document.querySelector('.modal-overlay.open').remove();
   history.replaceState(null,'',location.pathname);
   showPage('portfolio');
-  toast('✅','Shared holdings imported into your portfolio.');
+  toast('✅','Shared holdings imported. Their buy price is set to today’s price, so profit/loss starts at $0.');
 }
 
 

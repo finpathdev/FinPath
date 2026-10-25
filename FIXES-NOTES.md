@@ -281,3 +281,21 @@ New tickers on the cards (FDXF, CBRS, MTD, and AMD/APP/AVGO/HD/CAT/WM/INTC where
 - **Howard Marks / Oaktree (CIK 949509):** filed, but the table is about 145 rows of distressed names, convertibles and ETF puts. Left out rather than pick a misleading handful.
 - **Mohnish Pabrai / Dalal Street LLC (CIK 1549575):** filed August 13, 2026, and the book is real and concentrated ($326,749,980, four lines). Warrior Met Coal 1,810,831 → 1,744,050 (−3.69%, $141.5M, 43.32%), Transocean essentially unchanged (20,392,672 → 20,398,659, $99.7M, 30.53%), Alpha Metallurgical 579,738 → 517,194 (−10.79%, $85.3M, 26.11%), plus a new Kaspi stub of 1,702 shares ($150k, 0.05%). The quarter does not have four meaningful moves without padding, so he was not added.
 - **Fundsmith Investment Services Ltd (CIK 1868537)** filed its own Q2 13F of overlapping names. Cards use Fundsmith LLP only, so a second reporting entity is not counted as a fresh set of buys.
+
+## 2026-10-25 — Calculators, Gold honesty, sharing (finpath-v16)
+
+**Shipped**
+1. **Lesson calculators were blank on open (bug).** All five (compound interest, rent vs buy, 401k match, credit score, DRIP) only filled their result after you typed. `runLessonCalc()` now runs right after the lesson body renders.
+2. **Calculator clarity and input safety.** Inputs are clamped through `_cv()` (negative, blank or huge values no longer give nonsense like negative years). Each result now has a one-line assumptions note. Compound interest also shows the result in today’s dollars (~3%/yr inflation). Rent vs buy dropped "strong buy signal" for neutral wording and lists its assumptions (20% down, 30-year fixed, tax/insurance/maintenance rates, what it ignores). The 401k note mentions vesting. The credit-score note says it is a teaching model, not FICO/VantageScore. DRIP notes taxes and dividend cuts. Inputs get `min="0" inputmode="decimal"` for phone keypads.
+3. **Free vs Gold honesty: the "hourly breakdown".** Pricing promised "Full profit tracking with hourly breakdown", but the modal only showed one live total, because hour-by-hour history isn't on the data plan. The Gold modal now shows **today’s change by holding** (sorted by dollar impact, with % and "no price" handling), and the pricing bullets, feature card, portfolio hint, modal title and aria-label all describe that instead. Free users get a toast and the Gold page instead of a blocking `alert()`.
+4. **Share a lesson deep-links to it.** `shareLesson` used to share the home page. It now shares `…#lesson/N` from the current origin, which the hash router already opens. Gold lessons show their preview/lock.
+5. **Share portfolio on phones** uses the native share sheet (Android/iOS), with copy-to-clipboard kept on desktop. The import toast now explains that imported holdings use today’s price as the buy price, so P/L starts at $0.
+6. **Performance:** merged the separate Caveat Google Fonts stylesheet into the main fonts request (one fewer render-blocking request).
+
+**Verified:** node --check (3 inline scripts + sw.js); Finnhub AAPL 200; headless Chrome checked that all calculators render on open, clamping works, the share URL is `#lesson/6`, the Gold today's-change modal is sorted with a no-price row, free users are sent to Gold, there is one fonts link and no horizontal overflow. Stripe test link unchanged. `sw.js` CACHE → `finpath-v16`.
+
+**Deferred**
+- Supabase JS is still a render-blocking `<script>` pinned only to `@2`. Deferring it needs `initAuth` reordered, so it was left alone this pass.
+- Real intraday/hourly portfolio history (needs a data plan with candles).
+- `LESSONS[15]` is an empty slot (sparse array). Code already skips it; leaving the indices stable avoids breaking saved progress and `#lesson/N` links.
+- Gold `gold_users`/`payments` mismatch: still documented only. Stripe is untouched.
