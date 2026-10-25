@@ -3612,9 +3612,17 @@ function openLesson(i, fromHash){
 }
 
 function closeLessonDetail(){
+  const detail = document.getElementById('lessonDetail');
+  const wasOpen = !!(detail && detail.classList.contains('active'));
   document.getElementById('lessons-list-view').style.display='';
-  document.getElementById('lessonDetail').classList.remove('active');
+  if(detail) detail.classList.remove('active');
   if(document.getElementById('page-lessons').classList.contains('active')){ try{ const q = document.getElementById('lessonSearch'); if(!q || !q.value.trim()) renderLessons(); }catch(e){} }
+  // The in-page back button closes the detail without a history change. Drop the
+  // lesson hash so a refresh stays on the list. Browser Back already moved the
+  // hash to #lessons before this runs, so it does not push a second entry.
+  if(wasOpen && /^#\/?lesson\/\d+\/?$/i.test(location.hash)){
+    try{ history.pushState(null,'','#lessons'); }catch(e){}
+  }
 }
 
 // ── GOLD PAGE ──
