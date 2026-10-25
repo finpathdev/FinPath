@@ -5260,13 +5260,18 @@ function announcePortfolio(tv, td){
 
 // ══ KEYBOARD SHORTCUT: "/" opens stock search or lesson search ══
 document.addEventListener('keydown', function(e){
-  if(e.key !== '/' || e.ctrlKey || e.metaKey) return;
+  if(e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
   const tag = (document.activeElement && document.activeElement.tagName) || '';
-  if(tag === 'INPUT' || tag === 'TEXTAREA') return;
-  e.preventDefault();
-  if(document.getElementById('page-portfolio').classList.contains('active')) openSearch();
-  else if(document.getElementById('page-lessons').classList.contains('active')){
-    const s = document.getElementById('lessonSearch'); if(s) s.focus();
+  if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (document.activeElement && document.activeElement.isContentEditable)) return;
+  const detail = document.getElementById('lessonDetail');
+  if(detail && detail.classList.contains('active')) return;
+  if(document.getElementById('page-portfolio').classList.contains('active')){
+    e.preventDefault();
+    openSearch();
+  } else if(document.getElementById('page-lessons').classList.contains('active')){
+    const s = document.getElementById('lessonSearch');
+    const list = document.getElementById('lessons-list-view');
+    if(s && list && list.style.display !== 'none'){ e.preventDefault(); s.focus(); }
   }
 });
 
