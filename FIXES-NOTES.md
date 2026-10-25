@@ -208,3 +208,22 @@ Market data only. No Stripe, 13F, lesson, or pricing edits. Rebased onto the 13F
   - No horizontal overflow at the narrowest headless width (500px) on home, lessons, a lesson page and portfolio. No page errors.
 
 **Deferred:** real-device check at 320–375px (headless Chrome can't go below 500px). Per-lesson glossary links in the Gold lesson content. The 13F refresh waits until after Nov 16, 2026. Stripe live link and Finnhub proxy are still out of scope.
+
+## Pass 5 — Mobile + PWA polish (finpath-v12, 2026-10-25)
+
+**Shipped**
+- Safe-area / notch support: `viewport-fit=cover`; sticky nav, mobile menu, page top padding, offline bar, toasts, modals, install pill and iOS tip all offset by `env(safe-area-inset-*)`.
+- Mobile menu bug fix: tapping a menu link used to leave the menu open (`showPage` closed it, then the link's `toggleMenu()` reopened it). Links now call `toggleMenu(false)`; `showPage`/Escape use it too, so `aria-expanded` stays in sync.
+- Menu also closes on an outside tap or Escape; hamburger gets `aria-expanded`, a 44×44 tap target, and a label that changes with its state. Menu links are 44px tall and scroll if the screen is short.
+- Keyboard: nav anchors are `role=button tabindex=0`, and the global Enter/Space handler now activates `<a>` without href (it used to skip all anchors).
+- ≤640px: form fields are 16px (no iOS zoom on focus); chips, tabs and the theme button get ≥40px tap targets; toasts span the screen width.
+- Offline: a clearer `role=status` bar ("Lessons, the glossary and your saved portfolio still work; live prices, news and sign-in pause…") plus a "Back online" toast.
+- Install: the pill copy now explains the benefit ("Opens like an app · lessons work offline · free"); `beforeinstallprompt` no longer double-counts `fp_visits`.
+- sw.js: navigations are cached only under `./index.html`, and only for same-origin responses, so `?gold=success&session_id=…` / `?p=…` URLs no longer pile up in the cache. Cache bumped to `finpath-v12`.
+
+**Verified**: node --check (3 inline scripts + sw.js); Finnhub AAPL 200; headless Chrome (500px minimum): menu open/close/outside/Escape/link tap, keyboard Enter navigation, 16px inputs, offline/online bar + toast, no horizontal overflow, no page errors.
+
+**Deferred**
+- Real-device check at 320–375px with a notch (headless can't go below 500px).
+- No bottom tab bar (the hamburger menu is enough for now; adding one would be a bigger UX change).
+- Gold `gold_users`/`payments` mismatch is still documented only (Stripe untouched).

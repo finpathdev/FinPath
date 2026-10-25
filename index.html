@@ -26,7 +26,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23052e16'/><polyline points='15,75 35,55 52,65 70,40 85,20' fill='none' stroke='%2322c55e' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/><circle cx='85' cy='20' r='8' fill='%2322c55e'/></svg>">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -996,6 +996,24 @@ body.light .scr-filters input,body.light .scr-filters select{background:#fff}
 .glossary-box dd{margin:2px 0 0;font-size:13px;color:var(--muted);line-height:1.55}
 .practice-note{font-size:12.5px;line-height:1.6;color:var(--muted);background:rgba(245,182,11,.06);border:1px solid rgba(245,182,11,.25);border-radius:12px;padding:10px 14px;margin:0 0 20px}
 @media (max-width:600px){.lesson-nav button{width:100%}.lp-step{font-size:12px}}
+/* ── Phones / installed PWA: safe areas, tap targets, no iOS focus-zoom (2026-10-25) ── */
+/* The app uses viewport-fit=cover + a black-translucent iOS status bar, so content can sit under the notch / home bar. */
+nav{top:calc(14px + env(safe-area-inset-top, 0px))}
+.mobile-menu{top:calc(82px + env(safe-area-inset-top, 0px));max-height:calc(100vh - 100px - env(safe-area-inset-top, 0px));overflow-y:auto}
+.page{padding-top:calc(100px + env(safe-area-inset-top, 0px))}
+.offline-bar{padding-top:calc(9px + env(safe-area-inset-top, 0px))}
+.toast-stack{bottom:calc(20px + env(safe-area-inset-bottom, 0px))}
+.modal-overlay,.detail-modal{padding-bottom:calc(40px + env(safe-area-inset-bottom, 0px))}
+body{padding-left:env(safe-area-inset-left, 0px);padding-right:env(safe-area-inset-right, 0px)}
+.hamburger{min-width:44px;min-height:44px;align-items:center;justify-content:center}
+.mobile-menu a{min-height:44px;display:flex;align-items:center}
+@media (max-width:640px){
+  input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px!important}
+  .period-tab,.chip,.filter-tab,.mode-tab{min-height:40px}
+  .theme-btn{width:42px;height:42px}
+  .toast-stack{left:12px;right:12px;max-width:none}
+  .modal-overlay{padding-top:calc(90px + env(safe-area-inset-top, 0px))}
+}
 .term-pop{position:fixed;z-index:950;max-width:280px;background:var(--panel-solid);border:1px solid var(--line-strong);border-radius:14px;padding:14px 16px;font-size:13px;line-height:1.6;box-shadow:0 16px 48px rgba(0,0,0,.55);color:var(--text)}
 /* ── CALCULATORS ── */
 .calc-box{background:linear-gradient(150deg,rgba(34,197,94,.09),var(--panel) 55%);border:1px solid var(--line-strong);border-radius:var(--radius-lg);padding:24px;margin-top:30px}
@@ -1213,7 +1231,7 @@ body.light .gs-item{background:#fff}
     </div>
 
     <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(134,239,172,.1);text-align:center;font-size:12px;color:#555">
-      By continuing you agree to our <a onclick="showPage('legal');closeLogin()" style="color:#22c55e;cursor:pointer;text-decoration:none">Terms &amp; Legal Disclaimers</a>
+      By continuing you agree to our <a role="button" tabindex="0" onclick="showPage('legal');closeLogin()" style="color:#22c55e;cursor:pointer;text-decoration:none">Terms &amp; Legal Disclaimers</a>
     </div>
   </div>
 </div>
@@ -1236,25 +1254,25 @@ body.light .gs-item{background:#fff}
   <div class="nav-inner">
     <div class="logo" onclick="showPage('home')" aria-label="FinPath home"><img class="logo-mark" src="logo-mark.png" alt="" aria-hidden="true"><span class="logo-text">Fin<span class="logo-path">Path</span></span></div>
     <div class="nav-links">
-      <a onclick="showPage('home')">Home</a>
-      <a onclick="showPage('lessons')">Lessons</a>
-      <a onclick="showPage('gold')">Gold</a>
-      <a onclick="showPage('portfolio')">Portfolio</a>
-      <a onclick="showPage('markets')">Markets</a>
-      <a onclick="showPage('legal')">Legal</a>
+      <a role="button" tabindex="0" onclick="showPage('home')">Home</a>
+      <a role="button" tabindex="0" onclick="showPage('lessons')">Lessons</a>
+      <a role="button" tabindex="0" onclick="showPage('gold')">Gold</a>
+      <a role="button" tabindex="0" onclick="showPage('portfolio')">Portfolio</a>
+      <a role="button" tabindex="0" onclick="showPage('markets')">Markets</a>
+      <a role="button" tabindex="0" onclick="showPage('legal')">Legal</a>
     </div>
     <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle light or dark mode" title="Toggle theme">🌙</button><button class="theme-btn" id="navInstallBtn" onclick="triggerInstall()" aria-label="Install FinPath as an app" title="Install FinPath" style="display:inline-flex">📲</button><button class="nav-cta" id="navAuthBtn" onclick="handleAuthClick()">Get Started Free</button>
-    <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu" aria-controls="mobileMenu"><span></span><span></span><span></span></button>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu" aria-controls="mobileMenu" aria-expanded="false" id="hamburgerBtn"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
-  <a onclick="showPage('home');toggleMenu()">Home</a>
-  <a onclick="showPage('lessons');toggleMenu()">Lessons</a>
-  <a onclick="showPage('gold');toggleMenu()">Gold</a>
-  <a onclick="showPage('portfolio');toggleMenu()">Portfolio</a>
-  <a onclick="showPage('markets');toggleMenu()">Markets</a>
-  <a onclick="showPage('legal');toggleMenu()">Legal</a>
-  <a onclick="toggleTheme()" role="button">🌙 / ☀️ Toggle theme</a>
+  <a role="button" tabindex="0" onclick="showPage('home');toggleMenu(false)">Home</a>
+  <a role="button" tabindex="0" onclick="showPage('lessons');toggleMenu(false)">Lessons</a>
+  <a role="button" tabindex="0" onclick="showPage('gold');toggleMenu(false)">Gold</a>
+  <a role="button" tabindex="0" onclick="showPage('portfolio');toggleMenu(false)">Portfolio</a>
+  <a role="button" tabindex="0" onclick="showPage('markets');toggleMenu(false)">Markets</a>
+  <a role="button" tabindex="0" onclick="showPage('legal');toggleMenu(false)">Legal</a>
+  <a onclick="toggleTheme()" role="button" tabindex="0">🌙 / ☀️ Toggle theme</a>
 </div>
 
 <!-- HOME -->
@@ -1829,9 +1847,9 @@ body.light .gs-item{background:#fff}
     <div class="footer-logo">Fin<span>Path</span></div>
     <div class="footer-sub">The financial playbook schools skipped.</div>
     <div class="footer-links">
-      <a onclick="showPage('home')">Home</a><a onclick="showPage('lessons')">Lessons</a>
-      <a onclick="showPage('gold')">Gold</a><a onclick="showPage('portfolio')">Portfolio</a>
-      <a onclick="showPage('legal')">Legal & Disclaimers</a>
+      <a role="button" tabindex="0" onclick="showPage('home')">Home</a><a role="button" tabindex="0" onclick="showPage('lessons')">Lessons</a>
+      <a role="button" tabindex="0" onclick="showPage('gold')">Gold</a><a role="button" tabindex="0" onclick="showPage('portfolio')">Portfolio</a>
+      <a role="button" tabindex="0" onclick="showPage('legal')">Legal & Disclaimers</a>
     </div>
     <div id="footerInstall" style="margin-bottom:26px">
       <button onclick="triggerInstall()" style="background:linear-gradient(135deg,#052e16,#0b1a10);color:#eef5ee;border:1px solid rgba(134,239,172,.3);padding:12px 24px;border-radius:99px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:9px;transition:all .2s" aria-label="Install FinPath as an app on this device">
@@ -3207,7 +3225,19 @@ function getActionBadge(a){
   return '<span class="inv-badge badge-reduce">'+A+'</span>';
 }
 
-function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open');}
+function toggleMenu(force){
+  const m = document.getElementById('mobileMenu'); if(!m) return;
+  const open = typeof force === 'boolean' ? force : !m.classList.contains('open');
+  m.classList.toggle('open', open);
+  const b = document.getElementById('hamburgerBtn');
+  if(b){ b.setAttribute('aria-expanded', open ? 'true' : 'false'); b.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu'); }
+}
+// Close the phone menu on an outside tap or Escape (it used to stay open over the page).
+document.addEventListener('click', function(e){
+  const m = document.getElementById('mobileMenu');
+  if(m && m.classList.contains('open') && !m.contains(e.target) && !e.target.closest('.hamburger')) toggleMenu(false);
+});
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ const m = document.getElementById('mobileMenu'); if(m && m.classList.contains('open')) toggleMenu(false); } });
 
 const ROUTES=['home','portfolio','lessons','gold','markets','legal'];
 function showPage(p,fromHash){
@@ -3221,7 +3251,7 @@ function showPage(p,fromHash){
     const cur = location.hash.replace(/^#/,'') || 'home';
     if(cur!==p){ try{ history.pushState(null,'',want); }catch(e){} }
   }
-  document.getElementById('mobileMenu').classList.remove('open');
+  toggleMenu(false);
   window.scrollTo(0,0);
   if(p==='lessons'){ if(typeof closeLessonDetail==='function') closeLessonDetail(); renderLessons(); }
   if(p==='gold') renderGold();
@@ -4830,7 +4860,7 @@ document.addEventListener('keydown', function(e){
   const l = document.getElementById('loginModal');
   if(l && l.style.display === 'flex') closeLogin();
   const mm = document.getElementById('mobileMenu');
-  if(mm) mm.classList.remove('open');
+  if(mm && mm.classList.contains("open")) toggleMenu(false);
   const um = document.getElementById('userMenu');
   if(um) um.style.display = 'none';
   // Dynamically created overlays (shared-portfolio preview etc.) have no id — close them too.
@@ -5028,7 +5058,7 @@ function shareLesson(i){
 // ══ A11Y: Enter / Space activates non-<button> elements that declare role="button" ══
 document.addEventListener('keydown', function(e){
   const t = e.target;
-  if((e.key === 'Enter' || e.key === ' ') && t && t.getAttribute && t.getAttribute('role') === 'button' && !/^(BUTTON|A|INPUT|TEXTAREA|SELECT)$/.test(t.tagName)){
+  if((e.key === 'Enter' || e.key === ' ') && t && t.getAttribute && t.getAttribute('role') === 'button' && !/^(BUTTON|INPUT|TEXTAREA|SELECT)$/.test(t.tagName) && !(t.tagName === 'A' && t.hasAttribute('href'))){
     e.preventDefault();
     if(t.classList.contains('term')){ const r = t.getBoundingClientRect(); showTerm({stopPropagation:function(){}, clientX:r.left, clientY:r.bottom}, t.dataset.term); }
     else t.click();
@@ -5063,9 +5093,15 @@ a11yLabelFields();
 (function(){
   const bar = document.createElement('div');
   bar.className = 'offline-bar';
-  bar.textContent = 'You are offline — live prices are paused and will resume automatically.';
+  bar.setAttribute('role','status');
+  bar.textContent = 'You’re offline. Lessons, the glossary and your saved portfolio still work; live prices, news and sign-in pause until you reconnect.';
   document.body.appendChild(bar);
-  function upd(){ bar.style.display = navigator.onLine ? 'none' : 'block'; }
+  let wasOffline = !navigator.onLine;
+  function upd(){
+    bar.style.display = navigator.onLine ? 'none' : 'block';
+    if(navigator.onLine && wasOffline && typeof toast === 'function') toast('✅','Back online — live prices will refresh shortly.');
+    wasOffline = !navigator.onLine;
+  }
   window.addEventListener('online', upd);
   window.addEventListener('offline', upd);
   upd();
@@ -6479,8 +6515,8 @@ window.addEventListener('beforeinstallprompt', function(e){
   e.preventDefault();
   _deferredInstall = e;
   updateFooterInstall();
-  const visits = parseInt(localStorage.getItem('fp_visits')||'0', 10) + 1;
-  localStorage.setItem('fp_visits', String(visits));
+  // fp_visits is counted once per session at the bottom of this script; this event can fire on every load.
+  const visits = parseInt(localStorage.getItem('fp_visits')||'0', 10);
   const dismissed = localStorage.getItem('fp_install_dismissed');
   const installed = localStorage.getItem('fp_installed');
   if(installed || dismissed || visits < 2) return;   // wait until they've come back at least once
@@ -6584,10 +6620,10 @@ function showInstallPill(){
   pill.id = 'installPill';
   pill.setAttribute('role','dialog');
   pill.setAttribute('aria-label','Install FinPath to your home screen');
-  pill.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);z-index:945;background:linear-gradient(135deg,#052e16,#0b1a10);border:1px solid rgba(134,239,172,.28);border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 20px 50px rgba(0,0,0,.5);max-width:calc(100% - 32px);opacity:0;transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .3s;font-family:var(--font-body)';
+  pill.style.cssText = 'position:fixed;bottom:calc(20px + env(safe-area-inset-bottom, 0px));left:50%;transform:translateX(-50%) translateY(80px);z-index:945;background:linear-gradient(135deg,#052e16,#0b1a10);border:1px solid rgba(134,239,172,.28);border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:14px;box-shadow:0 20px 50px rgba(0,0,0,.5);max-width:calc(100% - 32px);opacity:0;transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .3s;font-family:var(--font-body)';
   pill.innerHTML =
     '<div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">🌱</div>' +
-    '<div style="min-width:0"><div style="font-size:14px;font-weight:700;color:#eef5ee">Add FinPath to your home screen</div><div style="font-size:12px;color:#93a693;margin-top:1px">Opens like an app · works offline · updates itself</div></div>' +
+    '<div style="min-width:0"><div style="font-size:14px;font-weight:700;color:#eef5ee">Add FinPath to your home screen</div><div style="font-size:12px;color:#93a693;margin-top:1px">Opens like an app · lessons work offline · free</div></div>' +
     '<button id="installGo" style="background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border:none;padding:9px 15px;border-radius:99px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0" aria-label="Install FinPath">Install</button>' +
     '<button id="installNo" style="background:none;border:none;color:#93a693;font-size:20px;cursor:pointer;padding:4px 8px;line-height:1;flex-shrink:0" aria-label="Not now">×</button>';
   document.body.appendChild(pill);
@@ -6619,7 +6655,7 @@ function showInstallPill(){
       localStorage.setItem('fp_ios_tip_shown','1');
       const t = document.createElement('div');
       t.setAttribute('role','dialog');
-      t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:945;background:linear-gradient(135deg,#052e16,#0b1a10);border:1px solid rgba(134,239,172,.28);border-radius:16px;padding:14px 18px;box-shadow:0 20px 50px rgba(0,0,0,.5);max-width:calc(100% - 32px);font-family:var(--font-body);color:#eef5ee;font-size:13px;line-height:1.5';
+      t.style.cssText = 'position:fixed;bottom:calc(20px + env(safe-area-inset-bottom, 0px));left:50%;transform:translateX(-50%);z-index:945;background:linear-gradient(135deg,#052e16,#0b1a10);border:1px solid rgba(134,239,172,.28);border-radius:16px;padding:14px 18px;box-shadow:0 20px 50px rgba(0,0,0,.5);max-width:calc(100% - 32px);font-family:var(--font-body);color:#eef5ee;font-size:13px;line-height:1.5';
       t.innerHTML = '<div style="font-weight:700;margin-bottom:4px">📲 Add FinPath to your home screen</div>Tap <b>Share</b> in Safari, then <b>Add to Home Screen</b>. <button style="background:none;border:none;color:#22c55e;font-weight:700;margin-left:8px;cursor:pointer;font-family:inherit;font-size:13px" onclick="this.parentElement.remove()">Got it</button>';
       document.body.appendChild(t);
     }, 10000);

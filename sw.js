@@ -3,7 +3,7 @@
 // Live prices, filings, and API responses are intentionally NOT cached — those
 // must always be fresh.
 
-const CACHE = 'finpath-v11';
+const CACHE = 'finpath-v12';
 const SHELL = [
   './',
   './index.html',
@@ -67,9 +67,11 @@ self.addEventListener('fetch', function(event){
     // We only fall back to cache when the network fails (true offline mode).
     req.mode === 'navigate' || (req.headers.get('accept')||'').indexOf('text/html') !== -1
       ? fetch(req).then(function(res){
-          if(res && res.ok){
+          // Store the fresh shell under one key only. Caching every navigation URL would keep
+          // query-string variants (e.g. ?gold=success&session_id=…, ?p=… share links) in the cache.
+          if(res && res.ok && url.origin === self.location.origin){
             const clone = res.clone();
-            caches.open(CACHE).then(function(cache){ cache.put(req, clone); });
+            caches.open(CACHE).then(function(cache){ cache.put('./index.html', clone); });
           }
           return res;
         }).catch(function(){ return caches.match('./index.html').then(function(m){ return m || caches.match('./'); }); })
