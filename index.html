@@ -2317,13 +2317,10 @@ body.light .gs-item{background:#fff}
 
 <script>
 
-// TODO(siddharth): Finnhub key is shipped client-side. Rotate it in the Finnhub dashboard and move
-// quote/candle calls behind a server proxy (e.g. Supabase Edge Function). Do NOT paste a new key here.
-// TODO(siddharth): 2026-10-24 — this key now returns HTTP 401 "Invalid API key." from Finnhub, so ALL
-// live prices, candles, news, metrics and the WebSocket are down. Create a new free key at
-// https://finnhub.io/dashboard and replace the value below (or better, move it behind a proxy).
-// When the key is rejected the app shows a "Market data unavailable" banner (see apiKeyInvalid()).
-const FK='d8pn5n1r01qujv4j5d70d8pn5n1r01qujv4j5d7g';
+// TODO(siddharth): Finnhub key is shipped client-side (free key, rotated 2026-10-25; live quotes restored).
+// Keys can still be rotated via https://finnhub.io/dashboard, or better, moved behind a server proxy
+// (e.g. Supabase Edge Function). If a key is rejected the app shows a "Market data unavailable" banner (see apiKeyInvalid()).
+const FK='dbep8o9r01qp3vut32g0dbep8o9r01qp3vut32gg';
 const SBU='https://ivhhfhemcecwqadrjmwq.supabase.co';
 const SBK='sb_publishable_KoWYv1Ro5D4I83XxWmJFOg_DCB2ldw6';
 const SBH={'Content-Type':'application/json','apikey':SBK,'Authorization':'Bearer '+SBK};

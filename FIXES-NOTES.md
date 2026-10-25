@@ -102,3 +102,7 @@ logic didn't cause this; it was masking the failure. Every quote came back with 
 - sw.js CACHE → finpath-v6. The Stripe test link was not changed.
 - Verified: `node --check` on all 3 inline scripts and on sw.js. A headless Chrome smoke test showed the banner on a 401, the pulse message,
   the #markets deep link, pushState plus Back, hashchange, the #p= modal and the portfolio "no live price" flag, with no page errors.
+
+## 2026-10-25 — Finnhub key rotation
+- Replaced the dead (401) Finnhub key in index.html with a new free key; live quotes, candles, news and WebSocket restored.
+- sw.js CACHE → finpath-v7 so clients fetch the new HTML.
