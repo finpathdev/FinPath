@@ -1,9 +1,11 @@
 // Life Path UI. The math lives in engine.js. This file only reads inputs,
 // draws the page, and keeps the local journal.
-import { simulate, defaultInputs, fvMonthly, monthlyPayment, compoundGrowth, creditScoreEstimate, deflate, SNAP_AGES, ENGINE_VERSION } from './engine.js';
+import { simulate, defaultInputs, normalizeInputs, fvMonthly, monthlyPayment, compoundGrowth, creditScoreEstimate, deflate, monteCarloBands, SNAP_AGES, ENGINE_VERSION } from './engine.js';
 import { PRESETS, presetById, applyPreset } from './presets.js';
 import { comparePaths } from './compare.js';
 import { mergeJournal, upsertEntry } from './journal.js';
+import { futureLetter } from './future.js';
+import { choosePath, mergeJournalEntries, journalRow, entryFromRow } from './sync.js';
 import { conceptsFor, CONCEPTS } from '../learn/concepts.js';
 import { lessonProgressMap, lessonStoreFromProgress } from '../learn/progress.js';
 import { appendAttempt, makeAttempt, emptyQuizLog } from '../learn/quizlog.js';
@@ -13,6 +15,8 @@ let ASSUMPTIONS = null;
 let BOUND = false;
 let DOLLARS = 'today';
 let COMPARE_ID = 'wait25';
+let SYNC_TIMER = 0;
+let SYNC_CHAIN = Promise.resolve();
 
 function esc(s){
   return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
@@ -47,16 +51,54 @@ function loadStore(){
   return null;
 }
 
-function saveStore(inputs){
+function inputKey(inputs){
+  if(!inputs) return '';
+  return JSON.stringify({
+    currentAge: inputs.currentAge,
+    state: inputs.state,
+    college: inputs.college,
+    career: inputs.career,
+    salary: inputs.salary == null || inputs.salary === '' ? null : inputs.salary,
+    scholarship: inputs.scholarship,
+    monthlyInvest: inputs.monthlyInvest
+  });
+}
+
+function writeStore(record){
   try{
     localStorage.setItem('fp_life', JSON.stringify({
-      v: 1,
-      inputs: inputs,
-      dollars: DOLLARS,
-      comparePreset: COMPARE_ID
+      v: 2,
+      inputs: record.inputs,
+      dollars: record.dollars === 'future' ? 'future' : 'today',
+      comparePreset: record.comparePreset || COMPARE_ID,
+      updatedAt: record.updatedAt || 0,
+      touched: !!record.touched
     }));
     localStorage.setItem('fp_intel_v', '1');
   }catch(e){}
+}
+
+// Phase 1 stores had inputs and no timestamp. Stamp them once so a later
+// cloud row cannot replace a path the learner already built on this device.
+function ensureStamp(){
+  const prev = loadStore();
+  if(!prev || !prev.inputs) return;
+  if(prev.updatedAt != null || prev.touched === false) return;
+  prev.v = 2;
+  prev.touched = true;
+  prev.updatedAt = Date.now();
+  try{ localStorage.setItem('fp_life', JSON.stringify(prev)); }catch(e){}
+}
+
+function saveStore(inputs){
+  const prev = loadStore();
+  if(prev && prev.inputs && inputKey(prev.inputs) === inputKey(inputs) && (prev.dollars || 'today') === DOLLARS && (prev.comparePreset || 'wait25') === COMPARE_ID) return;
+  if(!prev){
+    writeStore({ inputs: inputs, dollars: DOLLARS, comparePreset: COMPARE_ID, updatedAt: 0, touched: false });
+    return;
+  }
+  writeStore({ inputs: inputs, dollars: DOLLARS, comparePreset: COMPARE_ID, updatedAt: Date.now(), touched: true });
+  scheduleCloudPush();
 }
 
 function currentView(){
@@ -65,6 +107,7 @@ function currentView(){
   if(parts[0] !== 'life') return { name: 'path', preset: null };
   const name = parts[1] || 'path';
   if(name === 'compare') return { name: 'compare', preset: null };
+  if(name === 'future' || name === 'future-self') return { name: 'future', preset: null };
   if(name === 'journal') return { name: 'journal', preset: null };
   if(name === 'assumptions') return { name: 'assumptions', preset: null };
   if(name === 'whatif' || name === 'what-if') return { name: 'whatif', preset: parts[2] || 'invest50at16' };
@@ -72,8 +115,8 @@ function currentView(){
 }
 
 function setTab(name){
-  const map = { path: 'lifeTabPath', compare: 'lifeTabCompare', whatif: 'lifeTabWhat', journal: 'lifeTabJournal', assumptions: 'lifeTabAssume' };
-  const panels = { path: 'lifePanelPath', compare: 'lifePanelCompare', whatif: 'lifePanelWhat', journal: 'lifePanelJournal', assumptions: 'lifePanelAssume' };
+  const map = { path: 'lifeTabPath', compare: 'lifeTabCompare', whatif: 'lifeTabWhat', future: 'lifeTabFuture', journal: 'lifeTabJournal', assumptions: 'lifeTabAssume' };
+  const panels = { path: 'lifePanelPath', compare: 'lifePanelCompare', whatif: 'lifePanelWhat', future: 'lifePanelFuture', journal: 'lifePanelJournal', assumptions: 'lifePanelAssume' };
   Object.keys(map).forEach(function(key){
     const tab = document.getElementById(map[key]);
     const panel = document.getElementById(panels[key]);
@@ -123,12 +166,14 @@ function fillSelects(){
     }).join('');
     college.dataset.ready = '1';
   }
-  if(compare && !compare.dataset.ready){
-    compare.innerHTML = PRESETS.map(function(p){
-      return '<option value="' + esc(p.id) + '">' + esc(p.label) + '</option>';
-    }).join('');
-    compare.dataset.ready = '1';
-  }
+  [compare, document.getElementById('lifeFuturePick')].forEach(function(el){
+    if(el && !el.dataset.ready){
+      el.innerHTML = PRESETS.map(function(p){
+        return '<option value="' + esc(p.id) + '">' + esc(p.label) + '</option>';
+      }).join('');
+      el.dataset.ready = '1';
+    }
+  });
   const chips = document.getElementById('lifeWhatChips');
   if(chips && !chips.dataset.ready){
     chips.innerHTML = PRESETS.map(function(p){
@@ -162,7 +207,9 @@ function applySaved(){
   if(salary) salary.value = inputs.salary == null ? '' : String(inputs.salary);
   set('lifeMonthly', inputs.monthlyInvest);
   const pick = document.getElementById('lifeComparePick');
+  const futurePick = document.getElementById('lifeFuturePick');
   if(pick) pick.value = COMPARE_ID;
+  if(futurePick) futurePick.value = COMPARE_ID;
   syncDollarButtons();
   syncSalaryHint();
 }
@@ -254,7 +301,16 @@ function bind(){
     list[n].click();
   });
   const pick = document.getElementById('lifeComparePick');
-  if(pick) pick.addEventListener('change', function(){ COMPARE_ID = pick.value; renderLife(); });
+  const futurePick = document.getElementById('lifeFuturePick');
+  function onPreset(value){
+    if(!presetById(value)) return;
+    COMPARE_ID = value;
+    if(pick) pick.value = value;
+    if(futurePick) futurePick.value = value;
+    renderLife();
+  }
+  if(pick) pick.addEventListener('change', function(){ onPreset(pick.value); });
+  if(futurePick) futurePick.addEventListener('change', function(){ onPreset(futurePick.value); });
   const saveCompare = document.getElementById('lifeSaveCompare');
   if(saveCompare) saveCompare.addEventListener('click', function(){ saveJournalCompare(); });
   const noteForm = document.getElementById('lifeNoteForm');
@@ -288,6 +344,7 @@ function readJournalEntries(){
 function writeEntry(entry){
   const next = upsertEntry(readJournalEntries(), entry);
   try{ localStorage.setItem('fp_journal', JSON.stringify({ v: 1, entries: next })); }catch(e){}
+  scheduleCloudPush();
 }
 
 function lessonNames(){
@@ -356,17 +413,23 @@ function formatAssumption(item){
   return String(n);
 }
 
-function takeaway(result){
+function takeaway(result, bands){
   const end = result.snapshots[65];
   if(!end) return 'This path does not reach 65. Enter an age from 13 to 64.';
   const nw = money(viewOf(result, end.netWorth, 65));
+  let base;
   if(result.crossoverAge){
-    return 'Around age ' + result.crossoverAge + ', growth on this path is larger than the dollars put in. By 65 the model’s net worth is ' + nw + '. That is the shape of compounding in a steady-rate model, not a forecast.';
+    base = 'Around age ' + result.crossoverAge + ', growth on this path is larger than the dollars put in. By 65 the model’s net worth is ' + nw + '. That is the shape of compounding in a steady-rate model, not a forecast.';
+  } else {
+    base = 'By 65 this model’s net worth is ' + nw + '. Growth has not yet passed the dollars put in. A longer stretch of deposits is what makes compounding visible here. This is not a forecast.';
   }
-  return 'By 65 this model’s net worth is ' + nw + '. Growth has not yet passed the dollars put in. A longer stretch of deposits is what makes compounding visible here. This is not a forecast.';
+  const band = bands && bands.rows ? bands.rows.find(function(r){ return r.age === 65; }) : null;
+  if(!band) return base;
+  return base + ' A classroom range around the invested balance at 65 runs from ' + money(viewOf(result, band.p10, 65)) + ' to ' + money(viewOf(result, band.p90, 65)) + '. That shade is uncertainty in a teaching model, not a forecast.';
 }
 
-function snapCards(result){
+function snapCards(result, bands){
+  const band65 = bands && bands.rows ? bands.rows.find(function(r){ return r.age === 65; }) : null;
   const copy = {
     22: 'Starting line. For a four-year path that began at 18, this is graduation morning: school debt is in place, work has not started.',
     30: 'How fast the loan is falling, and whether investing has started.',
@@ -387,30 +450,58 @@ function snapCards(result){
     if(age >= 30) bits.push(['Gross pay in this model', money(viewOf(result, row.earnings, age))]);
     if(age >= 30) bits.push(['Freedom progress', row.freedom == null ? '—' : Math.round(row.freedom * 100) + '%']);
     if(age === 22) bits.push(['Yearly living costs ahead', money(viewOf(result, row.living, age))]);
+    if(age === 65 && band65) bits.push(['Classroom range', money(viewOf(result, band65.p10, 65)) + ' – ' + money(viewOf(result, band65.p90, 65))]);
     return '<article class="life-snap"><h3>Age ' + age + '</h3><dl>' +
       bits.map(function(b){ return '<div><dt>' + b[0] + '</dt><dd>' + b[1] + '</dd></div>'; }).join('') +
       '</dl><p class="life-help">' + copy[age] + '</p></article>';
   }).join('');
 }
 
-function chartSvg(result){
+function chartSvg(result, bands){
   const rows = result.rows;
   if(rows.length < 2) return '';
+  const byAge = {};
+  if(bands && bands.rows) bands.rows.forEach(function(r){ byAge[r.age] = r; });
   const vals = rows.map(function(r){ return viewOf(result, r.portfolio, r.age); });
   const cons = rows.map(function(r){ return viewOf(result, r.contrib, r.age); });
-  const maxV = Math.max.apply(null, vals.concat(cons).concat([1]));
+  const p10 = rows.map(function(r){ return viewOf(result, byAge[r.age] ? byAge[r.age].p10 : r.portfolio, r.age); });
+  const p50 = rows.map(function(r){ return viewOf(result, byAge[r.age] ? byAge[r.age].p50 : r.portfolio, r.age); });
+  const p90 = rows.map(function(r){ return viewOf(result, byAge[r.age] ? byAge[r.age].p90 : r.portfolio, r.age); });
+  const maxV = Math.max.apply(null, vals.concat(cons, p90, [1]));
   const w = 640, h = 200, pad = 16;
   const x = function(i){ return pad + (w - pad * 2) * (i / (rows.length - 1)); };
   const y = function(v){ return h - pad - (v / maxV) * (h - pad * 2); };
   const line = function(arr){ return arr.map(function(v, i){ return x(i).toFixed(1) + ',' + y(v).toFixed(1); }).join(' '); };
-  const label = result.crossoverAge
-    ? 'Portfolio and contributions from age ' + result.inputs.currentAge + ' to 65. Growth passes contributions around age ' + result.crossoverAge + '.'
-    : 'Portfolio and contributions from age ' + result.inputs.currentAge + ' to 65. Contributions are still larger than growth at 65 in this model.';
+  const bandPts = p90.map(function(v, i){ return x(i).toFixed(1) + ',' + y(v).toFixed(1); });
+  for(let i = p10.length - 1; i >= 0; i--) bandPts.push(x(i).toFixed(1) + ',' + y(p10[i]).toFixed(1));
+  const end = byAge[65];
+  const range = end
+    ? ' Classroom range at 65: low ' + money(viewOf(result, end.p10, 65)) + ', middle ' + money(viewOf(result, end.p50, 65)) + ', high ' + money(viewOf(result, end.p90, 65)) + '.'
+    : '';
+  const label = (result.crossoverAge
+    ? 'Invested balance and contributions from age ' + result.inputs.currentAge + ' to 65, with a shaded classroom range. Growth passes contributions around age ' + result.crossoverAge + '.'
+    : 'Invested balance and contributions from age ' + result.inputs.currentAge + ' to 65, with a shaded classroom range. Contributions are still larger than growth at 65 in this model.') + range;
+  const legend = '<div class="life-legend"><span><i class="swatch band"></i>Classroom range (p10–p90)</span><span><i class="swatch mid"></i>Middle path (p50)</span><span><i class="swatch growth"></i>Steady invested balance</span><span><i class="swatch contrib"></i>Dollars put in</span></div>';
   return '<div class="life-chart"><svg viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="' + esc(label) + '">' +
+    '<polygon points="' + bandPts.join(' ') + '" fill="rgba(34,197,94,.20)" stroke="none"/>' +
     '<polyline points="' + line(cons) + '" fill="none" stroke="#93a693" stroke-width="2" stroke-dasharray="4 4"/>' +
+    '<polyline points="' + line(p50) + '" fill="none" stroke="#86efac" stroke-width="1.5" stroke-dasharray="2 3"/>' +
     '<polyline points="' + line(vals) + '" fill="none" stroke="#22c55e" stroke-width="2.5"/>' +
-    '</svg><div class="life-legend"><span><i class="swatch growth"></i>Invested balance</span><span><i class="swatch contrib"></i>Dollars put in</span></div>' +
-    '<p class="life-help">' + esc(label) + ' Figures are ' + (DOLLARS === 'today' ? 'today’s dollars, using the 2% inflation assumption.' : 'future dollars, before adjusting for inflation.') + '</p></div>';
+    '</svg>' + legend +
+    '<p class="life-help">' + esc(label) + ' The shade uses the same deposits as the steady line. It is a teaching range, not a forecast. Figures are ' + (DOLLARS === 'today' ? 'today’s dollars, using the 2% inflation assumption.' : 'future dollars, before adjusting for inflation.') + '</p></div>';
+}
+
+function bandTable(result, bands){
+  if(!bands || !bands.rows) return '';
+  const byAge = {};
+  bands.rows.forEach(function(r){ byAge[r.age] = r; });
+  const ages = SNAP_AGES.filter(function(age){ return byAge[age]; });
+  if(!ages.length) return '';
+  const body = ages.map(function(age){
+    const r = byAge[age];
+    return '<tr><th scope="row">' + age + '</th><td>' + money(viewOf(result, r.p10, age)) + '</td><td>' + money(viewOf(result, r.p50, age)) + '</td><td>' + money(viewOf(result, r.steady, age)) + '</td><td>' + money(viewOf(result, r.p90, age)) + '</td></tr>';
+  }).join('');
+  return '<div class="life-table-scroll"><table class="life-table"><caption>Classroom range for the invested balance. About 10% of the practice paths fell below the low column, and about 10% landed above the high column. Not a prediction.</caption><thead><tr><th>Age</th><th>Low (p10)</th><th>Middle (p50)</th><th>Steady</th><th>High (p90)</th></tr></thead><tbody>' + body + '</tbody></table></div>';
 }
 
 function yearTable(result){
@@ -429,7 +520,7 @@ function debtText(d){
   return 'Still in debt at 65';
 }
 
-function paintPath(inputs, result){
+function paintPath(inputs, result, bands){
   const meta = document.getElementById('lifeMeta');
   const college = ASSUMPTIONS.colleges[inputs.college];
   const state = ASSUMPTIONS.states[inputs.state];
@@ -437,13 +528,17 @@ function paintPath(inputs, result){
     meta.textContent = 'Age ' + result.inputs.currentAge + ' · ' + (college ? college.label : '') + ' · ' + (state ? state.name : '') + ' · assumptions ' + ASSUMPTIONS.version + ' · engine ' + ENGINE_VERSION;
   }
   const say = document.getElementById('lifeTakeaway');
-  if(say) say.textContent = takeaway(result);
+  if(say) say.textContent = takeaway(result, bands);
   const snaps = document.getElementById('lifeSnaps');
-  if(snaps) snaps.innerHTML = snapCards(result);
+  if(snaps) snaps.innerHTML = snapCards(result, bands);
   const chart = document.getElementById('lifeChart');
-  if(chart) chart.innerHTML = chartSvg(result) + yearTable(result);
+  if(chart) chart.innerHTML = chartSvg(result, bands) + bandTable(result, bands) + yearTable(result);
   const used = document.getElementById('lifeUsed');
-  if(used) used.innerHTML = assumptionHtml(result.used);
+  if(used){
+    const keys = result.used.slice();
+    if(ASSUMPTIONS.values.stock_vol && keys.indexOf('stock_vol') < 0) keys.push('stock_vol');
+    used.innerHTML = assumptionHtml(keys);
+  }
   const warn = document.getElementById('lifeAgeWarn');
   if(warn){
     const raw = Number((document.getElementById('lifeAge') || {}).value);
@@ -503,6 +598,51 @@ function metricList(result, end){
 function pathBlurb(inputs){
   const college = ASSUMPTIONS.colleges[inputs.college];
   return 'Your inputs: age ' + inputs.currentAge + ', ' + (college ? college.label : 'school') + ', investing ' + money(inputs.monthlyInvest) + ' a month from that age when the paycheck covers it.';
+}
+
+function shortPath(inputs){
+  const college = ASSUMPTIONS.colleges[inputs.college];
+  return 'age ' + inputs.currentAge + ', ' + (college ? college.label : 'school') + ', ' + money(inputs.monthlyInvest) + ' a month';
+}
+
+function paintFuture(inputs, baseline, bands){
+  const host = document.getElementById('lifeFutureBody');
+  if(!host) return;
+  const pick = document.getElementById('lifeFuturePick');
+  if(pick) pick.value = COMPARE_ID;
+  const preset = presetById(COMPARE_ID) || PRESETS[1];
+  const other = simulate(applyPreset(inputs, preset.id, ASSUMPTIONS), ASSUMPTIONS);
+  const pack = function(result){
+    const out = {};
+    SNAP_AGES.forEach(function(age){
+      const row = result.snapshots[age];
+      if(!row) return;
+      out[age] = {
+        portfolio: viewOf(result, row.portfolio, age),
+        debt: viewOf(result, row.debt, age),
+        netWorth: viewOf(result, row.netWorth, age)
+      };
+    });
+    return out;
+  };
+  const end = bands && bands.rows ? bands.rows.find(function(r){ return r.age === 65; }) : null;
+  const letter = futureLetter({
+    dollars: DOLLARS,
+    ageNow: baseline.inputs.currentAge,
+    pathLabel: shortPath(inputs),
+    altLabel: preset.label,
+    path: pack(baseline),
+    alt: pack(other),
+    band: end ? {
+      p10: viewOf(baseline, end.p10, 65),
+      p50: viewOf(baseline, end.p50, 65),
+      p90: viewOf(baseline, end.p90, 65)
+    } : null
+  });
+  host.innerHTML = '<article class="life-letter"><h3>' + esc(letter.title) + '</h3>' +
+    letter.paragraphs.map(function(p){ return '<p>' + esc(p) + '</p>'; }).join('') +
+    '</article><p class="life-help">The other path is the what-if selected above, on your age, state, school, and pay. Figures are ' +
+    (DOLLARS === 'today' ? 'today’s dollars.' : 'future dollars.') + ' This note is educational. It does not tell you what to do.</p>';
 }
 
 function paintWhat(inputs, baseline){
@@ -634,6 +774,7 @@ function renderLife(){
     return;
   }
   if(status) status.textContent = '';
+  ensureStamp();
   fillSelects();
   if(!BOUND){
     applySaved();
@@ -649,9 +790,13 @@ function renderLife(){
     if(status) status.textContent = 'The life model hit a problem on these inputs. Check the numbers and try again.';
     return;
   }
-  paintPath(inputs, result);
+  let bands = null;
+  try{ bands = monteCarloBands(inputs, ASSUMPTIONS, { result: result }); }
+  catch(e){ bands = null; }
+  paintPath(inputs, result, bands);
   if(view.name === 'compare') paintCompare(inputs, result);
   if(view.name === 'whatif') paintWhat(inputs, result);
+  if(view.name === 'future') paintFuture(inputs, result, bands);
   if(view.name === 'journal') paintJournal();
   if(view.name === 'assumptions') paintAssumptions();
   syncDollarButtons();
@@ -672,6 +817,164 @@ window.FPLearn = {
   emptyQuizLog: emptyQuizLog
 };
 
+function enqueueSync(fn){
+  SYNC_CHAIN = SYNC_CHAIN.then(function(){ return fn(); }).catch(function(){});
+  return SYNC_CHAIN;
+}
+
+function scheduleCloudPush(){
+  clearTimeout(SYNC_TIMER);
+  SYNC_TIMER = setTimeout(function(){ enqueueSync(pushCloud); }, 800);
+}
+
+function cloudCtx(){
+  const client = window.supabaseClient;
+  const user = window.currentUser;
+  if(!client || !client.from || !user || !user.id || !ASSUMPTIONS) return null;
+  return { client: client, userId: user.id };
+}
+
+function setSyncStatus(text){
+  const el = document.getElementById('lifeSync');
+  if(el && text) el.textContent = text;
+}
+
+function localRecord(raw){
+  if(!raw || !raw.inputs) return null;
+  return {
+    inputs: raw.inputs,
+    dollars: raw.dollars,
+    comparePreset: raw.comparePreset,
+    updatedAt: raw.updatedAt,
+    touched: raw.touched === true
+  };
+}
+
+function applyRecord(record){
+  if(!record || !record.inputs) return;
+  DOLLARS = record.dollars === 'future' ? 'future' : 'today';
+  if(presetById(record.comparePreset)) COMPARE_ID = record.comparePreset;
+  writeStore({
+    inputs: record.inputs,
+    dollars: DOLLARS,
+    comparePreset: COMPARE_ID,
+    updatedAt: record.updatedAt,
+    touched: true
+  });
+  const set = function(id, value){
+    const el = document.getElementById(id);
+    if(el && value != null) el.value = String(value);
+  };
+  set('lifeAge', record.inputs.currentAge);
+  set('lifeState', record.inputs.state);
+  set('lifeCollege', record.inputs.college);
+  set('lifeScholarship', record.inputs.scholarship || 0);
+  set('lifeCareer', record.inputs.career);
+  const salary = document.getElementById('lifeSalary');
+  if(salary) salary.value = record.inputs.salary == null ? '' : String(record.inputs.salary);
+  set('lifeMonthly', record.inputs.monthlyInvest);
+  const pick = document.getElementById('lifeComparePick');
+  const futurePick = document.getElementById('lifeFuturePick');
+  if(pick) pick.value = COMPARE_ID;
+  if(futurePick) futurePick.value = COMPARE_ID;
+  syncDollarButtons();
+  syncSalaryHint();
+  renderLife();
+}
+
+async function fetchRemotePath(ctx){
+  const { data, error } = await ctx.client.from('life_paths').select('inputs,dollars,compare_preset,updated_at').eq('user_id', ctx.userId).maybeSingle();
+  if(error) throw error;
+  if(!data || !data.inputs || typeof data.inputs !== 'object') return null;
+  return {
+    inputs: data.inputs,
+    dollars: data.dollars,
+    comparePreset: data.compare_preset,
+    updatedAt: data.updated_at,
+    touched: true
+  };
+}
+
+async function pushPath(ctx, record){
+  const inputs = normalizeInputs(record.inputs, ASSUMPTIONS);
+  const { error } = await ctx.client.from('life_paths').upsert({
+    user_id: ctx.userId,
+    inputs: inputs,
+    dollars: record.dollars === 'future' ? 'future' : 'today',
+    compare_preset: String(record.comparePreset || 'wait25').slice(0, 40),
+    assumptions_version: String(ASSUMPTIONS.version || '').slice(0, 40),
+    engine: String(ENGINE_VERSION).slice(0, 40),
+    updated_at: new Date(record.updatedAt).toISOString()
+  }, { onConflict: 'user_id' });
+  if(error) throw error;
+}
+
+async function pullJournal(ctx){
+  const { data, error } = await ctx.client.from('life_journal').select('entry_id,kind,title,why,concept_ids,at,ref').eq('user_id', ctx.userId);
+  if(error) throw error;
+  const remote = (data || []).map(entryFromRow).filter(Boolean);
+  const local = readJournalEntries();
+  const merged = mergeJournalEntries(local, remote);
+  if(JSON.stringify(merged) !== JSON.stringify(local)){
+    try{ localStorage.setItem('fp_journal', JSON.stringify({ v: 1, entries: merged })); }catch(e){}
+    if(currentView().name === 'journal') paintJournal();
+  }
+}
+
+async function pushJournalFromLocal(ctx){
+  const rows = readJournalEntries().map(function(entry){ return journalRow(ctx.userId, entry); }).filter(Boolean);
+  if(!rows.length) return;
+  for(let i = 0; i < rows.length; i += 100){
+    const { error } = await ctx.client.from('life_journal').upsert(rows.slice(i, i + 100), { onConflict: 'user_id,entry_id' });
+    if(error) throw error;
+  }
+}
+
+async function pushCloud(){
+  const ctx = cloudCtx();
+  if(!ctx){
+    setSyncStatus('Saved on this device. Sign in if you want a copy on your account too.');
+    return;
+  }
+  try{
+    const remote = await fetchRemotePath(ctx);
+    const choice = choosePath(localRecord(loadStore()), remote);
+    if(choice.source === 'remote'){
+      applyRecord(choice.record);
+      await pullJournal(ctx);
+      setSyncStatus('Brought the newer copy from your account onto this device. Your notes stayed here too.');
+      return;
+    }
+    if(choice.push && choice.record) await pushPath(ctx, choice.record);
+    await pullJournal(ctx);
+    await pushJournalFromLocal(ctx);
+    setSyncStatus('Saved on this device and on your account.');
+  }catch(e){
+    setSyncStatus('Saved on this device. Your account didn’t update just now.');
+  }
+}
+
+async function syncNow(){
+  if(!ASSUMPTIONS) return;
+  ensureStamp();
+  const ctx = cloudCtx();
+  if(!ctx){
+    setSyncStatus('Saved on this device. Sign in if you want a copy on your account too.');
+    return;
+  }
+  try{
+    const remote = await fetchRemotePath(ctx);
+    const choice = choosePath(localRecord(loadStore()), remote);
+    if(choice.source === 'remote') applyRecord(choice.record);
+    else if(choice.push && choice.record) await pushPath(ctx, choice.record);
+    await pullJournal(ctx);
+    await pushJournalFromLocal(ctx);
+    setSyncStatus('Saved on this device. Your account has this path and the notes you saved here.');
+  }catch(e){
+    setSyncStatus('Saved on this device. Your account didn’t update just now.');
+  }
+}
+
 window.FPLife = {
   ENGINE_VERSION: ENGINE_VERSION,
   fvMonthly: fvMonthly,
@@ -680,12 +983,15 @@ window.FPLife = {
   creditScoreEstimate: creditScoreEstimate,
   deflate: deflate,
   simulate: simulate,
-  render: renderLife
+  monteCarloBands: monteCarloBands,
+  render: renderLife,
+  syncNow: function(){ enqueueSync(syncNow); }
 };
 
 loadAssumptions().then(function(data){
   ASSUMPTIONS = data;
   if(document.getElementById('page-life') && document.getElementById('page-life').classList.contains('active')) renderLife();
+  enqueueSync(syncNow);
 }).catch(function(){
   const status = document.getElementById('lifeStatus');
   if(status) status.textContent = 'The assumptions file didn’t load. Refresh once you’re online. The rest of FinPath still works.';

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   fvMonthly, monthlyPayment, compoundGrowth, creditScoreEstimate, deflate,
-  simulate, defaultInputs
+  simulate, defaultInputs, monteCarloBands, percentileNearest, hashSeed
 } from './engine.js';
 import { applyPreset } from './presets.js';
 import { comparePaths } from './compare.js';
@@ -160,6 +160,71 @@ test('quiz log appends and keeps concept ids', function(){
   assert.equal(log.attempts.length, 1);
   assert.equal(log.attempts[0].responses[0].conceptIds[0], 'saving');
   assert.equal(log.v, 1);
+});
+
+test('percentile helper and seed hash are stable', function(){
+  assert.equal(percentileNearest([], 50), 0);
+  assert.equal(percentileNearest([10, 20, 30, 40], 0), 10);
+  assert.equal(percentileNearest([10, 20, 30, 40], 100), 40);
+  assert.equal(percentileNearest([10, 20, 30, 40], 50), 20);
+  assert.equal(hashSeed('life'), hashSeed('life'));
+  assert.notEqual(hashSeed('life'), hashSeed('life-2'));
+});
+
+test('monthly deposits are recorded for the range model', function(){
+  const inputs = defaultInputs(assumptions);
+  inputs.college = 'none';
+  inputs.monthlyInvest = 50;
+  inputs.currentAge = 16;
+  const result = simulate(inputs, assumptions);
+  assert.ok(result.flows.length > 0);
+  assert.ok(result.flows.every(function(f){ return f.monthInvest && f.monthInvest.length === 12; }));
+  const sum = result.flows.reduce(function(total, f){
+    return total + f.monthInvest.reduce(function(a, b){ return a + b; }, 0);
+  }, 0);
+  assert.ok(Math.abs(sum - result.totals.invested) < 1);
+});
+
+test('zero volatility bands sit on the steady invested balance', function(){
+  const inputs = defaultInputs(assumptions);
+  inputs.college = 'none';
+  inputs.monthlyInvest = 50;
+  inputs.currentAge = 16;
+  const result = simulate(inputs, assumptions);
+  const band = monteCarloBands(inputs, assumptions, { result: result, vol: 0, paths: 12, seed: 3 });
+  assert.equal(band.rows.length, result.rows.length);
+  band.rows.forEach(function(row){
+    const steady = result.rows.find(function(r){ return r.age === row.age; });
+    assert.equal(row.p10, steady.portfolio);
+    assert.equal(row.p50, steady.portfolio);
+    assert.equal(row.p90, steady.portfolio);
+  });
+  assert.equal(band.note.indexOf('Not a prediction') >= 0, true);
+});
+
+test('volatility spreads p10, p50, and p90 around the steady line', function(){
+  const inputs = defaultInputs(assumptions);
+  inputs.college = 'none';
+  inputs.monthlyInvest = 50;
+  inputs.currentAge = 16;
+  const result = simulate(inputs, assumptions);
+  const band = monteCarloBands(inputs, assumptions, { result: result, seed: 42, paths: 240 });
+  const again = monteCarloBands(inputs, assumptions, { result: result, seed: 42, paths: 240 });
+  const other = monteCarloBands(inputs, assumptions, { result: result, seed: 99, paths: 240 });
+  const end = band.rows[band.rows.length - 1];
+  assert.equal(end.age, 65);
+  assert.ok(end.p10 < end.p50);
+  assert.ok(end.p50 < end.p90);
+  assert.ok(end.p10 < end.steady);
+  assert.ok(end.steady < end.p90);
+  assert.equal(end.p10, again.rows[again.rows.length - 1].p10);
+  assert.equal(end.p90, again.rows[again.rows.length - 1].p90);
+  assert.notEqual(end.p90, other.rows[other.rows.length - 1].p90);
+  assert.equal(band.vol, assumptions.values.stock_vol.value);
+  band.rows.forEach(function(row){
+    assert.ok(isFinite(row.p10) && isFinite(row.p50) && isFinite(row.p90));
+    assert.ok(row.p10 <= row.p50 && row.p50 <= row.p90);
+  });
 });
 
 test('journal merges trades, goals, and lessons without dropping a sim note', function(){
