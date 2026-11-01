@@ -387,6 +387,11 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 .life-legend .swatch{display:inline-block;width:16px;height:3px;margin-right:6px;vertical-align:middle}
 .life-legend .growth{background:#22c55e}
 .life-legend .contrib{background:#93a693}
+.life-legend .band{background:rgba(34,197,94,.45);height:8px;border-radius:2px}
+.life-legend .mid{background:#86efac;height:2px}
+.life-letter{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 16px 6px;margin:8px 0 14px}
+.life-letter h3{font-size:18px;margin:0 0 10px;font-family:var(--font-display)}
+.life-letter p{font-size:15px;line-height:1.55;margin:0 0 12px}
 .life-table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
 .life-table th,.life-table td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
 .life-table caption{text-align:left;font-size:13px;color:var(--muted);margin-bottom:6px}
@@ -2181,12 +2186,14 @@ body.light .gs-item{background:#fff}
       <h1>Life Path</h1>
       <p id="lifeMeta">A yearly model from your age to 65. Educational only.</p>
     </div>
-    <p class="life-note" role="note">This is an educational model, not a prediction and not advice. It uses one steady return and the assumptions listed on this page. Real life includes job changes, crashes, raises, and taxes this model skips. Nothing here is a reason to buy, sell, borrow, or pick a school.</p>
+    <p class="life-note" role="note">This is an educational model, not a prediction and not advice. The solid line uses one steady return from the assumptions sheet. The shaded band is a classroom range around that line (a low path, a middle path, and a high path). Real life includes job changes, crashes, raises, and taxes this model skips. Nothing here is a reason to buy, sell, borrow, or pick a school.</p>
+    <p id="lifeSync" class="life-help">Inputs and the notes you write here stay on this device. Sign in if you want a copy on your account too. Signed out, nothing about this path leaves the browser.</p>
     <p id="lifeStatus" class="life-help" role="status"></p>
     <div class="life-tabs" id="lifeTabs" role="tablist" aria-label="Life Path sections">
       <button type="button" role="tab" id="lifeTabPath" data-life-tab="path" aria-controls="lifePanelPath" aria-selected="true">Path</button>
       <button type="button" role="tab" id="lifeTabWhat" data-life-tab="whatif" aria-controls="lifePanelWhat" aria-selected="false" tabindex="-1">What-if</button>
       <button type="button" role="tab" id="lifeTabCompare" data-life-tab="compare" aria-controls="lifePanelCompare" aria-selected="false" tabindex="-1">Compare</button>
+      <button type="button" role="tab" id="lifeTabFuture" data-life-tab="future" aria-controls="lifePanelFuture" aria-selected="false" tabindex="-1">Future self</button>
       <button type="button" role="tab" id="lifeTabJournal" data-life-tab="journal" aria-controls="lifePanelJournal" aria-selected="false" tabindex="-1">Journal</button>
       <button type="button" role="tab" id="lifeTabAssume" data-life-tab="assumptions" aria-controls="lifePanelAssume" aria-selected="false" tabindex="-1">Assumptions</button>
     </div>
@@ -2278,8 +2285,17 @@ body.light .gs-item{background:#fff}
       <p id="lifeCompareSaved" class="life-help" role="status"></p>
     </div>
 
+    <div id="lifePanelFuture" role="tabpanel" aria-labelledby="lifeTabFuture" hidden>
+      <div class="life-field">
+        <label for="lifeFuturePick">A second path to set beside yours</label>
+        <select id="lifeFuturePick"></select>
+        <p class="life-help">Future you writes from the path on the Path tab, then peeks at this what-if. It is a letter from the worksheet, not a plan you have to follow.</p>
+      </div>
+      <div id="lifeFutureBody"></div>
+    </div>
+
     <div id="lifePanelJournal" role="tabpanel" aria-labelledby="lifeTabJournal" hidden>
-      <p class="life-help">A local timeline: what-ifs you save, paper trades, savings goals, finished lessons, and quiz scores. It stays in this browser. It is not synced.</p>
+      <p class="life-help">A timeline of what-ifs you save, notes you write, paper trades, savings goals, finished lessons, and quiz scores. Trades, goals, and lessons stay in this browser. Path inputs and the notes you save here can also sync when you are signed in. If you are signed out, or the network fails, they still stay on this device.</p>
       <form id="lifeNoteForm" class="life-field">
         <label for="lifeNote">Add a one-line note</label>
         <input id="lifeNote" maxlength="280" placeholder="What did you decide to look at, and why?">
@@ -2629,7 +2645,7 @@ body.light .gs-item{background:#fff}
     <div class="warning-box"><p><strong>Please read carefully.</strong> By using FinPath you confirm you have read, understood, and agreed to everything below. If you do not agree, do not use FinPath. Some sections limit your legal rights — including a mandatory arbitration clause and class-action waiver — so read them attentively.</p></div>
 
     <div class="legal-section" id="l-not-advice"><h2>1. Not Financial, Investment, Legal, or Tax Advice</h2>
-      <p>FinPath is an <strong>educational and informational platform</strong>. Nothing on FinPath — including lessons, articles, screener output, market pulse data, sector heat maps, portfolio analytics, the AI Analyzer, the AI Suggestions feature (Gold), Ask FinPath (powered by Grok), investor move summaries, the Strategy Playground, the Life Path model, backtest results, share prices, alert notifications, or any communication from FinPath or Siddharth Moosani — constitutes financial advice, investment advice, tax advice, legal advice, accounting advice, retirement planning advice, or any other form of professional advice. Life Path projections are educational models with stated assumptions. They are not predictions.</p>
+      <p>FinPath is an <strong>educational and informational platform</strong>. Nothing on FinPath — including lessons, articles, screener output, market pulse data, sector heat maps, portfolio analytics, the AI Analyzer, the AI Suggestions feature (Gold), Ask FinPath (powered by Grok), investor move summaries, the Strategy Playground, the Life Path model, backtest results, share prices, alert notifications, or any communication from FinPath or Siddharth Moosani — constitutes financial advice, investment advice, tax advice, legal advice, accounting advice, retirement planning advice, or any other form of professional advice. Life Path projections, including the classroom percentile bands and the Future Self letter, are educational models with stated assumptions. They are not predictions and they are not a reason to buy, sell, or borrow.</p>
       <p>FinPath does <strong>not</strong> know your full financial situation, income, debts, tax bracket, dependents, age, health, insurance, employment status, retirement horizon, other assets, or personal risk tolerance. Any statement about a security, sector, strategy, or approach is generic educational content and does not consider your individual circumstances.</p>
       <p>You must consult a qualified, licensed financial adviser, tax professional, or attorney before making any investment, tax, or legal decision. Your reliance on FinPath is solely at your own risk.</p>
     </div>
@@ -5581,6 +5597,7 @@ function onUserLoggedIn(user){
   }catch(e){}
   hideLoginNudge();
   if(typeof renderAsk==='function' && document.getElementById('page-ask') && document.getElementById('page-ask').classList.contains('active')) renderAsk();
+  if(window.FPLife && typeof FPLife.syncNow === 'function') FPLife.syncNow();
 }
 
 // ══ LOGIN NUDGE ══
@@ -8903,7 +8920,7 @@ initStreak();
 startAlertLoop();
 handleSharedLink();
 // Hash router: #portfolio / #lessons / #life / #ask / #gold / #markets / #legal / #home (or empty).
-// #lesson/N opens that lesson. #life/whatif/card (and compare, journal, assumptions) open Life Path.
+// #lesson/N opens that lesson. #life/whatif/card (and compare, future, journal, assumptions) open Life Path.
 // #moment/paycheck opens the first-paycheck planner.
 // #p= shared links are handled above by handleSharedLink and ignored here.
 // A cold #l-* load runs while the page is still laying out. showPage scrolls to

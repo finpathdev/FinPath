@@ -1,7 +1,7 @@
 {
-  "version": "v1",
+  "version": "v1.1",
   "reviewed": "2026-11-01",
-  "engine": "life-1",
+  "engine": "life-2",
   "sources": {
     "fed_inflation": {
       "name": "Federal Reserve — longer-run inflation goal of 2 percent",
@@ -9,7 +9,7 @@
       "asOf": "2026-11-01"
     },
     "damodaran": {
-      "name": "Aswath Damodaran, historical returns on the S&P 500 including dividends, geometric average 1928–2022",
+      "name": "Aswath Damodaran, historical returns on the S&P 500 including dividends, 1928–2022 (geometric average 9.64%, arithmetic average 11.51%)",
       "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html",
       "asOf": "2022-12-31"
     },
@@ -122,6 +122,7 @@
   "values": {
     "inflation": { "value": 0.02, "unit": "annual_rate", "source": "fed_inflation", "note": "Used to show results in today’s dollars. One steady rate, not a forecast." },
     "stock_nominal": { "value": 0.0964, "unit": "annual_rate", "source": "damodaran", "note": "Geometric average. A single steady rate hides crashes. Past averages are not a forecast." },
+    "stock_vol": { "value": 0.1934, "unit": "annual_rate", "source": "damodaran", "note": "Annual volatility implied by that same table: σ ≈ √(2 × (11.51% arithmetic − 9.64% geometric)). It only draws the classroom range around the steady line. It is not a forecast of future volatility." },
     "wage_growth": { "value": 0.03, "unit": "annual_rate", "source": "wage_growth", "note": "Applied once a year after the first working year. Nominal, so it includes inflation." },
     "fica_rate": { "value": 0.0765, "unit": "annual_rate", "source": "fica", "note": "Employee share only. Additional Medicare tax and the wage base are not modeled." },
     "income_tax_rate": { "value": 0.10, "unit": "annual_rate", "source": "income_tax", "note": "Added to the FICA rate as a flat effective income tax. Not your bracket." },

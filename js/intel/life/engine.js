@@ -1,8 +1,9 @@
 // Yearly life-path model. No DOM and no network. Lesson calculators call the
 // same future-value, payment, growth, and credit-score helpers so a number
 // cannot drift between a lesson and the simulator.
-export const ENGINE_VERSION = 'life-1';
+export const ENGINE_VERSION = 'life-2';
 export const SNAP_AGES = [22, 30, 45, 65];
+export const MC_DEFAULT_PATHS = 400;
 
 export function fvMonthly(monthly, annualPct, years){
   const pmt = Number(monthly);
@@ -256,7 +257,8 @@ function applyYear(state, age, inputs, assumptions, flags){
     carInterest: 0,
     carPaid: 0,
     borrowed: 0,
-    loanPayment: 0
+    loanPayment: 0,
+    monthInvest: []
   };
 
   if(borrow > 0){
@@ -353,6 +355,7 @@ function applyYear(state, age, inputs, assumptions, flags){
     state.portfolio = cents(state.portfolio * (1 + stockM) + invest);
     state.contrib = cents(state.contrib + invest);
     flow.invested += invest;
+    flow.monthInvest.push(cents(invest));
   }
 
   flow.income = gross;
@@ -521,6 +524,147 @@ function usedKeys(inputs){
   if(inputs.raisePct > 0) keys.push('raise_pct', 'raise_invest_share');
   if(inputs.state && inputs.state !== 'US') keys.push('needs_share');
   return keys;
+}
+
+// Classroom ranges around the invested balance. The steady line still uses the
+// sheet's single rate. These paths keep that same deposit schedule and only
+// wobble the monthly return, so the band is uncertainty in a teaching model,
+// not a prediction and not a reason to buy, sell, or borrow.
+export function hashSeed(text){
+  let h = 2166136261;
+  const s = String(text == null ? '' : text);
+  for(let i = 0; i < s.length; i++){
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+export function mulberry32(seed){
+  let a = (Number(seed) >>> 0) || 1;
+  return function(){
+    a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+export function normalSample(rng){
+  let u = 0;
+  let v = 0;
+  while(u <= 0) u = rng();
+  while(v <= 0) v = rng();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+// Nearest-rank percentile. `sorted` must be ascending. p is 0–100.
+export function percentileNearest(sorted, p){
+  if(!sorted || !sorted.length) return 0;
+  const pct = clamp(Number(p), 0, 100);
+  if(pct <= 0) return sorted[0];
+  const n = Math.ceil((pct / 100) * sorted.length);
+  const i = Math.min(sorted.length, Math.max(1, n)) - 1;
+  return sorted[i];
+}
+
+function stockVolOf(assumptions, override){
+  let vol = override == null ? val(assumptions, 'stock_vol') : Number(override);
+  if(!isFinite(vol) || vol < 0) vol = 0;
+  if(vol > 1) vol = 1;
+  return vol;
+}
+
+function seedFor(result, vol, paths, explicit){
+  if(explicit != null && isFinite(Number(explicit))) return Number(explicit) >>> 0;
+  const inputs = result.inputs || {};
+  return hashSeed(JSON.stringify({
+    age: inputs.currentAge,
+    state: inputs.state,
+    college: inputs.college,
+    career: inputs.career,
+    salary: inputs.salary,
+    scholarship: inputs.scholarship,
+    monthly: inputs.monthlyInvest,
+    start: inputs.investStartAge,
+    card: inputs.cardBalance,
+    car: inputs.car,
+    raise: inputs.raisePct,
+    raiseAge: inputs.raiseAge,
+    raiseShare: inputs.raiseInvestShare,
+    loans: inputs.loansOverride,
+    vol: vol,
+    paths: paths,
+    rate: result.stockRate
+  }));
+}
+
+export function monteCarloBands(rawInputs, assumptions, options){
+  const opts = options || {};
+  const result = opts.result || simulate(rawInputs, assumptions);
+  const paths = Math.round(clamp(opts.paths == null ? MC_DEFAULT_PATHS : Number(opts.paths), 1, 800));
+  const vol = stockVolOf(assumptions, opts.vol);
+  const rate = Number(result.stockRate) || 0;
+  const medianMonthly = rate / 12;
+  const sigma = vol / Math.sqrt(12);
+  const seed = seedFor(result, vol, paths, opts.seed);
+  const rng = mulberry32(seed);
+  const pcts = Array.isArray(opts.percentiles) && opts.percentiles.length ? opts.percentiles : [10, 50, 90];
+  const rowsIn = result.rows || [];
+  const flows = result.flows || [];
+  const bal = new Array(paths);
+  for(let p = 0; p < paths; p++) bal[p] = 0;
+  const columns = rowsIn.map(function(){ return new Array(paths); });
+  if(columns.length){
+    for(let p = 0; p < paths; p++) columns[0][p] = 0;
+  }
+
+  const yearCount = Math.min(flows.length, Math.max(0, rowsIn.length - 1));
+  for(let y = 0; y < yearCount; y++){
+    const flow = flows[y] || {};
+    const months = Array.isArray(flow.monthInvest) && flow.monthInvest.length === 12
+      ? flow.monthInvest
+      : null;
+    const even = months ? 0 : (Number(flow.invested) || 0) / 12;
+    for(let m = 0; m < 12; m++){
+      const invest = months ? Number(months[m]) || 0 : even;
+      for(let p = 0; p < paths; p++){
+        let mult;
+        if(sigma === 0){
+          mult = 1 + medianMonthly;
+        } else {
+          const z = normalSample(rng);
+          const base = 1 + medianMonthly;
+          mult = base > 0 ? Math.exp(Math.log(base) + sigma * z) : 0;
+          if(!isFinite(mult) || mult < 0) mult = 0;
+        }
+        let next = cents(bal[p] * mult + invest);
+        if(next < 0) next = 0;
+        bal[p] = next;
+      }
+    }
+    for(let p = 0; p < paths; p++) columns[y + 1][p] = bal[p];
+  }
+
+  const outRows = rowsIn.map(function(row, i){
+    const sorted = columns[i] ? columns[i].slice().sort(function(a, b){ return a - b; }) : [];
+    const point = { age: row.age, steady: row.portfolio };
+    pcts.forEach(function(pct){
+      point['p' + pct] = percentileNearest(sorted, pct);
+    });
+    return point;
+  });
+
+  return {
+    engine: ENGINE_VERSION,
+    paths: paths,
+    seed: seed,
+    vol: vol,
+    rate: rate,
+    percentiles: pcts.slice(),
+    rows: outRows,
+    note: 'Classroom range around the invested balance. Same deposits as the steady line, with the sheet’s return as the median monthly step and historical-size volatility. Not a prediction.'
+  };
 }
 
 export function moneyAt(result, nominal, age){
