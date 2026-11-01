@@ -536,6 +536,8 @@ button.term{background:none;border:none;border-bottom:1.5px dotted var(--green);
 .act-sell{background:rgba(251,113,133,.1);color:#fb7185;border:1px solid rgba(251,113,133,.3)}
 .act-watch{background:var(--gold-soft);color:var(--gold);border:1px solid rgba(245,182,11,.3)}
 .ai-rec-text{font-size:14px;color:#a9bba9;line-height:1.7}
+.ai-rec-notes{margin:4px 0 0;padding-left:18px}
+.ai-rec-notes li{margin:0 0 8px;font-size:14px;color:#a9bba9;line-height:1.7}
 .live-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:blip 2s infinite;display:inline-block;box-shadow:0 0 8px var(--green)}
 .live-dot.is-offline{background:#94a3b8;animation:none;box-shadow:none}
 
@@ -576,7 +578,7 @@ button.term{background:none;border:none;border-bottom:1.5px dotted var(--green);
 .d-chart-wrap{height:200px;margin-bottom:16px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
 .detail-ai-box{background:linear-gradient(150deg,rgba(34,197,94,.14),var(--panel-solid) 60%);border:1px solid var(--line-strong);border-radius:var(--radius-lg);padding:26px;margin-bottom:16px}
 .detail-ai-action{font-size:22px;font-weight:700;color:var(--mint);margin-bottom:9px;font-family:var(--font-display)}
-.detail-ai-text{font-size:15px;color:#c7e6cd;line-height:1.75}
+.detail-ai-text{font-size:15px;color:#c7e6cd;line-height:1.75;white-space:pre-line}
 .remove-btn{background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.3);border-radius:13px;padding:14px 26px;color:var(--red);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
 .remove-btn:hover{background:rgba(248,113,113,.14)}
 
@@ -687,6 +689,7 @@ body.light .hero h1 span::after{background:rgba(34,197,94,.28)}
 body.light .ai-disclaimer{background:rgba(20,83,45,.06)}
 body.light .ai-rec{background:rgba(20,83,45,.05)}
 body.light .ai-rec-text{color:#41584a}
+body.light .ai-rec-notes li{color:#41584a}
 body.light .detail-ai-text{color:#1d4028}
 body.light .lesson-content{color:#243b2b}
 body.light .legal-section p,body.light .legal-section ul li{color:#3c5344}
@@ -1494,7 +1497,7 @@ body.light .gs-item{background:#fff}
     <div class="hero-inner">
       <div class="hero-tag">🚀 Just launched · Early access · Built by a high schooler</div>
       <h1>Money doesn't come with a manual.<br><span>Now it does.</span></h1>
-      <p>34 no-fluff lessons, the latest SEC 13F trades from 9 legendary investors like Buffett, Ackman, Gates and Druckenmiller, and a live portfolio tracker with rule-based buy/hold/sell notes — built for people starting from zero.</p>
+      <p>34 no-fluff lessons, the latest SEC 13F trades from 9 legendary investors like Buffett, Ackman, Gates and Druckenmiller, and a live portfolio tracker with rule-based educational notes — built for people starting from zero.</p>
       <div class="hero-btns">
         <button class="btn-primary" onclick="handleAuthClick()">Get Started Free</button>
         <button class="btn-secondary" onclick="startDemoMode()">👀 Try the Demo — no sign-in</button>
@@ -1995,7 +1998,7 @@ body.light .gs-item{background:#fff}
       <div class="feature-card" onclick="showPage('lessons')"><div class="feature-icon">📚</div><div class="feature-title">34 Expert Lessons</div><div class="feature-desc">Everything schools skipped — from credit scores to compound interest — explained in plain English.</div></div>
       <div class="feature-card" onclick="showPage('gold')"><div class="feature-icon">👑</div><div class="feature-title">Investor Moves — Gold</div><div class="feature-desc">See what 9 legendary investors (Buffett, Ackman, Tepper, Druckenmiller, Li Lu, Klarman, Gates, Coleman and Smith) bought and sold in their latest 13F filings — and why.</div></div>
       <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">📈</div><div class="feature-title">Live Portfolio Tracker</div><div class="feature-desc">Track your stocks with live prices. See total profit, daily gains, and (with Gold) which holdings drove today’s move.</div></div>
-      <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">🧭</div><div class="feature-title">Stock Suggestions — Gold</div><div class="feature-desc">Buy, hold and sell suggestions for the stocks you own, with plain-English reasoning. Rule-based and educational — not personal advice.</div></div>
+      <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">🧭</div><div class="feature-title">Stock Suggestions — Gold</div><div class="feature-desc">Rule-based educational notes for the stocks you own, drawn from position size, sector mix, and unrealized gain or loss. Not a live AI and not personal advice.</div></div>
     </div>
   </section>
   <section class="investor-section">
@@ -2036,7 +2039,7 @@ body.light .gs-item{background:#fff}
           <li>Basic profit and loss tracking</li>
           <li class="no">Investor Moves (9 legendary investors)</li>
           <li class="no">14 Gold lessons</li>
-          <li class="no">Buy/hold/sell suggestions (rule-based)</li>
+          <li class="no">Rule-based educational notes on holdings</li>
           <li class="no">Today’s-change breakdown per holding</li>
         </ul>
         <button class="price-btn outline" onclick="handleAuthClick()">Get started free</button>
@@ -2050,7 +2053,7 @@ body.light .gs-item{background:#fff}
           <li>Live portfolio tracker</li>
           <li>Today’s-change breakdown per holding (hour-by-hour history isn’t available on our data plan yet)</li>
           <li>Investor Moves — 9 legendary investors (13F)</li>
-          <li>Buy/hold/sell suggestions with plain-English reasoning (rule-based, educational)</li>
+          <li>Rule-based educational notes on each holding (size, sector, gain or loss)</li>
           <li>Holding alerts with the reasoning behind each suggestion</li>
         </ul>
         <button class="price-btn" onclick="openGoldPayment()">Start with Gold</button>
@@ -2136,7 +2139,7 @@ body.light .gs-item{background:#fff}
     <div class="mode-tabs" role="tablist"><button class="mode-tab active" id="tabLive" role="tab" onclick="setMode('live')">My portfolio</button><button class="mode-tab" id="tabPaper" role="tab" onclick="setMode('paper')">Paper trading<span class="pill">practice</span></button></div>
     <div id="liveWrap">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
-      <div><h1 style="font-size:28px;font-weight:800;letter-spacing:-.5px">Your Portfolio</h1><p style="font-size:14px;color:var(--muted);margin-top:4px"><span class="live-dot"></span> Live prices · Buy/hold/sell notes · Profit tracking</p><details class="quote-tip"><summary>How to read a quote</summary><p><b>Price</b> is the latest trade we could load. The <b>day’s % change</b> compares that price with the previous close — green means up, red means down. <b>Last known</b> means we saved that price earlier and are showing it because a live update isn’t available. It isn’t a guessed number.</p></details></div>
+      <div><h1 style="font-size:28px;font-weight:800;letter-spacing:-.5px">Your Portfolio</h1><p style="font-size:14px;color:var(--muted);margin-top:4px"><span class="live-dot"></span> Live prices · Educational notes · Profit tracking</p><details class="quote-tip"><summary>How to read a quote</summary><p><b>Price</b> is the latest trade we could load. The <b>day’s % change</b> compares that price with the previous close — green means up, red means down. <b>Last known</b> means we saved that price earlier and are showing it because a live update isn’t available. It isn’t a guessed number.</p></details></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="add-btn" onclick="openSearch()">+ Add stock</button><button class="btn-secondary" style="padding:14px 20px;font-size:14px" onclick="refreshPrices()" id="refreshBtn" aria-label="Refresh live prices">↻ Refresh</button><button class="btn-secondary" style="padding:14px 20px;font-size:14px" onclick="sharePortfolio()" aria-label="Copy shareable portfolio link">Share</button></div>
     </div>
     <div class="port-top-grid">
@@ -2187,10 +2190,10 @@ body.light .gs-item{background:#fff}
     </div>
     <div class="ai-section">
       <div class="ai-head"><div class="ai-title">Stock Suggestions <span style="font-size:12px;font-weight:500;color:var(--muted)">(rule-based)</span></div><span class="ai-badge">Gold Plan</span></div>
-      <div class="ai-disclaimer">Suggestions are rule-based educational notes written for well-known stocks (a general note is shown for others) — not a live AI reading your personal situation. These suggestions are for educational purposes only and do not constitute financial advice. Always do your own research. Past performance does not guarantee future results. You are solely responsible for any investment decisions you make.</div>
+      <div class="ai-disclaimer">Suggestions are rule-based educational notes derived from portfolio weights, sector mix, and unrealized gain or loss — not a live AI reading your personal situation. These notes are for educational purposes only and do not constitute financial advice. Always do your own research. Past performance does not guarantee future results. You are solely responsible for any investment decisions you make.</div>
       <!-- 2026-10-25: removed the "instructions" textarea; suggestions are rule-based and never used it (the old copy falsely said they were "adjusted accordingly"). -->
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="ai-run-btn" onclick="runAI()">Get suggestions</button><button class="ai-run-btn" style="background:linear-gradient(135deg,#b8860b,#f5b60b);color:#0a0a05" onclick="analyzePortfolio()">Deep portfolio analysis</button></div>
-      <div id="aiRecs"><div class="empty">Add stocks and click above to get a suggestion for each holding.</div></div>
+      <div id="aiRecs"><div class="empty">Add stocks and click above for a rule-based educational note on each holding.</div></div>
     </div>
     <div class="alerts-section" id="newsSection" style="margin-top:26px">
       <div style="font-size:16px;font-weight:700;margin-bottom:12px;font-family:var(--font-display)">Market news</div>
@@ -2654,8 +2657,8 @@ body.light .gs-item{background:#fff}
     <div class="detail-ai-box">
       <div style="font-size:12px;font-weight:600;color:#86efac;margin-bottom:4px">RULE-BASED SUGGESTION · GOLD PLAN</div>
       <div style="font-size:11px;color:rgba(134,239,172,.6);margin-bottom:12px">For educational purposes only. Not financial advice.</div>
-      <div class="detail-ai-action" id="dAiAction">Analysing...</div>
-      <div class="detail-ai-text" id="dAiText">Loading...</div>
+      <div class="detail-ai-action" id="dAiAction">Educational note</div>
+      <div class="detail-ai-text" id="dAiText">Rule-based notes are a Gold feature.</div>
     </div>
     <div class="d-metric" style="margin-bottom:16px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px">
       <div class="d-mlabel">Price alert</div>
@@ -2720,15 +2723,91 @@ const AI_INSIGHT={
   DEFAULT:"A solid company in its sector. Check recent earnings and sector news before adding. Diversification is your best protection."
 };
 
-const AI_ADVISOR={
-  AAPL:{action:'Hold',cls:'act-hold',text:"Apple is rock solid. Buffett has held it for years. The services business adds growing recurring revenue on top of hardware. If you are down short-term, do not panic — this is a multi-year play. Suggestion: hold and consider adding on any significant dip."},
-  MSFT:{action:'Consider adding',cls:'act-buy',text:"Microsoft has strong AI and cloud tailwinds with Azure growing 30%+ year over year. Copilot integration is just getting started. Suggestion: if this is less than 20% of your portfolio, adding on dips toward recent support makes sense long term."},
-  GOOGL:{action:'Strong opportunity',cls:'act-buy',text:"Berkshire grew its Alphabet stake ~83% in Q2 2026 (now a top-3 holding). Search dominates, YouTube grows, Cloud gains share. Reasonable valuation for its AI growth. Suggestion: a position in GOOGL looks attractive at current levels."},
-  AMZN:{action:'Hold - let it run',cls:'act-hold',text:"Tepper, Klarman and Druckenmiller all added Amazon in Q2 2026 (Ackman trimmed). AWS growth plus improving retail profitability is powerful. Suggestion: hold and avoid trimming — the next earnings reports could be major catalysts."},
-  NVDA:{action:'Hold - monitor size',cls:'act-watch',text:"You are riding the AI wave. If NVDA has grown beyond 20-25% of your portfolio, consider trimming a small portion to rebalance. Suggestion: keep your core position but manage concentration risk."},
-  TSLA:{action:'Watch and wait',cls:'act-watch',text:"Tesla has been volatile. Hold your position but avoid adding without a catalyst. Suggestion: wait for the next earnings report and FSD progress before making a move."},
-  DEFAULT:{action:'Hold position',cls:'act-hold',text:"Your position looks reasonable based on general market conditions. Suggestion: continue holding, monitor quarterly earnings, and ensure this position is appropriately sized in your portfolio."}
-};
+// Retired: per-ticker AI_ADVISOR essays (buy/add/hold copy). Suggestions and holding
+// alerts now come from ruleSuggest(), which only looks at weights, sector mix,
+// unrealized gain/loss, and whether the ticker is a known ETF. No model is called.
+
+// Portfolio-derived educational notes. Pure: no DOM, no network, no LLM.
+// holdingsQuotes: [{h:{ticker,shares,buyPrice}, q:{c}}] or flat {ticker,shares,buyPrice,q}.
+// Returns one {ticker, label, cls, text} per input row. text is 1–3 lines separated by \n.
+// Labels are neutral. cls is only act-hold or act-watch.
+function ruleSuggest(holdingsQuotes){
+  const SIZE = 0.22;    // inside the ~20–25% single-name band
+  const SECTOR = 0.40;  // single-sector pile-up
+  const PNL = 0.25;     // large unrealized gain or loss vs buy price
+  const list = Array.isArray(holdingsQuotes) ? holdingsQuotes : [];
+  function num(v){ const n = Number(v); return isFinite(n) ? n : 0; }
+  function pct(part){ return (part * 100).toFixed(0); }
+  const rows = list.map(function(item){
+    const src = item && item.h ? item.h : (item || {});
+    const q = item && item.q != null ? item.q : (src.q != null ? src.q : null);
+    const ticker = String(src.ticker || '').trim();
+    const key = ticker.toUpperCase();
+    const shares = num(src.shares);
+    const buyPrice = num(src.buyPrice);
+    const live = !!(q && typeof q.c === 'number' && isFinite(q.c) && q.c > 0);
+    const price = live ? q.c : (buyPrice > 0 ? buyPrice : 0);
+    const value = (price > 0 && shares > 0) ? price * shares : 0;
+    const sector = (typeof SECTORS !== 'undefined' && (SECTORS[ticker] || SECTORS[key])) || 'Other';
+    const isEtf = typeof ETFS !== 'undefined' && (ETFS.has(ticker) || ETFS.has(key));
+    const pnl = (live && buyPrice > 0) ? (q.c - buyPrice) / buyPrice : null;
+    return {ticker:ticker, shares:shares, buyPrice:buyPrice, live:live, price:price, value:value, sector:sector, isEtf:isEtf, pnl:pnl};
+  });
+  const total = rows.reduce(function(s, r){ return s + r.value; }, 0);
+  const sectorTotals = {};
+  rows.forEach(function(r){ sectorTotals[r.sector] = (sectorTotals[r.sector] || 0) + r.value; });
+  return rows.map(function(r){
+    const weight = total > 0 ? r.value / total : 0;
+    const sectorW = total > 0 ? (sectorTotals[r.sector] || 0) / total : 0;
+    const parts = [];
+    if(!r.live){
+      const basis = r.buyPrice > 0 ? ' of $' + r.buyPrice.toFixed(2) : '';
+      parts.push({kind:'quote', text:'No live price is available, so this note uses the recorded buy price' + basis + '. Weights and gain or loss can change once a quote loads.'});
+    }
+    if(weight > SIZE){
+      const who = r.isEtf ? 'one fund’s market' : 'one company’s news';
+      parts.push({kind:'size', text:'This holding is about ' + pct(weight) + '% of the portfolio. Above the rough 20–25% band, ' + who + ' can move most of the account. This is a size check — a prompt to revisit how large the position is — not an instruction to trade.'});
+    }
+    const indexPile = sectorW > SECTOR && r.sector === 'Index Fund';
+    if(sectorW > SECTOR){
+      const sectorText = indexPile
+        ? 'About ' + pct(sectorW) + '% of the portfolio is grouped as Index Fund. ' + (r.isEtf ? (r.ticker || 'This fund') + ' is a broad basket: one fund that holds many securities. The expense ratio is the fee for owning that basket, and small fee gaps compound over long periods. ' : 'Those holdings are baskets. ') + 'A share this large still means one market drives most of the account.'
+        : 'About ' + pct(sectorW) + '% of the portfolio is in ' + (r.sector === 'Other' ? 'Other (no sector on file)' : r.sector) + '. A share above ~40% in one sector means a downturn there shows up across most of the account. Different kinds of businesses can move differently — that is the idea behind diversification.';
+      parts.push({kind:'sector', text:sectorText});
+    }
+    if(r.pnl != null && r.pnl >= PNL){
+      parts.push({kind:'thesis', text:'The latest price is about ' + pct(r.pnl) + '% above the recorded buy price. A large unrealized gain is a reason to reread why the holding was added: the original reason may already have played out, or it may still fit. Reviewing that reason is the point; the price move itself is not an order.'});
+    } else if(r.pnl != null && r.pnl <= -PNL){
+      parts.push({kind:'thesis', text:'The latest price is about ' + pct(Math.abs(r.pnl)) + '% below the recorded buy price. A large unrealized loss is uncomfortable, and it is not by itself a reason to panic. Reread the original reason for the holding and separate a price move from a change in the business.'});
+    }
+    if(r.isEtf && !indexPile){
+      parts.push({kind:'etf', text:(r.ticker || 'This fund') + ' is a broad basket: one fund that holds many securities. The expense ratio is the fee for owning that basket, and small fee gaps compound over long periods. The fund still rises and falls with the market it tracks.'});
+    } else if(!r.isEtf && r.ticker && weight <= SIZE){
+      parts.push({kind:'single', text:'This is one company, so its results are not spread across a basket. The useful question is how large it is next to the rest of the portfolio.'});
+    }
+    let labelKind = 'default';
+    if(parts.some(function(p){ return p.kind === 'size'; })) labelKind = 'size';
+    else if(parts.some(function(p){ return p.kind === 'sector'; })) labelKind = 'sector';
+    else if(parts.some(function(p){ return p.kind === 'thesis'; })) labelKind = 'thesis';
+    else if(parts.some(function(p){ return p.kind === 'quote'; })) labelKind = 'quote';
+    const defaultText = 'No size, sector, or large gain/loss rule stood out for this holding. A useful habit is to know its share of the portfolio and to read the next earnings report before treating a headline as new information.';
+    if(!parts.length) parts.push({kind:'default', text:defaultText});
+    else if(labelKind === 'default' && !parts.some(function(p){ return p.kind === 'etf' || p.kind === 'default'; })) parts.unshift({kind:'default', text:defaultText});
+    const rank = {size:0, sector:1, thesis:2, quote:3, etf:4, single:5, default:6};
+    parts.sort(function(a, b){
+      if(a.kind === labelKind) return -1;
+      if(b.kind === labelKind) return 1;
+      return rank[a.kind] - rank[b.kind];
+    });
+    let kept = parts.slice(0, 3);
+    const quote = parts.find(function(p){ return p.kind === 'quote'; });
+    if(quote && kept.indexOf(quote) === -1) kept = kept.slice(0, 2).concat(quote);
+    const labels = {size:'Size check', sector:'Diversify note', thesis:'Thesis check', quote:'Watchlist note', default:'Educational note'};
+    const label = labels[labelKind] || 'Educational note';
+    const cls = label === 'Educational note' ? 'act-hold' : 'act-watch';
+    return {ticker:r.ticker, label:label, cls:cls, text:kept.map(function(p){ return p.text; }).join('\n')};
+  });
+}
 
 
 
@@ -4068,7 +4147,7 @@ function openLesson(i, fromHash){
       <div class="gold-lock">
         <div style="font-size:36px;margin-bottom:12px">👑</div>
         <h3>This is a Gold lesson</h3>
-        <p>Upgrade to FinPath Gold to access all 14 premium lessons, Investor Moves, and buy/hold/sell suggestions.</p>
+        <p>Upgrade to FinPath Gold to access all 14 premium lessons, Investor Moves, and rule-based educational notes on your holdings.</p>
         <button class="price-btn" style="width:auto;padding:12px 28px;margin-top:8px" onclick="openGoldPayment()">Upgrade to Gold — $4.99/mo</button>
       </div>`;
   } else {
@@ -4774,7 +4853,7 @@ async function renderPortfolio(){
     document.getElementById('pReturn').textContent='0.00%';
     document.getElementById('stocksGrid').innerHTML=empty;
     document.getElementById('alertsList').innerHTML='<div class="empty">Add stocks to see alerts.</div>';
-    document.getElementById('aiRecs').innerHTML='<div class="empty">Add stocks then click Get suggestions.</div>';
+    document.getElementById('aiRecs').innerHTML='<div class="empty">Add stocks, then click Get suggestions for a rule-based note on each holding.</div>';
     renderPortfolioChart(1);
     renderWatchlist();
     var _aw=document.getElementById('allocWrap'); if(_aw)_aw.style.display='none';
@@ -4833,12 +4912,86 @@ function alertPctHtml(q){
   if(dp == null) return '';
   return '<span class="alert-pct" style="' + (dp<0?'background:rgba(248,113,113,.1);color:#f87171':'') + '">' + (dp>=0?'+':'') + dp.toFixed(2) + '%</span>';
 }
+function suggestionRows(quotes){
+  if(quotes && quotes.length) return quotes.map(function(row){
+    if(row && row.h) return {h: row.h, q: row.q || null};
+    return row;
+  });
+  return portfolio.map(function(h){ return {h: h, q: priceCache[h.ticker] || null}; });
+}
+function suggestionBadgeCls(cls){ return cls === 'act-watch' ? 'act-watch' : 'act-hold'; }
+function suggestionNoteHtml(note, holding){
+  const n = note || {ticker:'', label:'Educational note', cls:'act-hold', text:''};
+  const cls = suggestionBadgeCls(n.cls);
+  const ticker = n.ticker || '';
+  const company = (typeof COMPANIES !== 'undefined' && COMPANIES[ticker]) || '';
+  const shares = holding && holding.shares != null ? holding.shares : '';
+  const q = priceCache[ticker];
+  const live = !!(q && typeof q.c === 'number' && isFinite(q.c) && q.c > 0);
+  let fact = '';
+  if(!live) fact = ' · no live price';
+  else if(holding && Number(holding.buyPrice) > 0){
+    const pnl = (q.c - Number(holding.buyPrice)) / Number(holding.buyPrice) * 100;
+    fact = ' · ' + (pnl >= 0 ? '+' : '') + pnl.toFixed(1) + '% vs buy price';
+  }
+  const meta = escapeHtml(company) + (shares !== '' ? ' · ' + escapeHtml(shares) + ' shares' : '') + escapeHtml(fact);
+  const items = String(n.text || '').split('\n').filter(function(line){ return line; }).map(function(line){
+    return '<li>' + escapeHtml(line) + '</li>';
+  }).join('');
+  return '<div class="ai-rec">'+
+    '<div class="ai-rec-head">'+
+      '<div><div class="ai-rec-ticker">' + escapeHtml(ticker) + '</div>'+
+      '<div style="font-size:12px;color:var(--muted);margin-top:2px">' + meta + '</div></div>'+
+      '<span class="ai-action-badge ' + cls + '">' + escapeHtml(n.label || 'Educational note') + '</span>'+
+    '</div>'+
+    '<ul class="ai-rec-notes">' + items + '</ul>'+
+    '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--muted2)">For educational purposes only. Not financial advice. Always do your own research.</div>'+
+    '</div>';
+}
+function alertPreview(text){
+  const line = String(text || '').split('\n').filter(function(l){ return l; })[0] || '';
+  if(line.length <= 110) return line;
+  const cut = line.slice(0, 107);
+  const sp = cut.lastIndexOf(' ');
+  return (sp > 60 ? cut.slice(0, sp) : cut) + '…';
+}
+function alertNoteHtml(note, q){
+  const n = note || {ticker:'', label:'Educational note', cls:'act-hold', text:''};
+  const cls = n.cls === 'act-watch' ? 'warn' : '';
+  return '<div class="alert-item ' + cls + '">'+
+    '<div><div class="alert-ticker">' + escapeHtml(n.ticker) + ' — ' + escapeHtml(n.label || 'Educational note') + '</div>'+
+    '<div class="alert-msg">' + escapeHtml(alertPreview(n.text)) + '</div></div>'+
+    alertPctHtml(q)+
+    '</div>';
+}
+function fillDetailSuggestion(ticker){
+  const actionEl = document.getElementById('dAiAction');
+  const textEl = document.getElementById('dAiText');
+  if(!actionEl || !textEl) return;
+  if(!IS_GOLD){
+    actionEl.textContent = 'Gold plan';
+    textEl.textContent = 'Upgrade to Gold for a rule-based educational note on this holding. Nothing is hidden behind the lock — there is no recommendation yet.';
+    return;
+  }
+  const h = portfolio.find(function(p){ return p.ticker === ticker; });
+  if(!h){
+    actionEl.textContent = 'Educational note';
+    textEl.textContent = 'This holding is no longer in the portfolio.';
+    return;
+  }
+  // Score this holding against the whole portfolio. A one-row call would
+  // treat every position as 100% of the account.
+  const notes = ruleSuggest(portfolio.map(function(p){ return {h: p, q: priceCache[p.ticker] || null}; }));
+  const note = notes.filter(function(n){ return n.ticker === ticker; })[0];
+  actionEl.textContent = note ? note.label : 'Educational note';
+  textEl.textContent = note ? note.text : '';
+}
 function renderAlerts(quotes){
   const host = document.getElementById('alertsList');
   if(!host) return;
-  // AI Alerts contain the same premium reasoning as AI Suggestions, so the
-  // actual advice (action + explanation) is Gold-only. Non-Gold users see the
-  // stock and a locked teaser prompting an upgrade — but never the real advice.
+  // Holding alerts use the same ruleSuggest notes as Stock Suggestions.
+  // The note itself is Gold-only. Free users see the ticker and an upgrade
+  // teaser — never a canned recommendation behind the lock.
   if(!IS_GOLD){
     host.innerHTML = portfolio.map((h,i)=>{
       const q = quotes && quotes[i] ? quotes[i].q : null;
@@ -4851,49 +5004,36 @@ function renderAlerts(quotes){
     (portfolio.length ? '<div style="text-align:center;margin-top:14px"><button onclick="openGoldPayment()" style="background:var(--green-dim);border:none;border-radius:10px;padding:11px 24px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">👑 Unlock holding alerts with Gold — $4.99/mo</button></div>' : '');
     return;
   }
-  host.innerHTML=portfolio.map((h,i)=>{
-    const adv=AI_ADVISOR[h.ticker]||AI_ADVISOR.DEFAULT;
-    const q=quotes&&quotes[i]?quotes[i].q:null;
-    const cls=adv.cls==='act-sell'?'sell':adv.cls==='act-watch'?'warn':'';
-    return '<div class="alert-item '+cls+'">'+
-      '<div><div class="alert-ticker">'+escapeHtml(h.ticker)+' — '+escapeHtml(adv.action)+'</div>'+
-      '<div class="alert-msg">'+escapeHtml(adv.text.slice(0,80))+'...</div></div>'+
-      alertPctHtml(q)+
-      '</div>';
+  const rows = suggestionRows(quotes);
+  const notes = ruleSuggest(rows);
+  host.innerHTML = notes.map(function(n, i){
+    const q = rows[i] && rows[i].q ? rows[i].q : null;
+    return alertNoteHtml(n, q);
   }).join('');
 }
 
+let _suggestGen = 0;
 function runAI(){
   const recsEl = document.getElementById('aiRecs');
   if(!IS_GOLD){
-    recsEl.innerHTML='<div style="background:linear-gradient(135deg,rgba(5,46,22,.6),var(--surface));border:1px solid var(--green-dim);border-radius:16px;padding:40px;text-align:center"><div style="font-size:32px;margin-bottom:12px">👑</div><div style="font-size:18px;font-weight:700;margin-bottom:8px">Gold Plan Required</div><p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6">Upgrade to FinPath Gold to unlock rule-based suggestions with plain-English reasoning for every stock in your portfolio.</p><button onclick="openGoldPayment()" style="background:var(--green-dim);border:none;border-radius:10px;padding:12px 28px;color:#fff;font-size:14px;font-weight:600;cursor:pointer">Upgrade to Gold — $4.99/mo</button></div>';
+    recsEl.innerHTML='<div style="background:linear-gradient(135deg,rgba(5,46,22,.6),var(--surface));border:1px solid var(--green-dim);border-radius:16px;padding:40px;text-align:center"><div style="font-size:32px;margin-bottom:12px">👑</div><div style="font-size:18px;font-weight:700;margin-bottom:8px">Gold Plan Required</div><p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6">Upgrade to FinPath Gold to unlock rule-based educational notes for every holding. Notes use position size, sector mix, and unrealized gain or loss. No live AI is involved.</p><button onclick="openGoldPayment()" style="background:var(--green-dim);border:none;border-radius:10px;padding:12px 28px;color:#fff;font-size:14px;font-weight:600;cursor:pointer">Upgrade to Gold — $4.99/mo</button></div>';
     return;
   }
   if(portfolio.length===0){
     recsEl.innerHTML='<div class="empty">Add stocks to your portfolio first, then come back for suggestions.</div>';
     return;
   }
-  recsEl.innerHTML='<div class="loading"><div class="spinner"></div>Analysing your portfolio...</div>';
-  setTimeout(()=>{
-    const html = portfolio.map(h=>{
-      const adv = AI_ADVISOR[h.ticker] || AI_ADVISOR.DEFAULT;
-      const q = priceCache[h.ticker];
-      const price = (q && isFinite(q.c) && q.c > 0) ? q.c : h.buyPrice;
-      const pnl = h.buyPrice > 0 ? ((price - h.buyPrice)/h.buyPrice*100) : 0;
-      const pnlText = pnl >= 0 ? '+'+pnl.toFixed(1)+'% gain' : pnl.toFixed(1)+'% loss';
-      let text = adv.text;
-      return '<div class="ai-rec">'+
-        '<div class="ai-rec-head">'+
-          '<div><div class="ai-rec-ticker">'+h.ticker+'</div>'+
-          '<div style="font-size:12px;color:var(--muted);margin-top:2px">'+(COMPANIES[h.ticker]||'')+' · '+h.shares+' shares · '+pnlText+'</div></div>'+
-          '<span class="ai-action-badge '+adv.cls+'">'+adv.action+'</span>'+
-        '</div>'+
-        '<div class="ai-rec-text" style="margin-top:10px">'+text+'</div>'+
-        '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);font-size:11px;color:var(--muted2)">For educational purposes only. Not financial advice. Always do your own research.</div>'+
-        '</div>';
+  const gen = ++_suggestGen;
+  recsEl.innerHTML='<div class="loading"><div class="spinner"></div>Building notes…</div>';
+  setTimeout(function(){
+    if(gen !== _suggestGen) return;
+    const rows = suggestionRows(null);
+    const notes = ruleSuggest(rows);
+    recsEl.innerHTML = notes.map(function(n, i){
+      const h = rows[i] && rows[i].h ? rows[i].h : null;
+      return suggestionNoteHtml(n, h);
     }).join('');
-    recsEl.innerHTML = html;
-  },1200);
+  }, 160);
 }
 
 // Honest "no data" overlay for charts (replaces the old Math.random fallback curves).
@@ -4977,10 +5117,9 @@ async function openDetail(ticker){
   document.getElementById('dToday').textContent='--';
   document.getElementById('dVal').textContent='--';
   document.getElementById('dPnl').textContent='--';
-  const adv=AI_ADVISOR[ticker]||AI_ADVISOR.DEFAULT;
-  document.getElementById('dAiAction').textContent=adv.action;
-  document.getElementById('dAiText').textContent=adv.text;
+  fillDetailSuggestion(ticker);
   const q=await fetchQ(ticker);
+  if(selectedStock && selectedStock.ticker === ticker) fillDetailSuggestion(ticker);
   if(q){
     const val=q.c*selectedStock.shares;
     const pnl=(q.c-selectedStock.buyPrice)*selectedStock.shares;
@@ -6010,7 +6149,7 @@ function initOnboarding(){
     {icon:'👋', title:'Welcome to FinPath', body:'The financial playbook schools skipped. Three small steps and you\u2019ll have the hang of it — this takes about a minute.'},
     {icon:'📈', title:'Step 1 — Add your first stock', body:'Track a real stock with live prices, or practice risk-free with $100,000 of virtual paper-trading cash. Not sure where to start? Try the one-tap demo portfolio.'},
     {icon:'🎯', title:'Step 2 — Set a goal, then learn', body:'Set a concrete savings goal (like a $1,000 emergency fund), then start the beginner path: 6 short free lessons, about 1–2 minutes each. A checklist on your Portfolio page tracks your progress.'},
-    {icon:'🧭', title:'Good to know', body:'FinPath is for learning, not financial advice. Buy/hold/sell notes are rule-based, investor moves come from SEC filings that are weeks old, and paper trading uses virtual money only.'}
+    {icon:'🧭', title:'Good to know', body:'FinPath is for learning, not financial advice. Notes on holdings are rule-based and educational, investor moves come from SEC filings that are weeks old, and paper trading uses virtual money only.'}
   ];
   let step = 0;
   const ov = document.createElement('div');
@@ -7885,6 +8024,7 @@ function spShare(amt, years, fv, asset){
 
 // ── PORTFOLIO ANALYZER (rule-based) ──
 function analyzePortfolio(){
+  _suggestGen++;
   unlockAchv('analyzer'); track('analyzer_run');
   const recs = document.getElementById('aiRecs');
   if(!portfolio.length){ recs.innerHTML = '<div class="empty">Add stocks first, then run the analysis.</div>'; return; }
