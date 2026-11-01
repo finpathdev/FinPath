@@ -18,13 +18,15 @@ FinPath is a personal-finance learning app: bite-sized lessons and quizzes, a po
 python3 -m http.server 8000   # then open http://localhost:8000
 ```
 
-Life Path checks (no build step):
+Life Path, literacy, and identity checks (no build step):
 
 ```bash
-node --test js/intel/life/*.test.js js/intel/learn/*.test.js
+node --test js/intel/life/*.test.js js/intel/learn/*.test.js js/intel/identity/*.test.js
 ```
 
-Open `#life` for the classroom range (p10 / p50 / p90) around the invested balance, and `#life/future` for the Future Self letter. Both stay educational. They are not predictions and not a reason to buy, sell, or borrow.
+Open `#life` for the classroom range (p10 / p50 / p90) around the invested balance, and `#life/future` for the Future Self letter. Open `#identity` (or `#life/identity`) for a study profile, the 0–1000 literacy score, concept mastery, and a weekly plan of at most four lessons or quizzes. All of that stays educational. It is not a prediction and not a reason to buy, sell, or borrow.
+
+The identity page reads onboarding answers, Life Path inputs, lesson completions, and `fp_quiz_log` on this device. Picking a profile saves `fp_identity` in the browser. The weekly list saves `fp_study_plan`. Neither one is synced to an account. Signed-out use is unchanged.
 
 ## Life Path cloud sync
 

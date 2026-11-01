@@ -1,5 +1,5 @@
-// Stable concept ids for Phase 2 gap tracing. Phase 1 stores them on quiz
-// responses and journal entries. It does not draw a mastery dashboard.
+// Stable concept ids. Quiz responses, journal entries, the literacy score,
+// and the identity dashboard all group by these ids.
 export const CONCEPTS = {
   budgeting: 'Budgeting',
   saving: 'Saving',
@@ -58,4 +58,18 @@ export const LESSON_CONCEPTS = {
 export function conceptsFor(slug){
   const list = LESSON_CONCEPTS[slug];
   return Array.isArray(list) ? list.slice() : [];
+}
+
+// Lessons that teach each concept, in slug order. Used by mastery and the
+// weekly plan so a gap can point at a real lesson.
+export function lessonsByConcept(){
+  const out = {};
+  Object.keys(CONCEPTS).forEach(function(id){ out[id] = []; });
+  Object.keys(LESSON_CONCEPTS).forEach(function(slug){
+    LESSON_CONCEPTS[slug].forEach(function(id){
+      if(!out[id]) out[id] = [];
+      out[id].push(slug);
+    });
+  });
+  return out;
 }

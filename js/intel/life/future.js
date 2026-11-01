@@ -81,6 +81,14 @@ export function futureLetter(model){
     if(text) paragraphs.push(text);
   });
 
+  if(src.identityLabel){
+    const score = Number(src.literacyScore);
+    let line = 'The study profile saved on this device is ' + String(src.identityLabel) + '.';
+    if(isFinite(score)) line += ' The literacy score is ' + Math.round(score) + ' out of 1000, from lessons and quizzes already saved in this browser.';
+    line += ' That label only organizes what to study. It is not a reason to buy, sell, or borrow.';
+    paragraphs.push(line);
+  }
+
   paragraphs.push('The assumptions are listed on this page if you want to see where the rates came from. This letter does not know your real job, your family, or your luck. It is a note from a model.');
 
   return {

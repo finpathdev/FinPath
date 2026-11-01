@@ -32,3 +32,14 @@ export function lessonStoreFromProgress(progress){
   });
   return store;
 }
+
+// How many of the known slugs have a saved completion time.
+export function countCompleted(progress, slugs){
+  const src = progress && typeof progress === 'object' && !Array.isArray(progress) ? progress : {};
+  const list = Array.isArray(slugs) ? slugs : [];
+  let n = 0;
+  list.forEach(function(slug){
+    if(src[slug]) n += 1;
+  });
+  return n;
+}

@@ -15,6 +15,22 @@ export function appendAttempt(log, attempt){
   return { v: 1, attempts: next.length > MAX_ATTEMPTS ? next.slice(next.length - MAX_ATTEMPTS) : next };
 }
 
+// One row per quiz. A retake replaces the earlier attempt for scoring.
+// The log itself still keeps every attempt.
+export function latestAttempts(log){
+  const byKey = {};
+  const attempts = (log && Array.isArray(log.attempts)) ? log.attempts : [];
+  attempts.forEach(function(attempt){
+    if(!attempt || typeof attempt !== 'object') return;
+    const key = String(attempt.quizKey || attempt.lessonName || '');
+    if(!key) return;
+    const prev = byKey[key];
+    const t = Number(attempt.finishedAt) || 0;
+    if(!prev || t >= (Number(prev.finishedAt) || 0)) byKey[key] = attempt;
+  });
+  return Object.keys(byKey).map(function(key){ return byKey[key]; });
+}
+
 export function makeAttempt(partial){
   const responses = Array.isArray(partial.responses) ? partial.responses.map(function(r){
     return {
