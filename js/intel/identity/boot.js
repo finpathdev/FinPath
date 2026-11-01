@@ -7,6 +7,7 @@ import { presetById } from '../life/presets.js';
 
 const PLAN_KEY = 'fp_study_plan';
 const IDENTITY_KEY = 'fp_identity';
+const IDENTITY_LOG_KEY = 'fp_identity_log';
 let BOUND = false;
 
 function esc(s){
@@ -57,10 +58,47 @@ function readStoredIdentity(){
   return { id: raw.id, pinned: raw.pinned === true };
 }
 
-function writeStoredIdentity(id, pinned){
+function readIdentityLog(){
+  const raw = readJSON(IDENTITY_LOG_KEY, null);
+  if(!raw || !Array.isArray(raw.entries)) return [];
+  return raw.entries.filter(function(entry){ return entry && entry.id; }).slice(-80);
+}
+
+function writeIdentityLog(entries){
   try{
-    localStorage.setItem(IDENTITY_KEY, JSON.stringify({ v: 1, id: id, pinned: !!pinned, updatedAt: Date.now() }));
+    localStorage.setItem(IDENTITY_LOG_KEY, JSON.stringify({ v: 1, entries: entries.slice(-80) }));
   }catch(e){}
+}
+
+function appendIdentityLog(entry){
+  if(!entry || !entry.id) return readIdentityLog();
+  const entries = readIdentityLog();
+  const last = entries[entries.length - 1];
+  if(last && last.id === entry.id) return entries;
+  entries.push({ id: String(entry.id), label: String(entry.label || entry.id), at: Number(entry.at) || Date.now() });
+  writeIdentityLog(entries);
+  return entries;
+}
+
+function ensureIdentityLog(){
+  const stored = readJSON(IDENTITY_KEY, null);
+  if(!stored || !stored.id || !profileById(stored.id)) return readIdentityLog();
+  if(readIdentityLog().length) return readIdentityLog();
+  const at = Number(stored.updatedAt);
+  return appendIdentityLog({
+    id: stored.id,
+    label: profileById(stored.id).label,
+    at: isFinite(at) && at > 946684800000 ? at : Date.now()
+  });
+}
+
+function writeStoredIdentity(id, pinned){
+  const at = Date.now();
+  try{
+    localStorage.setItem(IDENTITY_KEY, JSON.stringify({ v: 1, id: id, pinned: !!pinned, updatedAt: at }));
+  }catch(e){}
+  const profile = profileById(id);
+  if(profile) appendIdentityLog({ id: id, label: profile.label, at: at });
 }
 
 function readPlan(){
@@ -167,6 +205,7 @@ function scoreBlock(literacy){
     '<div class="id-bar" aria-hidden="true"><span style="width:' + width + '%"></span></div>' +
     '<p class="life-help">Lessons are worth up to 400, latest-quiz accuracy up to 400 (full credit needs 24 questions), and concepts you have touched up to 200. Nothing here is a credit score.</p>' +
     '<ul class="id-math">' + lines + '</ul>' +
+    '<p class="life-help"><a href="#life/journal/review">Open this year’s journal review</a> to see what-ifs, notes, and how this score moved when the dates are on this device.</p>' +
     '</section>';
 }
 
@@ -270,6 +309,10 @@ function focusBlock(state){
     '</section>';
 }
 
+function untouched(state){
+  return !state.literacy.lessonsDone && !state.literacy.quizTotal && !state.literacy.score;
+}
+
 function render(refreshPlan){
   const host = document.getElementById('identityApp');
   const status = document.getElementById('identityStatus');
@@ -277,7 +320,10 @@ function render(refreshPlan){
   if(status) status.textContent = '';
   const state = model();
   const plan = buildPlan(state, refreshPlan);
-  host.innerHTML = profileCards(state) + focusBlock(state) + scoreBlock(state.literacy) + masteryBlock(state) + planBlock(state, plan);
+  const empty = untouched(state)
+    ? '<p class="life-empty">No lessons or quizzes are saved on this device yet, so the score stays at 0. <a href="#lessons">Start a lesson</a> or <a href="#life">open Life Path</a>. This is a study page, not a rating of your money.</p>'
+    : '';
+  host.innerHTML = empty + profileCards(state) + focusBlock(state) + scoreBlock(state.literacy) + masteryBlock(state) + planBlock(state, plan);
   const section = sectionFromHash();
   const target = section && document.getElementById('identity' + section.charAt(0).toUpperCase() + section.slice(1));
   if(target && target.scrollIntoView){
@@ -353,8 +399,11 @@ function lifeLineHtml(){
 window.FPIdentity = {
   render: function(){ render(false); },
   snapshot: snapshot,
-  lifeLineHtml: lifeLineHtml
+  lifeLineHtml: lifeLineHtml,
+  history: function(){ return ensureIdentityLog(); }
 };
+
+ensureIdentityLog();
 
 if(window.FPLearn){
   window.FPLearn.literacyScore = literacyScore;

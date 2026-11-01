@@ -248,14 +248,17 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{
 
 /* ── NAV — floating glass pill ── */
 nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px,calc(100% - 24px));z-index:200;background:rgba(9,15,10,.72);backdrop-filter:blur(22px) saturate(1.3);border:1px solid var(--line);border-radius:999px;padding:0 8px;box-shadow:0 12px 40px rgba(0,0,0,.45)}
-.nav-inner{display:flex;align-items:center;justify-content:space-between;height:58px;padding:0 14px}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:8px;height:58px;padding:0 14px;min-width:0}
 .logo{font-size:21px;font-weight:700;color:var(--green);letter-spacing:-.5px;cursor:pointer;display:flex;align-items:center;gap:9px}
 .logo-text{white-space:nowrap;letter-spacing:-.5px}
 .logo .logo-path{color:var(--text)}
 .logo-mark{width:26px;height:26px;flex-shrink:0;filter:drop-shadow(0 0 10px rgba(34,197,94,.35))}
-.nav-links{display:flex;align-items:center;gap:4px}
-.nav-links a{color:var(--muted);font-size:14px;font-weight:500;text-decoration:none;cursor:pointer;transition:all .15s;padding:8px 14px;border-radius:999px}
-.nav-links a:hover{color:var(--text);background:rgba(134,239,172,.08)}
+.nav-links{display:flex;align-items:center;gap:2px;flex:1 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{color:var(--muted);font-size:14px;font-weight:500;text-decoration:none;cursor:pointer;transition:all .15s;padding:8px 10px;border-radius:999px;flex:0 0 auto}
+.nav-links a:hover,.nav-links a[aria-current="page"]{color:var(--text);background:rgba(134,239,172,.08)}
+.nav-links a[aria-current="page"]{background:rgba(34,197,94,.16);color:var(--text)}
+.mobile-menu a[aria-current="page"]{color:var(--text);background:rgba(134,239,172,.1)}
 .nav-cta{background:linear-gradient(135deg,var(--green-dark),var(--green));color:#fff;border:none;border-radius:999px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;box-shadow:0 4px 18px rgba(34,197,94,.3)}
 .nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(34,197,94,.45)}
 .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:8px}
@@ -360,9 +363,10 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 /* Life Path — mobile first, one column until 768px */
 .life-wrap{max-width:1100px;margin:0 auto;padding:0 5% 80px}
 .life-note{background:rgba(245,182,11,.08);border:1px solid rgba(245,182,11,.35);border-radius:16px;padding:14px 16px;font-size:14px;line-height:1.55;color:var(--text);margin:0 0 18px}
-.life-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px;-webkit-overflow-scrolling:touch}
-.life-tabs button{min-height:44px;flex:0 0 auto;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer}
-.life-tabs button[aria-selected="true"]{background:rgba(34,197,94,.16);color:var(--text);border-color:var(--line-strong)}
+.life-tabs,.life-subtabs{display:flex;gap:8px;overflow-x:auto;max-width:100%;padding-bottom:8px;margin-bottom:16px;-webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
+.life-tabs::-webkit-scrollbar,.life-subtabs::-webkit-scrollbar{display:none}
+.life-tabs button,.life-subtabs button{min-height:44px;flex:0 0 auto;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer}
+.life-tabs button[aria-selected="true"],.life-subtabs button[aria-selected="true"]{background:rgba(34,197,94,.16);color:var(--text);border-color:var(--line-strong)}
 .life-steps{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:18px}
 .life-step{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 14px 6px}
 .life-step legend{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--green);padding:0 4px}
@@ -376,11 +380,11 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 .life-dollar button{min-height:44px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text);padding:8px 14px;cursor:pointer;font-weight:600}
 .life-dollar button[aria-pressed="true"]{background:rgba(34,197,94,.16);border-color:var(--line-strong)}
 .life-snaps{display:grid;grid-template-columns:1fr;gap:12px;margin:16px 0}
-.life-snap,.life-callout,.life-sources{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.life-snap,.life-callout,.life-sources,.life-pair > section{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
 .life-snap h3,.life-callout h3,.life-sources h3{font-size:16px;margin:0 0 8px}
 .life-snap dl,.life-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin:0}
 .life-snap dt,.life-metrics dt{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
-.life-snap dd,.life-metrics dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}
+.life-snap dd,.life-metrics dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;min-width:0}
 .life-chart{margin:12px 0}
 .life-chart svg{width:100%;height:auto;display:block}
 .life-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
@@ -405,20 +409,30 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 .life-chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
 .life-journal{list-style:none;margin:0;padding:0}
 .life-journal li{border-top:1px solid var(--line);padding:12px 0}
-.life-journal-top{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.life-journal-top{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
 .life-kind{text-transform:uppercase;letter-spacing:.05em;font-weight:700}
-.life-journal-title{font-weight:700;margin-top:4px}
+.life-journal-title{font-weight:700;margin-top:4px;overflow-wrap:anywhere}
 .life-journal p{white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0 0;font-size:14px;line-height:1.45}
-.life-empty{color:var(--muted);padding:12px 0}
-.life-help a{color:var(--mint)}
-.life-table-scroll{overflow-x:auto}
+.life-empty{color:var(--muted);padding:12px 0;line-height:1.5}
+.life-empty a,.life-help a{color:var(--mint)}
+.life-table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.life-table-scroll .life-table{width:max-content;min-width:100%}
+.life-review-block{margin:18px 0}
+.life-review-block h3,.life-review-stats + .life-review-block h3{font-size:16px;margin:0 0 8px}
+#lifeReviewBody h2{font-family:var(--font-display);font-size:clamp(26px,4vw,36px);letter-spacing:-.6px;margin:0 0 8px;overflow-wrap:anywhere;scroll-margin-top:120px}
+.life-review-num{font-family:var(--font-display);font-size:28px;font-weight:800;margin:4px 0 0}
+a.life-chip{display:inline-flex;align-items:center;text-decoration:none;color:var(--text)}
+.life-actions a.btn-secondary{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;min-height:44px;padding:10px 16px;font-size:14px}
+.hero-learn{margin-top:22px;font-size:14px;color:var(--muted);line-height:1.55}
+.hero-learn a{color:var(--mint);font-weight:650;text-decoration:none}
+.hero-learn a:hover{text-decoration:underline}
 .id-grid{display:grid;grid-template-columns:1fr;gap:10px}
 .id-card{display:flex;flex-direction:column;align-items:flex-start;gap:0;width:100%;min-height:44px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;color:var(--text);font:inherit;cursor:pointer}
 .id-card[aria-checked="true"]{background:rgba(34,197,94,.16);border-color:var(--line-strong)}
 .id-card-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;width:100%;font-size:16px}
 .id-card-blurb{display:block;color:var(--muted);font-size:13px;line-height:1.45;margin-top:6px}
 .id-badge{flex:0 0 auto;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--green);border:1px solid var(--line-strong);border-radius:999px;padding:3px 8px}
-.id-section{margin:26px 0}
+.id-section{margin:26px 0;scroll-margin-top:120px}
 .id-section h2{font-size:22px;margin:0 0 8px;font-family:var(--font-display);letter-spacing:-.3px}
 .id-section h3{font-size:16px;margin:16px 0 8px}
 .id-kicker{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--green);margin:0 0 6px}
@@ -442,6 +456,7 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 }
 @media(min-width:1024px){
   .life-snaps{grid-template-columns:1fr 1fr 1fr 1fr}
+  .life-review-stats{grid-template-columns:repeat(5,minmax(0,1fr))}
 }
 @media(max-width:1100px){
   .nav-links{display:none}
@@ -1126,7 +1141,7 @@ body.light nav{
 body.light .logo{color:#15803d !important;}
 body.light .logo .logo-path{color:#0a1a10 !important;}
 body.light .nav-links a{color:#3d5245 !important;}
-body.light .nav-links a:hover{color:#0a1a10 !important;}
+body.light .nav-links a:hover,body.light .nav-links a[aria-current="page"]{color:#0a1a10 !important;}
 
 /* Founder signature */
 body.light .founder-signature{color:#15803d !important;}
@@ -1281,9 +1296,15 @@ body{padding-left:env(safe-area-inset-left, 0px);padding-right:env(safe-area-ins
 @media (max-width:640px){
   input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px!important}
   .period-tab,.chip,.filter-tab,.mode-tab,.term-chip{min-height:40px}
-  .theme-btn{width:42px;height:42px}
+  .theme-btn{width:42px;height:42px;flex-shrink:0}
+  #navInstallBtn{display:none !important}
+  .nav-cta{padding:10px 12px;font-size:13px;white-space:nowrap;flex-shrink:0}
+  .logo,.hamburger{flex-shrink:0}
   .toast-stack{left:12px;right:12px;max-width:none}
   .modal-overlay{padding-top:calc(90px + env(safe-area-inset-top, 0px))}
+}
+@media (max-width:420px){
+  #themeBtn{display:none}
 }
 .term-pop{position:fixed;z-index:950;max-width:280px;background:var(--panel-solid);border:1px solid var(--line-strong);border-radius:14px;padding:14px 16px;font-size:13px;line-height:1.6;box-shadow:0 16px 48px rgba(0,0,0,.55);color:var(--text)}
 /* ── CALCULATORS ── */
@@ -1572,6 +1593,8 @@ body.light .gs-item{background:#fff}
 <div id="userMenu" style="display:none;position:fixed;top:74px;right:5%;background:#0b110c;border:1px solid rgba(134,239,172,.18);border-radius:16px;padding:8px;z-index:500;min-width:210px;box-shadow:0 16px 48px rgba(0,0,0,.6)">
   <div id="userEmailDisplay" style="padding:10px 12px;font-size:13px;color:#888;border-bottom:1px solid rgba(134,239,172,.1);margin-bottom:4px"></div>
   <div id="goldStatusMenu" style="padding:8px 12px;font-size:13px"></div>
+  <button onclick="showPage('life');closeUserMenu()" style="width:100%;background:none;border:none;color:#fff;text-align:left;padding:10px 12px;cursor:pointer;font-size:14px;border-radius:8px" onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background='none'">🧭 Life Path</button>
+  <button onclick="showPage('identity');closeUserMenu()" style="width:100%;background:none;border:none;color:#fff;text-align:left;padding:10px 12px;cursor:pointer;font-size:14px;border-radius:8px" onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background='none'">🪪 Financial identity</button>
   <button onclick="showPage('portfolio');closeUserMenu()" style="width:100%;background:none;border:none;color:#fff;text-align:left;padding:10px 12px;cursor:pointer;font-size:14px;border-radius:8px" onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background='none'">📈 My Portfolio</button>
   <button onclick="signOut()" style="width:100%;background:none;border:none;color:#f87171;text-align:left;padding:10px 12px;cursor:pointer;font-size:14px;border-radius:8px" onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background='none'">Sign out</button>
 </div>
@@ -1580,30 +1603,30 @@ body.light .gs-item{background:#fff}
   <div class="nav-inner">
     <div class="logo" onclick="showPage('home')" aria-label="FinPath home"><img class="logo-mark" src="logo-mark.png" alt="" aria-hidden="true"><span class="logo-text">Fin<span class="logo-path">Path</span></span></div>
     <div class="nav-links">
-      <a role="button" tabindex="0" onclick="showPage('home')">Home</a>
-      <a role="button" tabindex="0" onclick="showPage('life')">Life</a>
-      <a role="button" tabindex="0" onclick="showPage('identity')">Identity</a>
-      <a role="button" tabindex="0" onclick="showPage('lessons')">Lessons</a>
-      <a role="button" tabindex="0" onclick="showPage('ask')">Ask</a>
-      <a role="button" tabindex="0" onclick="showPage('gold')">Gold</a>
-      <a role="button" tabindex="0" onclick="showPage('portfolio')">Portfolio</a>
-      <a role="button" tabindex="0" onclick="showPage('markets')">Markets</a>
-      <a role="button" tabindex="0" onclick="showPage('legal')">Legal</a>
+      <a href="#home" data-nav="home" role="button" tabindex="0" aria-current="page" onclick="showPage('home');return false;">Home</a>
+      <a href="#life" data-nav="life" role="button" tabindex="0" onclick="showPage('life');return false;">Life</a>
+      <a href="#identity" data-nav="identity" role="button" tabindex="0" onclick="showPage('identity');return false;">Identity</a>
+      <a href="#lessons" data-nav="lessons" role="button" tabindex="0" onclick="showPage('lessons');return false;">Lessons</a>
+      <a href="#ask" data-nav="ask" role="button" tabindex="0" onclick="showPage('ask');return false;">Ask</a>
+      <a href="#gold" data-nav="gold" role="button" tabindex="0" onclick="showPage('gold');return false;">Gold</a>
+      <a href="#portfolio" data-nav="portfolio" role="button" tabindex="0" onclick="showPage('portfolio');return false;">Portfolio</a>
+      <a href="#markets" data-nav="markets" role="button" tabindex="0" onclick="showPage('markets');return false;">Markets</a>
+      <a href="#legal" data-nav="legal" role="button" tabindex="0" onclick="showPage('legal');return false;">Legal</a>
     </div>
     <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle light or dark mode" title="Toggle theme">🌙</button><button class="theme-btn" id="navInstallBtn" onclick="triggerInstall()" aria-label="Install FinPath as an app" title="Install FinPath" style="display:inline-flex">📲</button><button class="nav-cta" id="navAuthBtn" onclick="handleAuthClick()">Get Started Free</button>
     <button class="hamburger" onclick="toggleMenu()" aria-label="Open navigation menu" aria-controls="mobileMenu" aria-expanded="false" id="hamburgerBtn"><span></span><span></span><span></span></button>
   </div>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
-  <a role="button" tabindex="0" onclick="showPage('home');toggleMenu(false)">Home</a>
-  <a role="button" tabindex="0" onclick="showPage('life');toggleMenu(false)">Life</a>
-  <a role="button" tabindex="0" onclick="showPage('identity');toggleMenu(false)">Identity</a>
-  <a role="button" tabindex="0" onclick="showPage('lessons');toggleMenu(false)">Lessons</a>
-  <a role="button" tabindex="0" onclick="showPage('ask');toggleMenu(false)">Ask</a>
-  <a role="button" tabindex="0" onclick="showPage('gold');toggleMenu(false)">Gold</a>
-  <a role="button" tabindex="0" onclick="showPage('portfolio');toggleMenu(false)">Portfolio</a>
-  <a role="button" tabindex="0" onclick="showPage('markets');toggleMenu(false)">Markets</a>
-  <a role="button" tabindex="0" onclick="showPage('legal');toggleMenu(false)">Legal</a>
+  <a href="#home" data-nav="home" role="button" tabindex="0" aria-current="page" onclick="showPage('home');toggleMenu(false);return false;">Home</a>
+  <a href="#life" data-nav="life" role="button" tabindex="0" onclick="showPage('life');toggleMenu(false);return false;">Life Path</a>
+  <a href="#identity" data-nav="identity" role="button" tabindex="0" onclick="showPage('identity');toggleMenu(false);return false;">Identity</a>
+  <a href="#lessons" data-nav="lessons" role="button" tabindex="0" onclick="showPage('lessons');toggleMenu(false);return false;">Lessons</a>
+  <a href="#ask" data-nav="ask" role="button" tabindex="0" onclick="showPage('ask');toggleMenu(false);return false;">Ask</a>
+  <a href="#gold" data-nav="gold" role="button" tabindex="0" onclick="showPage('gold');toggleMenu(false);return false;">Gold</a>
+  <a href="#portfolio" data-nav="portfolio" role="button" tabindex="0" onclick="showPage('portfolio');toggleMenu(false);return false;">Portfolio</a>
+  <a href="#markets" data-nav="markets" role="button" tabindex="0" onclick="showPage('markets');toggleMenu(false);return false;">Markets</a>
+  <a href="#legal" data-nav="legal" role="button" tabindex="0" onclick="showPage('legal');toggleMenu(false);return false;">Legal</a>
   <a onclick="toggleTheme()" role="button" tabindex="0">🌙 / ☀️ Toggle theme</a>
 </div>
 
@@ -1619,6 +1642,7 @@ body.light .gs-item{background:#fff}
         <button class="btn-primary" onclick="handleAuthClick()">Get Started Free</button>
         <button class="btn-secondary" onclick="startDemoMode()">👀 Try the Demo — no sign-in</button>
       </div>
+      <p class="hero-learn"><a href="#life" onclick="showPage('life');return false;">Life Path</a> is the yearly model. <a href="#identity" onclick="showPage('identity');return false;">Identity</a> is the literacy score and this week’s plan. The journal’s year in review lives under Life.</p>
       <div class="stats-row">
         <div class="stat"><div class="stat-num" id="heroStat1">34</div><div class="stat-label">Expert lessons</div></div>
         <div class="stat"><div class="stat-num" id="heroStat2">$100k</div><div class="stat-label">Paper trading cash · per user</div></div>
@@ -1636,7 +1660,7 @@ body.light .gs-item{background:#fff}
 <section id="how-it-works" style="padding:80px 5% 20px;max-width:1200px;margin:0 auto">
   <div style="text-align:center;margin-bottom:44px">
     <div style="font-size:11px;font-weight:600;color:#22c55e;text-transform:uppercase;letter-spacing:.14em;margin-bottom:12px">How it works</div>
-    <h2 style="font-size:clamp(26px,3.5vw,42px);font-weight:800;letter-spacing:-1px;line-height:1.15;margin-bottom:12px">From <span style="color:#22c55e">"what's a stock?"</span> to confident<br>in three steps</h2>
+    <h2 style="font-size:clamp(26px,3.5vw,42px);font-weight:800;letter-spacing:-1px;line-height:1.15;margin-bottom:12px">From <span style="color:#22c55e">"what's a stock?"</span> to confident<br>step by step</h2>
     <p style="font-size:15px;color:var(--muted);max-width:560px;margin:0 auto">No prior finance knowledge required. If you know how to use TikTok, you can use FinPath.</p>
   </div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
@@ -1665,8 +1689,15 @@ body.light .gs-item{background:#fff}
       <div class="hiw-num">4</div>
       <div class="hiw-icon">🧭</div>
       <div class="hiw-title">See a life path</div>
-      <div class="hiw-body">A yearly model from your age to 65. Snapshots, two paths side by side, and five what-ifs. Educational numbers, not a prediction.</div>
+      <div class="hiw-body">A yearly model from your age to 65. Snapshots, two paths side by side, five what-ifs, and a journal year in review. Educational numbers, not a prediction.</div>
       <div class="hiw-cta">Open Life Path →</div>
+    </div>
+    <div class="hiw-card" onclick="showPage('identity')">
+      <div class="hiw-num">5</div>
+      <div class="hiw-icon">🪪</div>
+      <div class="hiw-title">Pick a study profile</div>
+      <div class="hiw-body">Identity turns lessons and quizzes on this device into a 0–1000 literacy score and a weekly plan of at most four items. Not a credit score, and not advice.</div>
+      <div class="hiw-cta">Open Identity →</div>
     </div>
   </div>
 </section>
@@ -2123,6 +2154,8 @@ body.light .gs-item{background:#fff}
       <div class="feature-card" onclick="showPage('gold')"><div class="feature-icon">👑</div><div class="feature-title">Investor Moves — Gold</div><div class="feature-desc">See what 9 legendary investors (Buffett, Ackman, Tepper, Druckenmiller, Li Lu, Klarman, Gates, Coleman and Smith) bought and sold in their latest 13F filings — and why.</div></div>
       <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">📈</div><div class="feature-title">Live Portfolio Tracker</div><div class="feature-desc">Track your stocks with live prices. See total profit, daily gains, and (with Gold) which holdings drove today’s move.</div></div>
       <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">🧭</div><div class="feature-title">Stock Suggestions — Gold</div><div class="feature-desc">Rule-based educational notes for the stocks you own, drawn from position size, sector mix, and unrealized gain or loss. Not a live AI and not personal advice.</div></div>
+      <div class="feature-card" onclick="showPage('life')"><div class="feature-icon">🌱</div><div class="feature-title">Life Path</div><div class="feature-desc">A yearly classroom model to 65, what-ifs, and a decision-journal yearbook. Educational only — not a prediction and not a reason to buy, sell, or borrow.</div></div>
+      <div class="feature-card" onclick="showPage('identity')"><div class="feature-icon">🪪</div><div class="feature-title">Financial identity</div><div class="feature-desc">A study profile, a 0–1000 literacy score, and a short weekly plan. It stays on this device. It is not a credit score.</div></div>
     </div>
   </section>
   <section class="investor-section">
@@ -2313,6 +2346,7 @@ body.light .gs-item{background:#fff}
     </div>
 
     <div id="lifePanelFuture" role="tabpanel" aria-labelledby="lifeTabFuture" hidden>
+      <p class="life-note" role="note">Future you is a letter from this worksheet. Educational only. It is not a prediction and not a reason to buy, sell, or borrow.</p>
       <div class="life-field">
         <label for="lifeFuturePick">A second path to set beside yours</label>
         <select id="lifeFuturePick"></select>
@@ -2322,13 +2356,24 @@ body.light .gs-item{background:#fff}
     </div>
 
     <div id="lifePanelJournal" role="tabpanel" aria-labelledby="lifeTabJournal" hidden>
-      <p class="life-help">A timeline of what-ifs you save, notes you write, paper trades, savings goals, finished lessons, and quiz scores. Trades, goals, and lessons stay in this browser. Path inputs and the notes you save here can also sync when you are signed in. If you are signed out, or the network fails, they still stay on this device.</p>
-      <form id="lifeNoteForm" class="life-field">
-        <label for="lifeNote">Add a one-line note</label>
-        <input id="lifeNote" maxlength="280" placeholder="What did you decide to look at, and why?">
-        <button type="submit" class="btn-primary" style="margin-top:8px">Save note</button>
-      </form>
-      <div id="lifeJournalList"></div>
+      <p class="life-note" role="note">Notes, what-ifs, paper trades, goals, and lesson check-ins here are for learning. They are not a record of real money and not a reason to buy, sell, or borrow.</p>
+      <div class="life-subtabs" role="tablist" aria-label="Journal views">
+        <button type="button" role="tab" id="lifeJournalTimeline" aria-controls="lifeJournalTimelinePane" aria-selected="true">Timeline</button>
+        <button type="button" role="tab" id="lifeJournalReview" aria-controls="lifeJournalReviewPane" aria-selected="false" tabindex="-1">Year in review</button>
+      </div>
+      <div id="lifeJournalTimelinePane" role="tabpanel" aria-labelledby="lifeJournalTimeline">
+        <p class="life-help">A timeline of what-ifs you save, notes you write, paper trades, savings goals, finished lessons, and quiz scores. Trades, goals, and lessons stay in this browser. Path inputs and the notes you save here can also sync when you are signed in. If you are signed out, or the network fails, they still stay on this device.</p>
+        <p class="life-help"><a href="#life/journal/review">Open this year’s review</a></p>
+        <form id="lifeNoteForm" class="life-field">
+          <label for="lifeNote">Add a one-line note</label>
+          <input id="lifeNote" maxlength="280" placeholder="What did you decide to look at, and why?">
+          <button type="submit" class="btn-primary" style="margin-top:8px">Save note</button>
+        </form>
+        <div id="lifeJournalList"></div>
+      </div>
+      <div id="lifeJournalReviewPane" role="tabpanel" aria-labelledby="lifeJournalReview" hidden>
+        <div id="lifeReviewBody"></div>
+      </div>
     </div>
 
     <div id="lifePanelAssume" role="tabpanel" aria-labelledby="lifeTabAssume" hidden>
@@ -4070,9 +4115,16 @@ document.addEventListener('click', function(e){
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ if(typeof hideTerm==='function') hideTerm(); const m = document.getElementById('mobileMenu'); if(m && m.classList.contains('open')) toggleMenu(false); } });
 
 const ROUTES=['home','portfolio','lessons','ask','gold','markets','legal','life','identity'];
+function markNav(p){
+  document.querySelectorAll('[data-nav]').forEach(function(el){
+    if(el.getAttribute('data-nav') === p) el.setAttribute('aria-current', 'page');
+    else el.removeAttribute('aria-current');
+  });
+}
 function showPage(p,fromHash){
   if(typeof hidePaycheckModal === 'function') hidePaycheckModal();
   if(!document.getElementById('page-'+p)) p='home';
+  markNav(p);
   document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
   // Keep the URL in sync (#portfolio etc.) so pages are linkable and Back works.
@@ -8972,6 +9024,7 @@ startAlertLoop();
 handleSharedLink();
 // Hash router: #portfolio / #lessons / #life / #identity / #ask / #gold / #markets / #legal / #home (or empty).
 // #lesson/N opens that lesson. #life/whatif/card (and compare, future, journal, assumptions) open Life Path.
+// #life/journal/review and #life/journal/review/2025 open the Decision Journal yearbook.
 // #identity and #life/identity open the study profile. #moment/paycheck opens the first-paycheck planner.
 // #p= shared links are handled above by handleSharedLink and ignored here.
 // A cold #l-* load runs while the page is still laying out. showPage scrolls to
