@@ -558,7 +558,11 @@ body.light .ask-upsell p{color:#854d0e}
 .daily-down{background:rgba(248,113,113,.12);color:var(--red)}
 .up{color:#4ade80}.down{color:var(--red)}
 .chart-wrap{position:relative;height:200px;margin-top:18px}
-.period-tabs{display:flex;gap:6px;margin-top:14px}
+.chart-note{font-size:12px;color:var(--muted);line-height:1.45;margin:8px 0 0}
+.chart-note[hidden],.chart-retry[hidden]{display:none !important}
+.chart-retry{margin-top:8px;padding:7px 14px;font-size:12px}
+.chart-unavailable{flex-direction:column;gap:4px;padding:8px 12px}
+.period-tabs{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
 .period-tab{background:rgba(134,239,172,.05);border:1px solid var(--line);border-radius:999px;padding:7px 16px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s}
 .period-tab:hover{color:var(--text)}
 .period-tab.active{background:linear-gradient(135deg,var(--green-dark),var(--green));color:#fff;border-color:transparent}
@@ -2499,12 +2503,14 @@ body.light .gs-item{background:#fff}
           <span style="font-size:12px;color:var(--muted)">▸ today’s movers (Gold)</span>
         </div>
         <div class="chart-wrap"><canvas id="portfolioChart"></canvas></div>
-        <div class="period-tabs">
-          <button class="period-tab active" onclick="setPeriod(this,1)">1D</button>
-          <button class="period-tab" onclick="setPeriod(this,7)">1W</button>
-          <button class="period-tab" onclick="setPeriod(this,30)">1M</button>
-          <button class="period-tab" onclick="setPeriod(this,90)">3M</button>
+        <div class="period-tabs" id="portPeriods">
+          <button type="button" class="period-tab active" data-days="1" onclick="setPeriod(this,1)">1D</button>
+          <button type="button" class="period-tab" data-days="7" onclick="setPeriod(this,7)">1W</button>
+          <button type="button" class="period-tab" data-days="30" onclick="setPeriod(this,30)">1M</button>
+          <button type="button" class="period-tab" data-days="90" onclick="setPeriod(this,90)">3M</button>
         </div>
+        <p id="portfolioChartNote" class="chart-note" role="status" hidden></p>
+        <button type="button" class="btn-secondary chart-retry" id="portfolioChartRetry" hidden onclick="retryPortfolioChart()">Retry</button>
       </div>
       <div class="port-card">
         <div class="port-label">Profit summary</div>
@@ -3002,11 +3008,13 @@ body.light .gs-item{background:#fff}
       <div style="font-size:28px;font-weight:800" id="dPnl">--</div>
     </div>
     <div class="d-chart-wrap"><canvas id="detailChartCanvas"></canvas></div>
-    <div class="period-tabs" style="margin-bottom:24px">
-      <button class="period-tab active" onclick="setDetailPeriod(this,1)">1D</button>
-      <button class="period-tab" onclick="setDetailPeriod(this,7)">1W</button>
-      <button class="period-tab" onclick="setDetailPeriod(this,30)">1M</button>
+    <div class="period-tabs" id="detailPeriods" style="margin-bottom:8px">
+      <button type="button" class="period-tab active" data-days="1" onclick="setDetailPeriod(this,1)">1D</button>
+      <button type="button" class="period-tab" data-days="7" onclick="setDetailPeriod(this,7)">1W</button>
+      <button type="button" class="period-tab" data-days="30" onclick="setDetailPeriod(this,30)">1M</button>
     </div>
+    <p id="detailChartNote" class="chart-note" role="status" hidden></p>
+    <button type="button" class="btn-secondary chart-retry" id="detailChartRetry" hidden onclick="retryDetailChart()" style="margin-bottom:16px">Retry</button>
     <div class="detail-ai-box">
       <div style="font-size:12px;font-weight:600;color:#86efac;margin-bottom:4px">RULE-BASED SUGGESTION · GOLD PLAN</div>
       <div style="font-size:11px;color:rgba(134,239,172,.6);margin-bottom:12px">For educational purposes only. Not financial advice.</div>
@@ -3031,6 +3039,7 @@ body.light .gs-item{background:#fff}
 
 <script type="module" src="js/intel/life/boot.js"></script>
 <script type="module" src="js/intel/identity/boot.js"></script>
+<script src="js/market/candles.js"></script>
 <script>
 
 // TODO(siddharth): Finnhub key is shipped client-side (free key, rotated 2026-10-25; live quotes restored).
@@ -5095,19 +5104,114 @@ async function fetchQ(t){
   return _pendingQ[t];
 }
 
-async function fetchCandles(t,days){
-  const to=Math.floor(Date.now()/1000),from=to-days*86400,res=days<=1?'5':'D';
-  // Crypto history is GET /crypto/candle?symbol=BINANCE:BTCUSDT (same pair quotes use).
-  // /stock/candle with the raw ticker never returns that series. Both candle routes
-  // are premium: a free-plan 403 falls through to the chart's "unavailable" state.
-  const path=CRYPTO[t]?'crypto/candle':'stock/candle';
+// Finnhub /stock/candle and /crypto/candle return HTTP 403 on the free plan
+// ("You don't have access to this resource.") while /quote still works.
+// History comes from the market-candles function (Yahoo charts, server-side,
+// because that API does not send CORS headers). A candle 403 must not flip the
+// live-quote banner. One confirmed 403 skips further candle calls this visit.
+let _candlePlanBlocked = false;
+function chartHelpersReady(){
+  return typeof fpChartRequest === 'function' && typeof fpCombineHoldings === 'function' && typeof fpCandleStatus === 'function';
+}
+function candleStorage(){
+  try{ return window.localStorage; }catch(e){ return null; }
+}
+function finnhubResolution(interval){
+  if(interval === '5m') return '5';
+  if(interval === '15m') return '15';
+  if(interval === '30m') return '30';
+  if(interval === '60m') return '60';
+  return 'D';
+}
+async function fetchHistoryBatch(tickers, req){
+  const series = {};
+  if(!tickers.length) return { series: series };
+  for(let i = 0; i < tickers.length; i += 8){
+    const slice = tickers.slice(i, i + 8);
+    const qs = new URLSearchParams({ symbols: slice.join(','), interval: req.interval, days: String(req.days) });
+    try{
+      const r = await fetch(SBU + '/functions/v1/market-candles?' + qs.toString(), {
+        headers: { apikey: SBK, Authorization: 'Bearer ' + SBK }
+      });
+      if(!r.ok) continue;
+      const data = await r.json();
+      const got = data && data.series ? data.series : {};
+      slice.forEach(function(t){
+        const row = got[t];
+        const pts = row ? fpPointsFromPairs(row.t, row.c) : [];
+        if(pts.length >= 2) series[t] = pts;
+      });
+    }catch(e){}
+  }
+  return { series: series };
+}
+async function fetchFinnhubSeries(ticker, req, uiDays, nowSec){
+  if(_candlePlanBlocked) return { points: [], plan: true };
+  const to = nowSec;
+  const from = to - req.days * 86400;
+  const path = CRYPTO[ticker] ? 'crypto/candle' : 'stock/candle';
   try{
-    const r=await fetch('https://finnhub.io/api/v1/'+path+'?symbol='+encodeURIComponent(finnhubSymbol(t))+'&resolution='+res+'&from='+from+'&to='+to+'&token='+FK);
-    if(!r.ok) return null;
-    const d=await r.json();
-    if(d.c&&d.c.length>1) return d.c;
-  }catch(e){}
-  return null;
+    const r = await fetch('https://finnhub.io/api/v1/' + path + '?symbol=' + encodeURIComponent(finnhubSymbol(ticker)) + '&resolution=' + finnhubResolution(req.interval) + '&from=' + from + '&to=' + to + '&token=' + FK);
+    if(r.status === 403 || r.status === 402){ _candlePlanBlocked = true; return { points: [], plan: true }; }
+    if(!r.ok) return { points: [], plan: false };
+    const d = await r.json();
+    if(d && d.error && /access|premium|permission/i.test(String(d.error))){ _candlePlanBlocked = true; return { points: [], plan: true }; }
+    const pts = fpClipSeries(fpPointsFromPairs(d && d.t, d && d.c), uiDays, nowSec);
+    return { points: pts.length >= 2 ? pts : [], plan: false };
+  }catch(e){
+    return { points: [], plan: false };
+  }
+}
+async function loadHoldingSeries(tickers, uiDays, opts){
+  const force = !!(opts && opts.force);
+  const req = fpChartRequest(uiDays);
+  const store = candleStorage();
+  const nowMs = Date.now();
+  const nowSec = Math.floor(nowMs / 1000);
+  const freshMs = fpCandleFreshMs(uiDays);
+  const out = {};
+  const need = [];
+  let plan = false;
+  tickers.forEach(function(t){
+    const cached = fpReadCandleCache(store, t, uiDays);
+    const fresh = cached && (nowMs - cached.saved) < freshMs;
+    if(!force && fresh){
+      const points = fpClipSeries(cached.points, uiDays, nowSec);
+      if(points.length >= 2){ out[t] = { points: points, stale: false, source: 'cache' }; return; }
+    }
+    need.push(t);
+  });
+  if(need.length){
+    const batch = await fetchHistoryBatch(need, req);
+    const still = [];
+    need.forEach(function(t){
+      const pts = batch.series[t];
+      if(pts && pts.length >= 2){
+        const clipped = fpClipSeries(pts, uiDays, nowSec);
+        if(clipped.length >= 2){
+          fpWriteCandleCache(store, t, uiDays, clipped, nowMs);
+          out[t] = { points: clipped, stale: false, source: 'yahoo' };
+          return;
+        }
+      }
+      still.push(t);
+    });
+    for(let i = 0; i < still.length; i++){
+      const t = still[i];
+      const fb = await fetchFinnhubSeries(t, req, uiDays, nowSec);
+      if(fb.plan) plan = true;
+      if(fb.points.length >= 2){
+        fpWriteCandleCache(store, t, uiDays, fb.points, nowMs);
+        out[t] = { points: fb.points, stale: false, source: 'finnhub' };
+      } else {
+        const cached = fpReadCandleCache(store, t, uiDays);
+        const points = cached ? fpClipSeries(cached.points, uiDays, nowSec) : [];
+        if(points.length >= 2) out[t] = { points: points, stale: true, source: 'cache' };
+        else out[t] = { points: [], stale: false, source: 'none' };
+      }
+    }
+  }
+  return { byTicker: out, plan: plan };
 }
 
 // Force a fully-live refresh: wipe the cache for held tickers and re-fetch.
@@ -5321,7 +5425,7 @@ async function renderPortfolio(){
     document.getElementById('stocksGrid').innerHTML=empty;
     document.getElementById('alertsList').innerHTML='<div class="empty">Add stocks to see alerts.</div>';
     document.getElementById('aiRecs').innerHTML='<div class="empty">Add stocks, then click Get suggestions for a rule-based note on each holding.</div>';
-    renderPortfolioChart(1);
+    renderPortfolioChart(selectedPortDays());
     renderWatchlist();
     var _aw=document.getElementById('allocWrap'); if(_aw)_aw.style.display='none';
     loadNews();
@@ -5366,7 +5470,7 @@ async function renderPortfolio(){
   re.textContent=(retPct>=0?'+':'')+retPct.toFixed(2)+'%';
   re.className='p-val '+(retPct>=0?'up':'down');
   renderAlerts(quotes);
-  renderPortfolioChart(1);
+  renderPortfolioChart(selectedPortDays());
   renderAnalytics(quotes);
   renderWatchlist();
   loadNews();
@@ -5503,49 +5607,125 @@ function runAI(){
   }, 160);
 }
 
-// Honest "no data" overlay for charts (replaces the old Math.random fallback curves).
-function chartUnavailable(canvas){
+// Honest empty state for charts. Never draw a synthetic curve.
+let _portChartGen = 0, _portChartDays = 1, _detailChartGen = 0, _detailChartDays = 1;
+function chartUnavailable(canvas, message){
   const wrap=canvas&&canvas.parentNode; if(!wrap) return;
   canvas.style.display='none';
+  canvas.setAttribute('aria-hidden','true');
   let m=wrap.querySelector('.chart-unavailable');
-  if(!m){ m=document.createElement('div'); m.className='chart-unavailable empty'; m.style.cssText='display:flex;align-items:center;justify-content:center;height:100%;min-height:120px;text-align:center;color:var(--muted);font-size:13px'; wrap.appendChild(m); }
-  m.textContent='Chart unavailable — historical price data isn\u2019t available right now (data plan / API limit). Current prices above are still live.';
+  if(!m){ m=document.createElement('div'); m.className='chart-unavailable empty'; m.style.cssText='display:flex;align-items:center;justify-content:center;height:100%;min-height:120px;text-align:center;color:var(--muted);font-size:13px;line-height:1.45'; wrap.appendChild(m); }
+  m.textContent = message || 'Historical prices didn’t load. The total above is still using live quotes.';
 }
 function chartAvailable(canvas){
   const wrap=canvas&&canvas.parentNode; if(!wrap) return;
   canvas.style.display='';
+  canvas.removeAttribute('aria-hidden');
   const m=wrap.querySelector('.chart-unavailable'); if(m) m.remove();
 }
-
-async function renderPortfolioChart(days){
-  await ensureChart();
-  if(!window.Chart) return;
-  const ctx=document.getElementById('portfolioChart');
-  if(!ctx) return;
-  const c=ctx.getContext('2d');
-  if(pChart){pChart.destroy();pChart=null;}
-  let pts=null;
-  if(portfolio.length>0){
-    const arrays=await Promise.all(portfolio.map(async h=>{const c=await fetchCandles(h.ticker,days);return{c,s:h.shares};}));
-    const valid=arrays.filter(a=>a.c && a.c.length>1);
-    if(valid.length>0){
-      const minLen=Math.min(...valid.map(a=>a.c.length));
-      if(minLen>3) pts=Array.from({length:minLen},(_,i)=>valid.reduce((s,a)=>s+a.c[i]*a.s,0));
-    }
+function applyChartFrame(canvas, noteId, retryId, status){
+  const note = document.getElementById(noteId);
+  const retry = document.getElementById(retryId);
+  const wrap = canvas && canvas.parentNode;
+  if(wrap) wrap.dataset.chartState = status.mode;
+  if(status.mode === 'ok'){
+    chartAvailable(canvas);
+    if(note){ note.hidden = !status.text; note.textContent = status.text || ''; }
+  } else {
+    chartUnavailable(canvas, status.text);
+    if(note){ note.hidden = true; note.textContent = ''; }
   }
-  if(!pts){
-    // No real candle data (API/plan limit) — show an honest empty state, never a synthetic curve.
-    chartUnavailable(ctx);
-    return;
-  }
-  chartAvailable(ctx);
-  const up=pts[pts.length-1]>=pts[0];
-  pChart=new Chart(c,{type:'line',data:{labels:pts.map((_,i)=>i),datasets:[{data:pts,borderColor:up?'#4ade80':'#f87171',borderWidth:2,fill:true,backgroundColor:up?'rgba(74,222,128,.06)':'rgba(248,113,113,.06)',pointRadius:0,tension:0.35}]},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(6,12,7,.95)',borderColor:'rgba(134,239,172,.25)',borderWidth:1,padding:12,cornerRadius:10,titleColor:'#86efac',bodyColor:'#eef5ee',displayColors:false,callbacks:{label:c=>'$'+c.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}}},scales:{x:{display:false},y:{ticks:{color:'#555',font:{size:10},callback:v=>'$'+parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:0})},grid:{color:'rgba(255,255,255,.04)'},border:{display:false}}}}});
+  if(retry) retry.hidden = !status.retry;
+}
+function makeLineChart(canvas, labels, values){
+  const up = values.length && values[values.length-1] >= values[0];
+  return new Chart(canvas.getContext('2d'), {type:'line', data:{labels:labels, datasets:[{data:values, borderColor:up?'#4ade80':'#f87171', borderWidth:2, fill:true, backgroundColor:up?'rgba(74,222,128,.06)':'rgba(248,113,113,.06)', pointRadius:0, tension:0.35}]},
+    options:{responsive:true, maintainAspectRatio:false, interaction:{mode:'index', intersect:false}, plugins:{legend:{display:false}, tooltip:{backgroundColor:'rgba(6,12,7,.95)', borderColor:'rgba(134,239,172,.25)', borderWidth:1, padding:12, cornerRadius:10, titleColor:'#86efac', bodyColor:'#eef5ee', displayColors:false, callbacks:{title:function(items){ return items && items[0] ? items[0].label : ''; }, label:function(c){ return '$'+c.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }}}}, scales:{x:{display:false}, y:{ticks:{color:'#555', font:{size:10}, callback:function(v){ return '$'+parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:0}); }}, grid:{color:'rgba(255,255,255,.04)'}, border:{display:false}}}}});
+}
+function selectedPortDays(){
+  const active = document.querySelector('#portPeriods .period-tab.active');
+  const days = active ? Number(active.getAttribute('data-days')) : NaN;
+  return isFinite(days) && days > 0 ? days : (_portChartDays || 1);
+}
+function selectedDetailDays(){
+  const active = document.querySelector('#detailPeriods .period-tab.active');
+  const days = active ? Number(active.getAttribute('data-days')) : NaN;
+  return isFinite(days) && days > 0 ? days : (_detailChartDays || 1);
+}
+function paintPortfolioLine(canvas, points, days){
+  chartAvailable(canvas);
+  if(pChart){ pChart.destroy(); pChart = null; }
+  const values = points.map(function(p){ return p.v; });
+  const labels = points.map(function(p){ return fpChartLabel(p.t, days); });
+  canvas.setAttribute('aria-label', 'Portfolio value, ' + labels[0] + ' ' + fmt(values[0]) + ' to ' + labels[labels.length-1] + ' ' + fmt(values[values.length-1]));
+  pChart = makeLineChart(canvas, labels, values);
+}
+function paintDetailLine(canvas, points, days){
+  chartAvailable(canvas);
+  if(dChart){ dChart.destroy(); dChart = null; }
+  const values = points.map(function(p){ return p.c; });
+  const labels = points.map(function(p){ return fpChartLabel(p.t, days); });
+  canvas.setAttribute('aria-label', 'Price, ' + labels[0] + ' ' + fmt(values[0]) + ' to ' + labels[labels.length-1] + ' ' + fmt(values[values.length-1]));
+  dChart = makeLineChart(canvas, labels, values);
 }
 
+async function renderPortfolioChart(days, opts){
+  const gen = ++_portChartGen;
+  _portChartDays = days;
+  await ensureChart();
+  if(gen !== _portChartGen) return;
+  const canvas = document.getElementById('portfolioChart');
+  if(!canvas) return;
+  if(!chartHelpersReady()){
+    applyChartFrame(canvas, 'portfolioChartNote', 'portfolioChartRetry', { mode:'error', text:'Price history couldn’t be prepared in this browser. The total above is still using live quotes.', retry:true });
+    return;
+  }
+  if(!window.Chart){
+    applyChartFrame(canvas, 'portfolioChartNote', 'portfolioChartRetry', { mode:'error', text:'The chart couldn’t be drawn. The total above is still using live quotes.', retry:true });
+    return;
+  }
+  if(!portfolio.length){
+    if(pChart){ pChart.destroy(); pChart = null; }
+    applyChartFrame(canvas, 'portfolioChartNote', 'portfolioChartRetry', fpCandleStatus({ empty:true }));
+    return;
+  }
+  const store = candleStorage();
+  const nowMs = Date.now();
+  const freshMs = fpCandleFreshMs(days);
+  let allFresh = !(opts && opts.force);
+  const previewRows = portfolio.map(function(h){
+    const cached = fpReadCandleCache(store, h.ticker, days);
+    if(!cached || (nowMs - cached.saved) >= freshMs) allFresh = false;
+    return { ticker: h.ticker, shares: h.shares, points: cached ? cached.points : [] };
+  });
+  const preview = fpCombineHoldings(previewRows);
+  if(preview.points.length >= 2){
+    paintPortfolioLine(canvas, preview.points, days);
+    applyChartFrame(canvas, 'portfolioChartNote', 'portfolioChartRetry', fpCandleStatus({ stale: !allFresh, missing: preview.missing }));
+    if(allFresh) return;
+  } else {
+    if(pChart){ pChart.destroy(); pChart = null; }
+    applyChartFrame(canvas, 'portfolioChartNote', 'portfolioChartRetry', fpCandleStatus({ loading:true }));
+  }
+  const loaded = await loadHoldingSeries(portfolio.map(function(h){ return h.ticker; }), days, opts);
+  if(gen !== _portChartGen) return;
+  const combined = fpCombineHoldings(portfolio.map(function(h){
+    const row = loaded.byTicker[h.ticker] || { points: [] };
+    return { ticker: h.ticker, shares: h.shares, points: row.points };
+  }));
+  const anyStale = portfolio.some(function(h){ const row = loaded.byTicker[h.ticker]; return row && row.stale; });
+  if(combined.points.length >= 2){
+    paintPortfolioLine(canvas, combined.points, days);
+    applyChartFrame(canvas, 'portfolioChartNote', 'portfolioChartRetry', fpCandleStatus({ stale: anyStale, missing: combined.missing }));
+    return;
+  }
+  if(pChart){ pChart.destroy(); pChart = null; }
+  applyChartFrame(canvas, 'portfolioChartNote', 'portfolioChartRetry', fpCandleStatus({ failed:true, plan: loaded.plan }));
+}
+function retryPortfolioChart(){ renderPortfolioChart(selectedPortDays(), { force:true }); }
+
 function setPeriod(btn,days){
-  document.querySelectorAll('#page-portfolio .period-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#portPeriods .period-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderPortfolioChart(days);
 }
@@ -5601,32 +5781,51 @@ async function openDetail(ticker){
     pe.textContent=(pnl>=0?'▲ +':'▼ -')+fmt(Math.abs(pnl))+' ('+pnlPct.toFixed(2)+'%)';
     pe.className='d-mval '+(pnl>=0?'up':'down');
   }
-  renderDetailChart(ticker,1);
+  renderDetailChart(ticker, selectedDetailDays());
   if(typeof loadWhyMoved==='function') loadWhyMoved(ticker);
 }
 
-async function renderDetailChart(ticker,days){
+async function renderDetailChart(ticker, days, opts){
+  const gen = ++_detailChartGen;
+  _detailChartDays = days;
   await ensureChart();
-  if(!window.Chart) return;
-  const canvas=document.getElementById('detailChartCanvas');
+  if(gen !== _detailChartGen) return;
+  const canvas = document.getElementById('detailChartCanvas');
   if(!canvas) return;
-  if(dChart){dChart.destroy();dChart=null;}
-  let pts=await fetchCandles(ticker,days);
-  if(!pts || pts.length<4){
-    // No real candle data — honest empty state instead of a random-walk chart.
-    chartUnavailable(canvas);
+  if(!chartHelpersReady() || !window.Chart){
+    applyChartFrame(canvas, 'detailChartNote', 'detailChartRetry', { mode:'error', text:'This price history didn’t load. The quote above is still live.', retry:true });
     return;
   }
-  chartAvailable(canvas);
-  const up=pts[pts.length-1]>=pts[0];
-  dChart=new Chart(canvas.getContext('2d'),{type:'line',data:{labels:pts.map((_,i)=>i),datasets:[{data:pts,borderColor:up?'#4ade80':'#f87171',borderWidth:2,fill:true,backgroundColor:up?'rgba(74,222,128,.07)':'rgba(248,113,113,.07)',pointRadius:0,tension:0.35}]},
-    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(6,12,7,.95)',borderColor:'rgba(134,239,172,.25)',borderWidth:1,padding:12,cornerRadius:10,titleColor:'#86efac',bodyColor:'#eef5ee',displayColors:false,callbacks:{label:c=>'$'+c.parsed.y.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}}},scales:{x:{display:false},y:{ticks:{color:'#555',font:{size:10},callback:v=>'$'+parseFloat(v).toLocaleString('en-US',{maximumFractionDigits:0})},grid:{color:'rgba(255,255,255,.04)'},border:{display:false}}}}});
+  const store = candleStorage();
+  const cached = fpReadCandleCache(store, ticker, days);
+  const fresh = cached && (Date.now() - cached.saved) < fpCandleFreshMs(days) && !(opts && opts.force);
+  if(cached && cached.points.length >= 2){
+    paintDetailLine(canvas, cached.points, days);
+    applyChartFrame(canvas, 'detailChartNote', 'detailChartRetry', fpCandleStatus({ detail:true, stale: !fresh }));
+    if(fresh) return;
+  } else {
+    if(dChart){ dChart.destroy(); dChart = null; }
+    applyChartFrame(canvas, 'detailChartNote', 'detailChartRetry', fpCandleStatus({ loading:true }));
+  }
+  const loaded = await loadHoldingSeries([ticker], days, opts);
+  if(gen !== _detailChartGen) return;
+  const row = loaded.byTicker[ticker] || { points: [] };
+  if(row.points.length >= 2){
+    paintDetailLine(canvas, row.points, days);
+    applyChartFrame(canvas, 'detailChartNote', 'detailChartRetry', fpCandleStatus({ detail:true, stale: !!row.stale }));
+    return;
+  }
+  if(dChart){ dChart.destroy(); dChart = null; }
+  applyChartFrame(canvas, 'detailChartNote', 'detailChartRetry', fpCandleStatus({ failed:true, detail:true, plan: loaded.plan }));
+}
+function retryDetailChart(){
+  if(selectedStock) renderDetailChart(selectedStock.ticker, selectedDetailDays(), { force:true });
 }
 
 function setDetailPeriod(btn,days){
-  document.querySelectorAll('#detailModal .period-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#detailPeriods .period-tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  if(selectedStock) renderDetailChart(selectedStock.ticker,days);
+  if(selectedStock) renderDetailChart(selectedStock.ticker, days);
 }
 
 function agreeToTerms(){
