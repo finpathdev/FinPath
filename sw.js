@@ -3,7 +3,7 @@
 // Live prices, filings, and API responses are intentionally NOT cached — those
 // must always be fresh.
 
-const CACHE = 'finpath-v27';
+const CACHE = 'finpath-v28';
 const SHELL = [
   './',
   './index.html',
@@ -54,6 +54,7 @@ self.addEventListener('fetch', function(event){
     'sec.gov',
     'openai.com',
     'anthropic.com',
+    'x.ai',
     'api.',
     'plausible.io'
   ];
