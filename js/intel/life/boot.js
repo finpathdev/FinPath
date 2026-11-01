@@ -4,7 +4,9 @@ import { simulate, defaultInputs, normalizeInputs, fvMonthly, monthlyPayment, co
 import { PRESETS, presetById, applyPreset } from './presets.js';
 import { comparePaths } from './compare.js';
 import { mergeJournal, upsertEntry } from './journal.js';
+import { yearWindow, yearsPresent, buildYearReview, sliceProgress, sliceQuizLog, datedStudyBefore, literacyDelta, identitySpan, dated } from './review.js';
 import { futureLetter } from './future.js';
+import { literacyScore } from '../learn/mastery.js';
 import { choosePath, mergeJournalEntries, journalRow, entryFromRow } from './sync.js';
 import { conceptsFor, CONCEPTS } from '../learn/concepts.js';
 import { lessonProgressMap, lessonStoreFromProgress } from '../learn/progress.js';
@@ -102,16 +104,21 @@ function saveStore(inputs){
 }
 
 function currentView(){
-  const raw = (location.hash || '').replace(/^#/, '').replace(/^\/+|\/+$/g, '').toLowerCase();
+  const raw = (location.hash || '').replace(/^#/, '').split(/[?#]/)[0].replace(/^\/+|\/+$/g, '').toLowerCase();
   const parts = raw.split('/');
-  if(parts[0] !== 'life') return { name: 'path', preset: null };
+  const base = { preset: null, review: false, year: null };
+  if(parts[0] !== 'life') return Object.assign({ name: 'path' }, base);
   const name = parts[1] || 'path';
-  if(name === 'compare') return { name: 'compare', preset: null };
-  if(name === 'future' || name === 'future-self') return { name: 'future', preset: null };
-  if(name === 'journal') return { name: 'journal', preset: null };
-  if(name === 'assumptions') return { name: 'assumptions', preset: null };
-  if(name === 'whatif' || name === 'what-if') return { name: 'whatif', preset: parts[2] || 'invest50at16' };
-  return { name: 'path', preset: null };
+  if(name === 'compare') return Object.assign({}, base, { name: 'compare' });
+  if(name === 'future' || name === 'future-self') return Object.assign({}, base, { name: 'future' });
+  if(name === 'journal'){
+    const review = parts[2] === 'review';
+    const year = review && /^\d{4}$/.test(parts[3] || '') ? Number(parts[3]) : null;
+    return { name: 'journal', preset: null, review: review, year: year };
+  }
+  if(name === 'assumptions') return Object.assign({}, base, { name: 'assumptions' });
+  if(name === 'whatif' || name === 'what-if') return Object.assign({}, base, { name: 'whatif', preset: parts[2] || 'invest50at16' });
+  return Object.assign({}, base, { name: 'path' });
 }
 
 function setTab(name){
@@ -314,6 +321,29 @@ function bind(){
   const saveCompare = document.getElementById('lifeSaveCompare');
   if(saveCompare) saveCompare.addEventListener('click', function(){ saveJournalCompare(); });
   const noteForm = document.getElementById('lifeNoteForm');
+  const journalTimeline = document.getElementById('lifeJournalTimeline');
+  const journalReview = document.getElementById('lifeJournalReview');
+  if(journalTimeline) journalTimeline.addEventListener('click', function(){ go('#life/journal'); });
+  if(journalReview) journalReview.addEventListener('click', function(){ go('#life/journal/review'); });
+  const journalTabs = document.querySelector('.life-subtabs');
+  if(journalTabs) journalTabs.addEventListener('keydown', function(e){
+    if(e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const list = [journalTimeline, journalReview].filter(Boolean);
+    const i = list.indexOf(document.activeElement);
+    if(i < 0) return;
+    e.preventDefault();
+    const n = e.key === 'ArrowRight' ? (i + 1) % list.length : (i - 1 + list.length) % list.length;
+    list[n].focus();
+    list[n].click();
+  });
+  const reviewHost = document.getElementById('lifeReviewBody');
+  if(reviewHost) reviewHost.addEventListener('click', function(e){
+    const btn = e.target.closest('[data-review-year]');
+    if(!btn) return;
+    const year = btn.getAttribute('data-review-year');
+    if(!/^\d{4}$/.test(year || '')) return;
+    go('#life/journal/review/' + year);
+  });
   if(noteForm) noteForm.addEventListener('submit', function(e){
     e.preventDefault();
     const input = document.getElementById('lifeNote');
@@ -505,13 +535,13 @@ function bandTable(result, bands){
 }
 
 function yearTable(result){
-  const head = '<table class="life-table"><caption>Birthday balances in this model</caption><thead><tr><th>Age</th><th>Invested</th><th>Put in</th><th>Debt</th><th>Net worth</th></tr></thead><tbody>';
+  const head = '<div class="life-table-scroll"><table class="life-table"><caption>Birthday balances in this model</caption><thead><tr><th>Age</th><th>Invested</th><th>Put in</th><th>Debt</th><th>Net worth</th></tr></thead><tbody>';
   const body = result.rows.filter(function(r){
     return SNAP_AGES.indexOf(r.age) >= 0 || r.age === result.inputs.currentAge || r.age % 5 === 0;
   }).map(function(r){
     return '<tr><th scope="row">' + r.age + '</th><td>' + money(viewOf(result, r.portfolio, r.age)) + '</td><td>' + money(viewOf(result, r.contrib, r.age)) + '</td><td>' + money(viewOf(result, r.debt, r.age)) + '</td><td>' + money(viewOf(result, r.netWorth, r.age)) + '</td></tr>';
   }).join('');
-  return head + body + '</tbody></table>';
+  return head + body + '</tbody></table></div>';
 }
 
 function debtText(d){
@@ -573,11 +603,11 @@ function paintCompare(inputs, baseline){
       '<section><h3>' + esc(preset.label) + '</h3><p class="life-help">' + esc(preset.blurb) + '</p>' + metricList(other, endB) + '</section>' +
     '</div>' +
     '<div class="life-callout"><h3>Opportunity cost</h3><p>' + esc(line) + '</p></div>' +
-    '<table class="life-table"><caption>Side by side. ' + (DOLLARS === 'today' ? 'Today’s dollars.' : 'Future dollars.') + '</caption><thead><tr><th>Age</th><th>My path</th><th>' + esc(preset.label) + '</th></tr></thead><tbody>' +
+    '<div class="life-table-scroll"><table class="life-table"><caption>Side by side. ' + (DOLLARS === 'today' ? 'Today’s dollars.' : 'Future dollars.') + '</caption><thead><tr><th>Age</th><th>My path</th><th>' + esc(preset.label) + '</th></tr></thead><tbody>' +
       ages +
       '<tr><th scope="row">Debt-free</th><td>' + esc(debtText(baseline.debtFree)) + '</td><td>' + esc(debtText(other.debtFree)) + '</td></tr>' +
       '<tr><th scope="row">Freedom progress at 65</th><td>' + freedomCell(endA) + '</td><td>' + freedomCell(endB) + '</td></tr>' +
-    '</tbody></table>' +
+    '</tbody></table></div>' +
     '<p class="life-help">A higher balance can come with more years of work or more debt. Read the row, don’t crown a winner.</p>' +
     assumptionHtml(baseline.used.concat(other.used));
 }
@@ -648,7 +678,8 @@ function paintFuture(inputs, baseline, bands){
   host.innerHTML = '<article class="life-letter"><h3>' + esc(letter.title) + '</h3>' +
     letter.paragraphs.map(function(p){ return '<p>' + esc(p) + '</p>'; }).join('') +
     '</article><p class="life-help">The other path is the what-if selected above, on your age, state, school, and pay. Figures are ' +
-    (DOLLARS === 'today' ? 'today’s dollars.' : 'future dollars.') + ' This note is educational. It does not tell you what to do.</p>';
+    (DOLLARS === 'today' ? 'today’s dollars.' : 'future dollars.') + ' This note is educational. It does not tell you what to do.</p>' +
+    '<p class="life-help"><a href="#life/journal/review">Open this year’s journal review</a> to look back at what-ifs, notes, and study check-ins saved on this device.</p>';
 }
 
 function paintWhat(inputs, baseline){
@@ -698,9 +729,9 @@ function paintWhat(inputs, baseline){
     }
   }
   host.innerHTML = '<h3>' + esc(preset.title) + '</h3><p>' + esc(preset.blurb) + '</p>' +
-    '<table class="life-table"><caption>Before and after, on your inputs</caption><thead><tr><th></th><th>My path</th><th>This what-if</th></tr></thead><tbody>' +
+    '<div class="life-table-scroll"><table class="life-table"><caption>Before and after, on your inputs</caption><thead><tr><th></th><th>My path</th><th>This what-if</th></tr></thead><tbody>' +
     three.map(function(r){ return '<tr><th scope="row">' + r[0] + '</th><td>' + r[1] + '</td><td>' + r[2] + '</td></tr>'; }).join('') +
-    '</tbody></table>' + extra +
+    '</tbody></table></div>' + extra +
     '<div class="life-actions"><button type="button" class="btn-primary" id="lifeSaveWhat">Save this what-if to the journal</button>' +
     '<button type="button" class="btn-secondary" id="lifeOpenLesson">Open the lesson</button>' +
     '<button type="button" class="btn-secondary" id="lifeOpenQuiz">Try the quiz</button></div>' +
@@ -725,23 +756,185 @@ function paintWhat(inputs, baseline){
   if(quizBtn) quizBtn.addEventListener('click', function(){ if(typeof openLessonQuiz === 'function') openLessonQuiz(preset.lesson); });
 }
 
-function paintJournal(){
+function whenLabel(at){
+  if(!dated(at)) return '';
+  try{
+    return new Date(at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }catch(e){ return ''; }
+}
+
+function lessonProgress(){
+  try{
+    if(typeof getLessonProgress === 'function'){
+      const progress = getLessonProgress();
+      if(progress && typeof progress === 'object') return progress;
+    }
+  }catch(e){}
+  try{
+    const raw = JSON.parse(localStorage.getItem('fp_lessons') || '{}');
+    if(raw && typeof raw === 'object') return raw;
+  }catch(e){}
+  return {};
+}
+
+function readQuizLogRaw(){
+  try{
+    const raw = JSON.parse(localStorage.getItem('fp_quiz_log') || '{"v":1,"attempts":[]}');
+    if(raw && Array.isArray(raw.attempts)) return raw;
+  }catch(e){}
+  return emptyQuizLog();
+}
+
+function readIdentityLog(){
+  try{
+    if(window.FPIdentity && typeof FPIdentity.history === 'function'){
+      const rows = FPIdentity.history();
+      if(Array.isArray(rows)) return rows;
+    }
+  }catch(e){}
+  try{
+    const raw = JSON.parse(localStorage.getItem('fp_identity_log') || 'null');
+    if(raw && Array.isArray(raw.entries)) return raw.entries;
+  }catch(e){}
+  return [];
+}
+
+function setJournalSub(onReview){
+  const timeline = document.getElementById('lifeJournalTimelinePane');
+  const review = document.getElementById('lifeJournalReviewPane');
+  const timelineBtn = document.getElementById('lifeJournalTimeline');
+  const reviewBtn = document.getElementById('lifeJournalReview');
+  if(timeline) timeline.hidden = !!onReview;
+  if(review) review.hidden = !onReview;
+  if(timelineBtn){
+    timelineBtn.setAttribute('aria-selected', onReview ? 'false' : 'true');
+    timelineBtn.tabIndex = onReview ? -1 : 0;
+  }
+  if(reviewBtn){
+    reviewBtn.setAttribute('aria-selected', onReview ? 'true' : 'false');
+    reviewBtn.tabIndex = onReview ? 0 : -1;
+  }
+}
+
+function paintTimeline(items){
   const list = document.getElementById('lifeJournalList');
   if(!list) return;
-  const items = journalItems();
   if(!items.length){
-    list.innerHTML = '<p class="life-empty">Nothing here yet. Finish a lesson, set a savings goal, place a paper trade, or save a what-if. Notes stay in this browser.</p>';
+    list.innerHTML = '<p class="life-empty">Nothing here yet. Finish a lesson, set a savings goal, place a paper trade, or save a what-if. Notes stay in this browser. <a href="#life/whatif/invest50at16">Try a what-if</a>, <a href="#lessons">open a lesson</a>, or <a href="#life/journal/review">open the year in review</a>.</p>';
     return;
   }
   list.innerHTML = '<ol class="life-journal">' + items.slice(0, 80).map(function(item){
-    const when = item.at > 946684800000 ? new Date(item.at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
-    const tags = item.conceptIds.map(function(id){ return CONCEPTS[id] || id; }).filter(Boolean);
+    const when = whenLabel(item.at);
+    const tags = (item.conceptIds || []).map(function(id){ return CONCEPTS[id] || id; }).filter(Boolean);
     return '<li><div class="life-journal-top"><span class="life-kind">' + esc(item.kind) + '</span><time>' + esc(when) + '</time></div>' +
       '<div class="life-journal-title">' + esc(item.title) + '</div>' +
       (item.why ? '<p>' + esc(item.why) + '</p>' : '') +
       (tags.length ? '<p class="life-help">' + esc(tags.join(' · ')) + '</p>' : '') +
       '</li>';
   }).join('') + '</ol>';
+}
+
+function reviewRows(title, rows, help){
+  if(!rows || !rows.length) return '';
+  return '<section class="life-review-block"><h3>' + esc(title) + '</h3>' +
+    (help ? '<p class="life-help">' + esc(help) + '</p>' : '') +
+    '<ol class="life-journal">' + rows.slice(0, 8).map(function(item){
+      const when = whenLabel(item.at);
+      return '<li><div class="life-journal-top"><time>' + esc(when) + '</time></div>' +
+        '<div class="life-journal-title">' + esc(item.title) + '</div>' +
+        (item.why ? '<p>' + esc(item.why) + '</p>' : '') +
+        '</li>';
+    }).join('') + '</ol></section>';
+}
+
+function paintReview(items){
+  const host = document.getElementById('lifeReviewBody');
+  if(!host) return;
+  const now = Date.now();
+  const view = currentView();
+  const chosen = view.year || new Date(now).getFullYear();
+  const window = yearWindow(chosen, now);
+  const progress = lessonProgress();
+  const log = readQuizLogRaw();
+  let literacy = { available: false, start: null, end: null, delta: null, undatedOnly: false };
+  if(window){
+    const start = literacyScore(sliceProgress(progress, window.start), sliceQuizLog(log, window.start));
+    const end = literacyScore(sliceProgress(progress, window.end), sliceQuizLog(log, window.end));
+    literacy = literacyDelta(start.score, end.score, {
+      datedEvidence: datedStudyBefore(progress, log, window.end),
+      partial: window.partial
+    });
+  }
+  const presetLabels = {};
+  PRESETS.forEach(function(preset){ presetLabels[preset.id] = preset.title; });
+  const review = buildYearReview(items, {
+    now: now,
+    year: chosen,
+    window: window,
+    presetLabels: presetLabels,
+    conceptLabels: CONCEPTS,
+    literacy: literacy,
+    identity: identitySpan(readIdentityLog(), window)
+  });
+  const years = yearsPresent(items, now);
+  if(review.window && years.indexOf(review.window.year) < 0) years.push(review.window.year);
+  years.sort(function(a, b){ return b - a; });
+  const clockYear = new Date(now).getFullYear();
+  const chips = years.map(function(year){
+    const on = review.window && year === review.window.year;
+    const label = year === clockYear ? (year + ' so far') : String(year);
+    return '<button type="button" class="life-chip" data-review-year="' + year + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + esc(label) + '</button>';
+  }).join('');
+  const stats = [
+    ['What-ifs', review.counts.simulation],
+    ['Notes', review.counts.reflection],
+    ['Paper trades', review.counts.trade],
+    ['Goals', review.counts.goal],
+    ['Lessons and quizzes', review.counts.learning]
+  ];
+  const cards = stats.map(function(row){
+    return '<article class="life-snap"><h3>' + esc(row[0]) + '</h3><p class="life-review-num">' + row[1] + '</p></article>';
+  }).join('');
+  const whatifLinks = review.whatifs.length
+    ? review.whatifs.map(function(item){
+        return '<a class="life-chip" href="' + esc(item.href) + '">' + esc(item.title) + '</a>';
+      }).join('')
+    : '<a class="life-chip" href="' + esc(review.links.whatif) + '">Try a what-if</a>';
+  const letter = review.lines.map(function(line){ return '<p>' + esc(line) + '</p>'; }).join('');
+  const undated = review.undatedCount
+    ? '<p class="life-help">' + review.undatedCount + ' saved item' + (review.undatedCount === 1 ? '' : 's') + ' have no date, so they stay on the timeline instead of a year page.</p>'
+    : '';
+  host.innerHTML =
+    '<p class="id-kicker">Decision journal · yearbook</p>' +
+    '<h2>' + esc(review.window ? review.window.label : 'Year in review') + '</h2>' +
+    '<div class="life-chips" role="group" aria-label="Year">' + chips + '</div>' +
+    (review.empty ? '<p class="life-empty">This yearbook page is still blank. The timeline fills it in once something on this device has a date.</p>' : '') +
+    '<article class="life-letter">' + letter + '</article>' +
+    undated +
+    '<div class="life-snaps life-review-stats">' + cards + '</div>' +
+    '<section class="life-review-block"><h3>From this page</h3>' +
+      '<p class="life-help">Open a worksheet you already tried, this week’s study list, or the identity page. Nothing here picks a path for you.</p>' +
+      '<div class="life-chips">' + whatifLinks + '</div>' +
+      '<div class="life-actions">' +
+        '<a class="btn-secondary" href="' + esc(review.links.plan) + '">This week’s plan</a>' +
+        '<a class="btn-secondary" href="' + esc(review.links.identity) + '">Identity</a>' +
+        '<a class="btn-secondary" href="' + esc(review.links.timeline) + '">Back to the timeline</a>' +
+      '</div></section>' +
+    reviewRows('What-ifs you saved', review.whatifs) +
+    reviewRows('Notes', review.notes) +
+    reviewRows('Paper trades', review.trades, 'Practice cash only.') +
+    reviewRows('Savings goals dated this year', review.goals, 'The date is the target you typed.') +
+    reviewRows('Goals you are still tracking', review.trackedGoals, 'A future target, or a goal with no date, still shows on this year so far.') +
+    reviewRows('Lessons finished', review.lessons) +
+    reviewRows('Quizzes saved', review.quizzes);
+}
+
+function paintJournal(){
+  const items = journalItems();
+  const onReview = !!currentView().review;
+  setJournalSub(onReview);
+  if(onReview) paintReview(items);
+  else paintTimeline(items);
 }
 
 function paintAssumptions(){
