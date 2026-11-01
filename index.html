@@ -2580,7 +2580,7 @@ body.light .gs-item{background:#fff}
     <label class="thesis-label" for="paperReflect">What did you learn? (optional)</label>
     <textarea class="modal-input" id="paperReflect" maxlength="280" rows="3" placeholder="Optional — anything you want to remember about this trade."></textarea>
     <button class="price-btn" id="paperSellConfirm" onclick="paperConfirmSell()">Sell</button>
-    <button class="modal-close-btn" onclick="closePaperSell()">Cancel</button>
+    <button class="modal-close-btn" id="paperSellCancel" onclick="closePaperSell()">Cancel</button>
   </div>
 </div>
 
@@ -7301,6 +7301,8 @@ async function paperBuy(t, sh, price, thesis){
   return true;
 }
 function paperAskSell(i){
+  // A confirm already waiting on a quote keeps this dialog. Don't retarget it.
+  if(PAPER_SELLING) return;
   const x = getPaper().pos[i];
   if(!x) return;
   PAPER_SELL_GEN++;
@@ -7328,6 +7330,8 @@ function paperAskSell(i){
   }, 60);
 }
 function closePaperSell(){
+  // Same rule as Escape: Cancel does not dismiss a sale that is already confirming.
+  if(PAPER_SELLING) return;
   const i = PAPER_SELL_I;
   const ticker = PAPER_SELL_T;
   const modal = document.getElementById('paperSellModal');
@@ -7346,30 +7350,42 @@ function closePaperSell(){
 }
 async function paperConfirmSell(){
   if(PAPER_SELLING) return;
-  const i = PAPER_SELL_I;
-  if(i == null) return;
+  // The open dialog's ticker, not the row index. An in-flight fill can splice
+  // the book and shift every later row before this confirm runs.
+  const ticker = PAPER_SELL_T;
+  if(!ticker) return;
   const gen = PAPER_SELL_GEN;
   const reflection = clampNote(document.getElementById('paperReflect') ? document.getElementById('paperReflect').value : '');
   PAPER_SELLING = true;
   const btn = document.getElementById('paperSellConfirm');
+  const cancelBtn = document.getElementById('paperSellCancel');
   if(btn) btn.disabled = true;
+  if(cancelBtn) cancelBtn.disabled = true;
+  let ok = false;
   try{
-    const ok = await paperSell(i, reflection);
-    // A dismiss or a newer Sell dialog bumps the generation. Don't close that one.
-    if(ok && gen === PAPER_SELL_GEN && PAPER_SELL_I === i) closePaperSell();
+    ok = await paperSell(ticker, reflection);
   } finally {
     PAPER_SELLING = false;
     if(btn) btn.disabled = false;
+    if(cancelBtn) cancelBtn.disabled = false;
   }
+  // A newer Sell dialog bumps the generation. Don't close that one.
+  // PAPER_SELLING is already clear, so this close is the filled sale, not Cancel.
+  if(ok && gen === PAPER_SELL_GEN && PAPER_SELL_T === ticker) closePaperSell();
 }
-async function paperSell(i, reflection){
-  const x0 = getPaper().pos[i]; if(!x0) return false;
+async function paperSell(ticker, reflection){
+  const x0 = getPaper().pos.find(function(x){ return x && x.t === ticker; });
+  if(!x0) return false;
   // Force a fresh quote so the sale isn't filled at a stale cached price.
-  if(priceCache[x0.t]) priceCache[x0.t].ts = 0;
-  const q = await fetchQ(x0.t);
+  if(priceCache[ticker]) priceCache[ticker].ts = 0;
+  const q = await fetchQ(ticker);
   if(!q || q.stale || !isFinite(q.c) || q.c <= 0){ toast('⚠️', 'Live price unavailable — paper sell blocked. Try again shortly.'); return false; }
   const p = getPaper();
-  const x = p.pos[i]; if(!x || x.t !== x0.t) return false;
+  // Look the ticker up again. The index captured when the dialog opened can
+  // point at a different position after another sale splices the book.
+  const i = p.pos.findIndex(function(x){ return x && x.t === ticker; });
+  const x = i >= 0 ? p.pos[i] : null;
+  if(!x) return false;
   const price = q.c;
   const pnl = (price - x.price)*x.sh;
   reflection = clampNote(reflection);
