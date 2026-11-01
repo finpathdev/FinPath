@@ -356,6 +356,26 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 .page-header{padding:56px 5% 40px;max-width:1200px;margin:0 auto}
 .page-header h1{font-size:clamp(32px,4.5vw,52px);font-weight:700;letter-spacing:-1.5px;margin-bottom:10px}
 .page-header p{font-size:16px;color:var(--muted)}
+.ask-wrap{max-width:760px;margin:0 auto;padding:0 5% 90px}
+.ask-gate{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px 24px}
+.ask-gate h2{font-family:var(--font-display);font-size:22px;letter-spacing:-.4px;margin-bottom:8px}
+.ask-gate p{color:var(--muted);font-size:15px;line-height:1.65;margin-bottom:18px}
+.ask-thread{display:flex;flex-direction:column;gap:12px;margin:4px 0 18px}
+.ask-bubble{border-radius:16px;padding:14px 16px;line-height:1.65;font-size:15px}
+.ask-bubble p{margin:0;white-space:pre-wrap;word-break:break-word}
+.ask-user{background:rgba(34,197,94,.12);border:1px solid var(--line);margin-left:12%}
+.ask-bot{background:var(--panel);border:1px solid var(--line)}
+.ask-meta{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+.ask-lesson{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--mint);border:1px solid var(--line);border-radius:999px;padding:6px 12px;margin-bottom:12px;width:fit-content;max-width:100%}
+.ask-lesson[hidden],#askSignedOut[hidden],#askSignedIn[hidden],#askUpsell[hidden]{display:none !important}
+.ask-foot{font-size:12px;color:var(--muted);margin-top:14px;line-height:1.65}
+.ask-foot a{color:var(--green)}
+.ask-upsell{border:1px solid rgba(245,182,11,.35);background:var(--gold-soft);border-radius:16px;padding:16px;margin:0 0 16px}
+.ask-upsell p{color:#fcd34d;font-size:14px;line-height:1.55;margin:0 0 12px}
+.ask-form-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.ask-label{display:block;font-size:13px;font-weight:600;margin-bottom:8px}
+body.light .ask-upsell p{color:#854d0e}
+#askSend:disabled{opacity:.55;cursor:default}
 .lessons-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;padding:0 5% 90px;max-width:1200px;margin:0 auto}
 .lesson-card{background:var(--panel);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;cursor:pointer;transition:all .25s}
 .lesson-card:hover{border-color:var(--line-strong);transform:translateY(-5px);box-shadow:0 18px 44px rgba(0,0,0,.4)}
@@ -1471,6 +1491,7 @@ body.light .gs-item{background:#fff}
     <div class="nav-links">
       <a role="button" tabindex="0" onclick="showPage('home')">Home</a>
       <a role="button" tabindex="0" onclick="showPage('lessons')">Lessons</a>
+      <a role="button" tabindex="0" onclick="showPage('ask')">Ask</a>
       <a role="button" tabindex="0" onclick="showPage('gold')">Gold</a>
       <a role="button" tabindex="0" onclick="showPage('portfolio')">Portfolio</a>
       <a role="button" tabindex="0" onclick="showPage('markets')">Markets</a>
@@ -1483,6 +1504,7 @@ body.light .gs-item{background:#fff}
 <div class="mobile-menu" id="mobileMenu">
   <a role="button" tabindex="0" onclick="showPage('home');toggleMenu(false)">Home</a>
   <a role="button" tabindex="0" onclick="showPage('lessons');toggleMenu(false)">Lessons</a>
+  <a role="button" tabindex="0" onclick="showPage('ask');toggleMenu(false)">Ask</a>
   <a role="button" tabindex="0" onclick="showPage('gold');toggleMenu(false)">Gold</a>
   <a role="button" tabindex="0" onclick="showPage('portfolio');toggleMenu(false)">Portfolio</a>
   <a role="button" tabindex="0" onclick="showPage('markets');toggleMenu(false)">Markets</a>
@@ -2037,6 +2059,7 @@ body.light .gs-item{background:#fff}
           <li>20 free lessons with full content</li>
           <li>Live portfolio tracker</li>
           <li>Basic profit and loss tracking</li>
+          <li>Ask FinPath — 5 educational questions a day after you sign in</li>
           <li class="no">Investor Moves (9 legendary investors)</li>
           <li class="no">14 Gold lessons</li>
           <li class="no">Rule-based educational notes on holdings</li>
@@ -2055,6 +2078,7 @@ body.light .gs-item{background:#fff}
           <li>Investor Moves — 9 legendary investors (13F)</li>
           <li>Rule-based educational notes on each holding (size, sector, gain or loss)</li>
           <li>Holding alerts with the reasoning behind each suggestion</li>
+          <li>Ask FinPath — 50 educational questions a day, powered by Grok (xAI)</li>
         </ul>
         <button class="price-btn" onclick="openGoldPayment()">Start with Gold</button>
       </div>
@@ -2064,7 +2088,7 @@ body.light .gs-item{background:#fff}
     <div class="footer-logo">Fin<span>Path</span></div>
     <div class="footer-sub">The financial playbook schools skipped.</div>
     <div class="footer-links">
-      <a role="button" tabindex="0" onclick="showPage('home')">Home</a><a role="button" tabindex="0" onclick="showPage('lessons')">Lessons</a>
+      <a role="button" tabindex="0" onclick="showPage('home')">Home</a><a role="button" tabindex="0" onclick="showPage('lessons')">Lessons</a><a role="button" tabindex="0" onclick="showPage('ask')">Ask</a>
       <a role="button" tabindex="0" onclick="showPage('gold')">Gold</a><a role="button" tabindex="0" onclick="showPage('portfolio')">Portfolio</a>
       <a role="button" tabindex="0" onclick="showPage('legal')">Legal & Disclaimers</a>
     </div>
@@ -2111,6 +2135,36 @@ body.light .gs-item{background:#fff}
   </div>
 
 <div style="text-align:center;padding:22px;font-size:12px;color:var(--muted);border-top:1px solid rgba(134,239,172,.08);position:relative;z-index:2">Built by <span style="color:#22c55e;font-weight:600">Siddharth Moosani</span> · © 2026 FinPath</div>
+</div>
+
+<!-- ASK -->
+<div id="page-ask" class="page">
+  <div class="page-header">
+    <h1>Ask FinPath</h1>
+    <p><strong>Ask FinPath — powered by Grok (xAI).</strong> Short educational answers about investing and the lessons. Not a buy, sell, or hold call.</p>
+  </div>
+  <div class="ask-wrap">
+    <div id="askSignedOut" class="ask-gate">
+      <h2>Sign in to ask</h2>
+      <p>Ask FinPath needs an account. Signed out, you have <strong>0 asks</strong>. A free account gets 5 questions per UTC day. Gold gets 50. About 5 per minute. The server enforces the limit.</p>
+      <button class="btn-primary" type="button" onclick="openLogin()">Sign in</button>
+    </div>
+    <div id="askSignedIn" hidden>
+      <div id="askQuota" class="ask-meta" aria-live="polite"></div>
+      <div id="askLesson" class="ask-lesson" hidden></div>
+      <div id="askThread" class="ask-thread" aria-live="polite"></div>
+      <div id="askUpsell" class="ask-upsell" hidden></div>
+      <form id="askForm" onsubmit="submitAsk(event)">
+        <label for="askInput" class="ask-label">Your question</label>
+        <textarea id="askInput" class="modal-input" maxlength="500" rows="4" placeholder="Example: What is an index fund?" required aria-describedby="askCount" oninput="updateAskCount()" onkeydown="askInputKey(event)"></textarea>
+        <div class="ask-form-row">
+          <span id="askCount" class="ask-meta">0/500</span>
+          <button class="btn-primary" id="askSend" type="submit">Ask</button>
+        </div>
+      </form>
+      <p class="ask-foot">Not financial advice. Answers come from Grok (xAI) and can be wrong. Stock Suggestions on the portfolio stay rule-based — they are not this chat. Questions are sent to xAI. <a href="#l-ai">Read the AI terms</a>.</p>
+    </div>
+  </div>
 </div>
 
 <!-- GOLD -->
@@ -2380,11 +2434,11 @@ body.light .gs-item{background:#fff}
 <div id="page-legal" class="page">
   <div class="legal-wrap">
     <h1>Legal, Privacy &amp; Terms of Use</h1>
-    <div class="legal-updated">Last updated: July 2026</div>
+    <div class="legal-updated">Last updated: November 1, 2026</div>
     <div class="warning-box"><p><strong>Please read carefully.</strong> By using FinPath you confirm you have read, understood, and agreed to everything below. If you do not agree, do not use FinPath. Some sections limit your legal rights — including a mandatory arbitration clause and class-action waiver — so read them attentively.</p></div>
 
     <div class="legal-section" id="l-not-advice"><h2>1. Not Financial, Investment, Legal, or Tax Advice</h2>
-      <p>FinPath is an <strong>educational and informational platform</strong>. Nothing on FinPath — including lessons, articles, screener output, market pulse data, sector heat maps, portfolio analytics, the AI Analyzer, the AI Suggestions feature (Gold), investor move summaries, the Strategy Playground, backtest results, share prices, alert notifications, or any communication from FinPath or Siddharth Moosani — constitutes financial advice, investment advice, tax advice, legal advice, accounting advice, retirement planning advice, or any other form of professional advice.</p>
+      <p>FinPath is an <strong>educational and informational platform</strong>. Nothing on FinPath — including lessons, articles, screener output, market pulse data, sector heat maps, portfolio analytics, the AI Analyzer, the AI Suggestions feature (Gold), Ask FinPath (powered by Grok), investor move summaries, the Strategy Playground, backtest results, share prices, alert notifications, or any communication from FinPath or Siddharth Moosani — constitutes financial advice, investment advice, tax advice, legal advice, accounting advice, retirement planning advice, or any other form of professional advice.</p>
       <p>FinPath does <strong>not</strong> know your full financial situation, income, debts, tax bracket, dependents, age, health, insurance, employment status, retirement horizon, other assets, or personal risk tolerance. Any statement about a security, sector, strategy, or approach is generic educational content and does not consider your individual circumstances.</p>
       <p>You must consult a qualified, licensed financial adviser, tax professional, or attorney before making any investment, tax, or legal decision. Your reliance on FinPath is solely at your own risk.</p>
     </div>
@@ -2395,10 +2449,13 @@ body.light .gs-item{background:#fff}
     </div>
 
     <div class="legal-section" id="l-ai"><h2>3. Automated ("AI") Features Disclaimer</h2>
-      <p>FinPath includes automated commentary, including the free portfolio Analyzer / check-up and the paid Gold "Stock Suggestions" feature (called "AI Suggestions" in earlier versions). No large language model or live AI system generates this content. These features apply <strong>rule-based algorithmic commentary</strong> using general publicly available information and educational heuristics. They are not personalized financial advice and should never be the sole basis for any investment decision.</p>
+      <p>FinPath has two different kinds of automated features. They are not the same, and neither one is personalized financial advice. Neither should be the sole basis for any investment decision.</p>
+      <p><strong>Rule-based notes.</strong> The free portfolio Analyzer / check-up and the paid Gold "Stock Suggestions" feature (called "AI Suggestions" in earlier versions) are <strong>not</strong> written by a large language model. No live AI system generates them. They apply <strong>rule-based commentary</strong> using portfolio weights, sector mix, and unrealized gain or loss.</p>
+      <p><strong>Ask FinPath.</strong> The separate Ask page is powered by <strong>Grok, a model from xAI</strong>. It is for learning about investing and the lessons. It is not a broker and not a portfolio manager. Ask FinPath is built to refuse buy, sell, and hold calls, price targets, personal allocations, and tax or legal advice. A refusal is not a recommendation. Answers can still be wrong.</p>
       <ul>
-        <li>These notes may be inaccurate, out-of-date, biased, incomplete, or contradictory</li>
-        <li>The rules do not fact-check themselves and can state something outdated with a confident tone</li>
+        <li>These notes and Ask FinPath answers may be inaccurate, out-of-date, biased, incomplete, or contradictory</li>
+        <li>Ask FinPath answers are generated by Grok (xAI) and can sound sure even when they are wrong</li>
+        <li>The rule-based notes do not fact-check themselves and can state something outdated with a confident tone</li>
         <li>Past performance data referenced does not guarantee future results</li>
         <li>The notes do not know your goals, tax situation, or risk tolerance</li>
         <li>You are solely responsible for any decision made after reading these notes</li>
@@ -2437,7 +2494,7 @@ body.light .gs-item{background:#fff}
     </div>
 
     <div class="legal-section" id="l-third-party"><h2>7. Third-Party Data &amp; Services</h2>
-      <p>FinPath uses third-party services and APIs to provide functionality, including but not limited to: <strong>Finnhub</strong> (market data), <strong>Supabase</strong> (authentication and storage), <strong>Stripe</strong> (payments), and various content delivery networks. Market data is provided "as is" and may be delayed, inaccurate, or unavailable. FinPath makes no representations about the accuracy, completeness, timeliness, or availability of any third-party data.</p>
+      <p>FinPath uses third-party services and APIs to provide functionality, including but not limited to: <strong>Finnhub</strong> (market data), <strong>Supabase</strong> (authentication and storage), <strong>Stripe</strong> (payments), <strong>xAI</strong> (the Grok model that writes Ask FinPath answers), and various content delivery networks. Market data is provided "as is" and may be delayed, inaccurate, or unavailable. FinPath makes no representations about the accuracy, completeness, timeliness, or availability of any third-party data or model output.</p>
       <p>Always verify prices, filings, and any other data with your broker, the SEC's EDGAR database, or another primary source before acting on it.</p>
     </div>
 
@@ -2460,7 +2517,9 @@ body.light .gs-item{background:#fff}
         <li><strong>Account data</strong> (if you sign up): email address and encrypted password, stored by Supabase</li>
         <li><strong>Portfolio &amp; goals</strong>: stored locally in your browser, and optionally synced to Supabase when signed in</li>
         <li><strong>Payment data</strong> (Gold subscribers only): handled entirely by Stripe; FinPath never sees or stores your card number</li>
-        <li><strong>Analytics</strong>: anonymous, aggregated event data (page views, feature usage) via privacy-respecting analytics — no cookies, no personal identifiers</li>
+        <li><strong>Analytics</strong>: anonymous, aggregated event data (page views, feature usage) via privacy-respecting analytics — no cookies, no personal identifiers. Ask events record that a question was opened, sent, refused, rate-limited, or failed, plus whether the account was free or Gold. They do not include the question text.</li>
+        <li><strong>Ask FinPath questions</strong>: the question, a short recent conversation, and an optional lesson title are sent to <strong>xAI</strong> so Grok can write an educational answer. FinPath does not send your email, user id, or portfolio to xAI. xAI handles that text under its own terms. FinPath does not keep a transcript of the questions.</li>
+        <li><strong>Ask usage counters</strong>: when you are signed in, FinPath stores a daily count and a short-lived per-minute count (your user id, the UTC day or minute, and a number) so the free limit of 5 questions a day and the Gold limit of 50 can be enforced, along with about 5 questions a minute. These rows are counters, not your questions. This browser may also save the last remaining number for display only. That saved number does not enforce the limit.</li>
         <li><strong>Technical logs</strong>: standard web-server logs (IP address, user agent) retained temporarily for security</li>
       </ul>
       <p><strong>What we do not do:</strong> sell your data, share it with advertisers, run targeted ads, use tracking cookies, or share information with data brokers.</p>
@@ -3745,7 +3804,7 @@ document.addEventListener('click', function(e){
 });
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ if(typeof hideTerm==='function') hideTerm(); const m = document.getElementById('mobileMenu'); if(m && m.classList.contains('open')) toggleMenu(false); } });
 
-const ROUTES=['home','portfolio','lessons','gold','markets','legal'];
+const ROUTES=['home','portfolio','lessons','ask','gold','markets','legal'];
 function showPage(p,fromHash){
   if(typeof hidePaycheckModal === 'function') hidePaycheckModal();
   if(!document.getElementById('page-'+p)) p='home';
@@ -3770,6 +3829,10 @@ function showPage(p,fromHash){
   if(p==='gold') renderGold();
   if(p==='portfolio'){loadFromDB().then(()=>renderPortfolio());if(typeof renderGoals==='function'){renderGoals();renderAchievements();renderAlertsList();}if(typeof renderTxns==='function')renderTxns();if(typeof renderChecklist==='function')renderChecklist();}
   if(p==='markets' && typeof initMarkets==='function') initMarkets();
+  if(p==='ask'){
+    if(typeof renderAsk==='function') renderAsk();
+    if(typeof track==='function') track('ask_open');
+  }
   if((p==='lessons' || p==='portfolio') && typeof maybeOfferIntake==='function') maybeOfferIntake();
 }
 
@@ -4165,6 +4228,15 @@ function openLesson(i, fromHash){
     (nxt >= 0 ? '<button class="' + (isDone ? 'btn-primary' : 'btn-secondary') + '" onclick="openLesson(' + nxt + ')">Next: ' + escapeHtml(LESSONS[nxt].name) + ' →</button>'
               : '<button class="btn-secondary" onclick="closeLessonDetail();renderLessons()">Back to all lessons</button>');
   body.appendChild(nav);
+  const askRow = document.createElement('div');
+  askRow.className = 'lesson-nav';
+  const askAbout = document.createElement('button');
+  askAbout.type = 'button';
+  askAbout.className = 'btn-secondary';
+  askAbout.textContent = 'Ask about this lesson';
+  askAbout.addEventListener('click', function(){ openAskAboutLesson(l.name); });
+  askRow.appendChild(askAbout);
+  body.appendChild(askRow);
   window.scrollTo(0,0);
   if(fromHash) return;
   try{
@@ -5232,6 +5304,7 @@ function onUserLoggedIn(user){
     }
   }catch(e){}
   hideLoginNudge();
+  if(typeof renderAsk==='function' && document.getElementById('page-ask') && document.getElementById('page-ask').classList.contains('active')) renderAsk();
 }
 
 // ══ LOGIN NUDGE ══
@@ -5272,6 +5345,7 @@ function onUserSignedOut(){
     btn.style.border = '';
   }
   document.getElementById('userMenu').style.display = 'none';
+  if(typeof resetAskOnSignOut==='function') resetAskOnSignOut();
 }
 
 async function checkGoldStatus(userId){
@@ -5312,6 +5386,7 @@ function updateGoldMenuStatus(){
   } else {
     el.innerHTML = '<button onclick="openGoldPayment();closeUserMenu()" style="background:linear-gradient(135deg,#15803d,#052e16);border:none;border-radius:8px;padding:8px 14px;color:#4ade80;font-size:13px;font-weight:600;cursor:pointer;width:100%">Upgrade to Gold ✦</button>';
   }
+  if(typeof renderAsk==='function' && document.getElementById('page-ask') && document.getElementById('page-ask').classList.contains('active')) renderAsk();
 }
 
 function handleAuthClick(){
@@ -8245,6 +8320,244 @@ async function compareStocks(){
 }
 
 
+// ── ASK FINPATH ──
+// Signed-in educational Q&A. The Edge Function enforces Gold and the daily cap.
+// fp_ask_display is a leftover count for this browser only. It never grants a question.
+let askHistory = [];
+let askLessonTitle = '';
+let askErrorNote = '';
+let askBusy = false;
+
+function askUtcDay(){ return new Date().toISOString().slice(0, 10); }
+function readAskDisplay(){
+  try{
+    const o = JSON.parse(localStorage.getItem('fp_ask_display') || 'null');
+    if(!o || o.day !== askUtcDay()) return null;
+    if(o.plan !== 'free' && o.plan !== 'gold') return null;
+    if(typeof o.remaining !== 'number' || !isFinite(o.remaining) || o.remaining < 0) return null;
+    return { remaining: Math.floor(o.remaining), plan: o.plan };
+  }catch(e){ return null; }
+}
+function writeAskDisplay(remaining, plan){
+  try{
+    localStorage.setItem('fp_ask_display', JSON.stringify({
+      day: askUtcDay(),
+      remaining: remaining,
+      plan: plan === 'gold' ? 'gold' : 'free'
+    }));
+  }catch(e){}
+  paintAskQuota();
+}
+function askPlanOf(body){ return body && body.plan === 'gold' ? 'gold' : 'free'; }
+function askRemainingOf(body){
+  const n = body && body.remaining;
+  if(typeof n !== 'number' || !isFinite(n) || n < 0) return null;
+  return Math.floor(n);
+}
+function paintAskQuota(){
+  const el = document.getElementById('askQuota');
+  if(!el) return;
+  if(!currentUser){ el.textContent = ''; return; }
+  const saved = readAskDisplay();
+  if(!saved){
+    el.textContent = 'Free accounts get 5 questions per UTC day. Gold gets 50. About 5 per minute. The server checks Gold on every question.';
+    return;
+  }
+  const cap = saved.plan === 'gold' ? 50 : 5;
+  const who = saved.plan === 'gold' ? 'Gold' : 'Free';
+  el.textContent = who + ' · ' + saved.remaining + ' of ' + cap + ' left today (UTC), last saved on this device. Display only. The server enforces the limit.';
+}
+function paintAskLesson(){
+  const el = document.getElementById('askLesson');
+  if(!el) return;
+  el.replaceChildren();
+  if(!askLessonTitle){ el.hidden = true; return; }
+  el.hidden = false;
+  const label = document.createElement('span');
+  label.textContent = 'Lesson: ' + askLessonTitle;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'btn-secondary';
+  btn.style.padding = '4px 10px';
+  btn.style.fontSize = '12px';
+  btn.textContent = 'Remove';
+  btn.addEventListener('click', function(){ askLessonTitle = ''; paintAskLesson(); });
+  el.appendChild(label);
+  el.appendChild(btn);
+}
+function renderAskThread(){
+  const host = document.getElementById('askThread');
+  if(!host) return;
+  const parts = askHistory.map(function(m){
+    const note = m.refused ? '<div class="ask-meta">' + escapeHtml('FinPath declined this one. It is not a recommendation.') + '</div>' : '';
+    return '<div class="ask-bubble ' + (m.role === 'user' ? 'ask-user' : 'ask-bot') + '"><p>' + escapeHtml(m.content) + '</p>' + note + '</div>';
+  });
+  if(askErrorNote) parts.push('<div class="ask-bubble ask-bot"><p>' + escapeHtml(askErrorNote) + '</p></div>');
+  host.innerHTML = parts.join('');
+}
+function showAskUpsell(on){
+  const el = document.getElementById('askUpsell');
+  if(!el) return;
+  if(!on){ el.hidden = true; el.innerHTML = ''; return; }
+  el.hidden = false;
+  el.innerHTML = '<p>' + escapeHtml('You have used the 5 free questions for today. Gold includes 50 a day. Stock Suggestions stay rule-based either way.') + '</p>' +
+    '<button type="button" class="btn-secondary" onclick="showPage(\'gold\')">See Gold</button>';
+}
+function setAskBusy(on){
+  const btn = document.getElementById('askSend');
+  const input = document.getElementById('askInput');
+  if(btn){ btn.disabled = on; btn.textContent = on ? 'Asking…' : 'Ask'; }
+  if(input) input.disabled = on;
+}
+function renderAsk(){
+  const out = document.getElementById('askSignedOut');
+  const inn = document.getElementById('askSignedIn');
+  const on = !!currentUser;
+  if(out) out.hidden = on;
+  if(inn) inn.hidden = !on;
+  paintAskLesson();
+  paintAskQuota();
+  renderAskThread();
+  updateAskCount();
+}
+function resetAskOnSignOut(){
+  askHistory = [];
+  askLessonTitle = '';
+  askErrorNote = '';
+  askBusy = false;
+  setAskBusy(false);
+  showAskUpsell(false);
+  if(document.getElementById('page-ask') && document.getElementById('page-ask').classList.contains('active')) renderAsk();
+}
+function updateAskCount(){
+  const input = document.getElementById('askInput');
+  const el = document.getElementById('askCount');
+  if(el) el.textContent = (input ? input.value.length : 0) + '/500';
+}
+function askInputKey(e){
+  if(e.key === 'Enter' && (e.metaKey || e.ctrlKey)){ e.preventDefault(); submitAsk(e); }
+}
+function openAskAboutLesson(name){
+  askLessonTitle = String(name == null ? '' : name).replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120);
+  showPage('ask');
+}
+function buildAskPayload(q){
+  const body = {
+    q: q,
+    history: askHistory.slice(-6).map(function(m){
+      return { role: m.role === 'assistant' ? 'assistant' : 'user', content: String(m.content || '').slice(0, 800) };
+    })
+  };
+  if(askLessonTitle) body.lessonContext = askLessonTitle;
+  return body;
+}
+async function readAskErrorBody(error){
+  if(!error) return null;
+  const ctx = error.context;
+  if(!ctx) return null;
+  if(typeof ctx === 'object' && typeof ctx.json !== 'function' && (ctx.error || ctx.remaining != null || ctx.reason || ctx.answer)) return ctx;
+  if(typeof ctx.clone === 'function'){
+    try{ return await ctx.clone().json(); }catch(e){}
+  }
+  if(typeof ctx.json === 'function'){
+    try{ return await ctx.json(); }catch(e){}
+  }
+  return null;
+}
+async function submitAsk(ev){
+  if(ev && ev.preventDefault) ev.preventDefault();
+  if(askBusy) return;
+  if(!currentUser){ openLogin(); return; }
+  const input = document.getElementById('askInput');
+  const q = input ? input.value.trim() : '';
+  askErrorNote = '';
+  if(!q){ askErrorNote = 'Type a question first.'; renderAskThread(); return; }
+  if(q.length > 500){ askErrorNote = 'Keep the question under 500 characters.'; renderAskThread(); return; }
+  if(!supabaseClient && typeof ensureSupabase === 'function') ensureSupabase();
+  if(!supabaseClient){
+    askErrorNote = 'Sign-in is unavailable right now.';
+    track('ask_error', { status: 'client' });
+    renderAskThread();
+    return;
+  }
+  let session = null;
+  try{
+    const sess = await supabaseClient.auth.getSession();
+    session = sess && sess.data && sess.data.session;
+  }catch(e){ session = null; }
+  if(!session || !session.access_token){
+    track('ask_error', { status: 'signed_out' });
+    openLogin();
+    return;
+  }
+  askBusy = true;
+  setAskBusy(true);
+  showAskUpsell(false);
+  try{
+    const invoked = await supabaseClient.functions.invoke('ask-finpath', {
+      headers: { Authorization: 'Bearer ' + session.access_token },
+      body: buildAskPayload(q)
+    });
+    const error = invoked && invoked.error;
+    const data = invoked && invoked.data;
+    const failBody = error ? await readAskErrorBody(error) : null;
+    const body = failBody || data || {};
+    const status = error ? (error.context && typeof error.context.status === 'number' ? error.context.status : 500) : 200;
+    const plan = askPlanOf(body);
+    const remaining = askRemainingOf(body);
+    if(status === 429){
+      if(remaining !== null) writeAskDisplay(remaining, plan);
+      track('ask_quota_hit', { plan: plan });
+      if(body.reason === 'burst'){
+        askErrorNote = remaining !== null
+          ? 'About 5 questions a minute. Wait a minute and try again. ' + remaining + ' left today.'
+          : 'About 5 questions a minute. Wait a minute and try again.';
+      } else if(plan === 'gold'){
+        askErrorNote = 'You have used the 50 Gold questions for today. They reset at 00:00 UTC.';
+      } else {
+        askErrorNote = 'You have used the 5 free questions for today. They reset at 00:00 UTC.';
+        showAskUpsell(true);
+      }
+      renderAskThread();
+      return;
+    }
+    if(status === 401){
+      track('ask_error', { status: '401' });
+      askErrorNote = 'Sign in again to ask. Signed out, you have 0 asks.';
+      renderAskThread();
+      openLogin();
+      return;
+    }
+    if(error || status >= 400 || !body.answer){
+      track('ask_error', { status: String(status || 'error') });
+      askErrorNote = 'Ask FinPath is unavailable right now. Try again in a minute.';
+      if(remaining !== null && body.refunded === true) writeAskDisplay(remaining, plan);
+      renderAskThread();
+      return;
+    }
+    const answer = String(body.answer);
+    const refused = body.refused === true;
+    askHistory.push({ role: 'user', content: q });
+    askHistory.push({ role: 'assistant', content: answer, refused: refused });
+    while(askHistory.length > 6) askHistory.shift();
+    if(input) input.value = '';
+    updateAskCount();
+    if(remaining !== null) writeAskDisplay(remaining, plan);
+    else paintAskQuota();
+    track('ask_sent', { plan: plan });
+    if(refused) track('ask_refused');
+    if(plan !== 'gold' && remaining === 0) showAskUpsell(true);
+    renderAskThread();
+  }catch(e){
+    track('ask_error', { status: 'network' });
+    askErrorNote = 'Ask FinPath is unavailable right now. Try again in a minute.';
+    renderAskThread();
+  }finally{
+    askBusy = false;
+    setAskBusy(false);
+  }
+}
+
 // Defensive dedupe — removes any duplicated UI rows (e.g. from a bad merge/paste)
 (function(){
   ['.chip-row', '.mode-tabs'].forEach(function(sel){
@@ -8262,7 +8575,7 @@ applyTheme(localStorage.getItem('fp_theme') || 'dark');
 initStreak();
 startAlertLoop();
 handleSharedLink();
-// Hash router: #portfolio / #lessons / #gold / #markets / #legal / #home (or empty).
+// Hash router: #portfolio / #lessons / #ask / #gold / #markets / #legal / #home (or empty).
 // #lesson/N opens that lesson. #moment/paycheck opens the first-paycheck planner.
 // #p= shared links are handled above by handleSharedLink and ignored here.
 // A cold #l-* load runs while the page is still laying out. showPage scrolls to
