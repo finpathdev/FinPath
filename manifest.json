@@ -37,6 +37,18 @@
   ],
   "shortcuts": [
     {
+      "name": "Life Path",
+      "short_name": "Life",
+      "description": "Educational life-path model",
+      "url": "./#life",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
       "name": "Portfolio",
       "short_name": "Portfolio",
       "description": "Track your holdings",

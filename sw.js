@@ -3,11 +3,20 @@
 // Live prices, filings, and API responses are intentionally NOT cached — those
 // must always be fresh.
 
-const CACHE = 'finpath-v28';
+const CACHE = 'finpath-v29';
 const SHELL = [
   './',
   './index.html',
   './manifest.json',
+  './data/life-assumptions.v1.json',
+  './js/intel/life/engine.js',
+  './js/intel/life/presets.js',
+  './js/intel/life/compare.js',
+  './js/intel/life/journal.js',
+  './js/intel/life/boot.js',
+  './js/intel/learn/concepts.js',
+  './js/intel/learn/progress.js',
+  './js/intel/learn/quizlog.js',
   './icon-192.png',
   './icon-512.png',
   './icon-512-maskable.png',

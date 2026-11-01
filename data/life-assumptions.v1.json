@@ -1,0 +1,250 @@
+{
+  "version": "v1",
+  "reviewed": "2026-11-01",
+  "engine": "life-1",
+  "sources": {
+    "fed_inflation": {
+      "name": "Federal Reserve — longer-run inflation goal of 2 percent",
+      "url": "https://www.federalreserve.gov/faqs/economy_14400.htm",
+      "asOf": "2026-11-01"
+    },
+    "damodaran": {
+      "name": "Aswath Damodaran, historical returns on the S&P 500 including dividends, geometric average 1928–2022",
+      "url": "https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datafile/histretSP.html",
+      "asOf": "2022-12-31"
+    },
+    "wage_growth": {
+      "name": "FinPath teaching assumption: the 2% inflation goal plus 1 percentage point, near long-run labor-productivity growth (BLS productivity)",
+      "url": "https://www.bls.gov/productivity/",
+      "asOf": "2026-11-01"
+    },
+    "fica": {
+      "name": "Social Security and Medicare employee tax rates (6.2% + 1.45%)",
+      "url": "https://www.ssa.gov/oact/cola/cbb.html",
+      "asOf": "2026-11-01"
+    },
+    "income_tax": {
+      "name": "FinPath teaching simplification — a flat 10% stand-in, not a tax bracket and not your tax bill",
+      "url": "https://www.irs.gov/filing/federal-income-tax-rates-and-brackets",
+      "asOf": "2026-11-01"
+    },
+    "budget": {
+      "name": "Consumer Financial Protection Bureau — the 50/30/20 budget (50% of take-home for needs)",
+      "url": "https://www.consumerfinance.gov/about-us/blog/budgeting-how-to-create-a-budget-and-stick-with-it/",
+      "asOf": "2026-11-01"
+    },
+    "direct_loan": {
+      "name": "Federal Student Aid — Direct Loan interest rates for loans first disbursed July 1, 2025–June 30, 2026 (undergraduate 6.39%)",
+      "url": "https://fsapartners.ed.gov/knowledge-center/library/electronic-announcements/2025-05-30/interest-rates-direct-loans-first-disbursed-between-july-1-2025-and-june-30-2026",
+      "asOf": "2025-07-01"
+    },
+    "standard_repay": {
+      "name": "Federal Student Aid — Standard Repayment Plan, 10 years for most Direct Loans",
+      "url": "https://studentaid.gov/manage-loans/repayment/plans/standard-repayment",
+      "asOf": "2026-11-01"
+    },
+    "unsubsidized": {
+      "name": "Federal Student Aid — unsubsidized Direct Loans accrue interest while you are in school",
+      "url": "https://studentaid.gov/understand-aid/types/loans/subsidized-unsubsidized",
+      "asOf": "2026-11-01"
+    },
+    "g19_card": {
+      "name": "Federal Reserve G.19 — commercial bank interest rate, credit card plans, accounts assessed interest, August 2026 preliminary",
+      "url": "https://www.federalreserve.gov/releases/g19/current/",
+      "asOf": "2026-08"
+    },
+    "cfpb_min": {
+      "name": "CFPB explains credit-card minimum payments. FinPath uses 2% of the balance or $25, whichever is more, as a stand-in. A real card can differ.",
+      "url": "https://www.consumerfinance.gov/ask-cfpb/what-is-a-minimum-payment-on-a-credit-card-en-39/",
+      "asOf": "2026-11-01"
+    },
+    "card_example": {
+      "name": "FinPath lesson example — a $3,000 balance in “How to Avoid the 5 Most Expensive Money Mistakes People Make in Their 20s.” An example, not a survey.",
+      "url": "https://finpathdev.github.io/FinPath/#lesson/29",
+      "asOf": "2026-11-01"
+    },
+    "g19_car": {
+      "name": "Federal Reserve G.19 — finance-company new-car loans, Q2 2026 revised (amount financed, APR, maturity)",
+      "url": "https://www.federalreserve.gov/releases/g19/current/",
+      "asOf": "2026-Q2"
+    },
+    "car_rule": {
+      "name": "FinPath teaching rule — a car payment above 10% of monthly take-home is flagged as tight. The unaffordable preset uses the greater of the G.19 payment and 20% of take-home.",
+      "url": "https://finpathdev.github.io/FinPath/#life/whatif/car",
+      "asOf": "2026-11-01"
+    },
+    "bengen": {
+      "name": "William Bengen, “Determining Withdrawal Rates Using Historical Data,” Journal of Financial Planning, October 1994. The 4% idea is a teaching rule of thumb (about 25 times yearly spending), not a promise.",
+      "url": "https://www.financialplanningassociation.org/article/journal/MAR04-determining-withdrawal-rates-using-historical-data",
+      "asOf": "1994-10"
+    },
+    "ssa": {
+      "name": "Social Security Administration — full retirement age is 67 for people born in 1960 or later. This model stops at 65 so the snapshots line up. That is a horizon, not a claim that you can retire then.",
+      "url": "https://www.ssa.gov/benefits/retirement/planner/agereduction.html",
+      "asOf": "2026-11-01"
+    },
+    "collegeboard": {
+      "name": "College Board, Trends in College Pricing and Student Aid 2025 — average published (sticker) prices for 2025-26",
+      "url": "https://research.collegeboard.org/trends/college-pricing/highlights",
+      "asOf": "2025-26"
+    },
+    "bls_oews": {
+      "name": "BLS Occupational Employment and Wage Statistics, May 2024 national median annual wages",
+      "url": "https://www.bls.gov/news.release/archives/ocwage_04022025.htm",
+      "asOf": "2024-05"
+    },
+    "bea_rpp": {
+      "name": "BEA regional price parities, all items, 2023. U.S. average = 100. Wages stay at the national median, so a higher state price level means the same paycheck covers less.",
+      "url": "https://www.bea.gov/news/2024/real-personal-consumption-expenditures-state-and-real-personal-income-state-and",
+      "asOf": "2023"
+    },
+    "school_earnings": {
+      "name": "FinPath teaching default — $0 earned while in school, so tuition and grants stay visible. Many students work. This is not a survey.",
+      "url": "https://finpathdev.github.io/FinPath/#life",
+      "asOf": "2026-11-01"
+    },
+    "under18": {
+      "name": "FinPath teaching default — before 18, living costs are treated as covered by someone else, and the monthly investing amount is still invested.",
+      "url": "https://finpathdev.github.io/FinPath/#life",
+      "asOf": "2026-11-01"
+    },
+    "monthly50": {
+      "name": "FinPath teaching example — $50 a month, the Decision Impact preset. The compound-interest lesson also walks through $200 a month.",
+      "url": "https://finpathdev.github.io/FinPath/#life/whatif/invest50at16",
+      "asOf": "2026-11-01"
+    },
+    "raise_example": {
+      "name": "FinPath teaching example — a 10% raise, with half of the after-tax increase invested and half added to living costs. Not a forecast of your raise.",
+      "url": "https://finpathdev.github.io/FinPath/#lesson/23",
+      "asOf": "2026-11-01"
+    }
+  },
+  "values": {
+    "inflation": { "value": 0.02, "unit": "annual_rate", "source": "fed_inflation", "note": "Used to show results in today’s dollars. One steady rate, not a forecast." },
+    "stock_nominal": { "value": 0.0964, "unit": "annual_rate", "source": "damodaran", "note": "Geometric average. A single steady rate hides crashes. Past averages are not a forecast." },
+    "wage_growth": { "value": 0.03, "unit": "annual_rate", "source": "wage_growth", "note": "Applied once a year after the first working year. Nominal, so it includes inflation." },
+    "fica_rate": { "value": 0.0765, "unit": "annual_rate", "source": "fica", "note": "Employee share only. Additional Medicare tax and the wage base are not modeled." },
+    "income_tax_rate": { "value": 0.10, "unit": "annual_rate", "source": "income_tax", "note": "Added to the FICA rate as a flat effective income tax. Not your bracket." },
+    "needs_share": { "value": 0.50, "unit": "share_of_takehome", "source": "budget", "note": "Needs take half of take-home, then the state price level scales that dollar amount. Money not invested is treated as spent." },
+    "loan_apr": { "value": 0.0639, "unit": "annual_rate", "source": "direct_loan", "note": "Fixed undergraduate Direct Loan rate for the 2025-26 disbursement year." },
+    "loan_years": { "value": 10, "unit": "years", "source": "standard_repay", "note": "Standard plan length. Payments start the year school ends." },
+    "unsubsidized_in_school": { "value": 1, "unit": "flag", "source": "unsubsidized", "note": "Interest accrues while you are in school. A subsidized loan would cost less. This is the cautious case, not a recommendation to borrow." },
+    "card_apr": { "value": 0.2236, "unit": "annual_rate", "source": "g19_card", "note": "Accounts that were charged interest, not a teaser rate." },
+    "card_min_share": { "value": 0.02, "unit": "share_of_balance", "source": "cfpb_min", "note": "Stand-in minimum. Your contract can be different." },
+    "card_min_floor": { "value": 25, "unit": "usd", "source": "cfpb_min", "note": "Minimum monthly payment is the greater of this floor and the percent of the balance." },
+    "card_example_balance": { "value": 3000, "unit": "usd", "source": "card_example", "note": "Starting balance for the credit-card what-if. Only the minimum is paid." },
+    "car_amount": { "value": 41705, "unit": "usd", "source": "g19_car", "note": "Average amount financed on a new-car loan at finance companies, Q2 2026 revised." },
+    "car_apr": { "value": 0.063, "unit": "annual_rate", "source": "g19_car", "note": "Finance-company new-car loan rate, Q2 2026 revised." },
+    "car_months": { "value": 67, "unit": "months", "source": "g19_car", "note": "Average maturity, Q2 2026 revised. The car is not counted as an asset." },
+    "car_tight_share": { "value": 0.10, "unit": "share_of_monthly_takehome", "source": "car_rule", "note": "A payment above this share of take-home is described as tight." },
+    "car_force_share": { "value": 0.20, "unit": "share_of_monthly_takehome", "source": "car_rule", "note": "The unaffordable-car preset payment is the greater of the G.19 payment and this share of take-home." },
+    "safe_multiple": { "value": 25, "unit": "times_spending", "source": "bengen", "note": "Freedom progress = invested assets ÷ (25 × yearly living costs). A teaching rule of thumb, not a retirement guarantee." },
+    "retire_age": { "value": 65, "unit": "age", "source": "ssa", "note": "Model horizon. Not Social Security full retirement age." },
+    "school_start_age": { "value": 18, "unit": "age", "source": "collegeboard", "note": "School years in this model begin at 18." },
+    "tuition_2yr": { "value": 4150, "unit": "usd_per_year", "source": "collegeboard", "note": "Public two-year, in-district, published tuition and fees. Also used as a stand-in for a short trade program." },
+    "living_2yr": { "value": 17170, "unit": "usd_per_year", "source": "collegeboard", "note": "Public two-year average budget minus tuition and fees ($21,320 − $4,150): housing, food, books, and other." },
+    "tuition_instate": { "value": 11950, "unit": "usd_per_year", "source": "collegeboard", "note": "Public four-year, in-state, published tuition and fees." },
+    "tuition_outstate": { "value": 31880, "unit": "usd_per_year", "source": "collegeboard", "note": "Public four-year, out-of-state, published tuition and fees." },
+    "living_4yr": { "value": 19040, "unit": "usd_per_year", "source": "collegeboard", "note": "Public four-year in-state budget minus tuition ($30,990 − $11,950). Out-of-state uses the same living budget." },
+    "tuition_private": { "value": 45000, "unit": "usd_per_year", "source": "collegeboard", "note": "Private nonprofit four-year, published tuition and fees." },
+    "living_private": { "value": 20470, "unit": "usd_per_year", "source": "collegeboard", "note": "Private nonprofit four-year budget minus tuition ($65,470 − $45,000)." },
+    "in_school_earnings": { "value": 0, "unit": "usd_per_year", "source": "school_earnings", "note": "Set this path’s scholarship if you will not pay the sticker price. Grants are an input, not guessed." },
+    "under18_invest": { "value": 1, "unit": "flag", "source": "under18", "note": "Before 18 the monthly amount is invested even with no paycheck." },
+    "example_monthly": { "value": 50, "unit": "usd_per_month", "source": "monthly50", "note": "Default monthly investing amount and the $50 what-ifs." },
+    "raise_pct": { "value": 0.10, "unit": "share", "source": "raise_example", "note": "One permanent raise on top of yearly wage growth." },
+    "raise_invest_share": { "value": 0.50, "unit": "share_of_raise_takehome", "source": "raise_example", "note": "Half of the after-tax raise is added to monthly investing. The other half is added to living costs." }
+  },
+  "states": {
+    "US": { "name": "U.S. average", "rpp": 100 },
+    "AL": { "name": "Alabama", "rpp": 90.0 },
+    "AK": { "name": "Alaska", "rpp": 101.7 },
+    "AZ": { "name": "Arizona", "rpp": 101.1 },
+    "AR": { "name": "Arkansas", "rpp": 86.5 },
+    "CA": { "name": "California", "rpp": 112.6 },
+    "CO": { "name": "Colorado", "rpp": 101.4 },
+    "CT": { "name": "Connecticut", "rpp": 103.7 },
+    "DE": { "name": "Delaware", "rpp": 99.3 },
+    "DC": { "name": "District of Columbia", "rpp": 110.8 },
+    "FL": { "name": "Florida", "rpp": 103.5 },
+    "GA": { "name": "Georgia", "rpp": 96.7 },
+    "HI": { "name": "Hawaii", "rpp": 108.6 },
+    "ID": { "name": "Idaho", "rpp": 91.4 },
+    "IL": { "name": "Illinois", "rpp": 98.9 },
+    "IN": { "name": "Indiana", "rpp": 92.2 },
+    "IA": { "name": "Iowa", "rpp": 88.8 },
+    "KS": { "name": "Kansas", "rpp": 90.0 },
+    "KY": { "name": "Kentucky", "rpp": 90.5 },
+    "LA": { "name": "Louisiana", "rpp": 88.3 },
+    "ME": { "name": "Maine", "rpp": 97.1 },
+    "MD": { "name": "Maryland", "rpp": 104.0 },
+    "MA": { "name": "Massachusetts", "rpp": 108.2 },
+    "MI": { "name": "Michigan", "rpp": 94.2 },
+    "MN": { "name": "Minnesota", "rpp": 98.4 },
+    "MS": { "name": "Mississippi", "rpp": 87.3 },
+    "MO": { "name": "Missouri", "rpp": 91.8 },
+    "MT": { "name": "Montana", "rpp": 90.2 },
+    "NE": { "name": "Nebraska", "rpp": 90.4 },
+    "NV": { "name": "Nevada", "rpp": 97.0 },
+    "NH": { "name": "New Hampshire", "rpp": 105.3 },
+    "NJ": { "name": "New Jersey", "rpp": 108.9 },
+    "NM": { "name": "New Mexico", "rpp": 90.4 },
+    "NY": { "name": "New York", "rpp": 107.6 },
+    "NC": { "name": "North Carolina", "rpp": 94.1 },
+    "ND": { "name": "North Dakota", "rpp": 88.6 },
+    "OH": { "name": "Ohio", "rpp": 91.8 },
+    "OK": { "name": "Oklahoma", "rpp": 88.3 },
+    "OR": { "name": "Oregon", "rpp": 104.7 },
+    "PA": { "name": "Pennsylvania", "rpp": 97.5 },
+    "RI": { "name": "Rhode Island", "rpp": 101.4 },
+    "SC": { "name": "South Carolina", "rpp": 93.2 },
+    "SD": { "name": "South Dakota", "rpp": 88.1 },
+    "TN": { "name": "Tennessee", "rpp": 92.5 },
+    "TX": { "name": "Texas", "rpp": 97.2 },
+    "UT": { "name": "Utah", "rpp": 95.0 },
+    "VT": { "name": "Vermont", "rpp": 96.6 },
+    "VA": { "name": "Virginia", "rpp": 100.7 },
+    "WA": { "name": "Washington", "rpp": 108.6 },
+    "WV": { "name": "West Virginia", "rpp": 89.8 },
+    "WI": { "name": "Wisconsin", "rpp": 93.1 },
+    "WY": { "name": "Wyoming", "rpp": 90.8 }
+  },
+  "colleges": {
+    "none": { "label": "No college — start working", "years": 0, "segments": [] },
+    "trade": {
+      "label": "Trade or short program (2 years, public two-year prices as a stand-in)",
+      "years": 2,
+      "segments": [{ "years": 2, "tuition": "tuition_2yr", "living": "living_2yr" }]
+    },
+    "community": {
+      "label": "Community college, then transfer in-state",
+      "years": 4,
+      "segments": [
+        { "years": 2, "tuition": "tuition_2yr", "living": "living_2yr" },
+        { "years": 2, "tuition": "tuition_instate", "living": "living_4yr" }
+      ]
+    },
+    "instate": {
+      "label": "In-state public university (4 years)",
+      "years": 4,
+      "segments": [{ "years": 4, "tuition": "tuition_instate", "living": "living_4yr" }]
+    },
+    "outstate": {
+      "label": "Out-of-state public university (4 years)",
+      "years": 4,
+      "segments": [{ "years": 4, "tuition": "tuition_outstate", "living": "living_4yr" }]
+    },
+    "private": {
+      "label": "Private nonprofit university (4 years)",
+      "years": 4,
+      "segments": [{ "years": 4, "tuition": "tuition_private", "living": "living_private" }]
+    }
+  },
+  "careers": {
+    "median": { "label": "Not sure yet — all occupations", "soc": "00-0000", "wage": 67920 },
+    "electrician": { "label": "Electrician", "soc": "47-2111", "wage": 62350 },
+    "teacher": { "label": "High school teacher", "soc": "25-2031", "wage": 73700 },
+    "accountant": { "label": "Accountant or auditor", "soc": "13-2011", "wage": 93520 },
+    "nurse": { "label": "Registered nurse", "soc": "29-1141", "wage": 98430 },
+    "software": { "label": "Software developer", "soc": "15-1252", "wage": 144570 }
+  }
+}
