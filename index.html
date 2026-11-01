@@ -356,6 +356,68 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 .page-header{padding:56px 5% 40px;max-width:1200px;margin:0 auto}
 .page-header h1{font-size:clamp(32px,4.5vw,52px);font-weight:700;letter-spacing:-1.5px;margin-bottom:10px}
 .page-header p{font-size:16px;color:var(--muted)}
+
+/* Life Path — mobile first, one column until 768px */
+.life-wrap{max-width:1100px;margin:0 auto;padding:0 5% 80px}
+.life-note{background:rgba(245,182,11,.08);border:1px solid rgba(245,182,11,.35);border-radius:16px;padding:14px 16px;font-size:14px;line-height:1.55;color:var(--text);margin:0 0 18px}
+.life-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:16px;-webkit-overflow-scrolling:touch}
+.life-tabs button{min-height:44px;flex:0 0 auto;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer}
+.life-tabs button[aria-selected="true"]{background:rgba(34,197,94,.16);color:var(--text);border-color:var(--line-strong)}
+.life-steps{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:18px}
+.life-step{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 14px 6px}
+.life-step legend{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--green);padding:0 4px}
+.life-field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.life-field label{font-size:14px;font-weight:650}
+.life-field input,.life-field select{min-height:44px;width:100%}
+.life-help{font-size:12.5px;color:var(--muted);line-height:1.5;margin:4px 0 0}
+.life-actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.life-actions button{min-height:44px}
+.life-dollar{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 16px}
+.life-dollar button{min-height:44px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text);padding:8px 14px;cursor:pointer;font-weight:600}
+.life-dollar button[aria-pressed="true"]{background:rgba(34,197,94,.16);border-color:var(--line-strong)}
+.life-snaps{display:grid;grid-template-columns:1fr;gap:12px;margin:16px 0}
+.life-snap,.life-callout,.life-sources{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.life-snap h3,.life-callout h3,.life-sources h3{font-size:16px;margin:0 0 8px}
+.life-snap dl,.life-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin:0}
+.life-snap dt,.life-metrics dt{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.life-snap dd,.life-metrics dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}
+.life-chart{margin:12px 0}
+.life-chart svg{width:100%;height:auto;display:block}
+.life-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+.life-legend .swatch{display:inline-block;width:16px;height:3px;margin-right:6px;vertical-align:middle}
+.life-legend .growth{background:#22c55e}
+.life-legend .contrib{background:#93a693}
+.life-table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
+.life-table th,.life-table td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.life-table caption{text-align:left;font-size:13px;color:var(--muted);margin-bottom:6px}
+.life-pair{display:grid;grid-template-columns:1fr;gap:12px}
+.life-sources ul{margin:8px 0 0;padding-left:18px}
+.life-sources li{margin:0 0 12px;font-size:14px;line-height:1.45}
+.life-cite{font-size:12px;color:var(--muted);margin-top:3px}
+.life-cite a{color:var(--mint)}
+.life-chip{min-height:44px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text);padding:8px 14px;cursor:pointer;font-weight:600}
+.life-chip[aria-pressed="true"]{background:rgba(34,197,94,.16);border-color:var(--line-strong)}
+.life-chips{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}
+.life-journal{list-style:none;margin:0;padding:0}
+.life-journal li{border-top:1px solid var(--line);padding:12px 0}
+.life-journal-top{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.life-kind{text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.life-journal-title{font-weight:700;margin-top:4px}
+.life-journal p{white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0 0;font-size:14px;line-height:1.45}
+.life-empty{color:var(--muted);padding:12px 0}
+.life-table-scroll{overflow-x:auto}
+@media(min-width:768px){
+  .life-steps{grid-template-columns:1fr 1fr}
+  .life-snaps{grid-template-columns:1fr 1fr}
+  .life-pair{grid-template-columns:1fr 1fr}
+}
+@media(min-width:1024px){
+  .life-snaps{grid-template-columns:1fr 1fr 1fr 1fr}
+}
+@media(max-width:1100px){
+  .nav-links{display:none}
+  .hamburger{display:flex}
+}
 .ask-wrap{max-width:760px;margin:0 auto;padding:0 5% 90px}
 .ask-gate{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px 24px}
 .ask-gate h2{font-family:var(--font-display);font-size:22px;letter-spacing:-.4px;margin-bottom:8px}
@@ -1490,6 +1552,7 @@ body.light .gs-item{background:#fff}
     <div class="logo" onclick="showPage('home')" aria-label="FinPath home"><img class="logo-mark" src="logo-mark.png" alt="" aria-hidden="true"><span class="logo-text">Fin<span class="logo-path">Path</span></span></div>
     <div class="nav-links">
       <a role="button" tabindex="0" onclick="showPage('home')">Home</a>
+      <a role="button" tabindex="0" onclick="showPage('life')">Life</a>
       <a role="button" tabindex="0" onclick="showPage('lessons')">Lessons</a>
       <a role="button" tabindex="0" onclick="showPage('ask')">Ask</a>
       <a role="button" tabindex="0" onclick="showPage('gold')">Gold</a>
@@ -1503,6 +1566,7 @@ body.light .gs-item{background:#fff}
 </nav>
 <div class="mobile-menu" id="mobileMenu">
   <a role="button" tabindex="0" onclick="showPage('home');toggleMenu(false)">Home</a>
+  <a role="button" tabindex="0" onclick="showPage('life');toggleMenu(false)">Life</a>
   <a role="button" tabindex="0" onclick="showPage('lessons');toggleMenu(false)">Lessons</a>
   <a role="button" tabindex="0" onclick="showPage('ask');toggleMenu(false)">Ask</a>
   <a role="button" tabindex="0" onclick="showPage('gold');toggleMenu(false)">Gold</a>
@@ -1565,6 +1629,13 @@ body.light .gs-item{background:#fff}
       <div class="hiw-title">Follow the pros</div>
       <div class="hiw-body">See what 9 legendary investors — Buffett, Ackman, Tepper, Druckenmiller, Li Lu, Klarman, Gates, Coleman and Smith — reported in their latest SEC 13F filings.</div>
       <div class="hiw-cta">See investor moves →</div>
+    </div>
+    <div class="hiw-card" onclick="showPage('life')">
+      <div class="hiw-num">4</div>
+      <div class="hiw-icon">🧭</div>
+      <div class="hiw-title">See a life path</div>
+      <div class="hiw-body">A yearly model from your age to 65. Snapshots, two paths side by side, and five what-ifs. Educational numbers, not a prediction.</div>
+      <div class="hiw-cta">Open Life Path →</div>
     </div>
   </div>
 </section>
@@ -2088,7 +2159,7 @@ body.light .gs-item{background:#fff}
     <div class="footer-logo">Fin<span>Path</span></div>
     <div class="footer-sub">The financial playbook schools skipped.</div>
     <div class="footer-links">
-      <a role="button" tabindex="0" onclick="showPage('home')">Home</a><a role="button" tabindex="0" onclick="showPage('lessons')">Lessons</a><a role="button" tabindex="0" onclick="showPage('ask')">Ask</a>
+      <a role="button" tabindex="0" onclick="showPage('home')">Home</a><a role="button" tabindex="0" onclick="showPage('life')">Life</a><a role="button" tabindex="0" onclick="showPage('lessons')">Lessons</a><a role="button" tabindex="0" onclick="showPage('ask')">Ask</a>
       <a role="button" tabindex="0" onclick="showPage('gold')">Gold</a><a role="button" tabindex="0" onclick="showPage('portfolio')">Portfolio</a>
       <a role="button" tabindex="0" onclick="showPage('legal')">Legal & Disclaimers</a>
     </div>
@@ -2101,6 +2172,126 @@ body.light .gs-item{background:#fff}
     </div>
     <div class="footer-copy">© 2026 FinPath. Built by Siddharth Moosani. For educational purposes only. Not financial advice.</div>
   </footer>
+</div>
+
+<!-- LIFE PATH -->
+<div id="page-life" class="page">
+  <div class="life-wrap">
+    <div class="page-header" style="padding-left:0;padding-right:0">
+      <h1>Life Path</h1>
+      <p id="lifeMeta">A yearly model from your age to 65. Educational only.</p>
+    </div>
+    <p class="life-note" role="note">This is an educational model, not a prediction and not advice. It uses one steady return and the assumptions listed on this page. Real life includes job changes, crashes, raises, and taxes this model skips. Nothing here is a reason to buy, sell, borrow, or pick a school.</p>
+    <p id="lifeStatus" class="life-help" role="status"></p>
+    <div class="life-tabs" id="lifeTabs" role="tablist" aria-label="Life Path sections">
+      <button type="button" role="tab" id="lifeTabPath" data-life-tab="path" aria-controls="lifePanelPath" aria-selected="true">Path</button>
+      <button type="button" role="tab" id="lifeTabWhat" data-life-tab="whatif" aria-controls="lifePanelWhat" aria-selected="false" tabindex="-1">What-if</button>
+      <button type="button" role="tab" id="lifeTabCompare" data-life-tab="compare" aria-controls="lifePanelCompare" aria-selected="false" tabindex="-1">Compare</button>
+      <button type="button" role="tab" id="lifeTabJournal" data-life-tab="journal" aria-controls="lifePanelJournal" aria-selected="false" tabindex="-1">Journal</button>
+      <button type="button" role="tab" id="lifeTabAssume" data-life-tab="assumptions" aria-controls="lifePanelAssume" aria-selected="false" tabindex="-1">Assumptions</button>
+    </div>
+
+    <div id="lifePanelPath" role="tabpanel" aria-labelledby="lifeTabPath">
+      <form id="lifeForm">
+        <div class="life-steps">
+          <fieldset class="life-step">
+            <legend>1 · Age</legend>
+            <div class="life-field">
+              <label for="lifeAge">Current age</label>
+              <input id="lifeAge" type="number" min="13" max="64" inputmode="numeric" value="16" required>
+              <p class="life-help" id="lifeAgeWarn" hidden>Enter an age from 13 to 64. This model stops at 65.</p>
+            </div>
+          </fieldset>
+          <fieldset class="life-step">
+            <legend>2 · State</legend>
+            <div class="life-field">
+              <label for="lifeState">Where prices should be scaled</label>
+              <select id="lifeState"></select>
+              <p class="life-help">State price levels are BEA regional price parities for 2023. Wages stay at the national median, so a higher price level means the same paycheck covers less. No address is stored.</p>
+            </div>
+          </fieldset>
+          <fieldset class="life-step">
+            <legend>3 · School</legend>
+            <div class="life-field">
+              <label for="lifeCollege">School path</label>
+              <select id="lifeCollege"></select>
+            </div>
+            <div class="life-field">
+              <label for="lifeScholarship">Grants and scholarships per year ($)</label>
+              <input id="lifeScholarship" type="number" min="0" inputmode="decimal" value="0">
+              <p class="life-help">Tuition starts at the College Board sticker price. Type a grant if you will not pay that sticker. This is not a suggestion to borrow.</p>
+            </div>
+          </fieldset>
+          <fieldset class="life-step">
+            <legend>4 · Work</legend>
+            <div class="life-field">
+              <label for="lifeCareer">Career goal</label>
+              <select id="lifeCareer"></select>
+            </div>
+            <div class="life-field">
+              <label for="lifeSalary">Starting yearly pay, if you want to replace the median</label>
+              <input id="lifeSalary" type="number" min="0" inputmode="decimal" placeholder="67920">
+              <p class="life-help" id="lifeSalaryHint"></p>
+            </div>
+          </fieldset>
+          <fieldset class="life-step">
+            <legend>5 · Investing</legend>
+            <div class="life-field">
+              <label for="lifeMonthly">Monthly amount to invest ($)</label>
+              <input id="lifeMonthly" type="number" min="0" inputmode="decimal" value="50">
+              <p class="life-help">Before 18 this amount is invested even without a paycheck. From 18 on, it is invested only when take-home covers needs, loans, and this amount. The $50 default is a teaching example.</p>
+            </div>
+            <div class="life-actions">
+              <button type="button" class="btn-secondary" id="lifeUse20">Use 20% of take-home</button>
+              <button type="button" class="btn-secondary" id="lifeUse200">Use the lesson’s $200</button>
+            </div>
+          </fieldset>
+        </div>
+      </form>
+      <div class="life-dollar" role="group" aria-label="Show dollars as">
+        <button type="button" id="lifeToday" aria-pressed="true">Today’s dollars</button>
+        <button type="button" id="lifeFuture" aria-pressed="false">Future dollars</button>
+      </div>
+      <p id="lifeTakeaway" class="life-callout" aria-live="polite"></p>
+      <div id="lifeSnaps" class="life-snaps"></div>
+      <div id="lifeChart"></div>
+      <div id="lifeUsed"></div>
+    </div>
+
+    <div id="lifePanelWhat" role="tabpanel" aria-labelledby="lifeTabWhat" hidden>
+      <p class="life-help">Five presets on your inputs. Each one links to a lesson. They compare paths. They do not tell you what to do.</p>
+      <div class="life-chips" id="lifeWhatChips" role="group" aria-label="What-if presets"></div>
+      <div id="lifeWhatBody"></div>
+      <p id="lifeWhatSaved" class="life-help" role="status"></p>
+    </div>
+
+    <div id="lifePanelCompare" role="tabpanel" aria-labelledby="lifeTabCompare" hidden>
+      <div class="life-field">
+        <label for="lifeComparePick">Path B</label>
+        <select id="lifeComparePick"></select>
+        <p class="life-help">Path A is always the inputs on the Path tab. From 768px wide, the two paths sit side by side.</p>
+      </div>
+      <div id="lifeCompareBody"></div>
+      <div class="life-actions">
+        <button type="button" class="btn-primary" id="lifeSaveCompare">Save this comparison to the journal</button>
+      </div>
+      <p id="lifeCompareSaved" class="life-help" role="status"></p>
+    </div>
+
+    <div id="lifePanelJournal" role="tabpanel" aria-labelledby="lifeTabJournal" hidden>
+      <p class="life-help">A local timeline: what-ifs you save, paper trades, savings goals, finished lessons, and quiz scores. It stays in this browser. It is not synced.</p>
+      <form id="lifeNoteForm" class="life-field">
+        <label for="lifeNote">Add a one-line note</label>
+        <input id="lifeNote" maxlength="280" placeholder="What did you decide to look at, and why?">
+        <button type="submit" class="btn-primary" style="margin-top:8px">Save note</button>
+      </form>
+      <div id="lifeJournalList"></div>
+    </div>
+
+    <div id="lifePanelAssume" role="tabpanel" aria-labelledby="lifeTabAssume" hidden>
+      <div id="lifeAssumeBody"></div>
+    </div>
+  </div>
 </div>
 
 <!-- LESSONS -->
@@ -2438,7 +2629,7 @@ body.light .gs-item{background:#fff}
     <div class="warning-box"><p><strong>Please read carefully.</strong> By using FinPath you confirm you have read, understood, and agreed to everything below. If you do not agree, do not use FinPath. Some sections limit your legal rights — including a mandatory arbitration clause and class-action waiver — so read them attentively.</p></div>
 
     <div class="legal-section" id="l-not-advice"><h2>1. Not Financial, Investment, Legal, or Tax Advice</h2>
-      <p>FinPath is an <strong>educational and informational platform</strong>. Nothing on FinPath — including lessons, articles, screener output, market pulse data, sector heat maps, portfolio analytics, the AI Analyzer, the AI Suggestions feature (Gold), Ask FinPath (powered by Grok), investor move summaries, the Strategy Playground, backtest results, share prices, alert notifications, or any communication from FinPath or Siddharth Moosani — constitutes financial advice, investment advice, tax advice, legal advice, accounting advice, retirement planning advice, or any other form of professional advice.</p>
+      <p>FinPath is an <strong>educational and informational platform</strong>. Nothing on FinPath — including lessons, articles, screener output, market pulse data, sector heat maps, portfolio analytics, the AI Analyzer, the AI Suggestions feature (Gold), Ask FinPath (powered by Grok), investor move summaries, the Strategy Playground, the Life Path model, backtest results, share prices, alert notifications, or any communication from FinPath or Siddharth Moosani — constitutes financial advice, investment advice, tax advice, legal advice, accounting advice, retirement planning advice, or any other form of professional advice. Life Path projections are educational models with stated assumptions. They are not predictions.</p>
       <p>FinPath does <strong>not</strong> know your full financial situation, income, debts, tax bracket, dependents, age, health, insurance, employment status, retirement horizon, other assets, or personal risk tolerance. Any statement about a security, sector, strategy, or approach is generic educational content and does not consider your individual circumstances.</p>
       <p>You must consult a qualified, licensed financial adviser, tax professional, or attorney before making any investment, tax, or legal decision. Your reliance on FinPath is solely at your own risk.</p>
     </div>
@@ -2735,6 +2926,7 @@ body.light .gs-item{background:#fff}
   </div>
 </div>
 
+<script type="module" src="js/intel/life/boot.js"></script>
 <script>
 
 // TODO(siddharth): Finnhub key is shipped client-side (free key, rotated 2026-10-25; live quotes restored).
@@ -3595,6 +3787,20 @@ Write a personal investment policy statement including your goals, time horizon,
 STEP 6 - REVIEW ANNUALLY NOT DAILY:
 Checking daily causes emotional decisions. Review once per year. Rebalance if allocations drifted more than 5%. Otherwise do nothing.`}
 ];
+// Stable ids. Index 15 is the empty hole in LESSONS. Keep this list aligned
+// with the array — progress is stored by these slugs, not by position.
+const LESSON_IDS = [
+  'schools-skipped','assets-liabilities','billionaire-investing','budget-50-30-20','credit-scores',
+  'market-signals','compound-interest','taxes','income-streams','emergency-fund',
+  'good-vs-bad-debt','economic-crashes','stock-market','rich-vs-wealthy','real-estate',
+  null,
+  'inflation','financial-goals','analyze-a-stock','first-credit-card','paycheck',
+  'etfs-vs-stocks','rent-vs-buy','negotiate-salary','dollar-cost-averaging','psychology-of-money',
+  'financial-news','dividends','building-credit','money-mistakes-20s','bonds-diversification',
+  'annual-report','tax-loss-harvesting','international-investing','long-term-strategy'
+];
+LESSONS.forEach(function(l, i){ if(l && LESSON_IDS[i]) l.id = LESSON_IDS[i]; });
+if(LESSON_IDS.length !== LESSONS.length) console.warn('LESSON_IDS length', LESSON_IDS.length, 'LESSONS', LESSONS.length);
 
 // Source: SEC Form 13F-HR filings for the quarter ended June 30, 2026 (filed Aug 13–14, 2026).
 // 13F data is delayed up to 45 days and shows long U.S. positions only. Educational use — not investment advice.
@@ -3804,7 +4010,7 @@ document.addEventListener('click', function(e){
 });
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ if(typeof hideTerm==='function') hideTerm(); const m = document.getElementById('mobileMenu'); if(m && m.classList.contains('open')) toggleMenu(false); } });
 
-const ROUTES=['home','portfolio','lessons','ask','gold','markets','legal'];
+const ROUTES=['home','portfolio','lessons','ask','gold','markets','legal','life'];
 function showPage(p,fromHash){
   if(typeof hidePaycheckModal === 'function') hidePaycheckModal();
   if(!document.getElementById('page-'+p)) p='home';
@@ -3833,15 +4039,85 @@ function showPage(p,fromHash){
     if(typeof renderAsk==='function') renderAsk();
     if(typeof track==='function') track('ask_open');
   }
+  if(p==='life' && typeof renderLife==='function') renderLife();
   if((p==='lessons' || p==='portfolio') && typeof maybeOfferIntake==='function') maybeOfferIntake();
 }
 
+function renderLife(){
+  if(window.FPLife && typeof FPLife.render === 'function') FPLife.render();
+  else {
+    const el = document.getElementById('lifeStatus');
+    if(el) el.textContent = 'Loading the life model…';
+  }
+}
+function openLessonById(slug){
+  const i = LESSONS.findIndex(function(l){ return l && l.id === slug; });
+  if(i < 0) return;
+  showPage('lessons');
+  openLesson(i);
+}
+function openLessonQuiz(slug){
+  const i = LESSONS.findIndex(function(l){ return l && l.id === slug; });
+  if(i < 0) return;
+  showPage('lessons');
+  openLesson(i);
+  if(QUIZZES[LESSONS[i].name]) startQuiz(LESSONS[i].name);
+}
+
 // ── LESSONS ──
-function getLessonProgress(){ try{ return JSON.parse(localStorage.getItem('fp_lessons')||'{}'); }catch(e){ return {}; } }
+// Same rules as js/intel/learn/progress.js. Index keys from older builds are
+// rewritten to slugs once, and the original timestamp is kept.
+function migrateLessonStore(raw){
+  const progress = {};
+  if(!raw || typeof raw !== 'object' || Array.isArray(raw)) return { progress: progress, rewrite: false };
+  let sawIndex = false;
+  Object.keys(raw).forEach(function(k){
+    if(k === '_v') return;
+    const n = Number(k);
+    const indexKey = String(n) === String(k) && n >= 0 && n < LESSON_IDS.length && Math.floor(n) === n;
+    const ts = Number(raw[k]);
+    if(!isFinite(ts)) return;
+    if(indexKey && LESSON_IDS[n]){
+      sawIndex = true;
+      const id = LESSON_IDS[n];
+      if(!progress[id] || ts > progress[id]) progress[id] = ts;
+    } else if(!indexKey){
+      if(!progress[k] || ts > progress[k]) progress[k] = ts;
+    }
+  });
+  return { progress: progress, rewrite: sawIndex || raw._v !== 1 };
+}
+function getLessonProgress(){
+  let raw = {};
+  try{ raw = JSON.parse(localStorage.getItem('fp_lessons')||'{}'); }catch(e){ raw = {}; }
+  let got;
+  if(window.FPLearn && typeof FPLearn.lessonProgressMap === 'function'){
+    got = FPLearn.lessonProgressMap(raw, LESSON_IDS);
+    if(got.rewrite){
+      try{ localStorage.setItem('fp_lessons', JSON.stringify(FPLearn.lessonStoreFromProgress(got.progress))); }catch(e){}
+    }
+  } else {
+    got = migrateLessonStore(raw);
+    if(got.rewrite){
+      const store = { _v: 1 };
+      Object.keys(got.progress).forEach(function(k){ store[k] = got.progress[k]; });
+      try{ localStorage.setItem('fp_lessons', JSON.stringify(store)); }catch(e){}
+    }
+  }
+  return got.progress;
+}
+function isLessonDone(prog, i){
+  const id = LESSONS[i] && LESSONS[i].id;
+  return !!(prog && id && prog[id]);
+}
 function markLessonComplete(i){
   const p = getLessonProgress();
-  p[i] = Date.now();
-  localStorage.setItem('fp_lessons', JSON.stringify(p));
+  const id = LESSONS[i] && LESSONS[i].id;
+  if(!id) return;
+  p[id] = Date.now();
+  const store = { _v: 1 };
+  Object.keys(p).forEach(function(k){ if(k !== '_v') store[k] = p[k]; });
+  localStorage.setItem('fp_lessons', JSON.stringify(store));
   if(Object.keys(p).length >= 5 && typeof unlockAchv==='function') unlockAchv('scholar');
   track('lesson_complete', {lesson: LESSONS[i].name});
   if(typeof renderChecklist==='function') renderChecklist();
@@ -4024,8 +4300,8 @@ function renderLessons(filtered){
   document.getElementById('lessonsGrid').innerHTML = items.length ? items.map(function(x){
     const l = x.l, i = x.i;
     return `
-    <div class="lesson-card" style="position:relative" role="button" tabindex="0" aria-label="${escapeHtml(l.name)}${prog[i] ? ' (completed)' : ''}" onclick="openLesson(${i})">
-      ${prog[i] ? '<div class="lesson-done" aria-label="Completed">✓</div>' : ''}
+    <div class="lesson-card" style="position:relative" role="button" tabindex="0" aria-label="${escapeHtml(l.name)}${isLessonDone(prog, i) ? ' (completed)' : ''}" onclick="openLesson(${i})">
+      ${isLessonDone(prog, i) ? '<div class="lesson-done" aria-label="Completed">✓</div>' : ''}
       <div class="lesson-img">${l.icon}</div>
       <div class="lesson-body">
         <div class="lesson-cat">${l.cat}</div>
@@ -4104,7 +4380,7 @@ function renderLearnRecommend(p, hidden){
   const el = document.getElementById('learnRecommend'); if(!el) return;
   if(hidden || !profileActive(p)){ el.innerHTML = ''; return; }
   const prog = getLessonProgress();
-  const next = learnPathIds(p).find(function(i){ return !prog[i]; });
+  const next = learnPathIds(p).find(function(i){ return !isLessonDone(prog, i); });
   if(next === undefined || !LESSONS[next]){ el.innerHTML = ''; return; }
   const title = escapeHtml(LESSONS[next].name);
   el.innerHTML = '<div class="learn-rec"><div><div class="lp-kicker">Up next</div><div class="learn-rec-title">' + title + '</div></div>' +
@@ -4122,9 +4398,9 @@ function renderLearnPath(hidden){
     return;
   }
   const prog = getLessonProgress();
-  const doneN = shown.filter(function(i){ return prog[i]; }).length;
-  const shownNext = shown.find(function(i){ return !prog[i]; });
-  const fullNext = full.find(function(i){ return !prog[i]; });
+  const doneN = shown.filter(function(i){ return isLessonDone(prog, i); }).length;
+  const shownNext = shown.find(function(i){ return !isLessonDone(prog, i); });
+  const fullNext = full.find(function(i){ return !isLessonDone(prog, i); });
   const mins = shown.reduce(function(a, i){ return a + lessonMinutes(LESSONS[i]); }, 0);
   let head, sub;
   if(active){
@@ -4148,7 +4424,7 @@ function renderLearnPath(hidden){
   el.innerHTML = '<div class="learn-path">' + head +
     '<div class="lp-sub">' + sub + '</div>' +
     '<div class="lp-steps">' + shown.map(function(i, k){
-      return '<button type="button" class="lp-step' + (prog[i] ? ' done' : '') + (i === shownNext ? ' next' : '') + '" onclick="openLesson(' + i + ')"><span class="n">' + (prog[i] ? '✓' : (k + 1)) + '</span>' + escapeHtml(LESSONS[i].name) + '</button>';
+      return '<button type="button" class="lp-step' + (isLessonDone(prog, i) ? ' done' : '') + (i === shownNext ? ' next' : '') + '" onclick="openLesson(' + i + ')"><span class="n">' + (isLessonDone(prog, i) ? '✓' : (k + 1)) + '</span>' + escapeHtml(LESSONS[i].name) + '</button>';
     }).join('') + '</div>' + foot + '</div>';
   renderLearnRecommend(p, false);
 }
@@ -4222,7 +4498,7 @@ function openLesson(i, fromHash){
   meta.innerHTML = 'Lesson ' + pos + ' of ' + ord.length + ' · ~' + lessonMinutes(l) + ' min read · ' + (l.plan === 'free' ? 'Free' : 'Gold') +
     ((l.plan === 'gold' && !IS_GOLD) ? '' : '<div style="margin-top:6px">Dotted words are defined. Tap or click one, or press Enter.</div>');
   const body = document.getElementById('detailBody'); body.insertBefore(meta, body.firstChild);
-  const prev = adjacentLesson(i, -1), nxt = adjacentLesson(i, 1), isDone = !!getLessonProgress()[i];
+  const prev = adjacentLesson(i, -1), nxt = adjacentLesson(i, 1), isDone = isLessonDone(getLessonProgress(), i);
   const nav = document.createElement('div'); nav.className = 'lesson-nav';
   nav.innerHTML = (prev >= 0 ? '<button class="btn-secondary" onclick="openLesson(' + prev + ')">← ' + escapeHtml(LESSONS[prev].name) + '</button>' : '<span></span>') +
     (nxt >= 0 ? '<button class="' + (isDone ? 'btn-primary' : 'btn-secondary') + '" onclick="openLesson(' + nxt + ')">Next: ' + escapeHtml(LESSONS[nxt].name) + ' →</button>'
@@ -6002,7 +6278,7 @@ function updateLiveActivity(){
   if(!el || !wrap) return;
   let txns = 0, lessons = 0, goals = 0, paperUsers = 0;
   try{ txns = (JSON.parse(localStorage.getItem('fp_txns')||'[]')).length; }catch(e){}
-  try{ lessons = Object.keys(JSON.parse(localStorage.getItem('fp_lessons')||'{}')).length; }catch(e){}
+  try{ lessons = Object.keys(getLessonProgress()).length; }catch(e){}
   try{ goals = (JSON.parse(localStorage.getItem('fp_goals')||'[]')).length; }catch(e){}
   try{ paperUsers = localStorage.getItem('fp_paper') ? 1 : 0; }catch(e){}
   // "days since launch" gives a real, growing number that always exists.
@@ -6062,8 +6338,8 @@ async function startDemoMode(){
   try{ sessionStorage.setItem('fp_demo', '1'); }catch(e){}
   // Pre-complete a few free lessons so the Finance IQ bar and checkmarks show
   try{
-    const prog = {};
-    [0,1,3].forEach(function(i){ prog[i] = Date.now() - (i+1)*86400000; });
+    const prog = { _v: 1 };
+    [0,1,3].forEach(function(i){ if(LESSONS[i] && LESSONS[i].id) prog[LESSONS[i].id] = Date.now() - (i+1)*86400000; });
     localStorage.setItem('fp_lessons', JSON.stringify(prog));
   }catch(e){}
   // Seed a savings goal so the goals section isn't empty
@@ -6809,8 +7085,22 @@ function financeIQ(){
 }
 let _quizState = null;
 function startQuiz(name){
-  _quizState = {name: name, idx: 0, correct: 0};
+  const lesson = LESSONS.find(function(l){ return l && l.name === name; });
+  _quizState = {name: name, slug: lesson && lesson.id || '', idx: 0, correct: 0, responses: [], startedAt: Date.now()};
   renderQuizQ();
+}
+function saveQuizAttempt(partial){
+  let log = { v: 1, attempts: [] };
+  try{ log = JSON.parse(localStorage.getItem('fp_quiz_log') || '{"v":1,"attempts":[]}'); }catch(e){ log = { v: 1, attempts: [] }; }
+  let next;
+  if(window.FPLearn && FPLearn.makeAttempt && FPLearn.appendAttempt){
+    next = FPLearn.appendAttempt(log, FPLearn.makeAttempt(partial));
+  } else {
+    const attempts = Array.isArray(log.attempts) ? log.attempts.slice() : [];
+    attempts.push(partial);
+    next = { v: 1, attempts: attempts.length > 400 ? attempts.slice(-400) : attempts };
+  }
+  try{ localStorage.setItem('fp_quiz_log', JSON.stringify(next)); }catch(e){}
 }
 function renderQuizQ(){
   const box = document.getElementById('quizBox'); if(!box || !_quizState) return;
@@ -6819,6 +7109,16 @@ function renderQuizQ(){
     const s = getQuizScore();
     s[_quizState.name] = {c: _quizState.correct, t: qz.length};
     localStorage.setItem('fp_quiz', JSON.stringify(s));
+    saveQuizAttempt({
+      id: 'q_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+      quizKey: _quizState.slug,
+      lessonName: _quizState.name,
+      startedAt: _quizState.startedAt,
+      finishedAt: Date.now(),
+      correct: _quizState.correct,
+      total: qz.length,
+      responses: _quizState.responses || []
+    });
     track('quiz_done', {lesson: _quizState.name, score: _quizState.correct});
     unlockAchv('quiz_whiz');
     box.innerHTML = '<div style="text-align:center"><div style="font-size:38px;margin-bottom:10px">' + (_quizState.correct === qz.length ? '🏆' : '📚') + '</div>' +
@@ -6843,6 +7143,14 @@ function answerQuiz(oi){
     else if(i === oi) b.classList.add('wrong');
   });
   if(oi === item.a) _quizState.correct++;
+  const concepts = (window.FPLearn && FPLearn.conceptsFor) ? FPLearn.conceptsFor(_quizState.slug) : [];
+  if(!_quizState.responses) _quizState.responses = [];
+  _quizState.responses.push({
+    qid: (_quizState.slug || 'lesson') + '#' + _quizState.idx,
+    conceptIds: concepts,
+    chosen: oi,
+    correct: oi === item.a
+  });
   const why = document.getElementById('quizWhy');
   why.style.display = 'block';
   why.innerHTML = (oi === item.a ? '<b class="up">Correct.</b> ' : '<b class="down">Not quite.</b> ') + glossaryWrap(item.w) +
@@ -6859,8 +7167,20 @@ function calculatorFor(name){
   return '';
 }
 function _fv(monthly, annualPct, years){
+  if(window.FPLife && typeof FPLife.fvMonthly === 'function') return FPLife.fvMonthly(monthly, annualPct, years);
   const r = annualPct/100/12, n = years*12;
   return r === 0 ? monthly*n : monthly * ((Math.pow(1+r, n) - 1) / r);
+}
+function _pmt(principal, annualPct, years){
+  if(window.FPLife && typeof FPLife.monthlyPayment === 'function') return FPLife.monthlyPayment(principal, annualPct, years);
+  const n = years*12, r = annualPct/100/12;
+  if(!(n > 0)) return 0;
+  if(r === 0) return principal/n;
+  return principal * r * Math.pow(1+r, n) / (Math.pow(1+r, n) - 1);
+}
+function _grow(principal, annualPct, years){
+  if(window.FPLife && typeof FPLife.compoundGrowth === 'function') return FPLife.compoundGrowth(principal, annualPct, years);
+  return principal * Math.pow(1 + annualPct/100, years);
 }
 // Read a calculator input as a number clamped to [lo, hi]; blank/invalid becomes lo.
 function _cv(id, lo, hi){
@@ -6877,39 +7197,46 @@ function runLessonCalc(){
 }
 function calcCI(){
   const a = _cv('ciAmt',0,1e6), r = _cv('ciRate',-20,30), y = _cv('ciYears',0,70);
-  const fv = _fv(a, r, y), inv = a*12*y, real = fv/Math.pow(1.03, y);
+  const fv = _fv(a, r, y), inv = a*12*y;
+  const real = (window.FPLife && FPLife.deflate) ? FPLife.deflate(fv, 0.03, y) : fv/Math.pow(1.03, y);
   document.getElementById('ciOut').innerHTML = 'Total you put in: <b>' + fmt(inv) + '</b><br>Final value: <b style="color:var(--mint)">' + fmt(fv) + '</b><br>Growth from compounding: <b>' + fmt(fv-inv) + '</b><br>In today’s dollars (after ~3%/yr inflation): <b>' + fmt(real) + '</b>' +
-    _calcNote('Assumes the same return every year. Real markets go up and down — the long-run US stock average has been roughly 7–10%/yr before inflation, but no return is guaranteed. Ignores fees and taxes.');
+    _calcNote('Same future-value formula as the Life Path model. Assumes the same return every year. Real markets go up and down — the long-run US stock average has been roughly 7–10%/yr before inflation, but no return is guaranteed. Ignores fees and taxes. <button type="button" class="pay-link" onclick="showPage(\'life\')">Open Life Path</button>');
 }
 function calcRB(){
   const p = _cv('rbPrice',0,1e8), rent = _cv('rbRent',0,1e6), rate = _cv('rbRate',0,25);
-  const loan = p*0.8, r = rate/100/12, n = 360;
-  const mort = r ? loan*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1) : loan/n;
+  const loan = p*0.8;
+  const mort = _pmt(loan, rate, 30);
   const own = mort + p*0.012/12 + p*0.0035/12 + p*0.01/12;
   const diff = own - rent;
   document.getElementById('rbOut').innerHTML = 'Est. monthly cost to own (mortgage + tax + insurance + maintenance): <b>' + fmt(own) + '</b><br>Renting: <b>' + fmt(rent) + '</b><br>' +
     (diff > 0 ? 'Owning costs about <b>' + fmt(diff) + '</b>/mo more, though part of each payment builds equity.' : 'Owning is about <b>' + fmt(-diff) + '</b>/mo cheaper on these numbers — worth a closer look if you expect to stay 5+ years.') +
-    _calcNote('Rough check only. Assumes 20% down (' + fmt(p*0.2) + ' you could otherwise invest), a 30-year fixed loan, ~1.2% property tax, ~0.35% insurance and ~1% maintenance per year. Ignores closing costs, HOA fees, PMI and home-price changes.');
+    _calcNote('Same payment formula as the Life Path student-loan math. Rough check only. Assumes 20% down (' + fmt(p*0.2) + ' you could otherwise invest), a 30-year fixed loan, ~1.2% property tax, ~0.35% insurance and ~1% maintenance per year. Ignores closing costs, HOA fees, PMI and home-price changes.');
 }
 function calcMatch(){
   const sal = _cv('mSal',0,1e7), p = _cv('mPct',0,25), y = _cv('mYears',0,60);
   const yearly = sal*p/100, fv = _fv(yearly/12, 8, y);
   document.getElementById('mOut').innerHTML = 'Employer match per year: <b>' + fmt(yearly) + '</b><br>Skipping it for ' + y + ' years could cost roughly <b style="color:var(--red)">' + fmt(fv) + '</b> by retirement.' +
-    _calcNote('Assumes you contribute enough to get the full match, your salary stays the same, and 8%/yr growth. Check your plan’s vesting schedule — some matches only become yours after a few years.');
+    _calcNote('Same future-value formula as the Life Path model. Assumes you contribute enough to get the full match, your salary stays the same, and 8%/yr growth. Check your plan’s vesting schedule — some matches only become yours after a few years.');
 }
 function calcCS(){
   const m = _cv('csMonths',0,600), u = _cv('csUtil',0,100), a = _cv('csAge',0,80);
-  let score = 480 + Math.min(m,48)*3.2 + Math.max(0, 30-u)*2.6 - Math.max(0, u-30)*1.8 + Math.min(a,10)*8;
-  score = Math.max(300, Math.min(850, Math.round(score)));
-  const band = score >= 740 ? 'Excellent' : score >= 670 ? 'Good' : score >= 580 ? 'Fair' : 'Building';
+  let score, band;
+  if(window.FPLife && typeof FPLife.creditScoreEstimate === 'function'){
+    const est = FPLife.creditScoreEstimate(m, u, a);
+    score = est.score; band = est.band;
+  } else {
+    score = 480 + Math.min(m,48)*3.2 + Math.max(0, 30-u)*2.6 - Math.max(0, u-30)*1.8 + Math.min(a,10)*8;
+    score = Math.max(300, Math.min(850, Math.round(score)));
+    band = score >= 740 ? 'Excellent' : score >= 670 ? 'Good' : score >= 580 ? 'Fair' : 'Building';
+  }
   document.getElementById('csOut').innerHTML = 'Estimated score: <b style="color:var(--mint);font-size:22px">' + score + '</b> · ' + band + '<br><span style="font-size:12px">Biggest levers: never miss a payment, keep utilisation under 30% (under 10% is ideal), let accounts age.</span>' +
     _calcNote('A teaching model, not FICO or VantageScore. Real scores also weigh credit mix, new applications and any negative marks. Check your actual score free through your bank or card issuer.');
 }
 function calcDR(){
   const amt = _cv('drAmt',0,1e9), y = _cv('drYield',0,20), g = _cv('drGrow',-20,30), yrs = _cv('drYears',0,70);
-  const withD = amt*Math.pow(1+(y+g)/100, yrs), noD = amt*Math.pow(1+g/100, yrs);
+  const withD = _grow(amt, y+g, yrs), noD = _grow(amt, g, yrs);
   document.getElementById('drOut').innerHTML = 'With dividends reinvested: <b style="color:var(--mint)">' + fmt(withD) + '</b><br>Price growth only (dividends spent): <b>' + fmt(noD) + '</b><br>Reinvesting added: <b>' + fmt(withD-noD) + '</b>' +
-    _calcNote('Assumes a steady yield and growth rate every year. Ignores taxes on dividends (in a taxable account), fees and dividend cuts.');
+    _calcNote('Same compound-growth formula as the Life Path model. Assumes a steady yield and growth rate every year. Ignores taxes on dividends (in a taxable account), fees and dividend cuts.');
 }
 
 // ── AUDIO MODE (Web Speech API) ──
@@ -6934,7 +7261,7 @@ function cycleSpeed(){
 
 // ── LESSON BODY BUILDER (content + glossary + calculator + quiz + actions) ──
 function buildLessonBody(l, i){
-  const done = getLessonProgress()[i];
+  const done = isLessonDone(getLessonProgress(), i);
   const hasQuiz = !!QUIZZES[l.name];
   let out = '<div class="lesson-content">' + glossaryWrap(l.content) + '</div>';
   out += calculatorFor(l.name);
@@ -7715,7 +8042,7 @@ function gsSteps(){
   let hasStock = portfolio.length > 0;
   try{ if(!hasStock) hasStock = getPaper().pos.length > 0; }catch(e){}
   let hasGoal = false; try{ hasGoal = (typeof getGoals==='function' ? getGoals() : JSON.parse(localStorage.getItem('fp_goals')||'[]')).length > 0; }catch(e){}
-  let hasLesson = false; try{ hasLesson = Object.keys(JSON.parse(localStorage.getItem('fp_lessons')||'{}')).length > 0; }catch(e){}
+  let hasLesson = false; try{ hasLesson = Object.keys(getLessonProgress()).length > 0; }catch(e){}
   const stock = {done:hasStock, icon:'📈', title:'Add your first stock', sub:'Track a real stock — or paper-trade with virtual cash', act:"openSearch()"};
   const goal = {done:hasGoal, icon:'🎯', title:'Set a savings goal', sub:'Something concrete, like a $1,000 emergency fund', act:"document.getElementById('goalsList').scrollIntoView({behavior:'smooth'});openGoalForm()"};
   const lesson = {done:hasLesson, icon:'📚', title:'Try your first lesson', sub:'5-minute reads, in plain English', act:"showPage('lessons')"};
@@ -8575,8 +8902,9 @@ applyTheme(localStorage.getItem('fp_theme') || 'dark');
 initStreak();
 startAlertLoop();
 handleSharedLink();
-// Hash router: #portfolio / #lessons / #ask / #gold / #markets / #legal / #home (or empty).
-// #lesson/N opens that lesson. #moment/paycheck opens the first-paycheck planner.
+// Hash router: #portfolio / #lessons / #life / #ask / #gold / #markets / #legal / #home (or empty).
+// #lesson/N opens that lesson. #life/whatif/card (and compare, journal, assumptions) open Life Path.
+// #moment/paycheck opens the first-paycheck planner.
 // #p= shared links are handled above by handleSharedLink and ignored here.
 // A cold #l-* load runs while the page is still laying out. showPage scrolls to
 // the top first, and that immediate scrollIntoView is lost before the first
@@ -8610,6 +8938,12 @@ function routeFromHash(){
   }
   if(momentOn){
     openPaycheckMoment(true);
+    return;
+  }
+  if(/^\/?life(\/|$)/i.test(raw.split(/[?#]/)[0])){
+    const lifePage = document.getElementById('page-life');
+    if(lifePage && !lifePage.classList.contains('active')) showPage('life', true);
+    else if(typeof renderLife === 'function') renderLife();
     return;
   }
   let p = raw.replace(/^\/+|\/+$/g,'').split(/[?#]/)[0].toLowerCase();
