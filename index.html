@@ -410,11 +410,35 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 .life-journal-title{font-weight:700;margin-top:4px}
 .life-journal p{white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0 0;font-size:14px;line-height:1.45}
 .life-empty{color:var(--muted);padding:12px 0}
+.life-help a{color:var(--mint)}
 .life-table-scroll{overflow-x:auto}
+.id-grid{display:grid;grid-template-columns:1fr;gap:10px}
+.id-card{display:flex;flex-direction:column;align-items:flex-start;gap:0;width:100%;min-height:44px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;color:var(--text);font:inherit;cursor:pointer}
+.id-card[aria-checked="true"]{background:rgba(34,197,94,.16);border-color:var(--line-strong)}
+.id-card-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;width:100%;font-size:16px}
+.id-card-blurb{display:block;color:var(--muted);font-size:13px;line-height:1.45;margin-top:6px}
+.id-badge{flex:0 0 auto;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--green);border:1px solid var(--line-strong);border-radius:999px;padding:3px 8px}
+.id-section{margin:26px 0}
+.id-section h2{font-size:22px;margin:0 0 8px;font-family:var(--font-display);letter-spacing:-.3px}
+.id-section h3{font-size:16px;margin:16px 0 8px}
+.id-kicker{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--green);margin:0 0 6px}
+.id-score{font-family:var(--font-display);font-size:40px;font-weight:800;letter-spacing:-1px;margin:8px 0}
+.id-score span{font-size:16px;font-weight:600;color:var(--muted)}
+.id-bar,.id-meter{height:10px;border-radius:99px;background:rgba(134,239,172,.12);overflow:hidden}
+.id-bar > span,.id-meter > span{display:block;height:100%;background:linear-gradient(90deg,#15803d,#22c55e)}
+.id-math{margin:8px 0 0;padding-left:18px}
+.id-math li{margin:0 0 6px;font-size:14px;line-height:1.45}
+.id-mastery,.id-plan{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.id-row,.id-plan li{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+.id-row-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:14px;font-weight:650}
+.id-done{color:var(--muted)}
+.id-plan button{margin-top:8px}
+.id-section summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:650}
 @media(min-width:768px){
   .life-steps{grid-template-columns:1fr 1fr}
   .life-snaps{grid-template-columns:1fr 1fr}
   .life-pair{grid-template-columns:1fr 1fr}
+  .id-grid{grid-template-columns:1fr 1fr}
 }
 @media(min-width:1024px){
   .life-snaps{grid-template-columns:1fr 1fr 1fr 1fr}
@@ -1558,6 +1582,7 @@ body.light .gs-item{background:#fff}
     <div class="nav-links">
       <a role="button" tabindex="0" onclick="showPage('home')">Home</a>
       <a role="button" tabindex="0" onclick="showPage('life')">Life</a>
+      <a role="button" tabindex="0" onclick="showPage('identity')">Identity</a>
       <a role="button" tabindex="0" onclick="showPage('lessons')">Lessons</a>
       <a role="button" tabindex="0" onclick="showPage('ask')">Ask</a>
       <a role="button" tabindex="0" onclick="showPage('gold')">Gold</a>
@@ -1572,6 +1597,7 @@ body.light .gs-item{background:#fff}
 <div class="mobile-menu" id="mobileMenu">
   <a role="button" tabindex="0" onclick="showPage('home');toggleMenu(false)">Home</a>
   <a role="button" tabindex="0" onclick="showPage('life');toggleMenu(false)">Life</a>
+  <a role="button" tabindex="0" onclick="showPage('identity');toggleMenu(false)">Identity</a>
   <a role="button" tabindex="0" onclick="showPage('lessons');toggleMenu(false)">Lessons</a>
   <a role="button" tabindex="0" onclick="showPage('ask');toggleMenu(false)">Ask</a>
   <a role="button" tabindex="0" onclick="showPage('gold');toggleMenu(false)">Gold</a>
@@ -2164,7 +2190,7 @@ body.light .gs-item{background:#fff}
     <div class="footer-logo">Fin<span>Path</span></div>
     <div class="footer-sub">The financial playbook schools skipped.</div>
     <div class="footer-links">
-      <a role="button" tabindex="0" onclick="showPage('home')">Home</a><a role="button" tabindex="0" onclick="showPage('life')">Life</a><a role="button" tabindex="0" onclick="showPage('lessons')">Lessons</a><a role="button" tabindex="0" onclick="showPage('ask')">Ask</a>
+      <a role="button" tabindex="0" onclick="showPage('home')">Home</a><a role="button" tabindex="0" onclick="showPage('life')">Life</a><a role="button" tabindex="0" onclick="showPage('identity')">Identity</a><a role="button" tabindex="0" onclick="showPage('lessons')">Lessons</a><a role="button" tabindex="0" onclick="showPage('ask')">Ask</a>
       <a role="button" tabindex="0" onclick="showPage('gold')">Gold</a><a role="button" tabindex="0" onclick="showPage('portfolio')">Portfolio</a>
       <a role="button" tabindex="0" onclick="showPage('legal')">Legal & Disclaimers</a>
     </div>
@@ -2189,6 +2215,7 @@ body.light .gs-item{background:#fff}
     <p class="life-note" role="note">This is an educational model, not a prediction and not advice. The solid line uses one steady return from the assumptions sheet. The shaded band is a classroom range around that line (a low path, a middle path, and a high path). Real life includes job changes, crashes, raises, and taxes this model skips. Nothing here is a reason to buy, sell, borrow, or pick a school.</p>
     <p id="lifeSync" class="life-help">Inputs and the notes you write here stay on this device. Sign in if you want a copy on your account too. Signed out, nothing about this path leaves the browser.</p>
     <p id="lifeStatus" class="life-help" role="status"></p>
+    <p id="lifeIdentityLine" class="life-help" hidden></p>
     <div class="life-tabs" id="lifeTabs" role="tablist" aria-label="Life Path sections">
       <button type="button" role="tab" id="lifeTabPath" data-life-tab="path" aria-controls="lifePanelPath" aria-selected="true">Path</button>
       <button type="button" role="tab" id="lifeTabWhat" data-life-tab="whatif" aria-controls="lifePanelWhat" aria-selected="false" tabindex="-1">What-if</button>
@@ -2310,11 +2337,26 @@ body.light .gs-item{background:#fff}
   </div>
 </div>
 
+<!-- IDENTITY -->
+<div id="page-identity" class="page">
+  <div class="life-wrap">
+    <div class="page-header" style="padding-left:0;padding-right:0">
+      <h1>Financial identity</h1>
+      <p>A study profile for this device. It shapes what to read next. It does not tell you what to do with money.</p>
+    </div>
+    <p class="life-note" role="note">Educational only. This profile and the literacy score are not a credit score, not a rating of your money, and not advice to buy, sell, or borrow. They stay in this browser unless you clear site data.</p>
+    <p id="identityStatus" class="life-help" role="status">Loading identity…</p>
+    <div id="identityApp"></div>
+  </div>
+</div>
+
 <!-- LESSONS -->
 <div id="page-lessons" class="page">
   <div id="lessons-list-view">
     <div class="page-header"><h1>Lessons</h1><p>Everything schools never taught you about money.</p>
-      <div id="lessonProgressWrap" style="margin-top:18px"><div style="font-size:13px;color:var(--muted)" id="lessonProgressLabel"></div><div class="progress-track"><div class="progress-fill" id="lessonProgressFill" style="width:0%"></div></div></div>
+      <div id="lessonProgressWrap" style="margin-top:18px"><div style="font-size:13px;color:var(--muted)" id="lessonProgressLabel"></div><div class="progress-track"><div class="progress-fill" id="lessonProgressFill" style="width:0%"></div></div>
+        <p class="life-help" style="margin-top:8px"><a href="#identity">Identity, literacy score, and this week’s plan</a></p>
+      </div>
       <div id="certCTA"></div>
       <input id="lessonSearch" class="modal-input" style="max-width:420px;margin-top:20px;margin-bottom:0" placeholder="Search lessons… (try “credit” or “Buffett”)" oninput="filterLessons(this.value)" aria-label="Search lessons" aria-describedby="lessonSearchStatus" type="search">
       <div id="lessonSearchStatus" class="search-status" aria-live="polite"></div>
@@ -2943,6 +2985,7 @@ body.light .gs-item{background:#fff}
 </div>
 
 <script type="module" src="js/intel/life/boot.js"></script>
+<script type="module" src="js/intel/identity/boot.js"></script>
 <script>
 
 // TODO(siddharth): Finnhub key is shipped client-side (free key, rotated 2026-10-25; live quotes restored).
@@ -4026,7 +4069,7 @@ document.addEventListener('click', function(e){
 });
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ if(typeof hideTerm==='function') hideTerm(); const m = document.getElementById('mobileMenu'); if(m && m.classList.contains('open')) toggleMenu(false); } });
 
-const ROUTES=['home','portfolio','lessons','ask','gold','markets','legal','life'];
+const ROUTES=['home','portfolio','lessons','ask','gold','markets','legal','life','identity'];
 function showPage(p,fromHash){
   if(typeof hidePaycheckModal === 'function') hidePaycheckModal();
   if(!document.getElementById('page-'+p)) p='home';
@@ -4056,6 +4099,7 @@ function showPage(p,fromHash){
     if(typeof track==='function') track('ask_open');
   }
   if(p==='life' && typeof renderLife==='function') renderLife();
+  if(p==='identity' && typeof renderIdentity==='function') renderIdentity();
   if((p==='lessons' || p==='portfolio') && typeof maybeOfferIntake==='function') maybeOfferIntake();
 }
 
@@ -4064,6 +4108,13 @@ function renderLife(){
   else {
     const el = document.getElementById('lifeStatus');
     if(el) el.textContent = 'Loading the life model…';
+  }
+}
+function renderIdentity(){
+  if(window.FPIdentity && typeof FPIdentity.render === 'function') FPIdentity.render();
+  else {
+    const el = document.getElementById('identityStatus');
+    if(el) el.textContent = 'Loading identity…';
   }
 }
 function openLessonById(slug){
@@ -8919,9 +8970,9 @@ applyTheme(localStorage.getItem('fp_theme') || 'dark');
 initStreak();
 startAlertLoop();
 handleSharedLink();
-// Hash router: #portfolio / #lessons / #life / #ask / #gold / #markets / #legal / #home (or empty).
+// Hash router: #portfolio / #lessons / #life / #identity / #ask / #gold / #markets / #legal / #home (or empty).
 // #lesson/N opens that lesson. #life/whatif/card (and compare, future, journal, assumptions) open Life Path.
-// #moment/paycheck opens the first-paycheck planner.
+// #identity and #life/identity open the study profile. #moment/paycheck opens the first-paycheck planner.
 // #p= shared links are handled above by handleSharedLink and ignored here.
 // A cold #l-* load runs while the page is still laying out. showPage scrolls to
 // the top first, and that immediate scrollIntoView is lost before the first
@@ -8957,7 +9008,14 @@ function routeFromHash(){
     openPaycheckMoment(true);
     return;
   }
-  if(/^\/?life(\/|$)/i.test(raw.split(/[?#]/)[0])){
+  const path0 = raw.split(/[?#]/)[0];
+  if(/^\/?identity(\/|$)/i.test(path0) || /^\/?life\/identity(\/|$)/i.test(path0)){
+    const identityPage = document.getElementById('page-identity');
+    if(identityPage && !identityPage.classList.contains('active')) showPage('identity', true);
+    else if(typeof renderIdentity === 'function') renderIdentity();
+    return;
+  }
+  if(/^\/?life(\/|$)/i.test(path0)){
     const lifePage = document.getElementById('page-life');
     if(lifePage && !lifePage.classList.contains('active')) showPage('life', true);
     else if(typeof renderLife === 'function') renderLife();

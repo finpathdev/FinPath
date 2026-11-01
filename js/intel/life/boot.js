@@ -626,6 +626,10 @@ function paintFuture(inputs, baseline, bands){
     return out;
   };
   const end = bands && bands.rows ? bands.rows.find(function(r){ return r.age === 65; }) : null;
+  let study = null;
+  try{
+    if(window.FPIdentity && typeof FPIdentity.snapshot === 'function') study = FPIdentity.snapshot();
+  }catch(e){ study = null; }
   const letter = futureLetter({
     dollars: DOLLARS,
     ageNow: baseline.inputs.currentAge,
@@ -637,7 +641,9 @@ function paintFuture(inputs, baseline, bands){
       p10: viewOf(baseline, end.p10, 65),
       p50: viewOf(baseline, end.p50, 65),
       p90: viewOf(baseline, end.p90, 65)
-    } : null
+    } : null,
+    identityLabel: study && study.label,
+    literacyScore: study ? study.score : null
   });
   host.innerHTML = '<article class="life-letter"><h3>' + esc(letter.title) + '</h3>' +
     letter.paragraphs.map(function(p){ return '<p>' + esc(p) + '</p>'; }).join('') +
@@ -800,6 +806,18 @@ function renderLife(){
   if(view.name === 'journal') paintJournal();
   if(view.name === 'assumptions') paintAssumptions();
   syncDollarButtons();
+  paintIdentityLine();
+}
+
+function paintIdentityLine(){
+  const el = document.getElementById('lifeIdentityLine');
+  if(!el) return;
+  let html = '';
+  try{
+    if(window.FPIdentity && typeof FPIdentity.lifeLineHtml === 'function') html = FPIdentity.lifeLineHtml() || '';
+  }catch(e){ html = ''; }
+  el.innerHTML = html;
+  el.hidden = !html;
 }
 
 async function loadAssumptions(){

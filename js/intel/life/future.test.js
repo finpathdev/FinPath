@@ -34,6 +34,26 @@ test('future letter frames 65 and the what-if without advice', function(){
   assert.match(text, /postcard from age 30/i);
   assert.match(text, /postcard from age 45/i);
   assert.match(text, /not a reason to buy, sell, or borrow/i);
+  assert.doesNotMatch(text, /literacy score/i);
+  assert.doesNotMatch(text, /you should|i recommend|buy this|sell your|borrow more|you need to/i);
+});
+
+test('future letter can mention a study profile without giving advice', function(){
+  const letter = futureLetter({
+    dollars: 'today',
+    ageNow: 16,
+    pathLabel: 'age 16',
+    altLabel: '',
+    path: path,
+    alt: null,
+    band: null,
+    identityLabel: 'Steady Saver',
+    literacyScore: 240
+  });
+  const text = letter.paragraphs.join('\n');
+  assert.match(text, /Steady Saver/);
+  assert.match(text, /240 out of 1000/);
+  assert.match(text, /not a reason to buy, sell, or borrow/i);
   assert.doesNotMatch(text, /you should|i recommend|buy this|sell your|borrow more|you need to/i);
 });
 
