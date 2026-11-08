@@ -31,6 +31,12 @@ test('chart windows match the portfolio period buttons', function(){
   assert.equal(fpChartRequest(30).displayDays, 30);
   assert.equal(fpChartRequest(90).displayDays, 90);
   assert.equal(fpChartRequest(90).days, 110);
+  assert.equal(fpChartRequest(90).cacheDays, 90);
+  assert.equal(fpChartRequest(365).interval, '1d');
+  assert.equal(fpChartRequest(365).days, 400);
+  assert.equal(fpChartRequest(365).displayDays, 370);
+  assert.equal(fpChartRequest(365).cacheDays, 365);
+  assert.notEqual(fpChartRequest(365).cacheDays, fpChartRequest(90).cacheDays);
   assert.equal(fpCandleFreshMs(1), 2 * 60 * 1000);
   assert.equal(fpCandleFreshMs(30), 15 * 60 * 1000);
 });
@@ -113,10 +119,10 @@ test('status copy distinguishes an empty book, a plan limit, and saved history',
   assert.match(fpChartLabel(FRI_CLOSE, 1), /PM|AM/);
 });
 
-test('service worker is finpath-v36 and precaches the chart helper', function(){
+test('service worker is finpath-v37 and precaches the chart helper', function(){
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');
-  assert.match(sw, /finpath-v36/);
-  assert.doesNotMatch(sw, /finpath-v35/);
+  assert.match(sw, /finpath-v37/);
+  assert.doesNotMatch(sw, /finpath-v36/);
   assert.match(sw, /js\/market\/candles\.js/);
   const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
   assert.match(html, /js\/market\/candles\.js/);

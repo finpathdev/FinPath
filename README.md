@@ -32,6 +32,8 @@ The portfolio Paper tab is the thesis lab. A practice buy asks why you are buyin
 
 The same tab has a Your patterns section under the journal. Three rule-based cards — overconfidence, loss aversion (the disposition effect), and panic selling — read that practice journal. Each card shows its rule, waits for a minimum count, and says “Not enough data yet” until then. A lesson link and a reflection question sit on every card. The notes are educational. They are not a reason to buy or sell.
 
+The portfolio page has a Risk check, and the paper tab has the same check on the practice stocks (virtual cash is left out). It uses about one year of daily closes from `market-candles`, cached in `fp_candlecache`, with today’s share counts — it does not replay old buys and sells. The cards are yearly volatility, max drawdown, beta versus SPY, Sharpe, and concentration (largest holding, holding HHI, and sector HHI when a sector label exists). Sharpe assumes a 4% yearly risk-free rate split across 252 trading days. That rate is a teaching number, not today’s Treasury yield. Each card shows the formula, a plain-language line, what the number means for this account, and a lesson link. A Portfolio Coach note describes the mix. It is not a reason to buy or sell.
+
 ## Life Path cloud sync
 
 Path inputs and the notes you save on the Journal tab stay in `localStorage` first. Signed-out use never requires an account. When someone is signed in, the page tries to sync those two things to Supabase project `ivhhfhemcecwqadrjmwq`. Paper trades, goals, and lesson progress stay on the device.

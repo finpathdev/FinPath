@@ -15,7 +15,13 @@ function fpChartRequest(days){
   if(d <= 30){
     return { interval: '1d', days: 40, displayDays: 30, cacheDays: 30, lastSession: false };
   }
-  return { interval: '1d', days: 110, displayDays: 90, cacheDays: 90, lastSession: false };
+  if(d <= 90){
+    return { interval: '1d', days: 110, displayDays: 90, cacheDays: 90, lastSession: false };
+  }
+  // Risk check: about one year of daily closes. 370 calendar days covers
+  // ~252 trading days. The fetch is a little longer so the first return
+  // still sits inside the year. Cache key is separate from the 3M chart.
+  return { interval: '1d', days: 400, displayDays: 370, cacheDays: 365, lastSession: false };
 }
 
 function fpCandleFreshMs(days){

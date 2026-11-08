@@ -780,6 +780,25 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
 .hold-bar{height:8px;border-radius:99px;background:rgba(134,239,172,.08);overflow:hidden;margin-top:6px}
 .hold-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--green-dark),var(--green));transition:width .6s ease}
 
+/* ── RISK CHECK ── */
+.risk-check{margin:0 0 28px;scroll-margin-top:96px}
+.risk-check h2{font-size:16px;font-weight:700;font-family:var(--font-display);margin:0}
+.risk-sub,.risk-note{font-size:12px;color:var(--muted);line-height:1.5;margin:6px 0 0}
+.risk-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.risk-card{border:1px solid var(--line);border-radius:14px;padding:14px;background:rgba(134,239,172,.04);min-width:0}
+.risk-card[data-status="short"],.risk-card[data-status="missing"],.risk-card[data-status="flat"]{background:rgba(245,182,11,.05)}
+.risk-card-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.risk-card h3{font-size:14px;font-weight:700;font-family:var(--font-display);margin:0;line-height:1.3}
+.risk-value{font-size:20px;font-weight:800;font-family:var(--font-display);letter-spacing:-.03em}
+.risk-formula,.risk-teen,.risk-you{font-size:12px;line-height:1.5;color:var(--muted);margin:10px 0 0;overflow-wrap:anywhere}
+.risk-you{color:var(--text)}
+.risk-coach{margin-top:12px;border:1px solid rgba(245,182,11,.35);background:rgba(245,182,11,.06);border-radius:14px;padding:12px 14px}
+.risk-coach-list{margin:8px 0 0;padding-left:18px;font-size:13px;line-height:1.5}
+.risk-coach-list li{margin:0 0 6px}
+.risk-retry{margin-top:12px}
+body.light .risk-card{background:rgba(20,83,45,.04)}
+body.light .risk-card[data-status="short"],body.light .risk-card[data-status="missing"],body.light .risk-card[data-status="flat"],body.light .risk-coach{background:rgba(180,120,7,.08);border-color:rgba(180,120,7,.28)}
+
 /* ── NEWS FEED ── */
 .news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
 .news-card{background:var(--panel);backdrop-filter:blur(8px);border:1px solid var(--line);border-radius:16px;overflow:hidden;text-decoration:none;color:var(--text);display:block;transition:all .2s}
@@ -836,7 +855,7 @@ body.light .t-price{color:#47604e}
   .filter-tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .filter-tabs::-webkit-scrollbar{display:none}
   .filter-tab{flex-shrink:0}
-  .analytics-grid{grid-template-columns:1fr}
+  .analytics-grid,.risk-grid{grid-template-columns:1fr}
   .hero-btns{flex-direction:column;max-width:340px;margin:0 auto}
   .hero-btns .btn-primary,.hero-btns .btn-secondary{width:100%}
   .tape-track{gap:34px}
@@ -2533,6 +2552,7 @@ body.light .gs-item{background:#fff}
       <button class="chip" id="chipStreak" onclick="document.getElementById('achvGrid').scrollIntoView({behavior:'smooth'})">🔥 1-day streak</button>
       <button class="chip" onclick="sharePortfolio()">🔗 Share portfolio</button>
       <button class="chip" onclick="setMode('live');analyzePortfolio();document.getElementById('aiRecs').scrollIntoView({behavior:'smooth'})">🧠 Portfolio check-up</button>
+      <button class="chip" onclick="scrollRiskCheck()">📉 Risk check</button>
       <button class="chip" onclick="exportCSV()">📥 Export CSV</button>
     </div>
     <div class="mode-tabs" role="tablist"><button class="mode-tab active" id="tabLive" role="tab" onclick="setMode('live')">My portfolio</button><button class="mode-tab" id="tabPaper" role="tab" onclick="setMode('paper')">Paper trading<span class="pill">practice</span></button></div>
@@ -2578,6 +2598,11 @@ body.light .gs-item{background:#fff}
       <div class="port-card"><div class="port-label">Top holdings</div><div id="holdList" style="margin-top:16px"></div></div>
       <div class="port-card"><div class="port-label">Dividend income (projected)</div><div id="divCard" style="margin-top:16px"><div class="skel-row" style="height:60px"></div></div></div>
     </div>
+    <section class="risk-check" id="riskCheck" aria-labelledby="riskCheckTitle">
+      <h2 id="riskCheckTitle">Risk check</h2>
+      <p class="risk-sub">Educational only. About one year of daily closes, using today’s share counts. Each card shows the formula. This is not a forecast and not a reason to buy or sell.</p>
+      <div id="riskCheckBody"><p class="risk-sub">Add a stock to see volatility, the deepest drop, beta versus SPY, Sharpe, and concentration.</p></div>
+    </section>
     <div style="font-size:16px;font-weight:700;margin-bottom:12px">Your stocks</div>
     <div class="stocks-grid" id="stocksGrid"><div class="empty empty-start" style="grid-column:1/-1"><div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px">Your portfolio is empty — pick a way to start</div><div style="font-size:13px;line-height:1.6;max-width:520px;margin:0 auto 16px">New to investing? Load a demo to see how tracking works, add a stock you already own (or are curious about), or practice risk-free with $100,000 of virtual cash.</div><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button class="btn-primary" style="padding:12px 22px;font-size:14px" onclick="loadDemoPortfolio()">Try a demo portfolio</button> <button class="btn-secondary" style="padding:12px 22px;font-size:14px" onclick="openSearch()">+ Add a stock</button> <button class="btn-secondary" style="padding:12px 22px;font-size:14px" onclick="setMode('paper')">Practice with paper money</button></div><div style="font-size:11px;color:var(--muted2);margin-top:12px">The demo is a sample mix of well-known companies and an index fund — not a recommendation.</div></div></div>
     <div class="alerts-section">
@@ -2616,6 +2641,11 @@ body.light .gs-item{background:#fff}
         <div class="p-metric"><div class="p-label">You vs S&amp;P 500</div><div class="p-val" id="ppVs">—</div></div>
       </div>
       <div class="stocks-grid" id="paperGrid"><div class="empty" style="grid-column:1/-1">No paper positions yet. Hit “+ Buy stock” to start practicing.</div></div>
+      <section class="risk-check" id="paperRiskCheck" aria-labelledby="paperRiskTitle">
+        <h2 id="paperRiskTitle">Risk check</h2>
+        <p class="risk-sub">Educational only, on the paper stocks. Virtual cash is left out. Not a forecast and not a reason to buy or sell.</p>
+        <div id="paperRiskBody"><p class="risk-sub">Buy a paper stock to see volatility, the deepest drop, beta versus SPY, Sharpe, and concentration.</p></div>
+      </section>
       <div class="thesis-journal" id="thesisJournal">
         <div class="thesis-journal-title">Thesis lab</div>
         <p class="thesis-journal-sub" id="thesisJournalNote">Saved in this browser only — not synced if you sign in. Scores grade the note you wrote before the practice buy. They are not a reason to buy or sell.</p>
@@ -3126,6 +3156,7 @@ body.light .gs-item{background:#fff}
 <script type="module" src="js/intel/identity/boot.js"></script>
 <script type="module" src="js/intel/paper/boot.js"></script>
 <script src="js/market/candles.js"></script>
+<script src="js/market/risk.js"></script>
 <script src="js/market/quotes.js"></script>
 <script>
 
@@ -5547,6 +5578,131 @@ async function removeStock(){
   if(_t) wsUnwatch(_t);
 }
 
+// ── RISK CHECK ──
+// Educational stats on about one year of daily closes. The math lives in
+// js/market/risk.js. This block only paints it. It never says to buy or sell.
+let _riskGen = { live: 0, paper: 0 };
+let _riskForce = { live: false, paper: false };
+function scrollRiskCheck(){
+  const id = (typeof PAPER_MODE !== 'undefined' && PAPER_MODE) ? 'paperRiskCheck' : 'riskCheck';
+  const el = document.getElementById(id);
+  if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function riskBook(mode){
+  if(mode === 'paper'){
+    let p;
+    try{ p = getPaper(); }catch(e){ p = { pos: [] }; }
+    return (p.pos || []).filter(function(x){ return x && isValidTicker(x.t) && isFinite(x.sh) && x.sh > 0; }).map(function(x){
+      const q = priceCache[x.t];
+      const px = q && isFinite(q.c) && q.c > 0 ? q.c : Number(x.price);
+      const value = isFinite(px) && px > 0 ? px * x.sh : 0;
+      return { ticker: x.t, shares: x.sh, value: value, sector: (typeof SECTORS !== 'undefined' && SECTORS[x.t]) || 'Other' };
+    });
+  }
+  return portfolio.filter(function(h){ return h && isValidTicker(h.ticker) && isFinite(h.shares) && h.shares > 0; }).map(function(h){
+    const q = priceCache[h.ticker];
+    const px = q && isFinite(q.c) && q.c > 0 ? q.c : Number(h.buyPrice);
+    const value = isFinite(px) && px > 0 ? px * h.shares : 0;
+    return { ticker: h.ticker, shares: h.shares, value: value, sector: (typeof SECTORS !== 'undefined' && SECTORS[h.ticker]) || 'Other' };
+  });
+}
+function riskLessonHtml(lesson){
+  const slug = lesson && lesson.slug ? lesson.slug : '';
+  return '<a class="risk-lesson pattern-lesson" href="' + escapeHtml(typeof lessonHref === 'function' ? lessonHref(slug) : '#lessons') + '" data-lesson="' + escapeHtml(slug) + '">' +
+    '<div class="thesis-kicker">Lesson</div>' +
+    '<div class="pattern-lesson-title">' + escapeHtml(lesson && lesson.title || 'Open the lesson') + '</div>' +
+    '<div class="pattern-lesson-blurb">' + escapeHtml(lesson && lesson.blurb || '') + '</div></a>';
+}
+function riskCardHtml(m){
+  return '<article class="risk-card" data-metric="' + escapeHtml(m.id || '') + '" data-status="' + escapeHtml(m.status || '') + '">' +
+    '<div class="risk-card-top"><h3>' + escapeHtml(m.title || '') + '</h3><div class="risk-value">' + escapeHtml(m.display || '—') + '</div></div>' +
+    '<p class="risk-formula"><span class="thesis-kicker">Formula</span> ' + escapeHtml(m.formula || '') + '</p>' +
+    '<p class="risk-teen">' + escapeHtml(m.teen || '') + '</p>' +
+    '<p class="risk-you"><span class="thesis-kicker">What this means for you</span> ' + escapeHtml(m.you || '') + '</p>' +
+    riskLessonHtml(m.lesson) +
+    '</article>';
+}
+function riskBodyHtml(report, mode){
+  const order = ['vol', 'drawdown', 'beta', 'sharpe', 'concentration'];
+  const cards = order.map(function(id){ return report.metrics[id] ? riskCardHtml(report.metrics[id]) : ''; }).join('');
+  const notes = [];
+  if(report.windowNote) notes.push(report.windowNote);
+  if(report.missing && report.missing.length){
+    notes.push('Left out ' + report.missing.join(', ') + ' — daily closes for those holdings did not load, so the path uses the rest. Concentration still counts a holding that has a current value.');
+  }
+  if(report.stale) notes.push('Showing saved daily closes from this device.');
+  const coach = (report.coach || []).map(function(line){ return '<li>' + escapeHtml(line) + '</li>'; }).join('');
+  const retry = report.retry ? '<button type="button" class="btn-secondary risk-retry" data-risk-retry="' + (mode === 'paper' ? 'paper' : 'live') + '">Retry daily closes</button>' : '';
+  return (notes.length ? '<p class="risk-note" role="status">' + escapeHtml(notes.join(' ')) + '</p>' : '') +
+    '<div class="risk-grid">' + cards + '</div>' +
+    '<div class="risk-coach"><div class="thesis-kicker">Portfolio Coach</div><ul class="risk-coach-list">' + coach + '</ul></div>' +
+    retry;
+}
+function renderRiskCheck(mode){
+  const key = mode === 'paper' ? 'paper' : 'live';
+  const gen = ++_riskGen[key];
+  const body = document.getElementById(key === 'paper' ? 'paperRiskBody' : 'riskCheckBody');
+  if(!body) return;
+  const book = riskBook(key);
+  if(!book.length){
+    body.innerHTML = '<p class="risk-sub">' + (key === 'paper'
+      ? 'Buy a paper stock to see volatility, the deepest drop, beta versus SPY, Sharpe, and concentration. Virtual cash is not part of this check.'
+      : 'Add a stock to see volatility, the deepest drop, beta versus SPY, Sharpe, and concentration.') + '</p>';
+    return;
+  }
+  const force = !!_riskForce[key];
+  _riskForce[key] = false;
+  if(!body.querySelector('.risk-grid')){
+    body.innerHTML = '<p class="risk-sub" role="status">Loading about a year of daily closes…</p>';
+  }
+  paintRiskCheck(key, book, gen, force);
+}
+function retryRiskCheck(mode){
+  const key = mode === 'paper' ? 'paper' : 'live';
+  _riskForce[key] = true;
+  renderRiskCheck(key);
+}
+async function paintRiskCheck(key, book, gen, force){
+  const body = document.getElementById(key === 'paper' ? 'paperRiskBody' : 'riskCheckBody');
+  if(!body) return;
+  if(typeof fpRiskReport !== 'function' || !chartHelpersReady()){
+    if(gen !== _riskGen[key]) return;
+    body.innerHTML = '<p class="risk-sub">Risk math didn’t load in this browser. Refresh the page.</p>';
+    return;
+  }
+  const days = (typeof FP_RISK_LOOKBACK_DAYS === 'number') ? FP_RISK_LOOKBACK_DAYS : 365;
+  const tickers = [];
+  book.forEach(function(h){ if(tickers.indexOf(h.ticker) < 0) tickers.push(h.ticker); });
+  if(tickers.indexOf('SPY') < 0) tickers.push('SPY');
+  const loaded = await loadHoldingSeries(tickers, days, { force: !!force });
+  if(gen !== _riskGen[key]) return;
+  const bench = loaded.byTicker.SPY || { points: [] };
+  const holdings = book.map(function(h){
+    const row = loaded.byTicker[h.ticker] || { points: [] };
+    return { ticker: h.ticker, shares: h.shares, value: h.value, sector: h.sector, points: row.points || [] };
+  });
+  const stale = tickers.some(function(t){
+    const row = loaded.byTicker[t];
+    return !!(row && row.stale);
+  });
+  const report = fpRiskReport({ holdings: holdings, benchmarkPoints: bench.points || [], benchmark: 'SPY', stale: stale });
+  report.retry = !!(stale || report.benchmarkMissing || (report.missing && report.missing.length));
+  if(gen !== _riskGen[key]) return;
+  body.innerHTML = riskBodyHtml(report, key);
+}
+document.addEventListener('click', function(e){
+  const retry = e.target && e.target.closest ? e.target.closest('[data-risk-retry]') : null;
+  if(retry){
+    retryRiskCheck(retry.getAttribute('data-risk-retry'));
+    return;
+  }
+  const a = e.target && e.target.closest ? e.target.closest('a.risk-lesson') : null;
+  if(!a) return;
+  e.preventDefault();
+  const slug = a.getAttribute('data-lesson');
+  if(slug && typeof openLessonById === 'function') openLessonById(slug);
+});
+
 // ── PORTFOLIO RENDER ──
 async function renderPortfolio(){
   const empty='<div class="empty empty-start" style="grid-column:1/-1"><div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px">Your portfolio is empty — pick a way to start</div><div style="font-size:13px;line-height:1.6;max-width:520px;margin:0 auto 16px">New to investing? Load a demo to see how tracking works, add a stock you already own (or are curious about), or practice risk-free with $100,000 of virtual cash.</div><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button class="btn-primary" style="padding:12px 22px;font-size:14px" onclick="loadDemoPortfolio()">Try a demo portfolio</button> <button class="btn-secondary" style="padding:12px 22px;font-size:14px" onclick="openSearch()">+ Add a stock</button> <button class="btn-secondary" style="padding:12px 22px;font-size:14px" onclick="setMode(\'paper\')">Practice with paper money</button></div><div style="font-size:11px;color:var(--muted2);margin-top:12px">The demo is a sample mix of well-known companies and an index fund — not a recommendation.</div></div>';
@@ -5560,6 +5716,7 @@ async function renderPortfolio(){
     document.getElementById('stocksGrid').innerHTML=empty;
     document.getElementById('alertsList').innerHTML='<div class="empty">Add stocks to see alerts.</div>';
     document.getElementById('aiRecs').innerHTML='<div class="empty">Add stocks, then click Get suggestions for a rule-based note on each holding.</div>';
+    renderRiskCheck('live');
     renderPortfolioChart(selectedPortDays());
     renderWatchlist();
     var _aw=document.getElementById('allocWrap'); if(_aw)_aw.style.display='none';
@@ -5607,6 +5764,7 @@ async function renderPortfolio(){
   renderAlerts(quotes);
   renderPortfolioChart(selectedPortDays());
   renderAnalytics(quotes);
+  renderRiskCheck('live');
   renderWatchlist();
   loadNews();
   portfolio.forEach(function(h){ wsWatch(h.ticker); });
@@ -8411,6 +8569,7 @@ async function renderPaper(){
     vs.className = 'p-val ' + (d >= 0 ? 'up' : 'down');
     vs.title = 'You: ' + you.toFixed(2) + '% vs SPY: ' + bench.toFixed(2) + '% since you started';
   } else vs.textContent = '—';
+  if(typeof renderRiskCheck === 'function') renderRiskCheck('paper');
 }
 async function paperBuy(t, sh, price, plan){
   if(!isFinite(price) || price <= 0){ toast('⚠️', 'Live price unavailable — paper trade blocked. Try again shortly.'); return false; }
