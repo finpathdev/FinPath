@@ -109,7 +109,7 @@ test('the consent screen is plain language, off by default, and blocks under 13'
   assert.doesNotMatch(boot, /id="studyAgree"[^>]*checked/);
   assert.match(boot, /No, I am under 13/);
   const sw = readFileSync(new URL('../../../sw.js', import.meta.url), 'utf8');
-  assert.match(sw, /finpath-v38/);
+  assert.match(sw, /finpath-v39/);
   assert.match(sw, /js\/intel\/study\/efficacy\.js/);
   assert.match(sw, /js\/intel\/sync\/merge\.js/);
 });
