@@ -1285,6 +1285,32 @@ body.light .scr-filters input,body.light .scr-filters select{background:#fff}
 .s-thesis,.txn-thesis{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4;overflow-wrap:anywhere}
 .sell-thesis{background:rgba(134,239,172,.05);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:14px}
 #paperSellConfirm:disabled{opacity:.65;cursor:wait}
+.thesis-help{font-size:12px;color:var(--muted);line-height:1.45;margin:-4px 0 12px}
+.thesis-fields[hidden],#paperPlanLock[hidden],#paperFalsifierAsk[hidden]{display:none !important}
+#paperPlanLock{font-size:13px;line-height:1.5;background:rgba(134,239,172,.05);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.thesis-formulas{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
+.thesis-formula{font-size:12px;line-height:1.45;color:var(--muted);background:rgba(245,182,11,.05);border:1px solid rgba(245,182,11,.22);border-radius:10px;padding:8px 10px;overflow-wrap:anywhere}
+.thesis-scores{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}
+.thesis-score{background:rgba(134,239,172,.05);border:1px solid var(--line);border-radius:10px;padding:8px;min-width:0}
+.thesis-score .k{font-size:11px;color:var(--muted);line-height:1.3}
+.thesis-score .n{font-size:18px;font-weight:700;font-family:var(--font-display);margin-top:2px}
+.thesis-formula-line{font-size:11px;color:var(--muted);line-height:1.4;margin-top:4px;overflow-wrap:anywhere}
+.cal-row{display:grid;grid-template-columns:72px minmax(0,1fr) minmax(88px,150px);gap:8px;align-items:center;padding:6px 0}
+.cal-label{font-size:12px;font-weight:700}
+.cal-track{height:8px;border-radius:99px;background:rgba(134,239,172,.12);overflow:hidden}
+.cal-fill{height:100%;background:var(--green);border-radius:99px;max-width:100%}
+.cal-stat{font-size:12px;color:var(--muted);text-align:right;overflow-wrap:anywhere}
+.thesis-choice{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}
+.thesis-choice .chip[aria-checked="true"]{color:var(--text);border-color:var(--green);background:rgba(34,197,94,.16)}
+body.light .cal-track{background:rgba(20,83,45,.1)}
+body.light .thesis-score,body.light #paperPlanLock{background:rgba(20,83,45,.04)}
+body.light .thesis-formula{background:rgba(180,120,7,.08);border-color:rgba(180,120,7,.28)}
+@media (max-width:600px){
+  .thesis-scores{grid-template-columns:1fr 1fr}
+  .cal-row{grid-template-columns:1fr;gap:4px}
+  .cal-stat{text-align:left}
+  .thesis-choice .chip{min-height:44px}
+}
 @media (max-width:600px){.lesson-nav button{width:100%}.lp-step{font-size:12px}}
 /* ── Phones / installed PWA: safe areas, tap targets, no iOS focus-zoom (2026-10-25) ── */
 /* The app uses viewport-fit=cover + a black-translucent iOS status bar, so content can sit under the notch / home bar. */
@@ -2560,8 +2586,8 @@ body.light .gs-item{background:#fff}
         <div><h2 style="font-size:24px;font-weight:800;letter-spacing:-.5px">Paper Trading</h2><p style="font-size:13px;color:var(--muted);margin-top:4px">Practice with $100,000 of virtual cash — real live prices, zero risk.</p></div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="add-btn" onclick="paperOpenBuy()">+ Buy stock</button><button class="btn-secondary" style="padding:14px 18px;font-size:13px" onclick="paperReset()">Reset</button><label class="paper-clear-journal" for="paperClearJournal"><input type="checkbox" id="paperClearJournal"> Also clear journal</label></div>
       </div>
-      <div class="practice-note" role="note"><b>Practice mode.</b> This is virtual money — nothing is actually bought or sold, and it isn’t linked to any brokerage. Trades fill instantly at the latest quote with no fees, taxes or slippage, so real results will differ. Tip: start with an amount you could realistically invest, not the full $100k.</div>
-      <p class="paper-thesis-tip">Each paper buy asks why you’re buying, and you’ll see that note again when you sell.</p>
+      <div class="practice-note" role="note"><b>Practice mode.</b> This is virtual money — nothing is actually bought or sold, and it isn’t linked to any brokerage. Trades fill instantly at the latest quote with no fees, taxes or slippage, so real results will differ. Tip: start with an amount you could realistically invest, not the full $100k. Thesis scores grade the note you wrote. They are not a reason to buy or sell.</div>
+      <p class="paper-thesis-tip">Each paper buy asks why you’re buying, what would prove you wrong, the move you expect, a timeframe, and how sure you are. You’ll see that note again when you sell.</p>
       <div class="pulse-grid" style="margin-bottom:22px">
         <div class="p-metric"><div class="p-label">Cash</div><div class="p-val" id="ppCash">$100,000.00</div></div>
         <div class="p-metric"><div class="p-label"><span class="term" role="button" tabindex="0" data-term="positions value" onclick="showTerm(event,this.dataset.term)">Positions value</span></div><div class="p-val" id="ppEquity">$0.00</div></div>
@@ -2570,10 +2596,12 @@ body.light .gs-item{background:#fff}
       </div>
       <div class="stocks-grid" id="paperGrid"><div class="empty" style="grid-column:1/-1">No paper positions yet. Hit “+ Buy stock” to start practicing.</div></div>
       <div class="thesis-journal" id="thesisJournal">
-        <div class="thesis-journal-title">Trade journal</div>
-        <p class="thesis-journal-sub" id="thesisJournalNote">Saved in this browser only — not synced if you sign in.</p>
-        <div id="thesisOpen"><div class="empty thesis-empty">Your next paper buy will ask for a short thesis — that’s how you practice thinking like an investor.</div></div>
+        <div class="thesis-journal-title">Thesis lab</div>
+        <p class="thesis-journal-sub" id="thesisJournalNote">Saved in this browser only — not synced if you sign in. Scores grade the note you wrote before the practice buy. They are not a reason to buy or sell.</p>
+        <div id="thesisFormulas" class="thesis-formulas"></div>
+        <div id="thesisOpen"><div class="empty thesis-empty">Your next paper buy asks for a thesis and a falsifier — what would prove you wrong — plus the move, timeframe, and confidence you expect.</div></div>
         <div id="thesisClosed"></div>
+        <div id="thesisCalibration"></div>
       </div>
     </div>
     <div class="learn-rec paycheck-entry" id="paycheckEntryPort" style="margin-top:34px">
@@ -2925,8 +2953,31 @@ body.light .gs-item{background:#fff}
     <div style="font-size:13px;color:var(--muted);margin-bottom:8px" id="sharesLabel">How many shares do you own?</div>
     <input class="modal-input" type="number" id="sharesInput" placeholder="e.g. 10" min="0.001" step="any" oninput="updatePreview()">
     <div id="paperThesisBox" style="display:none">
-      <label class="thesis-label" for="paperThesis">Why are you buying? (1–2 sentences)</label>
-      <textarea class="modal-input" id="paperThesis" maxlength="280" rows="3" aria-required="true" placeholder="I think this company will grow earnings over the next few years."></textarea>
+      <div id="paperPlanLock" hidden></div>
+      <div id="paperPlanFields" class="thesis-fields">
+        <label class="thesis-label" for="paperThesis">Why are you buying? (1–2 sentences)</label>
+        <textarea class="modal-input" id="paperThesis" maxlength="280" rows="3" aria-required="true" placeholder="I think this company will grow earnings over the next few years."></textarea>
+        <label class="thesis-label" for="paperFalsifier">What would prove you wrong?</label>
+        <textarea class="modal-input" id="paperFalsifier" maxlength="280" rows="3" aria-required="true" placeholder="A fact that would show this thesis is wrong, such as revenue falling for two quarters."></textarea>
+        <p class="thesis-help">Required. This is the falsifier for the note, not a signal to sell.</p>
+        <label class="thesis-label" for="paperExpected">Expected move (%)</label>
+        <input class="modal-input" id="paperExpected" type="number" inputmode="decimal" step="0.1" min="-95" max="500" aria-required="true" placeholder="8 means up 8%. −5 means down 5%." autocomplete="off">
+        <p class="thesis-help">Your forecast over the timeframe. FinPath does not turn this into a target.</p>
+        <label class="thesis-label" for="paperTimeframe">Timeframe</label>
+        <select class="modal-input" id="paperTimeframe" aria-required="true">
+          <option value="">Choose a timeframe</option>
+          <option value="7">1 week</option>
+          <option value="30">1 month</option>
+          <option value="90">3 months</option>
+          <option value="365">1 year</option>
+        </select>
+        <label class="thesis-label" for="paperConfidence">Confidence (%)</label>
+        <input class="modal-input" id="paperConfidence" type="number" inputmode="numeric" min="0" max="100" step="1" aria-required="true" placeholder="0–100" autocomplete="off">
+        <p class="thesis-help">How sure you are about the direction. 0 to 100. FinPath did not calculate this.</p>
+        <label class="thesis-label" for="paperStakeCap">Paper-account cap (%)</label>
+        <input class="modal-input" id="paperStakeCap" type="number" inputmode="decimal" min="0.1" max="100" step="0.1" aria-required="true" placeholder="Largest slice of this paper account, e.g. 10" autocomplete="off">
+        <p class="thesis-help">The risk-discipline score compares the buy with this number. It is not a limit for real money.</p>
+      </div>
     </div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:16px;min-height:20px" id="sharesPreview"></div>
     <button style="width:100%;background:var(--green-dim);border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;color:#fff;margin-bottom:8px" id="confirmAddBtn" onclick="confirmAdd()">Add to portfolio</button>
@@ -2939,6 +2990,15 @@ body.light .gs-item{background:#fff}
   <div class="modal">
     <h2 id="paperSellTitle">Sell position?</h2>
     <div class="sell-thesis" id="paperSellThesis"></div>
+    <div id="paperFalsifierAsk" hidden>
+      <div class="thesis-label" id="paperFalsifierAskLabel">Did the falsifier you wrote happen?</div>
+      <div class="thesis-choice" role="radiogroup" aria-labelledby="paperFalsifierAskLabel">
+        <button type="button" class="chip" id="paperHitYes" role="radio" aria-checked="false" onclick="setFalsifierHit('yes')">Yes, it happened</button>
+        <button type="button" class="chip" id="paperHitNo" role="radio" aria-checked="false" onclick="setFalsifierHit('no')">No, it did not</button>
+        <button type="button" class="chip" id="paperHitSkip" role="radio" aria-checked="false" onclick="setFalsifierHit('skip')">I didn’t check</button>
+      </div>
+      <p class="thesis-help">This answer is only for the decision-quality score.</p>
+    </div>
     <label class="thesis-label" for="paperReflect">What did you learn? (optional)</label>
     <textarea class="modal-input" id="paperReflect" maxlength="280" rows="3" placeholder="Optional — anything you want to remember about this trade."></textarea>
     <button class="price-btn" id="paperSellConfirm" onclick="paperConfirmSell()">Sell</button>
@@ -3039,6 +3099,7 @@ body.light .gs-item{background:#fff}
 
 <script type="module" src="js/intel/life/boot.js"></script>
 <script type="module" src="js/intel/identity/boot.js"></script>
+<script type="module" src="js/intel/paper/boot.js"></script>
 <script src="js/market/candles.js"></script>
 <script src="js/market/quotes.js"></script>
 <script>
@@ -5274,10 +5335,55 @@ function openSearch(){document.getElementById('searchModal').classList.add('open
 function closeSearch(){document.getElementById('searchModal').classList.remove('open');document.getElementById('searchInput').value='';}
 function closeShares(){
   document.getElementById('sharesModal').classList.remove('open');
+  resetPaperPlanForm();
+}
+function resetPaperPlanForm(){
+  ['paperThesis','paperFalsifier','paperExpected','paperConfidence','paperStakeCap'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  var tf = document.getElementById('paperTimeframe');
+  if(tf) tf.value = '';
+  var box = document.getElementById('paperThesisBox');
+  if(box) box.style.display = 'none';
+  var lock = document.getElementById('paperPlanLock');
+  var fields = document.getElementById('paperPlanFields');
+  if(lock){ lock.hidden = true; lock.innerHTML = ''; }
+  if(fields) fields.hidden = false;
+}
+function syncPaperPlanForm(ticker){
+  var box = document.getElementById('paperThesisBox');
+  var lock = document.getElementById('paperPlanLock');
+  var fields = document.getElementById('paperPlanFields');
+  var paper = (typeof PAPER_MODE !== 'undefined' && PAPER_MODE);
+  if(box) box.style.display = paper ? 'block' : 'none';
+  if(!paper){
+    if(lock){ lock.hidden = true; lock.innerHTML = ''; }
+    if(fields) fields.hidden = false;
+    return;
+  }
+  resetPaperPlanForm();
+  if(box) box.style.display = 'block';
+  var ex = null;
+  try{
+    ex = getPaper().pos.find(function(x){ return x && x.t === ticker; }) || null;
+  }catch(e){}
+  var structured = ex && String(ex.falsifier || '').trim();
+  if(structured){
+    if(fields) fields.hidden = true;
+    if(lock){
+      lock.hidden = false;
+      lock.innerHTML = '<div class="thesis-kicker">Plan already written</div>' +
+        '<div class="thesis-line">' + escapeHtml(ex.thesis || '') + '</div>' +
+        thesisMetaHtml(ex) +
+        '<p class="thesis-help">These shares keep that note. The risk-discipline score uses the position size after this buy.</p>';
+    }
+    return;
+  }
+  if(fields) fields.hidden = false;
+  if(lock){ lock.hidden = true; lock.innerHTML = ''; }
   var thesisInput = document.getElementById('paperThesis');
-  var thesisBox = document.getElementById('paperThesisBox');
-  if(thesisInput) thesisInput.value = '';
-  if(thesisBox) thesisBox.style.display = 'none';
+  if(thesisInput && ex && ex.thesis) thesisInput.value = ex.thesis;
 }
 function closeDetail(){document.getElementById('detailModal').classList.remove('open');}
 function closeHourly(){document.getElementById('hourlyModal').classList.remove('open');}
@@ -5341,10 +5447,7 @@ async function openAddShares(ticker){
   document.getElementById('sharesInsight').textContent=AI_INSIGHT[ticker]||AI_INSIGHT.DEFAULT;
   document.getElementById('sharesInput').value='';
   document.getElementById('sharesPreview').textContent='';
-  var thesisInput = document.getElementById('paperThesis');
-  var thesisBox = document.getElementById('paperThesisBox');
-  if(thesisInput) thesisInput.value = '';
-  if(thesisBox) thesisBox.style.display = _paper ? 'block' : 'none';
+  syncPaperPlanForm(ticker);
   const q=await fetchQ(ticker);
   if(q && !q.stale && isFinite(q.c) && q.c>0){selectedStock.price=q.c;document.getElementById('sharesLabel').textContent='Current price: $'+q.c.toFixed(2)+' per share';}
   else {selectedStock.price=0;document.getElementById('sharesLabel').textContent='Live price unavailable right now — try again in a moment.';}
@@ -5361,15 +5464,32 @@ async function confirmAdd(){
   const shares=parseFloat(document.getElementById('sharesInput').value)||0;
   if(!isFinite(shares)||shares<=0){alert('Please enter how many shares you own');return;}
   const paper = (typeof PAPER_MODE!=='undefined' && PAPER_MODE);
-  let thesis = '';
+  let plan = null;
   if(paper){
-    thesis = clampNote(document.getElementById('paperThesis') ? document.getElementById('paperThesis').value : '');
-    if(!thesis){ toast('✍️', 'Write a short thesis first — why are you buying?'); return; }
+    var existing = null;
+    try{ existing = getPaper().pos.find(function(x){ return x && x.t === selectedStock.ticker; }); }catch(e){}
+    var already = existing && String(existing.falsifier || '').trim();
+    if(!already){
+      if(!window.FPThesis || typeof window.FPThesis.readPlan !== 'function'){
+        toast('⚠️', 'Thesis lab is still loading. Try again in a moment.');
+        return;
+      }
+      var read = window.FPThesis.readPlan({
+        thesis: document.getElementById('paperThesis') ? document.getElementById('paperThesis').value : '',
+        falsifier: document.getElementById('paperFalsifier') ? document.getElementById('paperFalsifier').value : '',
+        expectedMove: document.getElementById('paperExpected') ? document.getElementById('paperExpected').value : '',
+        timeframeDays: document.getElementById('paperTimeframe') ? document.getElementById('paperTimeframe').value : '',
+        confidence: document.getElementById('paperConfidence') ? document.getElementById('paperConfidence').value : '',
+        maxStakePct: document.getElementById('paperStakeCap') ? document.getElementById('paperStakeCap').value : ''
+      });
+      if(!read.ok){ toast('✍️', read.error); return; }
+      plan = read.plan;
+    }
   }
   // Never record a buy at $0 / missing / stale price — it corrupts cost basis and P&L.
   if(!selectedStock||!isFinite(selectedStock.price)||selectedStock.price<=0){toast('⚠️','Live price unavailable — can\u2019t add right now. Please try again shortly.');return;}
   if(paper){
-    const done = await paperBuy(selectedStock.ticker, shares, selectedStock.price||0, thesis);
+    const done = await paperBuy(selectedStock.ticker, shares, selectedStock.price||0, plan);
     if(done) closeShares();
     return;
   }
@@ -8018,14 +8138,17 @@ function openPaycheckLesson(which){
 })();
 
 // ── PAPER TRADING ──
-// fp_paper: { cash, pos:[{t,sh,price,ts,thesis?}], journal:[closed trades], start, spyStart }.
-// A thesis is required on every new paper buy. Closed trades stay in journal so Reset
-// can wipe cash and positions and still keep the learning history. Local only — no sync.
+// fp_paper: { cash, pos:[{t,sh,price,ts,thesis,falsifier,expectedMove,timeframeDays,confidence,maxStakePct,stakePct}], journal:[closed trades], start, spyStart }.
+// A new paper buy needs a thesis and a falsifier. Adding to a symbol that already
+// has that plan keeps the original note and updates the size used for the risk score.
+// Closed trades stay in the journal so Reset can wipe cash and positions and still
+// keep the learning history. Local only — no sync.
 let PAPER_MODE = false;
 let PAPER_SELL_I = null;
 let PAPER_SELL_T = null;
 let PAPER_SELLING = false;
 let PAPER_SELL_GEN = 0;
+let PAPER_FALSIFIER_HIT = '';
 const NOTE_MAX = 280;
 function clampNote(s){
   s = String(s == null ? '' : s).trim();
@@ -8058,28 +8181,95 @@ function setMode(m){
   if(PAPER_MODE) renderPaper();
 }
 function paperOpenBuy(){ openSearch(); }
+function thesisApi(){
+  return (window.FPThesis && typeof window.FPThesis.gradeClosed === 'function') ? window.FPThesis : null;
+}
+function renderThesisFormulas(){
+  const el = document.getElementById('thesisFormulas');
+  if(!el) return;
+  const api = thesisApi();
+  if(!api || !Array.isArray(api.FORMULAS)){
+    el.innerHTML = '<p class="thesis-journal-sub">Score formulas did not load. Refresh the page.</p>';
+    return;
+  }
+  el.innerHTML = api.FORMULAS.map(function(f){
+    return '<div class="thesis-formula"><div class="thesis-kicker">' + escapeHtml(f.title) + '</div><div>' + escapeHtml(f.text) + '</div></div>';
+  }).join('');
+}
+function thesisMetaHtml(x){
+  if(!x || !String(x.falsifier || '').trim()) return '';
+  const api = thesisApi();
+  const bits = [];
+  if(api){
+    bits.push('Expected ' + api.formatMove(x.expectedMove));
+    bits.push(api.timeframeLabel(x.timeframeDays));
+    if(isFinite(Number(x.confidence))) bits.push(Math.round(Number(x.confidence)) + '% confidence');
+    if(isFinite(Number(x.stakePct)) && isFinite(Number(x.maxStakePct))) bits.push('using ' + api.formatStake(x.stakePct) + ' of cap ' + api.formatStake(x.maxStakePct));
+  }
+  return '<div class="thesis-kicker">Falsifier</div><div class="thesis-line">' + escapeHtml(x.falsifier) + '</div>' +
+    (bits.length ? '<div class="thesis-reflect">' + escapeHtml(bits.join(' · ')) + '</div>' : '');
+}
+function thesisScoresHtml(j){
+  const api = thesisApi();
+  if(!api) return '';
+  const g = api.gradeClosed(j);
+  if(!g) return '<div class="thesis-line"><span class="thesis-missing">No structured thesis on this close. Scores need a falsifier and an expected move written before the buy.</span></div>';
+  const cells = [
+    ['Accuracy', g.accuracy, api.explainAccuracy(g.accuracy)],
+    ['Research quality', g.research, api.explainResearch(g.research)],
+    ['Decision quality', g.decision, api.explainDecision(j.timeframeDays, g.heldDays, g.falsifierHappened, g.decision)],
+    ['Risk discipline', g.risk, api.explainRisk(g.risk)]
+  ];
+  return '<div class="thesis-scores">' + cells.map(function(c){
+    const score = c[1] && isFinite(c[1].score) ? String(c[1].score) : '—';
+    const line = c[2]
+      ? '<div class="thesis-formula-line">' + escapeHtml(c[2]) + '</div>'
+      : '<div class="thesis-formula-line">Not enough of the written plan to score this one.</div>';
+    return '<div class="thesis-score"><div class="k">' + escapeHtml(c[0]) + '</div><div class="n">' + escapeHtml(score) + '</div>' + line + '</div>';
+  }).join('') + '</div>';
+}
+function renderCalibration(journal){
+  const el = document.getElementById('thesisCalibration');
+  if(!el) return;
+  const api = thesisApi();
+  if(!api){ el.innerHTML = ''; return; }
+  const report = api.calibrate(journal || []);
+  const rows = report.buckets.map(function(b){
+    const rate = b.hitRate == null ? 0 : Math.round(b.hitRate * 100);
+    const stat = b.n ? (b.hits + ' of ' + b.n + (b.hits === 1 ? ' hit' : ' hits') + ' · ' + rate + '%') : 'No closed trades';
+    return '<div class="cal-row"><div class="cal-label">' + escapeHtml(b.label) + '</div><div class="cal-track" aria-hidden="true"><div class="cal-fill" style="width:' + (b.n ? rate : 0) + '%"></div></div><div class="cal-stat">' + escapeHtml(stat) + '</div></div>';
+  }).join('');
+  const skipped = report.skipped
+    ? '<p class="thesis-journal-sub">' + report.skipped + (report.skipped === 1 ? ' closed note is' : ' closed notes are') + ' left out — no confidence, or the price result could not be scored.</p>'
+    : '';
+  el.innerHTML = '<div class="thesis-kicker">Calibration</div>' +
+    '<p class="thesis-journal-sub">Each bucket is the confidence you wrote. The hit rate is how often the price moved the same direction as that note. A flat forecast (0%) counts as a hit only when the price finished within 1 percentage point. A bucket with few closes will jump around. This is a practice record, not a prediction.</p>' +
+    rows + skipped;
+}
 function renderTradeJournal(p){
   const openEl = document.getElementById('thesisOpen');
   const closedEl = document.getElementById('thesisClosed');
   if(!openEl || !closedEl) return;
+  renderThesisFormulas();
   const note = document.getElementById('thesisJournalNote');
-  if(note) note.textContent = 'Saved in this browser only — not synced if you sign in.';
+  if(note) note.textContent = 'Saved in this browser only — not synced if you sign in. Scores grade the note you wrote before the practice buy. They are not a reason to buy or sell.';
   const opens = (p && Array.isArray(p.pos)) ? p.pos : [];
   const allClosed = (p && Array.isArray(p.journal)) ? p.journal : [];
   const closed = allClosed.slice(0, 20);
   if(!opens.length && !allClosed.length){
-    openEl.innerHTML = '<div class="empty thesis-empty">Your next paper buy will ask for a short thesis — that’s how you practice thinking like an investor.</div>';
+    openEl.innerHTML = '<div class="empty thesis-empty">Your next paper buy asks for a thesis and a falsifier — what would prove you wrong — plus the move, timeframe, and confidence you expect.</div>';
     closedEl.innerHTML = '';
+    renderCalibration(allClosed);
     return;
   }
   openEl.innerHTML = opens.length ? ('<div class="thesis-kicker">Open</div>' + opens.map(function(x){
     const when = x.ts ? ('bought ' + txnWhen(x.ts)) : 'bought earlier';
     const line = x.thesis
-      ? escapeHtml(clipText(x.thesis, 120))
+      ? escapeHtml(x.thesis)
       : '<span class="thesis-missing">No thesis recorded</span>';
-    return '<div class="thesis-row"><div class="thesis-row-top"><span class="tk">' + escapeHtml(x.t) + '</span><span class="when">' + escapeHtml(when) + '</span></div><div class="thesis-line">' + line + '</div></div>';
+    return '<div class="thesis-row"><div class="thesis-row-top"><span class="tk">' + escapeHtml(x.t) + '</span><span class="when">' + escapeHtml(when) + '</span></div><div class="thesis-line">' + line + '</div>' + thesisMetaHtml(x) + '</div>';
   }).join('')) : '';
-  if(!closed.length){ closedEl.innerHTML = ''; return; }
+  if(!closed.length){ closedEl.innerHTML = ''; renderCalibration(allClosed); return; }
   closedEl.innerHTML = '<div class="thesis-kicker">Closed</div>' + closed.map(function(j){
     const thesis = j.thesis
       ? '<div class="thesis-line">' + escapeHtml(j.thesis) + '</div>'
@@ -8090,8 +8280,9 @@ function renderTradeJournal(p){
     const stamp = function(ts){ return ts ? new Date(ts).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : ''; };
     const bought = stamp(j.boughtAt), sold = stamp(j.soldAt);
     const dates = [bought ? ('Bought ' + bought) : '', sold ? ('Sold ' + sold) : ''].filter(Boolean).join(' · ');
-    return '<div class="thesis-row"><div class="thesis-row-top"><span class="tk">' + escapeHtml(j.t || '') + '</span><span class="when">' + escapeHtml(dates) + '</span></div>' + thesis + reflect + pnlHtml + '</div>';
+    return '<div class="thesis-row"><div class="thesis-row-top"><span class="tk">' + escapeHtml(j.t || '') + '</span><span class="when">' + escapeHtml(dates) + '</span></div>' + thesis + thesisMetaHtml(j) + reflect + pnlHtml + thesisScoresHtml(j) + '</div>';
   }).join('') + (allClosed.length > 20 ? '<div class="thesis-more" style="color:var(--muted);padding:8px 0 4px">Showing the 20 most recent closed trades.</div>' : '');
+  renderCalibration(allClosed);
 }
 async function renderPaper(){
   let p = getPaper();
@@ -8113,7 +8304,8 @@ async function renderPaper(){
       const price = r.q ? r.q.c : r.x.price;
       const val = price * r.x.sh, pnl = (price - r.x.price)*r.x.sh, pct = (price - r.x.price)/r.x.price*100;
       const note = r.x.thesis ? '<div class="s-thesis">' + escapeHtml(clipText(r.x.thesis, 90)) + '</div>' : '';
-      return '<div class="stock-row"><div class="s-icon">' + escapeHtml(r.x.t.slice(0,2)) + '</div><div class="s-info"><div class="s-name">' + escapeHtml(r.x.t) + '</div><div class="s-meta">' + escapeHtml(r.x.sh) + ' sh · ' + termLabel('cost basis') + ' ' + fmt(r.x.price) + quoteAsOfFlag(r.q) + '</div>' + note + '</div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" data-paper-sell="' + i + '" onclick="paperAskSell(' + i + ')">Sell</button></div></div>';
+      const fals = r.x.falsifier ? '<div class="s-thesis">Falsifier: ' + escapeHtml(clipText(r.x.falsifier, 80)) + '</div>' : '';
+      return '<div class="stock-row"><div class="s-icon">' + escapeHtml(r.x.t.slice(0,2)) + '</div><div class="s-info"><div class="s-name">' + escapeHtml(r.x.t) + '</div><div class="s-meta">' + escapeHtml(r.x.sh) + ' sh · ' + termLabel('cost basis') + ' ' + fmt(r.x.price) + quoteAsOfFlag(r.q) + '</div>' + note + fals + '</div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" data-paper-sell="' + i + '" onclick="paperAskSell(' + i + ')">Sell</button></div></div>';
     }).join('');
     p.pos.forEach(function(x){ wsWatch(x.t); });
   }
@@ -8134,28 +8326,61 @@ async function renderPaper(){
     vs.title = 'You: ' + you.toFixed(2) + '% vs SPY: ' + bench.toFixed(2) + '% since you started';
   } else vs.textContent = '—';
 }
-async function paperBuy(t, sh, price, thesis){
-  thesis = clampNote(thesis);
-  if(!thesis){ toast('✍️', 'Write a short thesis first — why are you buying?'); return false; }
+async function paperBuy(t, sh, price, plan){
   if(!isFinite(price) || price <= 0){ toast('⚠️', 'Live price unavailable — paper trade blocked. Try again shortly.'); return false; }
   if(!isFinite(sh) || sh <= 0){ toast('⚠️', 'Enter a positive number of shares.'); return false; }
   const p = getPaper();
   const cost = sh * price;
   if(cost > p.cash){ toast('⚠️', 'Not enough paper cash. You have ' + fmt(p.cash) + '.'); return false; }
-  p.cash -= cost;
   const ex = p.pos.find(function(x){ return x.t === t; });
+  const structured = ex && String(ex.falsifier || '').trim();
+  if(!structured && (!plan || !plan.thesis || !plan.falsifier)){
+    toast('✍️', 'Write a thesis and a falsifier before this practice buy.');
+    return false;
+  }
+  p.cash -= cost;
   if(ex){
     ex.price = (ex.price*ex.sh + cost)/(ex.sh + sh);
     ex.sh += sh;
-    if(!ex.thesis) ex.thesis = thesis;
-  } else p.pos.push({t:t, sh:sh, price:price, ts:Date.now(), thesis:thesis});
+    if(!structured){
+      ex.thesis = plan.thesis;
+      ex.falsifier = plan.falsifier;
+      ex.expectedMove = plan.expectedMove;
+      ex.timeframeDays = plan.timeframeDays;
+      ex.confidence = plan.confidence;
+      ex.maxStakePct = plan.maxStakePct;
+      if(!ex.ts) ex.ts = Date.now();
+    }
+  } else p.pos.push({
+    t:t, sh:sh, price:price, ts:Date.now(),
+    thesis: plan.thesis,
+    falsifier: plan.falsifier,
+    expectedMove: plan.expectedMove,
+    timeframeDays: plan.timeframeDays,
+    confidence: plan.confidence,
+    maxStakePct: plan.maxStakePct
+  });
+  const row = p.pos.find(function(x){ return x.t === t; });
+  const api = thesisApi();
+  if(row && api){
+    const stake = api.accountStakePct(p.cash, p.pos, t);
+    if(stake != null) row.stakePct = stake;
+  }
   savePaper(p);
-  logTxn({type:'buy', mode:'paper', t:t, sh:sh, price:price, thesis:thesis});
+  logTxn({type:'buy', mode:'paper', t:t, sh:sh, price:price, thesis: row && row.thesis || '', falsifier: row && row.falsifier || ''});
   if(typeof renderChecklist==='function') renderChecklist();
   unlockAchv('paper_trader'); track('paper_buy', {ticker:t});
   toast('📄', 'Paper-bought ' + sh + ' ' + t + ' @ ' + fmt(price));
   renderPaper();
   return true;
+}
+function setFalsifierHit(v){
+  PAPER_FALSIFIER_HIT = v || '';
+  [['yes','paperHitYes'],['no','paperHitNo'],['skip','paperHitSkip']].forEach(function(pair){
+    const btn = document.getElementById(pair[1]);
+    if(!btn) return;
+    btn.setAttribute('aria-checked', pair[0] === PAPER_FALSIFIER_HIT ? 'true' : 'false');
+  });
 }
 function paperAskSell(i){
   // A confirm already waiting on a quote keeps this dialog. Don't retarget it.
@@ -8172,18 +8397,23 @@ function paperAskSell(i){
     const thesis = x.thesis
       ? '<div class="sell-thesis-text">' + escapeHtml(x.thesis) + '</div>'
       : '<div class="sell-thesis-text"><span class="thesis-missing">No thesis recorded</span></div>';
-    box.innerHTML = '<div class="thesis-kicker">Why you bought</div>' + thesis +
+    box.innerHTML = '<div class="thesis-kicker">Why you bought</div>' + thesis + thesisMetaHtml(x) +
       '<div class="thesis-journal-sub" style="margin:8px 0 0">' + escapeHtml(String(x.sh)) + ' shares · cost ' + fmt(x.price) + '</div>';
   }
+  const needsCheck = !!String(x.falsifier || '').trim();
+  const ask = document.getElementById('paperFalsifierAsk');
+  if(ask) ask.hidden = !needsCheck;
+  setFalsifierHit('');
   const reflect = document.getElementById('paperReflect');
   if(reflect) reflect.value = '';
   const modal = document.getElementById('paperSellModal');
   if(modal) modal.classList.add('open');
   setTimeout(function(){
     // A fast Escape can close the dialog before this runs. Don't pull focus
-    // back onto the hidden reflection field.
+    // back onto a field in a dialog that is already gone.
     if(!modal || !modal.classList.contains('open') || PAPER_SELL_I !== i) return;
-    if(reflect) reflect.focus();
+    const first = needsCheck ? document.getElementById('paperHitYes') : reflect;
+    if(first) first.focus();
   }, 60);
 }
 function closePaperSell(){
@@ -8204,6 +8434,9 @@ function closePaperSell(){
   PAPER_SELL_T = null;
   const reflect = document.getElementById('paperReflect');
   if(reflect) reflect.value = '';
+  setFalsifierHit('');
+  const ask = document.getElementById('paperFalsifierAsk');
+  if(ask) ask.hidden = true;
 }
 async function paperConfirmSell(){
   if(PAPER_SELLING) return;
@@ -8211,6 +8444,15 @@ async function paperConfirmSell(){
   // the book and shift every later row before this confirm runs.
   const ticker = PAPER_SELL_T;
   if(!ticker) return;
+  const openPos = getPaper().pos.find(function(x){ return x && x.t === ticker; });
+  let happened = null;
+  if(openPos && String(openPos.falsifier || '').trim()){
+    if(PAPER_FALSIFIER_HIT !== 'yes' && PAPER_FALSIFIER_HIT !== 'no' && PAPER_FALSIFIER_HIT !== 'skip'){
+      toast('✍️', 'Mark whether your falsifier happened. “I didn’t check” is allowed.');
+      return;
+    }
+    happened = PAPER_FALSIFIER_HIT === 'yes' ? true : PAPER_FALSIFIER_HIT === 'no' ? false : null;
+  }
   const gen = PAPER_SELL_GEN;
   const reflection = clampNote(document.getElementById('paperReflect') ? document.getElementById('paperReflect').value : '');
   PAPER_SELLING = true;
@@ -8220,7 +8462,7 @@ async function paperConfirmSell(){
   if(cancelBtn) cancelBtn.disabled = true;
   let ok = false;
   try{
-    ok = await paperSell(ticker, reflection);
+    ok = await paperSell(ticker, reflection, happened);
   } finally {
     PAPER_SELLING = false;
     if(btn) btn.disabled = false;
@@ -8230,7 +8472,7 @@ async function paperConfirmSell(){
   // PAPER_SELLING is already clear, so this close is the filled sale, not Cancel.
   if(ok && gen === PAPER_SELL_GEN && PAPER_SELL_T === ticker) closePaperSell();
 }
-async function paperSell(ticker, reflection){
+async function paperSell(ticker, reflection, happened){
   const x0 = getPaper().pos.find(function(x){ return x && x.t === ticker; });
   if(!x0) return false;
   // Force a fresh quote so the sale isn't filled at a stale cached price.
@@ -8246,18 +8488,20 @@ async function paperSell(ticker, reflection){
   const pnl = (price - x.price)*x.sh;
   reflection = clampNote(reflection);
   if(!Array.isArray(p.journal)) p.journal = [];
-  p.journal.unshift({
+  const soldAt = Date.now();
+  const api = thesisApi();
+  const base = api
+    ? api.closedTradeFromPosition(x, { sellPrice: price, soldAt: soldAt, falsifierHappened: happened })
+    : {
+      t: x.t, sh: x.sh, thesis: x.thesis || '', falsifier: x.falsifier || '',
+      buyPrice: x.price, sellPrice: price, boughtAt: x.ts || null, soldAt: soldAt,
+      falsifierHappened: happened === true ? true : happened === false ? false : null
+    };
+  p.journal.unshift(Object.assign({
     id: 'j_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
-    t: x.t,
-    thesis: x.thesis || '',
     reflection: reflection,
-    sh: x.sh,
-    buyPrice: x.price,
-    sellPrice: price,
-    pnl: pnl,
-    boughtAt: x.ts || null,
-    soldAt: Date.now()
-  });
+    pnl: pnl
+  }, base));
   if(p.journal.length > 200) p.journal.length = 200;
   p.cash += price * x.sh;
   p.pos.splice(i, 1);
@@ -8282,6 +8526,22 @@ function paperReset(){
   logTxn({type:'reset', mode:'paper'});
   renderPaper();
 }
+(function(){
+  const modal = document.getElementById('paperSellModal');
+  if(!modal) return;
+  modal.addEventListener('keydown', function(e){
+    if(e.key !== 'ArrowRight' && e.key !== 'ArrowLeft' && e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    const ids = ['paperHitYes','paperHitNo','paperHitSkip'];
+    const keys = ['yes','no','skip'];
+    const i0 = ids.indexOf(document.activeElement && document.activeElement.id);
+    if(i0 < 0) return;
+    e.preventDefault();
+    const i = (e.key === 'ArrowRight' || e.key === 'ArrowDown') ? (i0 + 1) % ids.length : (i0 - 1 + ids.length) % ids.length;
+    setFalsifierHit(keys[i]);
+    const btn = document.getElementById(ids[i]);
+    if(btn) btn.focus();
+  });
+})();
 
 // ══ TRANSACTION HISTORY ══
 // Every buy, sell and removal is logged locally so users can review
@@ -8328,7 +8588,8 @@ function renderTxns(){
     const shTxt = escapeHtml(x.sh) + ' share' + (x.sh===1?'':'s') + ' @ ' + fmt(x.price||0);
     if(x.type === 'buy'){
       const snip = (x.mode==='paper' && x.thesis) ? '<div class="txn-thesis">' + escapeHtml(clipText(x.thesis, 88)) + '</div>' : '';
-      return '<div class="txn-row txn-buy"><div class="txn-icon">' + (x.demo?'🎓':'🟢') + '</div><div class="txn-main"><div class="txn-title">' + (x.demo?'Demo-added':'Bought') + ' <span class="tk">' + escapeHtml(x.t) + '</span>' + badge + '</div><div class="txn-sub">' + shTxt + ' · ' + when + '</div>' + snip + '</div><div class="txn-right"><div class="txn-amt">' + fmt(total) + '</div></div></div>';
+      const fals = (x.mode==='paper' && x.falsifier) ? '<div class="txn-thesis">Falsifier: ' + escapeHtml(clipText(x.falsifier, 80)) + '</div>' : '';
+      return '<div class="txn-row txn-buy"><div class="txn-icon">' + (x.demo?'🎓':'🟢') + '</div><div class="txn-main"><div class="txn-title">' + (x.demo?'Demo-added':'Bought') + ' <span class="tk">' + escapeHtml(x.t) + '</span>' + badge + '</div><div class="txn-sub">' + shTxt + ' · ' + when + '</div>' + snip + fals + '</div><div class="txn-right"><div class="txn-amt">' + fmt(total) + '</div></div></div>';
     }
     // sell / remove
     const pnl = (typeof x.pnl === 'number') ? x.pnl : null;
