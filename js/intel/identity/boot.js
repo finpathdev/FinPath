@@ -1,9 +1,10 @@
 // Identity page. Math lives in profiles.js, mastery.js, and plan.js.
 import { PROFILES, suggestProfile, resolveIdentity, profileById } from './profiles.js';
-import { literacyScore, conceptMastery, STATUS_LABELS } from '../learn/mastery.js';
-import { lessonsByConcept, CONCEPTS } from '../learn/concepts.js';
+import { literacyScore, conceptMastery, STATUS_LABELS, explainLiteracy, LITERACY_WEIGHTS } from '../learn/mastery.js';
+import { lessonsByConcept, CONCEPTS, conceptsFor } from '../learn/concepts.js';
 import { buildStudyPlan, currentPlan, planLimit, weekKey } from '../learn/plan.js';
 import { presetById } from '../life/presets.js';
+import { pickMastery, conceptClocks, timeMs } from '../sync/merge.js';
 
 const PLAN_KEY = 'fp_study_plan';
 const IDENTITY_KEY = 'fp_identity';
@@ -107,6 +108,7 @@ function readPlan(){
 
 function writePlan(plan){
   try{ localStorage.setItem(PLAN_KEY, JSON.stringify(plan)); }catch(e){}
+  try{ if(window.FPIntelSync && FPIntelSync.schedule) FPIntelSync.schedule(); }catch(e){}
 }
 
 function lessonInfo(slug){
@@ -134,20 +136,57 @@ function sectionFromHash(){
   return '';
 }
 
+function accountLiteracy(local, entries){
+  if((local.lessonsDone || 0) + (local.quizTotal || 0) > 0) return { literacy: local, fromAccount: false };
+  const list = Array.isArray(entries) ? entries : [];
+  let best = null;
+  list.forEach(function(row){
+    if(!row) return;
+    const at = timeMs(row.at != null ? row.at : row.capturedAt);
+    if(!best || at > best.at) best = row;
+  });
+  if(!best || timeMs(best.at != null ? best.at : best.capturedAt) <= 0) return { literacy: local, fromAccount: false };
+  const literacy = {
+    score: best.score,
+    lessonPoints: best.lessonPoints,
+    quizPoints: best.quizPoints,
+    breadthPoints: best.breadthPoints,
+    lessonsDone: best.lessonsDone,
+    lessonsTotal: best.lessonsTotal,
+    quizCorrect: best.quizCorrect,
+    quizTotal: best.quizTotal,
+    conceptsTouched: best.conceptsTouched,
+    conceptCount: best.conceptCount,
+    weights: LITERACY_WEIGHTS,
+    mastery: local.mastery
+  };
+  literacy.lines = explainLiteracy(literacy);
+  return { literacy: literacy, fromAccount: true };
+}
+
 function model(){
   const intake = readIntake();
   const life = readLife();
   const progress = readProgress();
   const log = readQuizLog();
   const literacy = literacyScore(progress, log);
-  const mastery = literacy.mastery;
-  const suggestion = suggestProfile({ intake: intake, life: life, concepts: mastery });
+  const clocks = conceptClocks(progress, log, lessonsByConcept(), conceptsFor);
+  const storedMastery = readJSON('fp_intel_mastery', null);
+  const picked = pickMastery(literacy.mastery, storedMastery && storedMastery.rows, clocks);
+  Object.keys(picked.mastery).forEach(function(id){
+    if(CONCEPTS[id]) picked.mastery[id].label = CONCEPTS[id];
+  });
+  const history = readJSON('fp_literacy_history', null);
+  const shown = accountLiteracy(literacy, history && (history.entries || history));
+  const suggestion = suggestProfile({ intake: intake, life: life, concepts: picked.mastery });
   const identity = resolveIdentity(suggestion, readStoredIdentity());
   return {
     intake: intake,
     progress: progress,
-    mastery: mastery,
-    literacy: literacy,
+    mastery: picked.mastery,
+    masteryFromAccount: picked.fromAccount,
+    literacy: shown.literacy,
+    literacyFromAccount: shown.fromAccount,
     suggestion: suggestion,
     identity: identity
   };
@@ -194,9 +233,13 @@ function profileCards(state){
   }).join('') + '</div>';
 }
 
-function scoreBlock(literacy){
+function scoreBlock(state){
+  const literacy = state.literacy;
   const width = Math.max(0, Math.min(100, literacy.score / 10));
-  const lines = literacy.lines.map(function(line){ return '<li>' + esc(line) + '</li>'; }).join('');
+  const lines = (literacy.lines || []).map(function(line){ return '<li>' + esc(line) + '</li>'; }).join('');
+  const account = state.literacyFromAccount
+    ? '<p class="life-help">This score was saved on your account. This device does not have the lessons yet, so the lines are from that saved snapshot.</p>'
+    : '';
   return '<section class="id-section" id="identityScore">' +
     '<p class="id-kicker">Literacy score</p>' +
     '<h2>How the 0–1000 score is counted</h2>' +
@@ -204,6 +247,7 @@ function scoreBlock(literacy){
       literacy.score + ' <span>/ 1000</span></p>' +
     '<div class="id-bar" aria-hidden="true"><span style="width:' + width + '%"></span></div>' +
     '<p class="life-help">Lessons are worth up to 400, latest-quiz accuracy up to 400 (full credit needs 24 questions), and concepts you have touched up to 200. Nothing here is a credit score.</p>' +
+    account +
     '<ul class="id-math">' + lines + '</ul>' +
     '<p class="life-help"><a href="#life/journal/review">Open this year’s journal review</a> to see what-ifs, notes, and how this score moved when the dates are on this device.</p>' +
     '</section>';
@@ -226,10 +270,14 @@ function masteryBlock(state){
       '<div class="id-meter" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + row.score + '" aria-label="' + esc(row.label) + ' ' + row.score + ' of 100"><span style="width:' + row.score + '%"></span></div>' +
       '<p class="life-help">' + row.lessonsDone + ' of ' + row.lessonsTotal + ' lessons · ' + esc(quiz) + '</p></li>';
   }).join('');
+  const account = state.masteryFromAccount
+    ? '<p class="life-help">Some concept marks came from your account because they were newer than the lessons on this device.</p>'
+    : '';
   return '<section class="id-section" id="identityMastery">' +
     '<p class="id-kicker">Concept mastery</p>' +
     '<h2>Where the lessons have landed</h2>' +
     '<p class="life-help">With a saved quiz, the mark is 45% lessons and 55% latest-quiz accuracy. With no quiz, it tops out at 60 even if every tagged lesson is finished. Focus topics for this profile are listed first.</p>' +
+    account +
     '<ul class="id-mastery">' + body + '</ul></section>';
 }
 
@@ -265,7 +313,7 @@ function planBlock(state, plan){
   return '<section class="id-section" id="identityPlan">' +
     '<p class="id-kicker">This week</p>' +
     '<h2>Study plan · ' + esc(weekTitle(new Date())) + '</h2>' +
-    '<p class="life-help">At most four items, and fewer when onboarding said the week is short. The list stays put until next week (' + esc(when) + ') so it does not keep adding more. Saved on this device.</p>' +
+    '<p class="life-help">At most four items, and fewer when onboarding said the week is short. The list stays put until next week (' + esc(when) + ') so it does not keep adding more. Saved on this device. When you are signed in, this plan can also be saved on your account.</p>' +
     list +
     '<div class="life-actions"><button type="button" class="btn-secondary" id="identityRefreshPlan">Build a new plan</button></div>' +
     '</section>';
@@ -323,7 +371,7 @@ function render(refreshPlan){
   const empty = untouched(state)
     ? '<p class="life-empty">No lessons or quizzes are saved on this device yet, so the score stays at 0. <a href="#lessons">Start a lesson</a> or <a href="#life">open Life Path</a>. This is a study page, not a rating of your money.</p>'
     : '';
-  host.innerHTML = empty + profileCards(state) + focusBlock(state) + scoreBlock(state.literacy) + masteryBlock(state) + planBlock(state, plan);
+  host.innerHTML = empty + profileCards(state) + focusBlock(state) + scoreBlock(state) + masteryBlock(state) + planBlock(state, plan);
   const section = sectionFromHash();
   const target = section && document.getElementById('identity' + section.charAt(0).toUpperCase() + section.slice(1));
   if(target && target.scrollIntoView){
@@ -398,6 +446,7 @@ function lifeLineHtml(){
 
 window.FPIdentity = {
   render: function(){ render(false); },
+  model: model,
   snapshot: snapshot,
   lifeLineHtml: lifeLineHtml,
   history: function(){ return ensureIdentityLog(); }

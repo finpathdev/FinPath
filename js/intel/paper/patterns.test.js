@@ -541,12 +541,12 @@ test('copy stays educational, shows the rules, and links real lessons', function
   assert.doesNotMatch(src, /shame|stupid|reckless|you failed|you panicked/i);
 });
 
-test('the paper tab keeps the yellow note and the service worker is finpath-v37', function(){
+test('the paper tab keeps the yellow note and the service worker is finpath-v38', function(){
   const sw = readFileSync(new URL('../../../sw.js', import.meta.url), 'utf8');
   const html = readFileSync(new URL('../../../index.html', import.meta.url), 'utf8');
   const boot = readFileSync(new URL('./boot.js', import.meta.url), 'utf8');
-  assert.match(sw, /finpath-v37/);
-  assert.doesNotMatch(sw, /finpath-v36/);
+  assert.match(sw, /finpath-v38/);
+  assert.doesNotMatch(sw, /finpath-v37/);
   assert.match(sw, /js\/intel\/paper\/patterns\.js/);
   assert.match(boot, /patterns\.js/);
   assert.match(boot, /FPPatterns/);

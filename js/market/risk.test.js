@@ -303,8 +303,8 @@ test('the page, service worker, and candle window expose the risk check', functi
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');
   const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
   const readme = readFileSync(new URL('../../README.md', import.meta.url), 'utf8');
-  assert.match(sw, /finpath-v37/);
-  assert.doesNotMatch(sw, /finpath-v36/);
+  assert.match(sw, /finpath-v38/);
+  assert.doesNotMatch(sw, /finpath-v37/);
   assert.match(sw, /js\/market\/risk\.js/);
   assert.match(html, /js\/market\/risk\.js/);
   assert.match(html, /id="riskCheck"/);
