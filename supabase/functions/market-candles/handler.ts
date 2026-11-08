@@ -4,7 +4,10 @@
 // returns closes only. It is not an open proxy: the URL is built here.
 
 const YAHOO = 'https://query1.finance.yahoo.com/v8/finance/chart/'
-const INTERVAL_MAX: Record<string, number> = { '5m': 10, '15m': 30, '30m': 60, '60m': 120, '1d': 120 }
+// 1d allows 400 calendar days so the portfolio risk check can load about a
+// year of closes (~252 trading days) plus a short buffer. Intraday caps stay
+// tight so this route is not an open history proxy.
+const INTERVAL_MAX: Record<string, number> = { '5m': 10, '15m': 30, '30m': 60, '60m': 120, '1d': 400 }
 const CRYPTO: Record<string, string> = {
   BTC: 'BTC-USD',
   ETH: 'ETH-USD',

@@ -96,6 +96,28 @@ test('rejects other origins, wide intraday windows, and too many symbols', async
   )
   assert.equal(many.status, 400)
 
+  const year = await handleMarketCandles(
+    new Request('https://example.test/market-candles?symbols=SPY&interval=1d&days=400', {
+      headers: { Origin: ORIGIN },
+    }),
+    deps(async (input) => {
+      const url = String(input)
+      assert.match(url, /interval=1d&period1=1665440000&period2=1700000000/)
+      return new Response(JSON.stringify(yahooBody('SPY', [1, 2], [100, 101])), { status: 200 })
+    }),
+  )
+  assert.equal(year.status, 200)
+  const yearBody = await year.json()
+  assert.deepEqual(yearBody.series.SPY.c, [100, 101])
+
+  const tooLong = await handleMarketCandles(
+    new Request('https://example.test/market-candles?symbols=SPY&interval=1d&days=401', {
+      headers: { Origin: ORIGIN },
+    }),
+    deps(fetchImpl),
+  )
+  assert.equal(tooLong.status, 400)
+
   const preflight = await handleMarketCandles(
     new Request('https://example.test/market-candles', { method: 'OPTIONS', headers: { Origin: ORIGIN } }),
     deps(fetchImpl),

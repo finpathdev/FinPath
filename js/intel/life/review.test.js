@@ -191,9 +191,9 @@ test('yearbook copy stays educational', function(){
   assert.doesNotMatch(bare.join('\n'), /literacy score/i);
 });
 
-test('service worker cache is finpath-v36 and precaches the review', function(){
+test('service worker cache is finpath-v37 and precaches the review', function(){
   const sw = readFileSync(new URL('../../../sw.js', import.meta.url), 'utf8');
-  assert.match(sw, /finpath-v36/);
-  assert.doesNotMatch(sw, /finpath-v35/);
+  assert.match(sw, /finpath-v37/);
+  assert.doesNotMatch(sw, /finpath-v36/);
   assert.match(sw, /js\/intel\/life\/review\.js/);
 });
