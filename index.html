@@ -448,6 +448,10 @@ a.life-chip{display:inline-flex;align-items:center;text-decoration:none;color:va
 .id-done{color:var(--muted)}
 .id-plan button{margin-top:8px}
 .id-section summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-weight:650}
+.study-choice{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 16px}
+.study-choice .btn-secondary,.study-choice .btn-primary{min-height:44px}
+.study-check{display:flex;gap:10px;align-items:flex-start;margin:12px 0;line-height:1.45}
+.study-check input{width:22px;height:22px;margin-top:2px;flex:0 0 auto}
 @media(min-width:768px){
   .life-steps{grid-template-columns:1fr 1fr}
   .life-snaps{grid-template-columns:1fr 1fr}
@@ -1676,6 +1680,7 @@ body.light .gs-item{background:#fff}
       <a href="#home" data-nav="home" role="button" tabindex="0" aria-current="page" onclick="showPage('home');return false;">Home</a>
       <a href="#life" data-nav="life" role="button" tabindex="0" onclick="showPage('life');return false;">Life</a>
       <a href="#identity" data-nav="identity" role="button" tabindex="0" onclick="showPage('identity');return false;">Identity</a>
+      <a href="#study" data-nav="study" role="button" tabindex="0" onclick="showPage('study');return false;">Study</a>
       <a href="#lessons" data-nav="lessons" role="button" tabindex="0" onclick="showPage('lessons');return false;">Lessons</a>
       <a href="#ask" data-nav="ask" role="button" tabindex="0" onclick="showPage('ask');return false;">Ask</a>
       <a href="#gold" data-nav="gold" role="button" tabindex="0" onclick="showPage('gold');return false;">Gold</a>
@@ -1691,6 +1696,7 @@ body.light .gs-item{background:#fff}
   <a href="#home" data-nav="home" role="button" tabindex="0" aria-current="page" onclick="showPage('home');toggleMenu(false);return false;">Home</a>
   <a href="#life" data-nav="life" role="button" tabindex="0" onclick="showPage('life');toggleMenu(false);return false;">Life Path</a>
   <a href="#identity" data-nav="identity" role="button" tabindex="0" onclick="showPage('identity');toggleMenu(false);return false;">Identity</a>
+  <a href="#study" data-nav="study" role="button" tabindex="0" onclick="showPage('study');toggleMenu(false);return false;">Does FinPath work?</a>
   <a href="#lessons" data-nav="lessons" role="button" tabindex="0" onclick="showPage('lessons');toggleMenu(false);return false;">Lessons</a>
   <a href="#ask" data-nav="ask" role="button" tabindex="0" onclick="showPage('ask');toggleMenu(false);return false;">Ask</a>
   <a href="#gold" data-nav="gold" role="button" tabindex="0" onclick="showPage('gold');toggleMenu(false);return false;">Gold</a>
@@ -2432,7 +2438,7 @@ body.light .gs-item{background:#fff}
         <button type="button" role="tab" id="lifeJournalReview" aria-controls="lifeJournalReviewPane" aria-selected="false" tabindex="-1">Year in review</button>
       </div>
       <div id="lifeJournalTimelinePane" role="tabpanel" aria-labelledby="lifeJournalTimeline">
-        <p class="life-help">A timeline of what-ifs you save, notes you write, paper trades, savings goals, finished lessons, and quiz scores. Trades, goals, and lessons stay in this browser. Path inputs and the notes you save here can also sync when you are signed in. If you are signed out, or the network fails, they still stay on this device.</p>
+        <p class="life-help">A timeline of what-ifs you save, notes you write, paper trades, savings goals, finished lessons, and quiz scores. Goals and lesson completions stay in this browser. Thesis notes can sync when you are signed in. Path inputs and the notes you save here can also sync when you are signed in. If you are signed out, or the network fails, they still stay on this device.</p>
         <p class="life-help"><a href="#life/journal/review">Open this year’s review</a></p>
         <form id="lifeNoteForm" class="life-field">
           <label for="lifeNote">Add a one-line note</label>
@@ -2459,9 +2465,25 @@ body.light .gs-item{background:#fff}
       <h1>Financial identity</h1>
       <p>A study profile for this device. It shapes what to read next. It does not tell you what to do with money.</p>
     </div>
-    <p class="life-note" role="note">Educational only. This profile and the literacy score are not a credit score, not a rating of your money, and not advice to buy, sell, or borrow. They stay in this browser unless you clear site data.</p>
+    <p class="life-note" role="note">Educational only. This profile and the literacy score are not a credit score, not a rating of your money, and not advice to buy, sell, or borrow. They stay on this device. When you are signed in, concept marks, the score history, and this week’s plan can also be saved on your account. Signed out, nothing is sent.</p>
+    <p id="identitySync" class="life-help" role="status"></p>
     <p id="identityStatus" class="life-help" role="status">Loading identity…</p>
+    <p class="life-help"><a href="#study" onclick="showPage('study');return false;">Does FinPath work?</a> is an optional study. It is off unless you join, and it is not for anyone under 13.</p>
     <div id="identityApp"></div>
+  </div>
+</div>
+
+<!-- EFFICACY STUDY -->
+<div id="page-study" class="page">
+  <div class="life-wrap">
+    <div class="page-header" style="padding-left:0;padding-right:0">
+      <h1>Does FinPath work?</h1>
+      <p>An optional study of whether the lessons help. It is off unless you join.</p>
+    </div>
+    <p class="life-note" role="note">Educational only. The combined numbers are not a grade and not a reason to buy, sell, or borrow. FinPath does not ask for your name, school, exact age, or location. Anyone under 13 is left out.</p>
+    <div id="studyConsent"></div>
+    <div id="studyResults"></div>
+    <p id="studyStatus" class="life-help" role="status"></p>
   </div>
 </div>
 
@@ -2648,7 +2670,7 @@ body.light .gs-item{background:#fff}
       </section>
       <div class="thesis-journal" id="thesisJournal">
         <div class="thesis-journal-title">Thesis lab</div>
-        <p class="thesis-journal-sub" id="thesisJournalNote">Saved in this browser only — not synced if you sign in. Scores grade the note you wrote before the practice buy. They are not a reason to buy or sell.</p>
+        <p class="thesis-journal-sub" id="thesisJournalNote">Saved on this device. When you are signed in, the thesis, falsifier, confidence, and scores can also be saved on your account. Scores grade the note you wrote before the practice buy. They are not a reason to buy or sell.</p>
         <div id="thesisFormulas" class="thesis-formulas"></div>
         <div id="thesisOpen"><div class="empty thesis-empty">Your next paper buy asks for a thesis and a falsifier — what would prove you wrong — plus the move, timeframe, and confidence you expect.</div></div>
         <div id="thesisClosed"></div>
@@ -2903,6 +2925,7 @@ body.light .gs-item{background:#fff}
         <li><strong>Analytics</strong>: anonymous, aggregated event data (page views, feature usage) via privacy-respecting analytics — no cookies, no personal identifiers. Ask events record that a question was opened, sent, refused, rate-limited, or failed, plus whether the account was free or Gold. They do not include the question text.</li>
         <li><strong>Ask FinPath questions</strong>: the question, a short recent conversation, and an optional lesson title are sent to <strong>xAI</strong> so Grok can write an educational answer. FinPath does not send your email, user id, or portfolio to xAI. xAI handles that text under its own terms. FinPath does not keep a transcript of the questions.</li>
         <li><strong>Ask usage counters</strong>: when you are signed in, FinPath stores a daily count and a short-lived per-minute count (your user id, the UTC day or minute, and a number) so the free limit of 5 questions a day and the Gold limit of 50 can be enforced, along with about 5 questions a minute. These rows are counters, not your questions. This browser may also save the last remaining number for display only. That saved number does not enforce the limit.</li>
+        <li><strong>Optional learning study</strong>: off unless you join, and not available if you are under 13. If you join and you are signed in, FinPath stores a random study code (not your email), your literacy score at the start and later, and a count when you finish a lesson or a quiz. It does not store your name, school, exact age, or location. An age band is optional. You can leave and delete those rows from the Study page. The public page shows combined numbers only when at least 10 people have joined.</li>
         <li><strong>Technical logs</strong>: standard web-server logs (IP address, user agent) retained temporarily for security</li>
       </ul>
       <p><strong>What we do not do:</strong> sell your data, share it with advertisers, run targeted ads, use tracking cookies, or share information with data brokers.</p>
@@ -3155,6 +3178,8 @@ body.light .gs-item{background:#fff}
 <script type="module" src="js/intel/life/boot.js"></script>
 <script type="module" src="js/intel/identity/boot.js"></script>
 <script type="module" src="js/intel/paper/boot.js"></script>
+<script type="module" src="js/intel/sync/boot.js"></script>
+<script type="module" src="js/intel/study/boot.js"></script>
 <script src="js/market/candles.js"></script>
 <script src="js/market/risk.js"></script>
 <script src="js/market/quotes.js"></script>
@@ -3167,6 +3192,7 @@ body.light .gs-item{background:#fff}
 const FK='dbep8o9r01qp3vut32g0dbep8o9r01qp3vut32gg';
 const SBU='https://ivhhfhemcecwqadrjmwq.supabase.co';
 const SBK='sb_publishable_KoWYv1Ro5D4I83XxWmJFOg_DCB2ldw6';
+window.FP_PUBLIC_SUPABASE = { url: SBU, key: SBK };
 const SBH={'Content-Type':'application/json','apikey':SBK,'Authorization':'Bearer '+SBK};
 const EP=new URLSearchParams(window.location.search);
 // PRIVACY: the legacy ?user=<email> param used to be copied into localStorage and left in the
@@ -4242,7 +4268,7 @@ document.addEventListener('click', function(e){
 });
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ if(typeof hideTerm==='function') hideTerm(); const m = document.getElementById('mobileMenu'); if(m && m.classList.contains('open')) toggleMenu(false); } });
 
-const ROUTES=['home','portfolio','lessons','ask','gold','markets','legal','life','identity'];
+const ROUTES=['home','portfolio','lessons','ask','gold','markets','legal','life','identity','study'];
 function markNav(p){
   document.querySelectorAll('[data-nav]').forEach(function(el){
     if(el.getAttribute('data-nav') === p) el.setAttribute('aria-current', 'page');
@@ -4280,6 +4306,7 @@ function showPage(p,fromHash){
   }
   if(p==='life' && typeof renderLife==='function') renderLife();
   if(p==='identity' && typeof renderIdentity==='function') renderIdentity();
+  if(p==='study' && window.FPStudy && typeof FPStudy.render==='function') FPStudy.render();
   if((p==='lessons' || p==='portfolio') && typeof maybeOfferIntake==='function') maybeOfferIntake();
 }
 
@@ -4365,6 +4392,7 @@ function markLessonComplete(i){
   const store = { _v: 1 };
   Object.keys(p).forEach(function(k){ if(k !== '_v') store[k] = p[k]; });
   localStorage.setItem('fp_lessons', JSON.stringify(store));
+  if(window.FPIntelSync && FPIntelSync.schedule) FPIntelSync.schedule();
   if(Object.keys(p).length >= 5 && typeof unlockAchv==='function') unlockAchv('scholar');
   track('lesson_complete', {lesson: LESSONS[i].name});
   if(typeof renderChecklist==='function') renderChecklist();
@@ -5687,6 +5715,7 @@ async function paintRiskCheck(key, book, gen, force){
   });
   const report = fpRiskReport({ holdings: holdings, benchmarkPoints: bench.points || [], benchmark: 'SPY', stale: stale });
   report.retry = !!(stale || report.benchmarkMissing || (report.missing && report.missing.length));
+  if(window.FPIntelSync && typeof FPIntelSync.noteRisk === 'function') FPIntelSync.noteRisk(key, report);
   if(gen !== _riskGen[key]) return;
   body.innerHTML = riskBodyHtml(report, key);
 }
@@ -6193,6 +6222,7 @@ function onUserLoggedIn(user){
   hideLoginNudge();
   if(typeof renderAsk==='function' && document.getElementById('page-ask') && document.getElementById('page-ask').classList.contains('active')) renderAsk();
   if(window.FPLife && typeof FPLife.syncNow === 'function') FPLife.syncNow();
+  if(window.FPIntelSync && typeof FPIntelSync.syncNow === 'function') FPIntelSync.syncNow();
 }
 
 // ══ LOGIN NUDGE ══
@@ -6234,6 +6264,7 @@ function onUserSignedOut(){
   }
   document.getElementById('userMenu').style.display = 'none';
   if(typeof resetAskOnSignOut==='function') resetAskOnSignOut();
+  if(window.FPIntelSync && typeof FPIntelSync.syncNow === 'function') FPIntelSync.syncNow();
 }
 
 async function checkGoldStatus(userId){
@@ -7720,6 +7751,7 @@ function saveQuizAttempt(partial){
     next = { v: 1, attempts: attempts.length > 400 ? attempts.slice(-400) : attempts };
   }
   try{ localStorage.setItem('fp_quiz_log', JSON.stringify(next)); }catch(e){}
+  if(window.FPIntelSync && FPIntelSync.schedule) FPIntelSync.schedule();
 }
 function renderQuizQ(){
   const box = document.getElementById('quizBox'); if(!box || !_quizState) return;
@@ -8354,7 +8386,7 @@ function getPaper(){
   }catch(e){}
   return {cash:100000, pos:[], journal:[], start:Date.now(), spyStart:null};
 }
-function savePaper(p){ localStorage.setItem('fp_paper', JSON.stringify(p)); }
+function savePaper(p){ localStorage.setItem('fp_paper', JSON.stringify(p)); if(window.FPIntelSync && FPIntelSync.schedule) FPIntelSync.schedule(); }
 function setMode(m){
   PAPER_MODE = m === 'paper';
   document.getElementById('tabLive').classList.toggle('active', !PAPER_MODE);
@@ -8489,6 +8521,19 @@ function renderPatterns(p){
     if(slug && typeof openLessonById === 'function') openLessonById(slug);
   });
 })();
+function accountThesisHtml(){
+  let rows = [];
+  try{
+    const raw = JSON.parse(localStorage.getItem('fp_thesis_account') || 'null');
+    rows = raw && Array.isArray(raw.entries) ? raw.entries : [];
+  }catch(e){ rows = []; }
+  if(!rows.length) return '';
+  return '<div class="thesis-kicker">From your account</div><p class="thesis-journal-sub">These notes are saved on your account. They are not open paper positions, so the pattern counts leave them out.</p>' + rows.slice(0, 20).map(function(row){
+    const line = row.thesis ? escapeHtml(row.thesis) : '<span class="thesis-missing">No thesis recorded</span>';
+    const falsifier = row.falsifier ? '<div class="thesis-reflect">Falsifier: ' + escapeHtml(row.falsifier) + '</div>' : '';
+    return '<div class="thesis-row"><div class="thesis-row-top"><span class="tk">' + escapeHtml(row.ticker || 'Note') + '</span><span class="when">From your account</span></div><div class="thesis-line">' + line + '</div>' + falsifier + '</div>';
+  }).join('');
+}
 function renderTradeJournal(p){
   const openEl = document.getElementById('thesisOpen');
   const closedEl = document.getElementById('thesisClosed');
@@ -8496,13 +8541,13 @@ function renderTradeJournal(p){
   if(!openEl || !closedEl) return;
   renderThesisFormulas();
   const note = document.getElementById('thesisJournalNote');
-  if(note) note.textContent = 'Saved in this browser only — not synced if you sign in. Scores grade the note you wrote before the practice buy. They are not a reason to buy or sell.';
+  if(note) note.textContent = 'Saved on this device. When you are signed in, the thesis, falsifier, confidence, and scores can also be saved on your account. Scores grade the note you wrote before the practice buy. They are not a reason to buy or sell.';
   const opens = (p && Array.isArray(p.pos)) ? p.pos : [];
   const allClosed = (p && Array.isArray(p.journal)) ? p.journal : [];
   const closed = allClosed.slice(0, 20);
   if(!opens.length && !allClosed.length){
     openEl.innerHTML = '<div class="empty thesis-empty">Your next paper buy asks for a thesis and a falsifier — what would prove you wrong — plus the move, timeframe, and confidence you expect.</div>';
-    closedEl.innerHTML = '';
+    closedEl.innerHTML = accountThesisHtml();
     renderCalibration(allClosed);
     return;
   }
@@ -8513,7 +8558,7 @@ function renderTradeJournal(p){
       : '<span class="thesis-missing">No thesis recorded</span>';
     return '<div class="thesis-row"><div class="thesis-row-top"><span class="tk">' + escapeHtml(x.t) + '</span><span class="when">' + escapeHtml(when) + '</span></div><div class="thesis-line">' + line + '</div>' + thesisMetaHtml(x) + '</div>';
   }).join('')) : '';
-  if(!closed.length){ closedEl.innerHTML = ''; renderCalibration(allClosed); return; }
+  if(!closed.length){ closedEl.innerHTML = accountThesisHtml(); renderCalibration(allClosed); return; }
   closedEl.innerHTML = '<div class="thesis-kicker">Closed</div>' + closed.map(function(j){
     const thesis = j.thesis
       ? '<div class="thesis-line">' + escapeHtml(j.thesis) + '</div>'
@@ -8525,7 +8570,7 @@ function renderTradeJournal(p){
     const bought = stamp(j.boughtAt), sold = stamp(j.soldAt);
     const dates = [bought ? ('Bought ' + bought) : '', sold ? ('Sold ' + sold) : ''].filter(Boolean).join(' · ');
     return '<div class="thesis-row"><div class="thesis-row-top"><span class="tk">' + escapeHtml(j.t || '') + '</span><span class="when">' + escapeHtml(dates) + '</span></div>' + thesis + thesisMetaHtml(j) + reflect + pnlHtml + thesisScoresHtml(j) + '</div>';
-  }).join('') + (allClosed.length > 20 ? '<div class="thesis-more" style="color:var(--muted);padding:8px 0 4px">Showing the 20 most recent closed trades.</div>' : '');
+  }).join('') + (allClosed.length > 20 ? '<div class="thesis-more" style="color:var(--muted);padding:8px 0 4px">Showing the 20 most recent closed trades.</div>' : '') + accountThesisHtml();
   renderCalibration(allClosed);
 }
 async function renderPaper(){

@@ -9,3 +9,11 @@ verify_jwt = false
 
 [functions.market-quotes]
 verify_jwt = false
+
+# Public k-anonymous aggregate for the opt-in study. The publishable key is
+# not a user JWT, and signed-out learners still need to read "not enough
+# participants yet". The handler allowlists Origin, requires a user JWT
+# before it stores an event, and never returns individual rows.
+# ask-finpath is still omitted here so the platform default stays verify_jwt on.
+[functions.efficacy-summary]
+verify_jwt = false
