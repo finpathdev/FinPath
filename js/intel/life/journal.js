@@ -27,7 +27,7 @@ export function mergeJournal(stores){
         id: 'trade:' + String(j.id || j.soldAt || ''),
         kind: 'trade',
         title: 'Paper sell ' + String(j.t || ''),
-        why: [j.thesis ? 'Thesis: ' + j.thesis : '', j.reflection ? 'Reflection: ' + j.reflection : '', isFinite(pnl) ? 'Result: ' + (pnl >= 0 ? '+' : '−') + Math.abs(pnl).toFixed(2) : ''].filter(Boolean).join('\n'),
+        why: [j.thesis ? 'Thesis: ' + j.thesis : '', j.falsifier ? 'Falsifier: ' + j.falsifier : '', j.reflection ? 'Reflection: ' + j.reflection : '', isFinite(pnl) ? 'Result: ' + (pnl >= 0 ? '+' : '−') + Math.abs(pnl).toFixed(2) : ''].filter(Boolean).join('\n'),
         conceptIds: ['psychology'],
         at: Number(j.soldAt) || 0,
         ref: 'fp_paper'
@@ -41,7 +41,7 @@ export function mergeJournal(stores){
         id: 'trade-open:' + String(p.t),
         kind: 'trade',
         title: 'Open paper buy ' + String(p.t),
-        why: p.thesis ? String(p.thesis) : '',
+        why: [p.thesis ? String(p.thesis) : '', p.falsifier ? 'Falsifier: ' + String(p.falsifier) : ''].filter(Boolean).join('\n'),
         conceptIds: ['psychology'],
         at: Number(p.ts) || 0,
         ref: 'fp_paper'

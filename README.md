@@ -21,12 +21,14 @@ python3 -m http.server 8000   # then open http://localhost:8000
 Life Path, literacy, and identity checks (no build step):
 
 ```bash
-node --test js/intel/life/*.test.js js/intel/learn/*.test.js js/intel/identity/*.test.js js/market/*.test.js supabase/functions/market-candles/handler.test.ts supabase/functions/market-quotes/handler.test.ts
+node --test js/intel/life/*.test.js js/intel/learn/*.test.js js/intel/identity/*.test.js js/intel/paper/*.test.js js/market/*.test.js supabase/functions/market-candles/handler.test.ts supabase/functions/market-quotes/handler.test.ts
 ```
 
 Open `#life` for the classroom range (p10 / p50 / p90) around the invested balance, and `#life/future` for the Future Self letter. Open `#life/journal` for the Decision Journal timeline and `#life/journal/review` for this year’s yearbook (what-ifs, notes, paper trades, goals, lessons, quizzes, and literacy or identity change when those dates exist on the device). `#life/journal/review/2025` opens a past year. Open `#identity` (or `#life/identity`) for a study profile, the 0–1000 literacy score, concept mastery, and a weekly plan of at most four lessons or quizzes. All of that stays educational. It is not a prediction and not a reason to buy, sell, or borrow.
 
 The identity page reads onboarding answers, Life Path inputs, lesson completions, and `fp_quiz_log` on this device. Picking a profile saves `fp_identity` in the browser. The weekly list saves `fp_study_plan`. Neither one is synced to an account. Signed-out use is unchanged.
+
+The portfolio Paper tab is the thesis lab. A practice buy asks why you are buying, what would prove that wrong, the move you expect, a timeframe, a confidence, and a cap on the paper account. After the close, the journal shows four 0–100 scores (accuracy, research quality, decision quality, risk discipline) and a calibration view of confidence buckets against the hit rate. The formulas are on the page. The scores grade the note. They are not a reason to buy or sell, and they stay in this browser.
 
 ## Life Path cloud sync
 
