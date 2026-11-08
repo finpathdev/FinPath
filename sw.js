@@ -1,9 +1,9 @@
-// FinPath Service Worker — cache finpath-v35
+// FinPath Service Worker — cache finpath-v36
 // Handles offline caching so lessons and the shell keep working with no signal.
 // Live prices, filings, and API responses are intentionally NOT cached — those
 // must always be fresh.
 
-const CACHE = 'finpath-v35';
+const CACHE = 'finpath-v36';
 const SHELL = [
   './',
   './index.html',
@@ -27,6 +27,7 @@ const SHELL = [
   './js/market/candles.js',
   './js/market/quotes.js',
   './js/intel/paper/thesis.js',
+  './js/intel/paper/patterns.js',
   './js/intel/paper/boot.js',
   './icon-192.png',
   './icon-512.png',

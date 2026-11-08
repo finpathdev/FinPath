@@ -243,8 +243,8 @@ test('the page, service worker, and function auth match the shared quote path', 
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');
   const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
   const cfg = readFileSync(new URL('../../supabase/config.toml', import.meta.url), 'utf8');
-  assert.match(sw, /finpath-v35/);
-  assert.doesNotMatch(sw, /finpath-v34/);
+  assert.match(sw, /finpath-v36/);
+  assert.doesNotMatch(sw, /finpath-v35/);
   assert.match(sw, /js\/market\/quotes\.js/);
   assert.match(html, /js\/market\/quotes\.js/);
   assert.match(html, /market-quotes/);

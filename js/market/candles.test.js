@@ -113,10 +113,10 @@ test('status copy distinguishes an empty book, a plan limit, and saved history',
   assert.match(fpChartLabel(FRI_CLOSE, 1), /PM|AM/);
 });
 
-test('service worker is finpath-v35 and precaches the chart helper', function(){
+test('service worker is finpath-v36 and precaches the chart helper', function(){
   const sw = readFileSync(new URL('../../sw.js', import.meta.url), 'utf8');
-  assert.match(sw, /finpath-v35/);
-  assert.doesNotMatch(sw, /finpath-v34/);
+  assert.match(sw, /finpath-v36/);
+  assert.doesNotMatch(sw, /finpath-v35/);
   assert.match(sw, /js\/market\/candles\.js/);
   const html = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
   assert.match(html, /js\/market\/candles\.js/);

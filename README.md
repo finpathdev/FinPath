@@ -30,6 +30,8 @@ The identity page reads onboarding answers, Life Path inputs, lesson completions
 
 The portfolio Paper tab is the thesis lab. A practice buy asks why you are buying, what would prove that wrong, the move you expect, a timeframe, a confidence, and a cap on the paper account. After the close, the journal shows four 0–100 scores (accuracy, research quality, decision quality, risk discipline) and a calibration view of confidence buckets against the hit rate. The formulas are on the page. The scores grade the note. They are not a reason to buy or sell, and they stay in this browser.
 
+The same tab has a Your patterns section under the journal. Three rule-based cards — overconfidence, loss aversion (the disposition effect), and panic selling — read that practice journal. Each card shows its rule, waits for a minimum count, and says “Not enough data yet” until then. A lesson link and a reflection question sit on every card. The notes are educational. They are not a reason to buy or sell.
+
 ## Life Path cloud sync
 
 Path inputs and the notes you save on the Journal tab stay in `localStorage` first. Signed-out use never requires an account. When someone is signed in, the page tries to sync those two things to Supabase project `ivhhfhemcecwqadrjmwq`. Paper trades, goals, and lesson progress stay on the device.

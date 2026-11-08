@@ -124,10 +124,10 @@ test('attempts with no responses fall back to the lesson tags', function(){
   assert.equal(mastery.budgeting.quizTotal, 3);
 });
 
-test('service worker cache is finpath-v35 and precaches the new modules', function(){
+test('service worker cache is finpath-v36 and precaches the new modules', function(){
   const sw = readFileSync(new URL('../../../sw.js', import.meta.url), 'utf8');
-  assert.match(sw, /finpath-v35/);
-  assert.doesNotMatch(sw, /finpath-v34/);
+  assert.match(sw, /finpath-v36/);
+  assert.doesNotMatch(sw, /finpath-v35/);
   ['js/intel/life/review.js', 'js/intel/learn/mastery.js', 'js/intel/learn/plan.js', 'js/intel/identity/profiles.js', 'js/intel/identity/boot.js'].forEach(function(file){
     assert.match(sw, new RegExp(file.replace(/\//g, '\\/')));
   });

@@ -1300,6 +1300,26 @@ body.light .scr-filters input,body.light .scr-filters select{background:#fff}
 .cal-track{height:8px;border-radius:99px;background:rgba(134,239,172,.12);overflow:hidden}
 .cal-fill{height:100%;background:var(--green);border-radius:99px;max-width:100%}
 .cal-stat{font-size:12px;color:var(--muted);text-align:right;overflow-wrap:anywhere}
+#thesisPatterns{scroll-margin-top:120px}
+.pattern-list{display:flex;flex-direction:column;gap:12px;margin:0 0 14px}
+.pattern-card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(134,239,172,.04);min-width:0}
+.pattern-card.noticed{border-color:rgba(245,182,11,.45);background:rgba(245,182,11,.06)}
+.pattern-card-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.pattern-card h3{font-size:15px;font-weight:700;font-family:var(--font-display);margin:0;line-height:1.3}
+.pattern-status{font-size:12px;font-weight:700;color:var(--muted)}
+.pattern-card.noticed .pattern-status{color:var(--gold)}
+.pattern-headline{font-size:13.5px;line-height:1.5;margin:8px 0}
+.pattern-check{font-size:12.5px;line-height:1.45;color:var(--text);padding:6px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
+.pattern-check-label{display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.pattern-lesson{display:block;margin-top:8px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);text-decoration:none;color:inherit;background:rgba(134,239,172,.04)}
+.pattern-lesson:hover{border-color:var(--green)}
+.pattern-lesson:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.pattern-lesson-title{font-size:13.5px;font-weight:700;line-height:1.35}
+.pattern-lesson-blurb{font-size:12.5px;color:var(--muted);line-height:1.45;margin-top:4px}
+.pattern-prompt{font-size:13px;line-height:1.5;margin:8px 0 2px}
+.pattern-prompt .thesis-kicker{display:block;margin:0 0 4px}
+body.light .pattern-lesson,body.light .pattern-card{background:rgba(20,83,45,.04)}
+body.light .pattern-card.noticed{background:rgba(180,120,7,.08);border-color:rgba(180,120,7,.35)}
 .thesis-choice{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}
 .thesis-choice .chip[aria-checked="true"]{color:var(--text);border-color:var(--green);background:rgba(34,197,94,.16)}
 body.light .cal-track{background:rgba(20,83,45,.1)}
@@ -1307,6 +1327,7 @@ body.light .thesis-score,body.light #paperPlanLock{background:rgba(20,83,45,.04)
 body.light .thesis-formula{background:rgba(180,120,7,.08);border-color:rgba(180,120,7,.28)}
 @media (max-width:600px){
   .thesis-scores{grid-template-columns:1fr 1fr}
+  .pattern-lesson{min-height:44px}
   .cal-row{grid-template-columns:1fr;gap:4px}
   .cal-stat{text-align:left}
   .thesis-choice .chip{min-height:44px}
@@ -2602,6 +2623,10 @@ body.light .gs-item{background:#fff}
         <div id="thesisOpen"><div class="empty thesis-empty">Your next paper buy asks for a thesis and a falsifier — what would prove you wrong — plus the move, timeframe, and confidence you expect.</div></div>
         <div id="thesisClosed"></div>
         <div id="thesisCalibration"></div>
+        <div id="thesisPatterns">
+          <div class="thesis-kicker" id="patternsHeading">Your patterns</div>
+          <p class="thesis-journal-sub">Pattern notes appear here from the practice journal in this browser. They are not a reason to buy or sell.</p>
+        </div>
       </div>
     </div>
     <div class="learn-rec paycheck-entry" id="paycheckEntryPort" style="margin-top:34px">
@@ -8246,9 +8271,70 @@ function renderCalibration(journal){
     '<p class="thesis-journal-sub">Each bucket is the confidence you wrote. The hit rate is how often the price moved the same direction as that note. A flat forecast (0%) counts as a hit only when the price finished within 1 percentage point. A bucket with few closes will jump around. This is a practice record, not a prediction.</p>' +
     rows + skipped;
 }
+function lessonHref(slug){
+  let i = -1;
+  if(typeof LESSONS !== 'undefined'){
+    for(let n = 0; n < LESSONS.length; n++){
+      if(LESSONS[n] && LESSONS[n].id === slug){ i = n; break; }
+    }
+  }
+  return i >= 0 ? '#lesson/' + i : '#lessons';
+}
+function renderPatterns(p){
+  const el = document.getElementById('thesisPatterns');
+  if(!el) return;
+  const api = window.FPPatterns;
+  if(!api || typeof api.detectPatterns !== 'function'){
+    el.innerHTML = '<p class="thesis-journal-sub">Pattern notes did not load. Refresh the page.</p>';
+    return;
+  }
+  let report;
+  try{
+    report = api.detectPatterns({
+      journal: (p && Array.isArray(p.journal)) ? p.journal : [],
+      pos: (p && Array.isArray(p.pos)) ? p.pos : []
+    });
+  }catch(e){
+    el.innerHTML = '<p class="thesis-journal-sub">Pattern notes did not load. Refresh the page.</p>';
+    return;
+  }
+  const cards = (report.detectors || []).map(function(d){
+    const status = (d.status === 'noticed' || d.status === 'quiet') ? d.status : 'insufficient';
+    const checks = (d.checks || []).map(function(c){
+      return '<div class="pattern-check"><span class="pattern-check-label">' + escapeHtml(c.label || '') + '</span><div>' + escapeHtml(c.line || '') + '</div></div>';
+    }).join('');
+    const lesson = d.lesson || {};
+    const slug = String(lesson.slug || '');
+    return '<article class="pattern-card ' + status + '" data-pattern="' + escapeHtml(d.id || '') + '">' +
+      '<div class="pattern-card-top"><h3>' + escapeHtml(d.title || '') + '</h3><div class="pattern-status">' + escapeHtml(d.statusLabel || '') + '</div></div>' +
+      '<p class="pattern-headline">' + escapeHtml(d.headline || '') + '</p>' +
+      '<div class="thesis-formula"><div class="thesis-kicker">Rule</div><div>' + escapeHtml(d.criteria || '') + '</div></div>' +
+      checks +
+      '<a class="pattern-lesson" href="' + escapeHtml(lessonHref(slug)) + '" data-lesson="' + escapeHtml(slug) + '">' +
+        '<div class="thesis-kicker">Lesson</div><div class="pattern-lesson-title">' + escapeHtml(lesson.title || 'Open the lesson') + '</div>' +
+        '<div class="pattern-lesson-blurb">' + escapeHtml(lesson.blurb || '') + '</div></a>' +
+      '<p class="pattern-prompt"><span class="thesis-kicker">A question to sit with</span> ' + escapeHtml(d.prompt || '') + '</p>' +
+    '</article>';
+  }).join('');
+  el.innerHTML = '<div class="thesis-kicker" id="patternsHeading">Your patterns</div>' +
+    '<p class="thesis-journal-sub">' + escapeHtml(report.intro || '') + '</p>' +
+    '<div class="pattern-list">' + cards + '</div>';
+}
+(function(){
+  const el = document.getElementById('thesisPatterns');
+  if(!el) return;
+  el.addEventListener('click', function(e){
+    const a = e.target && e.target.closest ? e.target.closest('a.pattern-lesson') : null;
+    if(!a || !el.contains(a)) return;
+    e.preventDefault();
+    const slug = a.getAttribute('data-lesson');
+    if(slug && typeof openLessonById === 'function') openLessonById(slug);
+  });
+})();
 function renderTradeJournal(p){
   const openEl = document.getElementById('thesisOpen');
   const closedEl = document.getElementById('thesisClosed');
+  renderPatterns(p);
   if(!openEl || !closedEl) return;
   renderThesisFormulas();
   const note = document.getElementById('thesisJournalNote');
