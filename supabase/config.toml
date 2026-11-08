@@ -1,0 +1,11 @@
+# Function auth for the public market-data endpoints.
+# This is not a full local-stack config. Signed-out learners call these with
+# the publishable key, which is not a user JWT, so the platform JWT check is
+# off. Each handler allowlists Origin and validates the ticker list.
+# ask-finpath is omitted on purpose: it keeps the platform default, verify_jwt on.
+
+[functions.market-candles]
+verify_jwt = false
+
+[functions.market-quotes]
+verify_jwt = false
