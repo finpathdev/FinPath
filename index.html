@@ -2491,7 +2491,7 @@ body.light .gs-item{background:#fff}
     <div class="mode-tabs" role="tablist"><button class="mode-tab active" id="tabLive" role="tab" onclick="setMode('live')">My portfolio</button><button class="mode-tab" id="tabPaper" role="tab" onclick="setMode('paper')">Paper trading<span class="pill">practice</span></button></div>
     <div id="liveWrap">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
-      <div><h1 style="font-size:28px;font-weight:800;letter-spacing:-.5px">Your Portfolio</h1><p style="font-size:14px;color:var(--muted);margin-top:4px"><span class="live-dot"></span> Live prices · Educational notes · Profit tracking</p><details class="quote-tip"><summary>How to read a quote</summary><p><b>Price</b> is the latest trade we could load. The <b>day’s % change</b> compares that price with the previous close — green means up, red means down. <b>Last known</b> means we saved that price earlier and are showing it because a live update isn’t available. It isn’t a guessed number.</p></details></div>
+      <div><h1 style="font-size:28px;font-weight:800;letter-spacing:-.5px">Your Portfolio</h1><p style="font-size:14px;color:var(--muted);margin-top:4px"><span class="live-dot"></span> Live prices · Educational notes · Profit tracking</p><details class="quote-tip"><summary>How to read a quote</summary><p><b>Price</b> is the latest trade we could load. The <b>day’s % change</b> compares that price with the previous close — green means up, red means down. <b>As of</b> means we saved that price a little earlier and a newer trade hasn’t loaded yet. It isn’t a guessed number.</p></details></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="add-btn" onclick="openSearch()">+ Add stock</button><button class="btn-secondary" style="padding:14px 20px;font-size:14px" onclick="refreshPrices()" id="refreshBtn" aria-label="Refresh live prices">↻ Refresh</button><button class="btn-secondary" style="padding:14px 20px;font-size:14px" onclick="sharePortfolio()" aria-label="Copy shareable portfolio link">Share</button></div>
     </div>
     <div class="port-top-grid">
@@ -2620,7 +2620,7 @@ body.light .gs-item{background:#fff}
 <div id="page-markets" class="page">
   <div class="portfolio-wrap">
     <div class="page-header" style="padding:16px 0 30px"><h1>Markets</h1><p>Market pulse (live when data is available), sector heat map, stock screener, earnings calendar and a steady-rate playground. Some figures are reference snapshots, not real-time.</p></div>
-    <div class="mk-section"><div class="mk-title">Market pulse <span class="live-dot" style="margin-left:6px"></span> <span id="mkStatus" class="mk-status" aria-live="polite"></span></div><div class="mk-sub">Major index ETFs — funds that track a whole slice of the market, so you can see how “the market” did on the latest trading day. Live when market data is available.</div><details class="quote-tip"><summary>How to read a quote</summary><p><b>Price</b> is the latest trade we could load. The <b>day’s % change</b> compares that price with the previous close — green means up, red means down. <b>Last known</b> means we saved that price earlier and are showing it because a live update isn’t available. It isn’t a guessed number.</p></details><div class="pulse-grid" id="pulseGrid"><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div></div><div id="pulseNote" style="font-size:13px;color:var(--muted)"></div></div>
+    <div class="mk-section"><div class="mk-title">Market pulse <span class="live-dot" style="margin-left:6px"></span> <span id="mkStatus" class="mk-status" aria-live="polite"></span></div><div class="mk-sub">Major index ETFs — funds that track a whole slice of the market, so you can see how “the market” did on the latest trading day. Live when market data is available.</div><details class="quote-tip"><summary>How to read a quote</summary><p><b>Price</b> is the latest trade we could load. The <b>day’s % change</b> compares that price with the previous close — green means up, red means down. <b>As of</b> means we saved that price a little earlier and a newer trade hasn’t loaded yet. It isn’t a guessed number.</p></details><div class="pulse-grid" id="pulseGrid"><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div><div class="skel-row" style="height:78px"></div></div><div id="pulseNote" style="font-size:13px;color:var(--muted)"></div></div>
     <div class="mk-section"><div class="mk-title">Sector heat map</div><div class="mk-sub">Today’s performance by sector (SPDR sector ETFs). Tap a sector for detail.</div><div class="heat-legend" id="heatLegend"><span class="heat-legend-item"><span class="heat-swatch heat-swatch-up" aria-hidden="true"></span>Green = up today</span><span class="heat-legend-item"><span class="heat-swatch heat-swatch-down" aria-hidden="true"></span>Red = down</span><span class="heat-legend-item"><span class="heat-scale" aria-hidden="true"></span>Stronger color ≈ a larger move</span></div><div class="heat-grid" id="heatGrid"><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div></div><div id="heatDetail" style="margin-top:14px;font-size:13px;color:var(--muted)"></div></div>
     <div class="mk-section"><div class="mk-title">Stock screener</div><div class="mk-sub">Discover stocks by fundamentals across FinPath’s tracked universe.</div>
       <div class="scr-filters">
@@ -2794,7 +2794,7 @@ body.light .gs-item{background:#fff}
     </div>
 
     <div class="legal-section" id="l-third-party"><h2>7. Third-Party Data &amp; Services</h2>
-      <p>FinPath uses third-party services and APIs to provide functionality, including but not limited to: <strong>Finnhub</strong> (market data), <strong>Supabase</strong> (authentication and storage), <strong>Stripe</strong> (payments), <strong>xAI</strong> (the Grok model that writes Ask FinPath answers), and various content delivery networks. Market data is provided "as is" and may be delayed, inaccurate, or unavailable. FinPath makes no representations about the accuracy, completeness, timeliness, or availability of any third-party data or model output.</p>
+      <p>FinPath uses third-party services and APIs to provide functionality, including but not limited to: <strong>Yahoo Finance</strong> (live quotes, cached on our server) and <strong>Finnhub</strong> (a backup quote feed, plus news and fundamentals), <strong>Supabase</strong> (authentication and storage), <strong>Stripe</strong> (payments), <strong>xAI</strong> (the Grok model that writes Ask FinPath answers), and various content delivery networks. Market data is provided "as is" and may be delayed, inaccurate, or unavailable. FinPath makes no representations about the accuracy, completeness, timeliness, or availability of any third-party data or model output.</p>
       <p>Always verify prices, filings, and any other data with your broker, the SEC's EDGAR database, or another primary source before acting on it.</p>
     </div>
 
@@ -3040,11 +3040,13 @@ body.light .gs-item{background:#fff}
 <script type="module" src="js/intel/life/boot.js"></script>
 <script type="module" src="js/intel/identity/boot.js"></script>
 <script src="js/market/candles.js"></script>
+<script src="js/market/quotes.js"></script>
 <script>
 
-// TODO(siddharth): Finnhub key is shipped client-side (free key, rotated 2026-10-25; live quotes restored).
-// Keys can still be rotated via https://finnhub.io/dashboard, or better, moved behind a server proxy
-// (e.g. Supabase Edge Function). If a key is rejected the app shows a "Market data unavailable" banner (see apiKeyInvalid()).
+// Finnhub is only the backup quote feed (plus news, fundamentals, and the trade
+// socket). Live quotes go through market-quotes first. The key stays in the page
+// for that backup, so a rejected key still ends at apiKeyInvalid() when Yahoo
+// is down too and nothing recent is cached.
 const FK='dbep8o9r01qp3vut32g0dbep8o9r01qp3vut32gg';
 const SBU='https://ivhhfhemcecwqadrjmwq.supabase.co';
 const SBK='sb_publishable_KoWYv1Ro5D4I83XxWmJFOg_DCB2ldw6';
@@ -4951,13 +4953,12 @@ const REV_CRYPTO = {}; Object.keys(CRYPTO).forEach(function(k){ REV_CRYPTO[CRYPT
 // Finnhub crypto symbols are exchange pairs. The raw ticker BTC is a different listing
 // (~$36), not Bitcoin. Stocks, including BRK.B, are already valid Finnhub symbols.
 function finnhubSymbol(t){ return CRYPTO[t] || t; }
-const _pendingQ = {};
 // ── RESILIENT PRICE FETCHING ──
-// Prices are cached in-memory AND persisted to localStorage, so if Finnhub
-// rate-limits (free tier) or the network drops, we show the last known price
-// instead of stuck skeletons, tell the user, and retry automatically.
-// 429 / 403 / 503 (or an error body about a limit) gets a "feed is busy" note.
-// HTTP 401 is a rejected key: stop retrying and say market data is unavailable.
+// Live quotes are one batched call to market-quotes (Yahoo, cached server-side).
+// Finnhub /quote is the backup, deduped and backed off so a shared free key
+// is not the first thing every visitor hits. A saved price under five minutes
+// old stays on screen with an "as of" time and no banner. The banner appears
+// only when every source fails and nothing recent is cached.
 try{
   const saved = JSON.parse(localStorage.getItem('fp_pricecache')||'{}');
   Object.keys(saved).forEach(function(k){ if(saved[k] && typeof saved[k].c === 'number') priceCache[k] = saved[k]; });
@@ -4970,7 +4971,7 @@ function persistPriceCache(){
     try{ localStorage.setItem('fp_pricecache', JSON.stringify(priceCache)); }catch(e){}
   }, 3000);
 }
-let _apiDown = false, _apiFailStreak = 0, _apiRetryT = null, _apiReason = '', _apiSawLimit = false;
+let _apiDown = false, _apiRetryT = null, _apiReason = '';
 function _apiBar(){
   let b = document.getElementById('apiBar');
   if(!b){
@@ -4992,11 +4993,8 @@ function _paintApiBar(reason){
   }
   b.style.display = 'flex';
 }
-function _limitError(body){
-  return !!(body && body.error && /limit|too many/i.test(String(body.error)));
-}
-// Finnhub rejected the API key (HTTP 401). Retrying won't help, so stop hammering the
-// API, stop the WebSocket reconnect loop, and tell the user plainly instead of silent blanks.
+// Finnhub rejected the backup key. Stop the trade socket. Quote retries still
+// go through market-quotes, which does not use this key.
 let _apiKeyDead = false;
 function apiKeyInvalid(){
   if(_apiKeyDead) return;
@@ -5010,42 +5008,15 @@ function apiKeyInvalid(){
   try{ if(typeof ws !== 'undefined' && ws){ ws.onclose = null; ws.close(); ws = null; } }catch(e){}
   try{ document.querySelectorAll('.live-pill,.live-dot').forEach(function(el){ el.classList.add('is-offline'); }); }catch(e){}
 }
-// 429, 403, 503, or a limit error body: the feed is busy. Not a dead key, and not the user's fault.
-function apiRateLimited(){
-  if(_apiKeyDead) return;
-  _apiSawLimit = true;
-  _apiFailStreak++;
-  if(_apiFailStreak < 3 && !_apiDown) return;   // one stray 429 shouldn't flash the banner
-  const changed = !_apiDown || _apiReason !== 'limit';
-  _apiDown = true;
-  _apiReason = 'limit';
-  if(changed) _paintApiBar('limit');
-  scheduleApiRetry();
-}
-function apiTrouble(){
-  if(_apiKeyDead) return;
-  if(_apiDown && _apiReason === 'limit') return;   // don't replace the rate-limit note with a generic outage
-  _apiFailStreak++;
-  if(_apiFailStreak < 3 || _apiDown) return;   // tolerate a couple of one-off misses
-  _apiDown = true;
-  if(_apiSawLimit){
-    _apiReason = 'limit';
-    _paintApiBar('limit');
-  } else {
-    _apiReason = 'outage';
-    _paintApiBar('outage');
-  }
-  scheduleApiRetry();
-}
 function apiOK(){
-  _apiFailStreak = 0;
-  if(!_apiDown || _apiKeyDead) return;
+  if(!_apiDown && !_apiKeyDead) return;
   _apiDown = false;
+  _apiKeyDead = false;
   _apiReason = '';
-  _apiSawLimit = false;
   if(_apiRetryT){ clearTimeout(_apiRetryT); _apiRetryT = null; }
   const b = document.getElementById('apiBar');
-  if(b){ b.style.display = 'none'; b.classList.remove('api-bar-limit'); }
+  if(b){ b.style.display = 'none'; b.classList.remove('api-bar-limit'); b.classList.remove('api-bar-dead'); }
+  try{ document.querySelectorAll('.live-pill,.live-dot').forEach(function(el){ el.classList.remove('is-offline'); }); }catch(e){}
   toast('✅','Live prices are back — everything is up to date.');
   // refresh whatever the user is looking at
   try{
@@ -5055,53 +5026,76 @@ function apiOK(){
   }catch(e){}
 }
 function scheduleApiRetry(){
-  if(_apiRetryT || _apiKeyDead) return;
-  _apiRetryT = setTimeout(async function(){
+  if(_apiRetryT) return;
+  _apiRetryT = setTimeout(function(){
     _apiRetryT = null;
-    if(_apiKeyDead) return;
-    try{
-      const r = await fetch('https://finnhub.io/api/v1/quote?symbol=SPY&token='+FK);
-      if(r.status === 401){ apiKeyInvalid(); return; }
-      if(r.status === 429 || r.status === 403 || r.status === 503){ apiRateLimited(); return; }
-      if(r.ok){
-        const d = await r.json();
-        if(_limitError(d)){ apiRateLimited(); return; }
-        if(d && d.c){ priceCache['SPY'] = {c:d.c,d:d.d,dp:d.dp,o:d.o,ts:Date.now()}; persistPriceCache(); apiOK(); return; }
-      }
-    }catch(e){}
-    if(_apiDown) scheduleApiRetry();   // still down — keep trying every 25s
+    fetchQ('SPY', {force:true}).then(function(q){
+      if(!q || q.stale) scheduleApiRetry();
+    }).catch(function(){ scheduleApiRetry(); });
   }, 25000);
 }
-async function fetchQ(t){
-  const cached = priceCache[t];
-  // Serve cached price only if it's under 10s old (was 30s) so quotes stay live.
-  if(cached && Date.now()-cached.ts < 10000) return cached;
-  if(_apiKeyDead) return cached ? {...cached, stale:true} : null;   // key rejected — don't spam the API
-  if(_pendingQ[t]) return _pendingQ[t];
-  _pendingQ[t] = (async function(){
-    try{
-      const r = await fetch('https://finnhub.io/api/v1/quote?symbol='+encodeURIComponent(finnhubSymbol(t))+'&token='+FK);
-      if(r.status === 401){ apiKeyInvalid(); return cached ? {...cached, stale:true} : null; }
-      if(r.status === 429 || r.status === 403 || r.status === 503){ apiRateLimited(); return cached ? {...cached, stale:true} : null; }
-      const d = await r.json();
-      if(_limitError(d)){ apiRateLimited(); return cached ? {...cached, stale:true} : null; }
-      if(d && d.c){
-        apiOK();
-        priceCache[t] = {c:d.c,d:d.d,dp:d.dp,o:d.o,ts:Date.now()};
-        persistPriceCache();
-        const keys = Object.keys(priceCache);
-        if(keys.length > 60){
-          const cutoff = Date.now()-300000;
-          keys.forEach(function(k){ if(priceCache[k].ts < cutoff && !portfolio.find(function(p){return p.ticker===k;})) delete priceCache[k]; });
-        }
-        return priceCache[t];
-      }
-      apiTrouble();
-    }catch(e){ apiTrouble(); }
-    // fall back to the last known price (may be stale) rather than nothing
-    return cached ? {...cached, stale:true} : null;
-  })().finally(function(){ delete _pendingQ[t]; });
-  return _pendingQ[t];
+function onQuoteStatus(s){
+  if(!s || !s.show){
+    if(_apiDown || _apiKeyDead) apiOK();
+    return;
+  }
+  if(s.reason === 'dead'){
+    apiKeyInvalid();
+    scheduleApiRetry();
+    return;
+  }
+  const reason = s.reason === 'limit' ? 'limit' : 'outage';
+  const changed = !_apiDown || _apiReason !== reason;
+  _apiDown = true;
+  _apiReason = reason;
+  if(changed) _paintApiBar(reason);
+  scheduleApiRetry();
+}
+function rememberQuote(t, q){
+  priceCache[t] = q;
+  persistPriceCache();
+  const keys = Object.keys(priceCache);
+  if(keys.length > 60){
+    const cutoff = Date.now() - 300000;
+    keys.forEach(function(k){
+      if(!priceCache[k] || priceCache[k].ts >= cutoff) return;
+      if(portfolio.find(function(p){ return p.ticker === k; })) return;
+      delete priceCache[k];
+    });
+  }
+}
+async function fetchQuoteBatch(symbols){
+  const qs = new URLSearchParams({ symbols: symbols.join(',') });
+  const r = await fetch(SBU + '/functions/v1/market-quotes?' + qs.toString(), {
+    headers: { apikey: SBK, Authorization: 'Bearer ' + SBK }
+  });
+  if(!r.ok) throw new Error('market-quotes');
+  return r.json();
+}
+async function fetchFinnhubQuote(t){
+  try{
+    const r = await fetch('https://finnhub.io/api/v1/quote?symbol=' + encodeURIComponent(finnhubSymbol(t)) + '&token=' + FK);
+    if(r.status === 401) return { error: 'dead' };
+    if(r.status === 429 || r.status === 403 || r.status === 503) return { error: 'limit' };
+    const d = await r.json();
+    if(d && d.error && /limit|too many/i.test(String(d.error))) return { error: 'limit' };
+    if(d && typeof d.c === 'number' && isFinite(d.c) && d.c > 0) return { c: d.c, d: d.d, dp: d.dp, o: d.o, pc: d.pc };
+  }catch(e){}
+  return { error: 'fail' };
+}
+const quoteBook = fpCreateQuoteBook({
+  now: function(){ return Date.now(); },
+  schedule: function(fn, ms){ return setTimeout(fn, ms); },
+  clear: function(id){ clearTimeout(id); },
+  readCache: function(t){ return priceCache[t] || null; },
+  writeCache: rememberQuote,
+  cacheSymbols: function(){ return Object.keys(priceCache); },
+  fetchBatch: fetchQuoteBatch,
+  fetchFallback: fetchFinnhubQuote,
+  onStatus: onQuoteStatus
+});
+function fetchQ(t, opts){
+  return quoteBook.fetchQ(t, opts);
 }
 
 // Finnhub /stock/candle and /crypto/candle return HTTP 403 on the free plan
@@ -5214,22 +5208,18 @@ async function loadHoldingSeries(tickers, uiDays, opts){
   return { byTicker: out, plan: plan };
 }
 
-// Force a fully-live refresh: wipe the cache for held tickers and re-fetch.
+// Force a live refresh. Saved prices stay put when the network misses.
 async function refreshPrices(){
   const btn = document.getElementById('refreshBtn');
   if(btn){ btn.disabled = true; btn.textContent = '↻ Refreshing…'; }
   track('manual_refresh');
-  // Invalidate cached quotes so fetchQ is forced to hit the network
   const tickers = portfolio.map(function(p){ return p.ticker; });
-  tickers.forEach(function(t){ if(priceCache[t]) priceCache[t].ts = 0; });
   try{
-    // Fetch all fresh, 2 at a time to respect the rate limit
-    for(let i=0;i<tickers.length;i+=2){
-      await Promise.all(tickers.slice(i,i+2).map(function(t){ return fetchQ(t); }));
-      if(i+2 < tickers.length) await new Promise(function(r){ setTimeout(r, 300); });
-    }
+    // One batched refresh. A miss keeps the saved price instead of zeroing it.
+    const fresh = await Promise.all(tickers.map(function(t){ return fetchQ(t, {force:true}); }));
     (typeof PAPER_MODE!=='undefined' && PAPER_MODE) ? renderPaper() : renderPortfolio();
-    toast('✅','Prices refreshed.');
+    if(fresh.some(function(q){ return q && !q.stale; })) toast('✅','Prices refreshed.');
+    else toast('⚠️','Could not refresh — showing last known prices.');
   }catch(e){
     toast('⚠️','Could not refresh — showing last known prices.');
   }
@@ -5314,8 +5304,8 @@ function renderSearchResults(items){
     let right = '<div style="text-align:right;font-size:12px;color:var(--muted)">Price unavailable</div>';
     if(c != null){
       const tone = dp == null ? '' : (dp>=0?'up':'down');
-      right = '<div style="text-align:right"><div class="' + tone + '" style="font-size:15px;font-weight:600">$' + c.toFixed(2) + '</div>' +
-        (dp == null ? '' : '<div class="' + tone + '" style="font-size:12px">' + (dp>=0?'+':'') + dp.toFixed(2) + '%' + (q.stale?' <span style="color:var(--muted)">(last known)</span>':'') + '</div>') +
+      right = '<div style="text-align:right"><div class="' + tone + '" style="font-size:15px;font-weight:600">$' + c.toFixed(2) + quoteAsOfFlag(q) + '</div>' +
+        (dp == null ? '' : '<div class="' + tone + '" style="font-size:12px">' + (dp>=0?'+':'') + dp.toFixed(2) + '%</div>') +
         '</div>';
     }
     return '<div class="modal-result" onclick="openAddShares(\'' + safe + '\')">' + star + name + right + '</div>';
@@ -5438,7 +5428,7 @@ async function renderPortfolio(){
   document.getElementById('stocksGrid').innerHTML=quotes.map(({h,q})=>{
     const live=q && typeof q.c==='number' && isFinite(q.c) && q.c>0;
     const price=live?q.c:h.buyPrice;
-    const priceFlag=!live?' <span class="price-flag" title="No market data — valued at your buy price">no live price</span>':(q.stale?' <span class="price-flag" title="Live quote unavailable — showing the last price we saw">last known</span>':'');
+    const priceFlag=!live?' <span class="price-flag" title="No market data — valued at your buy price">no live price</span>':quoteAsOfFlag(q);
     const val=price*h.shares;
     const invested=h.buyPrice*h.shares;
     const pnlPct=h.buyPrice>0?((price-h.buyPrice)/h.buyPrice*100):0;
@@ -6274,8 +6264,9 @@ function startWS(){
             let t = tr.s; if(REV_CRYPTO[t]) t = REV_CRYPTO[t]; const p = tr.p;
             const q = priceCache[t];
             if(q){
-              q.c = p; q.ts = Date.now();
-              if(q.o){ q.d = p - q.o; q.dp = (p - q.o)/q.o*100; }
+              q.c = p; q.ts = Date.now(); q.stale = false;
+              const base = (q.pc > 0) ? q.pc : q.o;
+              if(base){ q.d = p - base; q.dp = (p - base)/base*100; }
             } else {
               priceCache[t] = {c:p, d:0, dp:0, o:p, ts:Date.now()};
             }
@@ -6389,7 +6380,7 @@ async function renderWatchlist(){
       '<div class="s-icon" style="width:36px;height:36px;font-size:11px">' + safe.slice(0,2) + '</div>' +
       '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + safe + '</div>' +
       '<div style="font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escapeHtml(COMPANIES[t] || '') + '</div></div>' +
-      (priceOk ? '<div style="text-align:right"><div style="font-size:13px;font-weight:700;font-family:var(--font-display)">' + fmt(q.c) + '</div>' +
+      (priceOk ? '<div style="text-align:right"><div style="font-size:13px;font-weight:700;font-family:var(--font-display)">' + fmt(q.c) + quoteAsOfFlag(q) + '</div>' +
         (dp == null ? '' : '<div style="font-size:11px" class="' + (up?'up':'down') + '">' + (up?'+':'') + dp.toFixed(2) + '%</div>') + '</div>' : '') +
       '<button class="watch-star" aria-label="Remove ' + safe + ' from watchlist" onclick="event.stopPropagation();toggleWatch(\'' + safe + '\')">★</button></div>';
   }).join('');
@@ -6443,6 +6434,11 @@ let newsLoadedAt = 0;
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 // Day-change percent is optional. null >= 0 is true, and null.toFixed throws.
 function quoteDp(q){ return (q && typeof q.dp === 'number' && isFinite(q.dp)) ? q.dp : null; }
+function quoteAsOfFlag(q){
+  if(!q || !q.stale) return '';
+  const label = (typeof fpQuoteAsOfLabel === 'function' && fpQuoteAsOfLabel(q.ts, Date.now())) || 'last known';
+  return ' <span class="price-flag" title="Live quote unavailable — showing the last price we saw">' + escapeHtml(label) + '</span>';
+}
 // Finnhub marketCapitalization is millions of USD.
 function fmtMcap(v){
   if(v == null || !isFinite(Number(v))) return '—';
@@ -6634,13 +6630,14 @@ async function loadDemoPortfolio(){
   track('demo_portfolio');
   const picks = [{t:'VOO',s:2},{t:'AAPL',s:3},{t:'JPM',s:2},{t:'KO',s:5},{t:'LLY',s:1}];
   document.getElementById('stocksGrid').innerHTML = '<div class="skel-row"></div>'.repeat(3);
-  for(const p of picks){
-    const q = await fetchQ(p.t);
+  const demoQuotes = await Promise.all(picks.map(function(p){ return fetchQ(p.t); }));
+  picks.forEach(function(p, i){
+    const q = demoQuotes[i];
     if(!portfolio.find(function(x){return x.ticker===p.t;})){
       portfolio.push({ticker:p.t, shares:p.s, buyPrice:q?q.c:0});
       logTxn({type:'buy', mode:'live', demo:true, t:p.t, sh:p.s, price:q?q.c:0});
     }
-  }
+  });
   await saveToDB();
   if(typeof renderChecklist==='function') renderChecklist();
   renderPortfolio();
@@ -8116,7 +8113,7 @@ async function renderPaper(){
       const price = r.q ? r.q.c : r.x.price;
       const val = price * r.x.sh, pnl = (price - r.x.price)*r.x.sh, pct = (price - r.x.price)/r.x.price*100;
       const note = r.x.thesis ? '<div class="s-thesis">' + escapeHtml(clipText(r.x.thesis, 90)) + '</div>' : '';
-      return '<div class="stock-row"><div class="s-icon">' + escapeHtml(r.x.t.slice(0,2)) + '</div><div class="s-info"><div class="s-name">' + escapeHtml(r.x.t) + '</div><div class="s-meta">' + escapeHtml(r.x.sh) + ' sh · ' + termLabel('cost basis') + ' ' + fmt(r.x.price) + '</div>' + note + '</div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" data-paper-sell="' + i + '" onclick="paperAskSell(' + i + ')">Sell</button></div></div>';
+      return '<div class="stock-row"><div class="s-icon">' + escapeHtml(r.x.t.slice(0,2)) + '</div><div class="s-info"><div class="s-name">' + escapeHtml(r.x.t) + '</div><div class="s-meta">' + escapeHtml(r.x.sh) + ' sh · ' + termLabel('cost basis') + ' ' + fmt(r.x.price) + quoteAsOfFlag(r.q) + '</div>' + note + '</div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" data-paper-sell="' + i + '" onclick="paperAskSell(' + i + ')">Sell</button></div></div>';
     }).join('');
     p.pos.forEach(function(x){ wsWatch(x.t); });
   }
@@ -8237,8 +8234,7 @@ async function paperSell(ticker, reflection){
   const x0 = getPaper().pos.find(function(x){ return x && x.t === ticker; });
   if(!x0) return false;
   // Force a fresh quote so the sale isn't filled at a stale cached price.
-  if(priceCache[ticker]) priceCache[ticker].ts = 0;
-  const q = await fetchQ(ticker);
+  const q = await fetchQ(ticker, {force:true});
   if(!q || q.stale || !isFinite(q.c) || q.c <= 0){ toast('⚠️', 'Live price unavailable — paper sell blocked. Try again shortly.'); return false; }
   const p = getPaper();
   // Look the ticker up again. The index captured when the dialog opened can
@@ -8499,10 +8495,10 @@ async function renderPulse(){
     }
     const dp = quoteDp(r.q);
     const up = dp != null && dp >= 0;
-    const stale = r.q.stale ? ' <span class="price-flag" title="Live quote unavailable — showing the last price we saw">last known</span>' : '';
+    const stamp = quoteAsOfFlag(r.q);
     const chg = dp == null
-      ? '<div style="font-size:12px;margin-top:3px;color:var(--muted)">Day change unavailable</div>'
-      : '<div style="font-size:12px;margin-top:3px" class="' + (up?'up':'down') + '">' + (up?'▲ +':'▼ ') + dp.toFixed(2) + '%' + stale + '</div>';
+      ? '<div style="font-size:12px;margin-top:3px;color:var(--muted)">Day change unavailable' + stamp + '</div>'
+      : '<div style="font-size:12px;margin-top:3px" class="' + (up?'up':'down') + '">' + (up?'▲ +':'▼ ') + dp.toFixed(2) + '%' + stamp + '</div>';
     return '<div class="p-metric" title="' + title + '">' + label + '<div class="p-val">' + fmt(r.q.c) + '</div>' + chg + why + '</div>';
   }).join('');
   if(!qs.some(function(r){ return _pulseHasPrice(r.q); })){
@@ -9350,34 +9346,23 @@ renderLessons();
     // 2) Only actually hit the network if the cache is stale (>5 min old)
     if(cachedHtml && Date.now() - cachedAt < 300000) return;
   }catch(e){}
-  // 3) Fetch through the cached fetchQ pipeline (respects rate limits) and throttle
-  //    to 2 requests at a time so we never spam Finnhub with 12 parallel calls.
-  var results = [], idx = 0;
-  function next(){
-    if(idx >= syms.length){
-      var ok = results.filter(function(x){return x;});
-      if(ok.length >= 4){
-        var data = ok.map(function(x){ return {s:x.s, c:x.c, dp:x.dp||0}; });
-        var row = rowHtml(data);
-        if(row) el.innerHTML = row + row;
-        try{ localStorage.setItem('fp_tape_row', JSON.stringify(data)); localStorage.setItem('fp_tape_at', String(Date.now())); }catch(e){}
-      } else if(!el.innerHTML){
-        el.parentElement.style.display = 'none';
-      }
-      return;
+  // 3) One batched quote for the whole tape. fetchQ coalesces these with
+  //    whatever else the page is loading, and the server cache is shared.
+  Promise.all(syms.map(function(s){
+    return fetchQ(s)
+      .then(function(d){ return d && d.c ? {s:s, c:d.c, dp:d.dp||0} : null; })
+      .catch(function(){ return null; });
+  })).then(function(results){
+    var ok = results.filter(function(x){ return x; });
+    if(ok.length >= 4){
+      var data = ok.map(function(x){ return {s:x.s, c:x.c, dp:x.dp||0}; });
+      var row = rowHtml(data);
+      if(row) el.innerHTML = row + row;
+      try{ localStorage.setItem('fp_tape_row', JSON.stringify(data)); localStorage.setItem('fp_tape_at', String(Date.now())); }catch(e){}
+    } else if(!el.innerHTML){
+      el.parentElement.style.display = 'none';
     }
-    var batch = syms.slice(idx, idx+2);
-    idx += 2;
-    Promise.all(batch.map(function(s){
-      return (typeof fetchQ === 'function' ? fetchQ(s) : fetch('https://finnhub.io/api/v1/quote?symbol='+s+'&token='+FK).then(function(r){return r.json();}))
-        .then(function(d){ return d && d.c ? {s:s, c:d.c, dp:d.dp||0} : null; })
-        .catch(function(){ return null; });
-    })).then(function(batchResults){
-      results = results.concat(batchResults);
-      setTimeout(next, 350);   // small gap between batches to be a good API citizen
-    });
-  }
-  next();
+  });
 })();
 
 // ══ PWA — SERVICE WORKER + INSTALL PROMPT ══
