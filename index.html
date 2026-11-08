@@ -396,6 +396,29 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 .life-letter{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 16px 6px;margin:8px 0 14px}
 .life-letter h3{font-size:18px;margin:0 0 10px;font-family:var(--font-display)}
 .life-letter p{font-size:15px;line-height:1.55;margin:0 0 12px}
+.life-selves{display:grid;grid-template-columns:1fr;gap:14px;margin:8px 0 16px}
+.life-self{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;min-width:0}
+.life-self h2{font-family:var(--font-display);font-size:clamp(26px,6vw,34px);letter-spacing:-.6px;margin:0 0 4px;overflow-wrap:anywhere;scroll-margin-top:100px}
+.life-self h3{font-size:16px;margin:16px 0 8px}
+.life-self .life-kicker{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--green);margin:0 0 6px}
+.life-self .life-letter{background:transparent;border:0;padding:0;margin:12px 0 0}
+.life-metrics-stack{display:grid;grid-template-columns:1fr;gap:10px 12px;margin:12px 0}
+.life-metrics-stack div{min-width:0}
+.life-metrics-stack dt{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.life-metrics-stack dd{margin:2px 0 0;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.life-hero-num{font-family:var(--font-display);font-size:clamp(22px,5vw,28px);letter-spacing:-.4px}
+.life-meter{margin:12px 0 4px}
+.life-meter-label{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin-bottom:6px}
+.life-meter-label span:last-child{font-variant-numeric:tabular-nums;text-align:right}
+.life-decisions{list-style:decimal;margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:10px}
+.life-decision{min-width:0}
+.life-decision p{margin:0 0 8px;font-size:14px;line-height:1.45}
+a.life-whatif{display:inline-flex;align-items:center;min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--line-strong);text-decoration:none;color:var(--text);font-weight:650;font-size:14px;background:rgba(34,197,94,.08)}
+.life-empty-card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.life-empty-card h2{font-family:var(--font-display);font-size:clamp(24px,6vw,32px);margin:0 0 8px;overflow-wrap:anywhere}
+.life-empty-card p{line-height:1.5}
+#lifeTabs{scroll-margin-top:100px}
+.life-actions .btn-primary,.life-actions .btn-secondary{white-space:normal;text-align:center;max-width:100%}
 .life-table{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
 .life-table th,.life-table td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
 .life-table caption{text-align:left;font-size:13px;color:var(--muted);margin-bottom:6px}
@@ -422,7 +445,7 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 #lifeReviewBody h2{font-family:var(--font-display);font-size:clamp(26px,4vw,36px);letter-spacing:-.6px;margin:0 0 8px;overflow-wrap:anywhere;scroll-margin-top:120px}
 .life-review-num{font-family:var(--font-display);font-size:28px;font-weight:800;margin:4px 0 0}
 a.life-chip{display:inline-flex;align-items:center;text-decoration:none;color:var(--text)}
-.life-actions a.btn-secondary{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;min-height:44px;padding:10px 16px;font-size:14px}
+.life-actions a.btn-primary,.life-actions a.btn-secondary{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;min-height:44px;padding:10px 16px;font-size:14px}
 .hero-learn{margin-top:22px;font-size:14px;color:var(--muted);line-height:1.55}
 .hero-learn a{color:var(--mint);font-weight:650;text-decoration:none}
 .hero-learn a:hover{text-decoration:underline}
@@ -456,7 +479,12 @@ a.life-chip{display:inline-flex;align-items:center;text-decoration:none;color:va
   .life-steps{grid-template-columns:1fr 1fr}
   .life-snaps{grid-template-columns:1fr 1fr}
   .life-pair{grid-template-columns:1fr 1fr}
+  .life-selves{grid-template-columns:1fr 1fr;align-items:start}
   .id-grid{grid-template-columns:1fr 1fr}
+}
+@media(min-width:900px){
+  .life-metrics-stack{grid-template-columns:1fr 1fr}
+  .life-span{grid-column:1 / -1}
 }
 @media(min-width:1024px){
   .life-snaps{grid-template-columns:1fr 1fr 1fr 1fr}
@@ -1718,7 +1746,7 @@ body.light .gs-item{background:#fff}
         <button class="btn-primary" onclick="handleAuthClick()">Get Started Free</button>
         <button class="btn-secondary" onclick="startDemoMode()">👀 Try the Demo — no sign-in</button>
       </div>
-      <p class="hero-learn"><a href="#life" onclick="showPage('life');return false;">Life Path</a> is the yearly model. <a href="#identity" onclick="showPage('identity');return false;">Identity</a> is the literacy score and this week’s plan. The journal’s year in review lives under Life.</p>
+      <p class="hero-learn"><a href="#life" onclick="showPage('life');return false;">Life Path</a> is the yearly model. <a href="#life/future">Future Self</a> is you at 40 and you at 60. <a href="#identity" onclick="showPage('identity');return false;">Identity</a> is the literacy score and this week’s plan. The journal’s year in review lives under Life.</p>
       <div class="stats-row">
         <div class="stat"><div class="stat-num" id="heroStat1">34</div><div class="stat-label">Expert lessons</div></div>
         <div class="stat"><div class="stat-num" id="heroStat2">$100k</div><div class="stat-label">Paper trading cash · per user</div></div>
@@ -2230,7 +2258,7 @@ body.light .gs-item{background:#fff}
       <div class="feature-card" onclick="showPage('gold')"><div class="feature-icon">👑</div><div class="feature-title">Investor Moves — Gold</div><div class="feature-desc">See what 9 legendary investors (Buffett, Ackman, Tepper, Druckenmiller, Li Lu, Klarman, Gates, Coleman and Smith) bought and sold in their latest 13F filings — and why.</div></div>
       <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">📈</div><div class="feature-title">Live Portfolio Tracker</div><div class="feature-desc">Track your stocks with live prices. See total profit, daily gains, and (with Gold) which holdings drove today’s move.</div></div>
       <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">🧭</div><div class="feature-title">Stock Suggestions — Gold</div><div class="feature-desc">Rule-based educational notes for the stocks you own, drawn from position size, sector mix, and unrealized gain or loss. Not a live AI and not personal advice.</div></div>
-      <div class="feature-card" onclick="showPage('life')"><div class="feature-icon">🌱</div><div class="feature-title">Life Path</div><div class="feature-desc">A yearly classroom model to 65, what-ifs, and a decision-journal yearbook. Educational only — not a prediction and not a reason to buy, sell, or borrow.</div></div>
+      <div class="feature-card" onclick="showPage('life')"><div class="feature-icon">🌱</div><div class="feature-title">Life Path</div><div class="feature-desc">A yearly classroom model to 65, you at 40 and you at 60, what-ifs, and a decision-journal yearbook. Educational only — not a prediction and not a reason to buy, sell, or borrow.</div></div>
       <div class="feature-card" onclick="showPage('identity')"><div class="feature-icon">🪪</div><div class="feature-title">Financial identity</div><div class="feature-desc">A study profile, a 0–1000 literacy score, and a short weekly plan. It stays on this device. It is not a credit score.</div></div>
     </div>
   </section>
@@ -2329,7 +2357,7 @@ body.light .gs-item{background:#fff}
       <button type="button" role="tab" id="lifeTabPath" data-life-tab="path" aria-controls="lifePanelPath" aria-selected="true">Path</button>
       <button type="button" role="tab" id="lifeTabWhat" data-life-tab="whatif" aria-controls="lifePanelWhat" aria-selected="false" tabindex="-1">What-if</button>
       <button type="button" role="tab" id="lifeTabCompare" data-life-tab="compare" aria-controls="lifePanelCompare" aria-selected="false" tabindex="-1">Compare</button>
-      <button type="button" role="tab" id="lifeTabFuture" data-life-tab="future" aria-controls="lifePanelFuture" aria-selected="false" tabindex="-1">Future self</button>
+      <button type="button" role="tab" id="lifeTabFuture" data-life-tab="future" aria-controls="lifePanelFuture" aria-selected="false" tabindex="-1">Future Self</button>
       <button type="button" role="tab" id="lifeTabJournal" data-life-tab="journal" aria-controls="lifePanelJournal" aria-selected="false" tabindex="-1">Journal</button>
       <button type="button" role="tab" id="lifeTabAssume" data-life-tab="assumptions" aria-controls="lifePanelAssume" aria-selected="false" tabindex="-1">Assumptions</button>
     </div>
@@ -2422,12 +2450,7 @@ body.light .gs-item{background:#fff}
     </div>
 
     <div id="lifePanelFuture" role="tabpanel" aria-labelledby="lifeTabFuture" hidden>
-      <p class="life-note" role="note">Future you is a letter from this worksheet. Educational only. It is not a prediction and not a reason to buy, sell, or borrow.</p>
-      <div class="life-field">
-        <label for="lifeFuturePick">A second path to set beside yours</label>
-        <select id="lifeFuturePick"></select>
-        <p class="life-help">Future you writes from the path on the Path tab, then peeks at this what-if. It is a letter from the worksheet, not a plan you have to follow.</p>
-      </div>
+      <p class="life-note" role="note">You at 40 and you at 60 are portraits from this worksheet, using the choices on the Path tab. The range is a classroom exercise (a low path, a middle path, and a high path), not a forecast. Educational only. Not a prediction and not a reason to buy, sell, or borrow.</p>
       <div id="lifeFutureBody"></div>
     </div>
 
@@ -2843,7 +2866,7 @@ body.light .gs-item{background:#fff}
     <div class="warning-box"><p><strong>Please read carefully.</strong> By using FinPath you confirm you have read, understood, and agreed to everything below. If you do not agree, do not use FinPath. Some sections limit your legal rights — including a mandatory arbitration clause and class-action waiver — so read them attentively.</p></div>
 
     <div class="legal-section" id="l-not-advice"><h2>1. Not Financial, Investment, Legal, or Tax Advice</h2>
-      <p>FinPath is an <strong>educational and informational platform</strong>. Nothing on FinPath — including lessons, articles, screener output, market pulse data, sector heat maps, portfolio analytics, the AI Analyzer, the AI Suggestions feature (Gold), Ask FinPath (powered by Grok), investor move summaries, the Strategy Playground, the Life Path model, backtest results, share prices, alert notifications, or any communication from FinPath or Siddharth Moosani — constitutes financial advice, investment advice, tax advice, legal advice, accounting advice, retirement planning advice, or any other form of professional advice. Life Path projections, including the classroom percentile bands and the Future Self letter, are educational models with stated assumptions. They are not predictions and they are not a reason to buy, sell, or borrow.</p>
+      <p>FinPath is an <strong>educational and informational platform</strong>. Nothing on FinPath — including lessons, articles, screener output, market pulse data, sector heat maps, portfolio analytics, the AI Analyzer, the AI Suggestions feature (Gold), Ask FinPath (powered by Grok), investor move summaries, the Strategy Playground, the Life Path model, backtest results, share prices, alert notifications, or any communication from FinPath or Siddharth Moosani — constitutes financial advice, investment advice, tax advice, legal advice, accounting advice, retirement planning advice, or any other form of professional advice. Life Path projections, including the classroom percentile bands and the Future Self portraits at 40 and 60, are educational models with stated assumptions. They are not predictions and they are not a reason to buy, sell, or borrow.</p>
       <p>FinPath does <strong>not</strong> know your full financial situation, income, debts, tax bracket, dependents, age, health, insurance, employment status, retirement horizon, other assets, or personal risk tolerance. Any statement about a security, sector, strategy, or approach is generic educational content and does not consider your individual circumstances.</p>
       <p>You must consult a qualified, licensed financial adviser, tax professional, or attorney before making any investment, tax, or legal decision. Your reliance on FinPath is solely at your own risk.</p>
     </div>
@@ -9769,7 +9792,8 @@ initStreak();
 startAlertLoop();
 handleSharedLink();
 // Hash router: #portfolio / #lessons / #life / #identity / #ask / #gold / #markets / #legal / #home (or empty).
-// #lesson/N opens that lesson. #life/whatif/card (and compare, future, journal, assumptions) open Life Path.
+// #lesson/N opens that lesson. #life/whatif/card (and compare, compare/card, future, journal, assumptions) open Life Path.
+// #life/future opens You at 40 and You at 60. #life/compare/card opens that what-if beside the path.
 // #life/journal/review and #life/journal/review/2025 open the Decision Journal yearbook.
 // #identity and #life/identity open the study profile. #moment/paycheck opens the first-paycheck planner.
 // #p= shared links are handled above by handleSharedLink and ignored here.

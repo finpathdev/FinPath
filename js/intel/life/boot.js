@@ -5,7 +5,7 @@ import { PRESETS, presetById, applyPreset } from './presets.js';
 import { comparePaths } from './compare.js';
 import { mergeJournal, upsertEntry } from './journal.js';
 import { yearWindow, yearsPresent, buildYearReview, sliceProgress, sliceQuizLog, datedStudyBefore, literacyDelta, identitySpan, dated } from './review.js';
-import { futureLetter } from './future.js';
+import { lifePathReady, buildFutureSelf, portrayedAssumptions, formatShare, formatMonths, decisionLine } from './future.js';
 import { literacyScore } from '../learn/mastery.js';
 import { choosePath, mergeJournalEntries, journalRow, entryFromRow } from './sync.js';
 import { conceptsFor, CONCEPTS } from '../learn/concepts.js';
@@ -103,13 +103,23 @@ function saveStore(inputs){
   scheduleCloudPush();
 }
 
+function markPathSaved(){
+  const inputs = readInputs();
+  writeStore({ inputs: inputs, dollars: DOLLARS, comparePreset: COMPARE_ID, updatedAt: Date.now(), touched: true });
+  scheduleCloudPush();
+  renderLife();
+}
+
 function currentView(){
   const raw = (location.hash || '').replace(/^#/, '').split(/[?#]/)[0].replace(/^\/+|\/+$/g, '').toLowerCase();
   const parts = raw.split('/');
   const base = { preset: null, review: false, year: null };
   if(parts[0] !== 'life') return Object.assign({ name: 'path' }, base);
   const name = parts[1] || 'path';
-  if(name === 'compare') return Object.assign({}, base, { name: 'compare' });
+  if(name === 'compare'){
+    const preset = parts[2] && presetById(parts[2]) ? parts[2] : null;
+    return Object.assign({}, base, { name: 'compare', preset: preset });
+  }
   if(name === 'future' || name === 'future-self') return Object.assign({}, base, { name: 'future' });
   if(name === 'journal'){
     const review = parts[2] === 'review';
@@ -314,8 +324,23 @@ function bind(){
     COMPARE_ID = value;
     if(pick) pick.value = value;
     if(futurePick) futurePick.value = value;
-    renderLife();
+    if(currentView().name === 'compare') go('#life/compare/' + value);
+    else renderLife();
   }
+  const futurePanel = document.getElementById('lifePanelFuture');
+  if(futurePanel) futurePanel.addEventListener('click', function(e){
+    if(e.target.closest('#lifeFutureUsePath')){
+      e.preventDefault();
+      markPathSaved();
+      return;
+    }
+    if(e.target.closest('a[href^="#life/compare/"]')){
+      setTimeout(function(){
+        const tabs = document.getElementById('lifeTabs');
+        if(tabs && tabs.scrollIntoView) tabs.scrollIntoView({ block: 'start' });
+      }, 0);
+    }
+  });
   if(pick) pick.addEventListener('change', function(){ onPreset(pick.value); });
   if(futurePick) futurePick.addEventListener('change', function(){ onPreset(futurePick.value); });
   const saveCompare = document.getElementById('lifeSaveCompare');
@@ -630,55 +655,144 @@ function pathBlurb(inputs){
   return 'Your inputs: age ' + inputs.currentAge + ', ' + (college ? college.label : 'school') + ', investing ' + money(inputs.monthlyInvest) + ' a month from that age when the paycheck covers it.';
 }
 
-function shortPath(inputs){
-  const college = ASSUMPTIONS.colleges[inputs.college];
-  return 'age ' + inputs.currentAge + ', ' + (college ? college.label : 'school') + ', ' + money(inputs.monthlyInvest) + ' a month';
+function futureEmptyHtml(){
+  return '<div class="life-empty-card" id="lifeFutureEmpty">' +
+    '<h2>Future Self needs a Life Path</h2>' +
+    '<p>You at 40 and you at 60 are drawn from the age, school, pay, and monthly amount on the Path tab. Nothing has been saved as your path on this device yet, so these cards stay blank instead of guessing.</p>' +
+    '<div class="life-actions">' +
+      '<button type="button" class="btn-primary" id="lifeFutureUsePath">Use these Path numbers</button>' +
+      '<a class="btn-secondary" href="#life">Edit on the Path tab</a>' +
+    '</div>' +
+    '<p class="life-help">Changing an input saves the path on this device. The portraits stay educational. They are not a prediction and not a reason to buy, sell, or borrow.</p>' +
+  '</div>';
+}
+
+function futureCardHtml(portrait, letter, decisions){
+  const id = 'lifeYou' + portrait.age;
+  const heading = portrait.age === 60 ? 'You at 60' : (portrait.age === 40 ? 'You at 40' : 'You at ' + portrait.age);
+  const letterHtml = '<article class="life-letter"><h3>' + esc(letter.title) + '</h3>' +
+    letter.paragraphs.map(function(p){ return '<p>' + esc(p) + '</p>'; }).join('') +
+    '</article>';
+  if(!portrait.reachable){
+    return '<article class="life-self" aria-labelledby="' + id + '">' +
+      '<p class="life-kicker">Future Self</p>' +
+      '<h2 id="' + id + '">' + heading + '</h2>' +
+      letterHtml +
+    '</article>';
+  }
+  const nw = portrait.netWorth || {};
+  const range = (nw.p10 == null || nw.p90 == null)
+    ? money(nw.steady)
+    : money(nw.p10) + ' – ' + money(nw.p90);
+  const median = nw.p50 == null ? '' : '<p class="life-help">Median (p50) ' + money(nw.p50) + '. Steady line ' + money(nw.steady) + '.</p>';
+  const meterPct = portrait.retirement && portrait.retirement.meterPct != null ? portrait.retirement.meterPct : null;
+  const meterNow = portrait.retirement && portrait.retirement.meter != null ? Math.round(portrait.retirement.meter * 100) : 0;
+  const meterLabel = meterPct == null
+    ? 'Retirement meter unavailable'
+    : 'Retirement meter, ' + meterPct + ' percent of the 25 times spending line';
+  const savings = portrait.savingsRate == null ? '—' : formatShare(portrait.savingsRate);
+  const months = portrait.emergencyMonths == null ? '—' : formatMonths(portrait.emergencyMonths);
+  const debtAmount = portrait.debt && portrait.debt.amount != null ? money(portrait.debt.amount) : '—';
+  const debtStatus = portrait.debt && portrait.debt.statusLabel ? portrait.debt.statusLabel : '—';
+  const items = (decisions || []).map(function(d){
+    return '<li class="life-decision"><p>' + esc(decisionLine(d)) + '</p>' +
+      '<a class="life-whatif" href="' + esc(d.href) + '">Compare this what-if</a></li>';
+  }).join('');
+  const list = items
+    ? '<h3>What changed this</h3><p class="life-help">The three worksheets that move net worth at ' + portrait.age + ' the most, one change at a time. Each opens Compare beside the path on your screen. A higher number is not a prize and not a reason to buy, sell, or borrow.</p><ol class="life-decisions">' + items + '</ol>'
+    : '<h3>What changed this</h3><p class="life-help">No alternate worksheet changes this birthday.</p>';
+  return '<article class="life-self" aria-labelledby="' + id + '">' +
+    '<p class="life-kicker">Future Self</p>' +
+    '<h2 id="' + id + '">' + heading + '</h2>' +
+    '<p class="life-help">' + esc(portrait.whenLine || '') + '</p>' +
+    '<dl class="life-metrics-stack">' +
+      '<div class="life-span"><dt>Net worth range</dt><dd class="life-hero-num">' + range + '</dd></div>' +
+      '<div><dt>Savings rate</dt><dd>' + esc(savings) + '</dd></div>' +
+      '<div><dt>Debt</dt><dd>' + debtAmount + '</dd></div>' +
+      '<div><dt>Emergency-fund months</dt><dd>' + esc(months) + '</dd></div>' +
+      '<div><dt>Debt status</dt><dd>' + esc(debtStatus) + '</dd></div>' +
+    '</dl>' +
+    median +
+    '<p class="life-help">Savings rate is invested ÷ take-home in the year that starts on this birthday. Emergency-fund months read the invested balance, not a separate cash account.</p>' +
+    '<div class="life-meter">' +
+      '<div class="life-meter-label"><span>Retirement meter</span><span>' + (meterPct == null ? '—' : meterPct + '% of 25×') + '</span></div>' +
+      '<div class="id-meter" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + meterNow + '" aria-label="' + esc(meterLabel) + '"><span style="width:' + meterNow + '%"></span></div>' +
+    '</div>' +
+    '<p class="life-help">' + esc(portrait.retirement && portrait.retirement.line ? portrait.retirement.line : '') + '</p>' +
+    letterHtml +
+    list +
+  '</article>';
+}
+
+function futureAssumptionsHtml(result){
+  const sheet = portrayedAssumptions(ASSUMPTIONS);
+  const links = {};
+  (sheet.lessons || []).forEach(function(link){ links[link.slug] = link; });
+  const stock = links['compound-interest'];
+  const inflation = links.inflation;
+  const emergency = links['emergency-fund'];
+  const item = function(value, note, link){
+    const href = link ? ' <a href="' + esc(link.hash) + '">' + esc(link.label) + '</a>' : '';
+    return '<li><b>' + esc(value) + '</b> — ' + note + href + '</li>';
+  };
+  return '<section class="life-sources" aria-labelledby="lifeFutureAssumptions">' +
+    '<h2 id="lifeFutureAssumptions">Assumptions behind these portraits</h2>' +
+    '<p class="life-help">The range uses the sheet’s stock return as the middle step and the historical-size wobble around it. Figures are ' +
+    (DOLLARS === 'today' ? 'today’s dollars.' : 'future dollars, before adjusting for inflation.') +
+    ' Change the Path tab if a rate is not your situation. This is a teaching model, not a forecast.</p><ul>' +
+    item(pct(sheet.stockNominal), 'yearly stock return on the steady line and the middle of the classroom range. Past averages are not a forecast.', stock) +
+    item(pct(sheet.inflation), 'inflation, used when these cards show today’s dollars.', inflation) +
+    item(pct(sheet.stockVol), 'yearly wobble that draws the p10–p90 shade. It is not a forecast of future volatility.', null) +
+    item(String(sheet.safeMultiple) + '× spending', 'the retirement meter is invested balance divided by this multiple of yearly living costs. A teaching ruler, not a date to stop working.', null) +
+    item('Emergency-fund reading', 'months of living costs the invested balance could cover. Not a separate cash account.', emergency) +
+    '</ul><p class="life-help"><a href="#life/assumptions">Open the full assumptions list</a></p></section>';
 }
 
 function paintFuture(inputs, baseline, bands){
   const host = document.getElementById('lifeFutureBody');
   if(!host) return;
-  const pick = document.getElementById('lifeFuturePick');
-  if(pick) pick.value = COMPARE_ID;
-  const preset = presetById(COMPARE_ID) || PRESETS[1];
-  const other = simulate(applyPreset(inputs, preset.id, ASSUMPTIONS), ASSUMPTIONS);
-  const pack = function(result){
-    const out = {};
-    SNAP_AGES.forEach(function(age){
-      const row = result.snapshots[age];
-      if(!row) return;
-      out[age] = {
-        portfolio: viewOf(result, row.portfolio, age),
-        debt: viewOf(result, row.debt, age),
-        netWorth: viewOf(result, row.netWorth, age)
-      };
-    });
-    return out;
-  };
-  const end = bands && bands.rows ? bands.rows.find(function(r){ return r.age === 65; }) : null;
+  if(!lifePathReady(loadStore())){
+    host.innerHTML = futureEmptyHtml();
+    return;
+  }
   let study = null;
   try{
     if(window.FPIdentity && typeof FPIdentity.snapshot === 'function') study = FPIdentity.snapshot();
   }catch(e){ study = null; }
-  const letter = futureLetter({
+  const college = ASSUMPTIONS.colleges[baseline.inputs.college];
+  const career = ASSUMPTIONS.careers[baseline.inputs.career];
+  const state = ASSUMPTIONS.states[baseline.inputs.state];
+  const built = buildFutureSelf({
+    result: baseline,
+    bands: bands,
     dollars: DOLLARS,
-    ageNow: baseline.inputs.currentAge,
-    pathLabel: shortPath(inputs),
-    altLabel: preset.label,
-    path: pack(baseline),
-    alt: pack(other),
-    band: end ? {
-      p10: viewOf(baseline, end.p10, 65),
-      p50: viewOf(baseline, end.p50, 65),
-      p90: viewOf(baseline, end.p90, 65)
-    } : null,
-    identityLabel: study && study.label,
-    literacyScore: study ? study.score : null
+    alternates: PRESETS.map(function(preset){
+      return {
+        id: preset.id,
+        label: preset.label,
+        title: preset.title,
+        lesson: preset.lesson,
+        result: simulate(applyPreset(inputs, preset.id, ASSUMPTIONS), ASSUMPTIONS)
+      };
+    }),
+    context: {
+      ageNow: baseline.inputs.currentAge,
+      monthly: baseline.inputs.monthlyInvest,
+      collegeLabel: college ? college.label : '',
+      careerLabel: career ? career.label : '',
+      stateName: state && baseline.inputs.state !== 'US' ? state.name : '',
+      identityLabel: study && study.label,
+      identitySource: study && study.source,
+      literacyScore: study ? study.score : null
+    }
   });
-  host.innerHTML = '<article class="life-letter"><h3>' + esc(letter.title) + '</h3>' +
-    letter.paragraphs.map(function(p){ return '<p>' + esc(p) + '</p>'; }).join('') +
-    '</article><p class="life-help">The other path is the what-if selected above, on your age, state, school, and pay. Figures are ' +
-    (DOLLARS === 'today' ? 'today’s dollars.' : 'future dollars.') + ' This note is educational. It does not tell you what to do.</p>' +
+  const cards = built.selves.map(function(portrait, i){
+    return futureCardHtml(portrait, built.letters[i], built.decisionsByAge[portrait.age]);
+  }).join('');
+  host.innerHTML = '<p class="life-help">Figures follow the Today’s dollars / Future dollars switch on the Path tab. Right now these cards use ' +
+    (DOLLARS === 'today' ? 'today’s dollars.' : 'future dollars.') + '</p>' +
+    '<div class="life-selves">' + cards + '</div>' +
+    futureAssumptionsHtml(baseline) +
     '<p class="life-help"><a href="#life/journal/review">Open this year’s journal review</a> to look back at what-ifs, notes, and study check-ins saved on this device.</p>';
 }
 
@@ -980,6 +1094,9 @@ function renderLife(){
     bind();
   }
   const view = currentView();
+  if(view.name === 'compare' && view.preset && presetById(view.preset)) COMPARE_ID = view.preset;
+  const comparePick = document.getElementById('lifeComparePick');
+  if(comparePick && presetById(COMPARE_ID)) comparePick.value = COMPARE_ID;
   setTab(view.name);
   const inputs = readInputs();
   saveStore(inputs);
