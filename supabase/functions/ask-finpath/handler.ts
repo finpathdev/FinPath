@@ -1,11 +1,10 @@
-// HTTP handler for Ask FinPath. Auth, Gold, and xAI are injected so tests
+// HTTP handler for Ask FinPath. Auth and xAI are injected so tests
 // can run without a live project or an API key.
 
 import {
   BURST_PER_MINUTE,
+  DAILY_LIMIT,
   DEFAULT_XAI_MODEL,
-  FREE_DAILY,
-  GOLD_DAILY,
   XAI_URL,
   answerGivesAdvice,
   buildMessages,
@@ -103,15 +102,8 @@ export async function handleAsk(req: Request, deps: AskDeps): Promise<Response> 
     const history = sanitizeHistory(rec.history)
     const lesson = sanitizeLessonContext(rec.lessonContext)
 
-    const gold = await auth.admin
-      .from('gold_users')
-      .select('active')
-      .eq('user_id', auth.userId)
-      .maybeSingle()
-    if (gold.error) return json(req, 503, { error: 'Ask FinPath is unavailable right now.' }, secrets)
-    const isGold = gold.data?.active === true
-    const plan = isGold ? 'gold' : 'free'
-    const limit = isGold ? GOLD_DAILY : FREE_DAILY
+    const plan = 'free'
+    const limit = DAILY_LIMIT
 
     const consumed = await auth.admin.rpc('consume_ask_quota', {
       p_user_id: auth.userId,

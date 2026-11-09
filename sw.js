@@ -1,9 +1,9 @@
-// FinPath Service Worker — cache finpath-v39
+// FinPath Service Worker — cache finpath-v40
 // Handles offline caching so lessons and the shell keep working with no signal.
 // Live prices, filings, and API responses are intentionally NOT cached — those
 // must always be fresh.
 
-const CACHE = 'finpath-v39';
+const CACHE = 'finpath-v40';
 const SHELL = [
   './',
   './index.html',
@@ -76,7 +76,6 @@ self.addEventListener('fetch', function(event){
   const alwaysNetwork = [
     'finnhub.io',
     'supabase.co',
-    'stripe.com',
     'sec.gov',
     'openai.com',
     'anthropic.com',
@@ -95,7 +94,7 @@ self.addEventListener('fetch', function(event){
     req.mode === 'navigate' || (req.headers.get('accept')||'').indexOf('text/html') !== -1
       ? fetch(req).then(function(res){
           // Store the fresh shell under one key only. Caching every navigation URL would keep
-          // query-string variants (e.g. ?gold=success&session_id=…, ?p=… share links) in the cache.
+          // query-string variants (e.g. ?p=… share links) in the cache.
           if(res && res.ok && url.origin === self.location.origin){
             const clone = res.clone();
             caches.open(CACHE).then(function(cache){ cache.put('./index.html', clone); });

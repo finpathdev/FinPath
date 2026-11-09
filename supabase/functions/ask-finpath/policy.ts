@@ -1,7 +1,11 @@
 // Pure rules for Ask FinPath. No network, no secrets, no user identity.
 
-export const FREE_DAILY = 5
-export const GOLD_DAILY = 50
+// One daily cap for every signed-in account. The retired paid plan used 50;
+// that number is now the only limit. FREE_DAILY and GOLD_DAILY stay as aliases
+// so older imports still compile, and they are the same value.
+export const DAILY_LIMIT = 50
+export const FREE_DAILY = DAILY_LIMIT
+export const GOLD_DAILY = DAILY_LIMIT
 export const BURST_PER_MINUTE = 5
 export const MAX_QUESTION = 500
 export const MAX_HISTORY = 6

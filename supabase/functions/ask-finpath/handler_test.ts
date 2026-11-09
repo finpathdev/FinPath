@@ -2,8 +2,8 @@ import assert from 'node:assert/strict'
 import { describe, it } from 'node:test'
 import { handleAsk, type AskAdmin } from './handler.ts'
 import {
+  DAILY_LIMIT,
   FREE_DAILY,
-  GOLD_DAILY,
   answerGivesAdvice,
   classifyQuestion,
   isAllowedOrigin,
@@ -32,8 +32,10 @@ function mockAdmin(opts: {
   releaseRemaining?: number
 }) {
   const calls: { fn: string; args: Record<string, unknown> }[] = []
+  let fromCalls = 0
   const admin: AskAdmin = {
     from() {
+      fromCalls += 1
       return {
         select() {
           return {
@@ -63,7 +65,7 @@ function mockAdmin(opts: {
       return { data: null, error: { message: 'unknown' } }
     },
   }
-  return { admin, calls }
+  return { admin, calls, fromCalls: () => fromCalls }
 }
 
 function post(body: unknown, origin = 'https://finpathdev.github.io') {
@@ -165,8 +167,8 @@ describe('handler', () => {
     assert.equal(body.error, 'Sign in required.')
   })
 
-  it('ignores a fake Gold flag and uses the free cap', async () => {
-    const { admin, calls } = mockAdmin({ active: false })
+  it('ignores a fake plan flag and uses the single daily cap', async () => {
+    const { admin, calls, fromCalls } = mockAdmin({ active: false })
     let sent = ''
     const res = await handleAsk(post({
       q: 'What is an index fund?',
@@ -187,7 +189,9 @@ describe('handler', () => {
     }))
     assert.equal(res.status, 200)
     assert.equal(calls[0].fn, 'consume_ask_quota')
-    assert.equal(calls[0].args.p_daily_limit, FREE_DAILY)
+    assert.equal(fromCalls(), 0)
+    assert.equal(calls[0].args.p_daily_limit, DAILY_LIMIT)
+    assert.equal(FREE_DAILY, DAILY_LIMIT)
     assert.equal(calls[0].args.p_burst_limit, 5)
     const outbound = JSON.parse(sent)
     assert.equal(outbound.model, 'grok-4.7')
@@ -206,8 +210,8 @@ describe('handler', () => {
     assert.equal(body.remaining, 4)
   })
 
-  it('uses the Gold cap only when gold_users.active is true', async () => {
-    const { admin, calls } = mockAdmin({ active: true, consume: { allowed: true, reason: null, remaining: 49, limit: GOLD_DAILY, count: 1 } })
+  it('uses the same daily cap even if gold_users would say active', async () => {
+    const { admin, calls, fromCalls } = mockAdmin({ active: true, goldError: true, consume: { allowed: true, reason: null, remaining: 49, limit: DAILY_LIMIT, count: 1 } })
     const res = await handleAsk(post({ q: 'What is a bond?', isGold: false }), deps({
       admin,
       fetchImpl: async () => new Response(JSON.stringify({
@@ -215,9 +219,10 @@ describe('handler', () => {
       }), { status: 200 }),
     }))
     assert.equal(res.status, 200)
-    assert.equal(calls[0].args.p_daily_limit, GOLD_DAILY)
+    assert.equal(fromCalls(), 0)
+    assert.equal(calls[0].args.p_daily_limit, DAILY_LIMIT)
     const body = await res.json()
-    assert.equal(body.plan, 'gold')
+    assert.equal(body.plan, 'free')
     assert.equal(body.remaining, 49)
   })
 
@@ -246,14 +251,14 @@ describe('handler', () => {
   it('returns 429 for the burst limit and keeps the daily remaining', async () => {
     const { admin } = mockAdmin({
       active: true,
-      consume: { allowed: false, reason: 'burst', remaining: 40, limit: GOLD_DAILY, count: 10 },
+      consume: { allowed: false, reason: 'burst', remaining: 40, limit: DAILY_LIMIT, count: 10 },
     })
     const res = await handleAsk(post({ q: 'What is a stock?' }), deps({ admin }))
     assert.equal(res.status, 429)
     const body = await res.json()
     assert.equal(body.reason, 'burst')
     assert.equal(body.remaining, 40)
-    assert.equal(body.plan, 'gold')
+    assert.equal(body.plan, 'free')
   })
 
   it('soft-refuses a buy call without calling xAI', async () => {

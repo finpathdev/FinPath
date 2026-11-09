@@ -116,14 +116,15 @@ function lessonInfo(slug){
   const lesson = LESSONS.find(function(item){ return item && item.id === slug; });
   if(!lesson) return { name: slug, free: true, quiz: false };
   const quiz = typeof QUIZZES !== 'undefined' && !!QUIZZES[lesson.name];
-  return { name: lesson.name, free: lesson.plan !== 'gold', quiz: quiz };
+  // Every catalog lesson is available. plan is only a curriculum label.
+  return { name: lesson.name, free: true, quiz: quiz };
 }
 
 function freeSlugMap(){
   const map = {};
   if(typeof LESSONS === 'undefined') return map;
   LESSONS.forEach(function(lesson){
-    if(lesson && lesson.id && lesson.plan !== 'gold') map[lesson.id] = 1;
+    if(lesson && lesson.id) map[lesson.id] = 1;
   });
   return map;
 }
