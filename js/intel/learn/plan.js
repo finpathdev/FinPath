@@ -90,7 +90,7 @@ export function buildStudyPlan(opts){
       free: !freeSlugs || !!freeSlugs[quizSlug]
     });
   });
-  // Free lessons fill the short list first so a paywalled lesson is not the only next step.
+  // Lessons the caller marks free fill the short list first.
   candidates.filter(function(item){ return item.free; }).forEach(push);
   candidates.filter(function(item){ return !item.free; }).forEach(push);
 

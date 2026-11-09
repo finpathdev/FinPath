@@ -41,11 +41,11 @@ Useful EDGAR path: `https://www.sec.gov/edgar/browse/?CIK=<cik>&owner=exclude`, 
 
 ## Copy that names the quarter or the investor count
 
-These strings are hardcoded. `INVESTORS.length` / `MOVES.length` / `F13` already cover the paywall, the portfolio check-up line, the source line under the grid, and the timeline. Update the rest if the count or the quarter changes:
+These strings are hardcoded. `INVESTORS.length` / `MOVES.length` / `F13` already cover the moves page, the portfolio check-up line, the source line under the grid, and the timeline. Update the rest if the count or the quarter changes:
 
 - Hero paragraph (“9 legendary investors”) and `#heroStat3` (`9`)
-- How-it-works step 3, the Investor Moves feature card, both pricing bullets
-- Gold hero: “9 legendary investors … (Q2 2026)”
+- How-it-works step 3, the Investor Moves feature card, and the free-plan bullet on the home page
+- Investor Moves hero: “9 legendary investors … (Q2 2026)”
 - Landing subtitle `#landing13fNote` (the static Q2 sentence; the overdue sentence is built from `F13`)
 - Landing preview cards in `.investor-grid` — four real rows, not generated from `MOVES`: Buffett / GOOGL Add 83% $37.8B, Ackman / V Buy $1.12B, Tepper / AMZN Add 15.7% $1.19B, Druckenmiller / NTRA Add 4% $865M. Replace a card only with a row you actually put in `MOVES`.
 - `AI_INSIGHT`: `MSFT`, `GOOGL`, `AMZN`, `META` cite Q2 facts
@@ -59,12 +59,12 @@ Search the repo for `Q2 2026` and `9 legendary` before you ship.
 1. Bump `CACHE` in `sw.js` (this UX pass is `finpath-v19`, after the Markets pass at `finpath-v18`; the refresh needs the next name, e.g. `finpath-v20`).
 2. `node --check` the inline scripts you touched, and `sw.js`.
 3. Add a short note to `FIXES-NOTES.md`: which filings you opened, what you changed, and what you left out.
-4. Confirm the Gold grid still defaults to non-Hold moves, Show holds still reveals Holds, and Buy / Add / Reduce / Sold out still combine with the investor tabs.
+4. Confirm the Investor Moves grid still defaults to non-Hold moves, Show holds still reveals Holds, and Buy / Add / Reduce / Sold out still combine with the investor tabs. A signed-out visit should show the grid with no upgrade prompt.
 
 ## Do not invent
 
 - No Q3 (or later) row, dollar figure, percent, or “he probably sold” note without that quarter’s information table.
 - A letter or a 13F-NT is not a holdings table. Post-quarter trades wait for the next 13F. (Ackman’s Aug 12, 2026 letter named Alcon and ICE; they were not in the June 30 filing and they are not cards.)
 - Do not relabel a put, a call, or a spin-off as Buy.
-- Do not touch Stripe, pricing logic, auth, the Finnhub key, or `COMPANIES` / `SECTORS` / `POP`. A card can show a ticker that is not in the market universe; track search already accepts a typed symbol. Universe edits belong to the stocks owner.
+- Do not touch auth, the Finnhub key, or `COMPANIES` / `SECTORS` / `POP`. A card can show a ticker that is not in the market universe; track search already accepts a typed symbol. Universe edits belong to the stocks owner. FinPath has no checkout.
 - Do not add a manager just to raise the count. Q2 left out Burry (no 2026 13F-HR), Bridgewater, Oaktree, Pabrai, and the second Fundsmith entity for the reasons in `FIXES-NOTES.md`.

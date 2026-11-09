@@ -429,3 +429,7 @@ Cancel while a paper sell was waiting on a quote closed the dialog (Escape alrea
 - The fill is bound to the ticker the dialog was opened for. After the quote, that ticker is removed even if its index moved. Confirm does not sell a different name that now occupies the old index.
 - A finished sale still closes the dialog only when it is still that same sell.
 - `sw.js` cache is `finpath-v26`.
+
+## 2026-11-09 — FinPath is free (finpath-v40)
+
+The paid FinPath Gold plan is gone. Every lesson, Investor Moves, rule-based holding notes, and the today’s-change breakdown open for everyone, signed in or not. Sign-in is still required for Ask FinPath and for account sync. Ask FinPath uses one cap for every signed-in account: 50 questions per UTC day and about 5 per minute. The edge function no longer reads `gold_users` to pick a limit. The client no longer calls `gold_users` or `payments`, and the Stripe test Payment Link is gone. Home pricing now says FinPath is 100% free. Legal section 8 no longer describes a subscription, and the 18+ purchase rule is gone. Under-13 and under-18 consent rules stay. `plan:"gold"` remains a curriculum label so the beginner path and the foundations certificate still use the original shorter set. Tables were not dropped. `sw.js` cache is `finpath-v40`. Older notes in this file still describe the retired checkout.

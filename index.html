@@ -59,7 +59,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FinPath">
 <meta name="mobile-web-app-capable" content="yes">
-<!-- Stripe.js removed 2026-10-25: Gold checkout uses a hosted Payment Link (window.open), so the SDK was unused render-blocking weight. -->
+<!-- No payment SDK. FinPath does not sell a plan or take a card. -->
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ══ FINPATH DESIGN SYSTEM v2 — "Terminal Garden" ══
@@ -1648,7 +1648,7 @@ body.light .gs-item{background:#fff}
       <div style="font-size:18px;font-weight:700;margin-bottom:6px;text-align:center">Parent or guardian consent</div>
       <div style="font-size:13px;color:#888;margin-bottom:18px;text-align:center;line-height:1.55">Because you're under 18, we need a parent or guardian to sign off. Please have them fill this out with you.</div>
       <div style="background:rgba(245,182,11,.08);border:1px solid rgba(245,182,11,.28);border-radius:12px;padding:14px;font-size:12px;color:#fde68a;line-height:1.55;margin-bottom:18px">
-        <b>To the parent/guardian:</b> FinPath is an educational finance platform. It does NOT execute trades or hold funds. It includes paper trading (virtual money) and educational content. Your child cannot subscribe to paid features (Gold) without you. Full terms: <a onclick="closeLogin();showPage('legal')" style="color:#f5b60b;cursor:pointer;text-decoration:underline">Legal &amp; Terms</a>
+        <b>To the parent/guardian:</b> FinPath is an educational finance platform. It does NOT execute trades or hold funds. It includes paper trading (virtual money) and educational content. FinPath is 100% free — there is no subscription. Full terms: <a onclick="closeLogin();showPage('legal')" style="color:#f5b60b;cursor:pointer;text-decoration:underline">Legal &amp; Terms</a>
       </div>
       <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600">Parent/guardian full name</label>
       <input id="pcName" type="text" placeholder="e.g. Priya Patel" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:11px;padding:12px;color:#eef5ee;font-size:14px;outline:none;margin-bottom:12px">
@@ -1662,7 +1662,7 @@ body.light .gs-item{background:#fff}
       </select>
       <label style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:#c3d0c5;line-height:1.55;margin-bottom:12px;cursor:pointer">
         <input type="checkbox" id="pcAgree" style="margin-top:3px;flex-shrink:0;accent-color:#22c55e">
-        <span>I confirm I am the parent or legal guardian of this user, I have read and agree to the <a onclick="event.stopPropagation();closeLogin();showPage('legal')" style="color:#22c55e;cursor:pointer;text-decoration:underline">Terms &amp; Legal</a>, and I consent to my child using FinPath's free educational features. I understand paid features require my separate authorization.</span>
+        <span>I confirm I am the parent or legal guardian of this user, I have read and agree to the <a onclick="event.stopPropagation();closeLogin();showPage('legal')" style="color:#22c55e;cursor:pointer;text-decoration:underline">Terms &amp; Legal</a>, and I consent to my child using FinPath, including its lessons, practice tools, and saved progress.</span>
       </label>
       <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600">Type your full name below as your electronic signature</label>
       <input id="pcSig" type="text" placeholder="Type your name here to sign" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:11px;padding:12px;color:#eef5ee;font-size:16px;font-family:'Caveat',cursive;letter-spacing:.5px;outline:none;margin-bottom:16px">
@@ -1694,7 +1694,6 @@ body.light .gs-item{background:#fff}
 </div>
 <div id="userMenu" style="display:none;position:fixed;top:74px;right:5%;background:#0b110c;border:1px solid rgba(134,239,172,.18);border-radius:16px;padding:8px;z-index:500;min-width:210px;box-shadow:0 16px 48px rgba(0,0,0,.6)">
   <div id="userEmailDisplay" style="padding:10px 12px;font-size:13px;color:#888;border-bottom:1px solid rgba(134,239,172,.1);margin-bottom:4px"></div>
-  <div id="goldStatusMenu" style="padding:8px 12px;font-size:13px"></div>
   <button onclick="showPage('life');closeUserMenu()" style="width:100%;background:none;border:none;color:#fff;text-align:left;padding:10px 12px;cursor:pointer;font-size:14px;border-radius:8px" onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background='none'">🧭 Life Path</button>
   <button onclick="showPage('identity');closeUserMenu()" style="width:100%;background:none;border:none;color:#fff;text-align:left;padding:10px 12px;cursor:pointer;font-size:14px;border-radius:8px" onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background='none'">🪪 Financial identity</button>
   <button onclick="showPage('portfolio');closeUserMenu()" style="width:100%;background:none;border:none;color:#fff;text-align:left;padding:10px 12px;cursor:pointer;font-size:14px;border-radius:8px" onmouseover="this.style.background='#1a1a1a'" onmouseout="this.style.background='none'">📈 My Portfolio</button>
@@ -1711,7 +1710,7 @@ body.light .gs-item{background:#fff}
       <a href="#study" data-nav="study" role="button" tabindex="0" onclick="showPage('study');return false;">Study</a>
       <a href="#lessons" data-nav="lessons" role="button" tabindex="0" onclick="showPage('lessons');return false;">Lessons</a>
       <a href="#ask" data-nav="ask" role="button" tabindex="0" onclick="showPage('ask');return false;">Ask</a>
-      <a href="#gold" data-nav="gold" role="button" tabindex="0" onclick="showPage('gold');return false;">Gold</a>
+      <a href="#gold" data-nav="gold" role="button" tabindex="0" onclick="showPage('gold');return false;">Moves</a>
       <a href="#portfolio" data-nav="portfolio" role="button" tabindex="0" onclick="showPage('portfolio');return false;">Portfolio</a>
       <a href="#markets" data-nav="markets" role="button" tabindex="0" onclick="showPage('markets');return false;">Markets</a>
       <a href="#legal" data-nav="legal" role="button" tabindex="0" onclick="showPage('legal');return false;">Legal</a>
@@ -1727,7 +1726,7 @@ body.light .gs-item{background:#fff}
   <a href="#study" data-nav="study" role="button" tabindex="0" onclick="showPage('study');toggleMenu(false);return false;">Does FinPath work?</a>
   <a href="#lessons" data-nav="lessons" role="button" tabindex="0" onclick="showPage('lessons');toggleMenu(false);return false;">Lessons</a>
   <a href="#ask" data-nav="ask" role="button" tabindex="0" onclick="showPage('ask');toggleMenu(false);return false;">Ask</a>
-  <a href="#gold" data-nav="gold" role="button" tabindex="0" onclick="showPage('gold');toggleMenu(false);return false;">Gold</a>
+  <a href="#gold" data-nav="gold" role="button" tabindex="0" onclick="showPage('gold');toggleMenu(false);return false;">Moves</a>
   <a href="#portfolio" data-nav="portfolio" role="button" tabindex="0" onclick="showPage('portfolio');toggleMenu(false);return false;">Portfolio</a>
   <a href="#markets" data-nav="markets" role="button" tabindex="0" onclick="showPage('markets');toggleMenu(false);return false;">Markets</a>
   <a href="#legal" data-nav="legal" role="button" tabindex="0" onclick="showPage('legal');toggleMenu(false);return false;">Legal</a>
@@ -2255,16 +2254,16 @@ body.light .gs-item{background:#fff}
     <p class="section-sub">From your first lesson to your first investment, FinPath walks you through every step.</p>
     <div class="features-grid">
       <div class="feature-card" onclick="showPage('lessons')"><div class="feature-icon">📚</div><div class="feature-title">34 Expert Lessons</div><div class="feature-desc">Everything schools skipped — from credit scores to compound interest — explained in plain English.</div></div>
-      <div class="feature-card" onclick="showPage('gold')"><div class="feature-icon">👑</div><div class="feature-title">Investor Moves — Gold</div><div class="feature-desc">See what 9 legendary investors (Buffett, Ackman, Tepper, Druckenmiller, Li Lu, Klarman, Gates, Coleman and Smith) bought and sold in their latest 13F filings — and why.</div></div>
-      <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">📈</div><div class="feature-title">Live Portfolio Tracker</div><div class="feature-desc">Track your stocks with live prices. See total profit, daily gains, and (with Gold) which holdings drove today’s move.</div></div>
-      <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">🧭</div><div class="feature-title">Stock Suggestions — Gold</div><div class="feature-desc">Rule-based educational notes for the stocks you own, drawn from position size, sector mix, and unrealized gain or loss. Not a live AI and not personal advice.</div></div>
+      <div class="feature-card" onclick="showPage('gold')"><div class="feature-icon">👑</div><div class="feature-title">Investor Moves</div><div class="feature-desc">See what 9 legendary investors (Buffett, Ackman, Tepper, Druckenmiller, Li Lu, Klarman, Gates, Coleman and Smith) bought and sold in their latest 13F filings — and why.</div></div>
+      <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">📈</div><div class="feature-title">Live Portfolio Tracker</div><div class="feature-desc">Track your stocks with live prices. See total profit, daily gains, and which holdings drove today’s move.</div></div>
+      <div class="feature-card" onclick="showPage('portfolio')"><div class="feature-icon">🧭</div><div class="feature-title">Stock Suggestions</div><div class="feature-desc">Rule-based educational notes for the stocks you own, drawn from position size, sector mix, and unrealized gain or loss. Not a live AI and not personal advice.</div></div>
       <div class="feature-card" onclick="showPage('life')"><div class="feature-icon">🌱</div><div class="feature-title">Life Path</div><div class="feature-desc">A yearly classroom model to 65, you at 40 and you at 60, what-ifs, and a decision-journal yearbook. Educational only — not a prediction and not a reason to buy, sell, or borrow.</div></div>
       <div class="feature-card" onclick="showPage('identity')"><div class="feature-icon">🪪</div><div class="feature-title">Financial identity</div><div class="feature-desc">A study profile, a 0–1000 literacy score, and a short weekly plan. It stays on this device. It is not a credit score.</div></div>
     </div>
   </section>
   <section class="investor-section">
     <div class="investor-inner">
-      <div class="section-tag">Gold feature preview</div>
+      <div class="section-tag">Investor Moves</div>
       <h2 class="section-title">What legendary investors just reported</h2>
       <p class="section-sub" id="landing13fNote">Q2 2026 13F filings — positions as of June 30, 2026, filed Aug 14, 2026. Next filings due by Nov 16, 2026.</p>
       <div id="landing13fLag" class="f13-lag f13-lag-lite"></div>
@@ -2281,45 +2280,29 @@ body.light .gs-item{background:#fff}
     <div class="founder-section">
       <div class="founder-badge">✨ Just launched · Early adopter</div>
       <div class="founder-title">Hi, I'm Siddharth. I built FinPath because school skipped this.</div>
-      <div class="founder-body">I'm a high school student who kept hearing "invest early" without anyone actually explaining <strong>how</strong>. So I spent months building the tool I wish existed — <strong>34 lessons in plain English and $100k of practice cash are free</strong>. Investor Moves, from recent 13F filings, are part of Gold. The portfolio tracker shows prices when market data is available.<br><br>You're early. That means your feedback shapes what FinPath becomes next. Thanks for checking it out.</div>
+      <div class="founder-body">I'm a high school student who kept hearing "invest early" without anyone actually explaining <strong>how</strong>. So I spent months building the tool I wish existed. <strong>FinPath is 100% free</strong> — 34 lessons in plain English, $100k of practice cash, and Investor Moves from recent 13F filings. The portfolio tracker shows prices when market data is available.<br><br>You're early. That means your feedback shapes what FinPath becomes next. Thanks for checking it out.</div>
       <div class="founder-signature">— Siddharth<span class="founder-signature-role">Founder, FinPath</span></div>
       <div style="margin-top:26px;position:relative"><button class="btn-primary" onclick="handleAuthClick()">Get started free →</button></div>
     </div>
   </section>
-  <section class="pricing">
+  <section class="pricing" id="pricing">
     <div class="section-tag">Pricing</div>
-    <h2 class="section-title">Start free. Go Gold when you're ready.</h2>
+    <h2 class="section-title">FinPath is 100% free</h2>
+    <p class="section-sub">Every lesson, Investor Moves, the portfolio tools, and Ask FinPath are included. No card and no paid plan.</p>
     <div class="pricing-grid">
       <div class="price-card">
-        <div class="price-name">FinPath Free</div>
-        <div class="price-amount">$0<span>/mo</span></div>
-        <div class="price-period">Free forever</div>
+        <div class="price-name">FinPath</div>
+        <div class="price-amount">$0</div>
+        <div class="price-period">Free for everyone</div>
         <ul class="price-features">
-          <li>20 free lessons with full content</li>
-          <li>Live portfolio tracker</li>
-          <li>Basic profit and loss tracking</li>
-          <li>Ask FinPath — 5 educational questions a day after you sign in</li>
-          <li class="no">Investor Moves (9 legendary investors)</li>
-          <li class="no">14 Gold lessons</li>
-          <li class="no">Rule-based educational notes on holdings</li>
-          <li class="no">Today’s-change breakdown per holding</li>
-        </ul>
-        <button class="price-btn outline" onclick="handleAuthClick()">Get started free</button>
-      </div>
-      <div class="price-card featured">
-        <div class="price-name">FinPath Gold ✦</div>
-        <div class="price-amount">$4.99<span>/mo</span></div>
-        <div class="price-period">Billed monthly · annual plan coming soon</div>
-        <ul class="price-features">
-          <li>All 34 lessons including 14 Gold-only</li>
-          <li>Live portfolio tracker</li>
-          <li>Today’s-change breakdown per holding (hour-by-hour history isn’t available on our data plan yet)</li>
+          <li>All 34 lessons</li>
           <li>Investor Moves — 9 legendary investors (13F)</li>
-          <li>Rule-based educational notes on each holding (size, sector, gain or loss)</li>
-          <li>Holding alerts with the reasoning behind each suggestion</li>
-          <li>Ask FinPath — 50 educational questions a day, powered by Grok (xAI)</li>
+          <li>Live portfolio tracker and today’s-change breakdown</li>
+          <li>Rule-based educational notes on each holding</li>
+          <li>Ask FinPath — 50 educational questions a day after you sign in, powered by Grok (xAI)</li>
+          <li>$100,000 of practice cash</li>
         </ul>
-        <button class="price-btn" onclick="openGoldPayment()">Start with Gold</button>
+        <button class="price-btn" onclick="handleAuthClick()">Get started free</button>
       </div>
     </div>
   </section>
@@ -2328,7 +2311,7 @@ body.light .gs-item{background:#fff}
     <div class="footer-sub">The financial playbook schools skipped.</div>
     <div class="footer-links">
       <a role="button" tabindex="0" onclick="showPage('home')">Home</a><a role="button" tabindex="0" onclick="showPage('life')">Life</a><a role="button" tabindex="0" onclick="showPage('identity')">Identity</a><a role="button" tabindex="0" onclick="showPage('lessons')">Lessons</a><a role="button" tabindex="0" onclick="showPage('ask')">Ask</a>
-      <a role="button" tabindex="0" onclick="showPage('gold')">Gold</a><a role="button" tabindex="0" onclick="showPage('portfolio')">Portfolio</a>
+      <a role="button" tabindex="0" onclick="showPage('gold')">Moves</a><a role="button" tabindex="0" onclick="showPage('portfolio')">Portfolio</a>
       <a role="button" tabindex="0" onclick="showPage('legal')">Legal & Disclaimers</a>
     </div>
     <div id="footerInstall" style="margin-bottom:26px">
@@ -2555,7 +2538,7 @@ body.light .gs-item{background:#fff}
   <div class="ask-wrap">
     <div id="askSignedOut" class="ask-gate">
       <h2>Sign in to ask</h2>
-      <p>Ask FinPath needs an account. Signed out, you have <strong>0 asks</strong>. A free account gets 5 questions per UTC day. Gold gets 50. About 5 per minute. The server enforces the limit.</p>
+      <p>Ask FinPath needs an account so the daily limit can be counted. Signed out, you have <strong>0 asks</strong>. A signed-in account gets 50 questions per UTC day, about 5 per minute. The server enforces the limit.</p>
       <button class="btn-primary" type="button" onclick="openLogin()">Sign in</button>
     </div>
     <div id="askSignedIn" hidden>
@@ -2579,7 +2562,7 @@ body.light .gs-item{background:#fff}
 <!-- GOLD -->
 <div id="page-gold" class="page">
   <div class="gold-hero">
-    <div class="gold-badge">✦ Gold Plan</div>
+    <div class="gold-badge">Free for everyone</div>
     <h1 style="font-size:clamp(28px,4vw,56px);font-weight:800;letter-spacing:-1.5px;margin-bottom:12px">Investor Moves</h1>
     <p style="font-size:16px;color:var(--muted);max-width:500px;margin:0 auto">See what 9 legendary investors bought and sold in their latest 13F filings (Q2 2026) — and why.</p>
   </div>
@@ -2609,10 +2592,10 @@ body.light .gs-item{background:#fff}
     <div class="port-top-grid">
       <div class="port-card green-card">
         <div class="port-label">Total portfolio value</div>
-        <div class="port-value" id="totalValue" aria-live="polite" role="button" tabindex="0" onclick="openHourly()" title="See which holdings moved today (Gold)">$0.00</div>
+        <div class="port-value" id="totalValue" aria-live="polite" role="button" tabindex="0" onclick="openHourly()" title="See which holdings moved today">$0.00</div>
         <div class="daily-change-row" onclick="openHourly()">
           <span class="daily-badge daily-up" id="dailyBadge" aria-live="polite">+$0.00 today</span>
-          <span style="font-size:12px;color:var(--muted)">▸ today’s movers (Gold)</span>
+          <span style="font-size:12px;color:var(--muted)">▸ today’s movers</span>
         </div>
         <div class="chart-wrap"><canvas id="portfolioChart"></canvas></div>
         <div class="period-tabs" id="portPeriods">
@@ -2660,7 +2643,7 @@ body.light .gs-item{background:#fff}
       <div id="priceAlertsList"></div>
     </div>
     <div class="ai-section">
-      <div class="ai-head"><div class="ai-title">Stock Suggestions <span style="font-size:12px;font-weight:500;color:var(--muted)">(rule-based)</span></div><span class="ai-badge">Gold Plan</span></div>
+      <div class="ai-head"><div class="ai-title">Stock Suggestions <span style="font-size:12px;font-weight:500;color:var(--muted)">(rule-based)</span></div><span class="ai-badge">Included</span></div>
       <div class="ai-disclaimer">Suggestions are rule-based educational notes derived from portfolio weights, sector mix, and unrealized gain or loss — not a live AI reading your personal situation. These notes are for educational purposes only and do not constitute financial advice. Always do your own research. Past performance does not guarantee future results. You are solely responsible for any investment decisions you make.</div>
       <!-- 2026-10-25: removed the "instructions" textarea; suggestions are rule-based and never used it (the old copy falsely said they were "adjusted accordingly"). -->
       <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="ai-run-btn" onclick="runAI()">Get suggestions</button><button class="ai-run-btn" style="background:linear-gradient(135deg,#b8860b,#f5b60b);color:#0a0a05" onclick="analyzePortfolio()">Deep portfolio analysis</button></div>
@@ -2862,11 +2845,11 @@ body.light .gs-item{background:#fff}
 <div id="page-legal" class="page">
   <div class="legal-wrap">
     <h1>Legal, Privacy &amp; Terms of Use</h1>
-    <div class="legal-updated">Last updated: November 1, 2026</div>
+    <div class="legal-updated">Last updated: November 9, 2026</div>
     <div class="warning-box"><p><strong>Please read carefully.</strong> By using FinPath you confirm you have read, understood, and agreed to everything below. If you do not agree, do not use FinPath. Some sections limit your legal rights — including a mandatory arbitration clause and class-action waiver — so read them attentively.</p></div>
 
     <div class="legal-section" id="l-not-advice"><h2>1. Not Financial, Investment, Legal, or Tax Advice</h2>
-      <p>FinPath is an <strong>educational and informational platform</strong>. Nothing on FinPath — including lessons, articles, screener output, market pulse data, sector heat maps, portfolio analytics, the AI Analyzer, the AI Suggestions feature (Gold), Ask FinPath (powered by Grok), investor move summaries, the Strategy Playground, the Life Path model, backtest results, share prices, alert notifications, or any communication from FinPath or Siddharth Moosani — constitutes financial advice, investment advice, tax advice, legal advice, accounting advice, retirement planning advice, or any other form of professional advice. Life Path projections, including the classroom percentile bands and the Future Self portraits at 40 and 60, are educational models with stated assumptions. They are not predictions and they are not a reason to buy, sell, or borrow.</p>
+      <p>FinPath is an <strong>educational and informational platform</strong>. Nothing on FinPath — including lessons, articles, screener output, market pulse data, sector heat maps, portfolio analytics, the AI Analyzer, Stock Suggestions, Ask FinPath (powered by Grok), investor move summaries, the Strategy Playground, the Life Path model, backtest results, share prices, alert notifications, or any communication from FinPath or Siddharth Moosani — constitutes financial advice, investment advice, tax advice, legal advice, accounting advice, retirement planning advice, or any other form of professional advice. Life Path projections, including the classroom percentile bands and the Future Self portraits at 40 and 60, are educational models with stated assumptions. They are not predictions and they are not a reason to buy, sell, or borrow.</p>
       <p>FinPath does <strong>not</strong> know your full financial situation, income, debts, tax bracket, dependents, age, health, insurance, employment status, retirement horizon, other assets, or personal risk tolerance. Any statement about a security, sector, strategy, or approach is generic educational content and does not consider your individual circumstances.</p>
       <p>You must consult a qualified, licensed financial adviser, tax professional, or attorney before making any investment, tax, or legal decision. Your reliance on FinPath is solely at your own risk.</p>
     </div>
@@ -2878,7 +2861,7 @@ body.light .gs-item{background:#fff}
 
     <div class="legal-section" id="l-ai"><h2>3. Automated ("AI") Features Disclaimer</h2>
       <p>FinPath has two different kinds of automated features. They are not the same, and neither one is personalized financial advice. Neither should be the sole basis for any investment decision.</p>
-      <p><strong>Rule-based notes.</strong> The free portfolio Analyzer / check-up and the paid Gold "Stock Suggestions" feature (called "AI Suggestions" in earlier versions) are <strong>not</strong> written by a large language model. No live AI system generates them. They apply <strong>rule-based commentary</strong> using portfolio weights, sector mix, and unrealized gain or loss.</p>
+      <p><strong>Rule-based notes.</strong> The portfolio Analyzer / check-up and Stock Suggestions (called "AI Suggestions" in earlier versions) are <strong>not</strong> written by a large language model. No live AI system generates them. They apply <strong>rule-based commentary</strong> using portfolio weights, sector mix, and unrealized gain or loss.</p>
       <p><strong>Ask FinPath.</strong> The separate Ask page is powered by <strong>Grok, a model from xAI</strong>. It is for learning about investing and the lessons. It is not a broker and not a portfolio manager. Ask FinPath is built to refuse buy, sell, and hold calls, price targets, personal allocations, and tax or legal advice. A refusal is not a recommendation. Answers can still be wrong.</p>
       <ul>
         <li>These notes and Ask FinPath answers may be inaccurate, out-of-date, biased, incomplete, or contradictory</li>
@@ -2892,7 +2875,7 @@ body.light .gs-item{background:#fff}
       </ul>
     </div>
 
-    <div class="legal-section" id="l-13f"><h2>4. Investor Move Data (Gold Feature)</h2>
+    <div class="legal-section" id="l-13f"><h2>4. Investor Move Data</h2>
       <p>Investor holdings shown in the "Billionaire Moves" and related features are derived from publicly available <strong>SEC Form 13F filings</strong>. Under SEC rules, 13F filings reflect long U.S. equity positions as of the end of a calendar quarter and are filed up to 45 days after that quarter ends. This means the data you see may be up to four and a half months old and does not reflect:</p>
       <ul>
         <li>Current positions — the investor may have sold, added to, or eliminated any holding since the filing date</li>
@@ -2922,20 +2905,12 @@ body.light .gs-item{background:#fff}
     </div>
 
     <div class="legal-section" id="l-third-party"><h2>7. Third-Party Data &amp; Services</h2>
-      <p>FinPath uses third-party services and APIs to provide functionality, including but not limited to: <strong>Yahoo Finance</strong> (live quotes, cached on our server) and <strong>Finnhub</strong> (a backup quote feed, plus news and fundamentals), <strong>Supabase</strong> (authentication and storage), <strong>Stripe</strong> (payments), <strong>xAI</strong> (the Grok model that writes Ask FinPath answers), and various content delivery networks. Market data is provided "as is" and may be delayed, inaccurate, or unavailable. FinPath makes no representations about the accuracy, completeness, timeliness, or availability of any third-party data or model output.</p>
+      <p>FinPath uses third-party services and APIs to provide functionality, including but not limited to: <strong>Yahoo Finance</strong> (live quotes, cached on our server) and <strong>Finnhub</strong> (a backup quote feed, plus news and fundamentals), <strong>Supabase</strong> (authentication and storage), <strong>xAI</strong> (the Grok model that writes Ask FinPath answers), and various content delivery networks. Market data is provided "as is" and may be delayed, inaccurate, or unavailable. FinPath makes no representations about the accuracy, completeness, timeliness, or availability of any third-party data or model output.</p>
       <p>Always verify prices, filings, and any other data with your broker, the SEC's EDGAR database, or another primary source before acting on it.</p>
     </div>
 
-    <div class="legal-section" id="l-subscription"><h2>8. FinPath Gold Subscription Terms</h2>
-      <p>FinPath Gold is an optional paid subscription providing access to additional features. By subscribing you agree to the following:</p>
-      <ul>
-        <li><strong>Price:</strong> $4.99 USD per month, billed monthly, unless otherwise displayed at checkout.</li>
-        <li><strong>Billing:</strong> Payment is processed by Stripe. Your subscription renews automatically at the end of each billing period until you cancel.</li>
-        <li><strong>Cancellation:</strong> You may cancel at any time by contacting <a href="mailto:support@finpath.app" style="color:var(--green)">support@finpath.app</a>. Cancellation stops future billing; you retain Gold access until the end of your current paid period.</li>
-        <li><strong>Refunds:</strong> Except where required by law, subscription fees are <strong>non-refundable</strong>. If you believe you were charged in error, contact support within 14 days of the charge.</li>
-        <li><strong>Feature changes:</strong> FinPath may add, remove, or modify Gold features at any time. Gold does not entitle you to any specific feature indefinitely.</li>
-        <li><strong>Termination:</strong> FinPath may terminate your Gold access for violation of these terms, abusive behavior, fraud, or chargebacks, without refund.</li>
-      </ul>
+    <div class="legal-section" id="l-subscription"><h2>8. FinPath is free</h2>
+      <p>FinPath is 100% free. There is no subscription, no checkout, and no paid tier. Lessons, Investor Moves, portfolio tools, and rule-based notes are included for everyone. Ask FinPath is included for signed-in accounts, with the daily question limit described in Section 9. FinPath does not ask for a card.</p>
     </div>
 
     <div class="legal-section" id="l-privacy"><h2>9. Privacy &amp; Data</h2>
@@ -2944,10 +2919,10 @@ body.light .gs-item{background:#fff}
       <ul>
         <li><strong>Account data</strong> (if you sign up): email address and encrypted password, stored by Supabase</li>
         <li><strong>Portfolio &amp; goals</strong>: stored locally in your browser, and optionally synced to Supabase when signed in</li>
-        <li><strong>Payment data</strong> (Gold subscribers only): handled entirely by Stripe; FinPath never sees or stores your card number</li>
-        <li><strong>Analytics</strong>: anonymous, aggregated event data (page views, feature usage) via privacy-respecting analytics — no cookies, no personal identifiers. Ask events record that a question was opened, sent, refused, rate-limited, or failed, plus whether the account was free or Gold. They do not include the question text.</li>
+        <li><strong>Payment data</strong>: FinPath does not collect card numbers. There is no paid plan.</li>
+        <li><strong>Analytics</strong>: anonymous, aggregated event data (page views, feature usage) via privacy-respecting analytics — no cookies, no personal identifiers. Ask events record that a question was opened, sent, refused, rate-limited, or failed. They do not include the question text.</li>
         <li><strong>Ask FinPath questions</strong>: the question, a short recent conversation, and an optional lesson title are sent to <strong>xAI</strong> so Grok can write an educational answer. FinPath does not send your email, user id, or portfolio to xAI. xAI handles that text under its own terms. FinPath does not keep a transcript of the questions.</li>
-        <li><strong>Ask usage counters</strong>: when you are signed in, FinPath stores a daily count and a short-lived per-minute count (your user id, the UTC day or minute, and a number) so the free limit of 5 questions a day and the Gold limit of 50 can be enforced, along with about 5 questions a minute. These rows are counters, not your questions. This browser may also save the last remaining number for display only. That saved number does not enforce the limit.</li>
+        <li><strong>Ask usage counters</strong>: when you are signed in, FinPath stores a daily count and a short-lived per-minute count (your user id, the UTC day or minute, and a number) so a limit of 50 questions a day can be enforced, along with about 5 questions a minute. The same limit applies to every signed-in account. These rows are counters, not your questions. This browser may also save the last remaining number for display only. That saved number does not enforce the limit.</li>
         <li><strong>Optional learning study</strong>: off unless you join, and not available if you are under 13. If you join and you are signed in, FinPath stores a random study code (not your email), your literacy score at the start and later, and a count when you finish a lesson or a quiz. It does not store your name, school, exact age, or location. An age band is optional. You can leave and delete those rows from the Study page. The public page shows combined numbers only when at least 10 people have joined.</li>
         <li><strong>Technical logs</strong>: standard web-server logs (IP address, user agent) retained temporarily for security</li>
       </ul>
@@ -2962,7 +2937,6 @@ body.light .gs-item{background:#fff}
         <li>If you are <strong>under 18 years old</strong> (or under the age of majority in your jurisdiction), you may not create an account or use any personalized feature of FinPath — including portfolio tracking, paper trading, goals, alerts, streaks, the checklist, or synced data — <strong>without the verifiable consent of a parent or legal guardian</strong>. A parent or guardian must complete FinPath's in-app consent form during signup, providing their full name, email address, relationship to the minor, agreement to these Terms on the minor's behalf, and a typed electronic signature matching their name.</li>
         <li>An electronic typed signature has the same legal effect as a handwritten signature under the U.S. Electronic Signatures in Global and National Commerce Act (E-SIGN) and applicable state Uniform Electronic Transactions Acts.</li>
         <li>By providing that consent, the parent or guardian: (a) confirms they are the parent or legal guardian of the minor; (b) agrees to be bound by these Terms on the minor's behalf; (c) accepts responsibility for the minor's use of the platform; and (d) consents to FinPath processing the minor's data as described in Section 9.</li>
-        <li>You must be at least <strong>18 years old</strong> (or the age of majority in your jurisdiction) to purchase a FinPath Gold subscription. Gold subscriptions cannot be purchased by minors even with parental consent — a parent may choose to purchase Gold themselves for a minor's use.</li>
         <li>You must be at least 18 (or the age of majority in your jurisdiction) to open a real brokerage account elsewhere; FinPath is not a brokerage.</li>
         <li>FinPath retains signed parental consent records securely and will provide a copy to the parent or guardian on request via <a href="mailto:privacy@finpath.app" style="color:var(--green)">privacy@finpath.app</a>. A parent may withdraw consent at any time by emailing that address, which will result in the minor's account being suspended and personal data deleted.</li>
         <li>If FinPath learns that a user under 13, or a user 13–17 without valid parental consent, has created an account, FinPath will suspend the account and delete the associated personal data.</li>
@@ -2974,7 +2948,7 @@ body.light .gs-item{background:#fff}
       <ul>
         <li>Use FinPath to give financial or investment advice to others as if it were your own product</li>
         <li>Scrape, reverse-engineer, or attempt to extract source data from FinPath in bulk</li>
-        <li>Attempt to circumvent Gold subscription paywalls or rate limits</li>
+        <li>Attempt to circumvent rate limits</li>
         <li>Impersonate another person or misrepresent your affiliation with FinPath</li>
         <li>Upload malicious code, exploit vulnerabilities, or interfere with other users' use of the service</li>
         <li>Use FinPath for any illegal purpose, including tax evasion, market manipulation, or securities fraud</li>
@@ -2989,7 +2963,7 @@ body.light .gs-item{background:#fff}
     <div class="legal-section" id="l-liability"><h2>13. Limitation of Liability &amp; No Warranty</h2>
       <p>FinPath is provided <strong>"as is" and "as available"</strong>, without warranty of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, non-infringement, accuracy, or uninterrupted availability. FinPath does not guarantee that the service will be error-free, secure, or continuously available.</p>
       <p>To the maximum extent permitted by law, FinPath, its founder, employees, contractors, service providers, and affiliates shall <strong>not be liable</strong> for any direct, indirect, incidental, special, consequential, punitive, or exemplary damages arising from your use of the platform, including but not limited to investment losses, missed opportunities, loss of profits, loss of data, service interruption, or reputational harm — even if FinPath was advised of the possibility of such damages.</p>
-      <p>In no event shall FinPath's total aggregate liability to you exceed the amount you have paid to FinPath in the twelve months preceding the claim, or one hundred U.S. dollars ($100), whichever is greater.</p>
+      <p>FinPath is free, so there is no subscription fee. In no event shall FinPath's total aggregate liability to you exceed one hundred U.S. dollars ($100).</p>
     </div>
 
     <div class="legal-section" id="l-indemnity"><h2>14. Indemnification</h2>
@@ -3007,7 +2981,7 @@ body.light .gs-item{background:#fff}
     </div>
 
     <div class="legal-section" id="l-contact"><h2>17. Contact</h2>
-      <p>For questions, cancellations, DMCA notices, privacy requests, or legal matters:</p>
+      <p>For questions, DMCA notices, privacy requests, or legal matters:</p>
       <ul>
         <li>General: <a href="mailto:support@finpath.app" style="color:var(--green)">support@finpath.app</a></li>
         <li>Privacy: <a href="mailto:privacy@finpath.app" style="color:var(--green)">privacy@finpath.app</a></li>
@@ -3027,7 +3001,7 @@ body.light .gs-item{background:#fff}
 <!-- HOURLY MODAL -->
 <div class="modal-overlay" id="hourlyModal" role="dialog" aria-modal="true" aria-label="Today’s change by holding">
   <div class="modal">
-    <h2>Today’s change by holding <span style="font-size:13px;color:var(--gold);margin-left:8px">Gold</span></h2>
+    <h2>Today’s change by holding</h2>
     <div id="hourlyContent"></div>
     <button class="modal-close-btn" onclick="closeHourly()">Close</button>
   </div>
@@ -3177,10 +3151,10 @@ body.light .gs-item{background:#fff}
     <p id="detailChartNote" class="chart-note" role="status" hidden></p>
     <button type="button" class="btn-secondary chart-retry" id="detailChartRetry" hidden onclick="retryDetailChart()" style="margin-bottom:16px">Retry</button>
     <div class="detail-ai-box">
-      <div style="font-size:12px;font-weight:600;color:#86efac;margin-bottom:4px">RULE-BASED SUGGESTION · GOLD PLAN</div>
+      <div style="font-size:12px;font-weight:600;color:#86efac;margin-bottom:4px">RULE-BASED SUGGESTION</div>
       <div style="font-size:11px;color:rgba(134,239,172,.6);margin-bottom:12px">For educational purposes only. Not financial advice.</div>
       <div class="detail-ai-action" id="dAiAction">Educational note</div>
-      <div class="detail-ai-text" id="dAiText">Rule-based notes are a Gold feature.</div>
+      <div class="detail-ai-text" id="dAiText">A rule-based educational note for this holding. Not financial advice.</div>
     </div>
     <div class="d-metric" style="margin-bottom:16px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px">
       <div class="d-mlabel">Price alert</div>
@@ -3223,9 +3197,8 @@ const EP=new URLSearchParams(window.location.search);
 if(EP.has('user')){ try{ EP.delete('user'); const qs=EP.toString(); history.replaceState(history.state,'',location.pathname+(qs?'?'+qs:'')+location.hash); }catch(e){} }
 try{ const _old=localStorage.getItem('fp_uid'); if(_old && _old.indexOf('@')!==-1) localStorage.removeItem('fp_uid'); }catch(e){}
 let UID=localStorage.getItem('fp_uid')||(()=>{const id='u_'+Math.random().toString(36).slice(2);try{localStorage.setItem('fp_uid',id);}catch(e){}return id;})();
-// SECURITY: IS_GOLD starts false. It can only become true after the server (Supabase)
-// confirms an active Gold subscription for the logged-in user. Never trust the client.
-let IS_GOLD = false;
+// FinPath is free. Drop leftover client flags from the retired paid plan.
+try{ localStorage.removeItem('fp_gold'); localStorage.removeItem('fp_pending_gold'); }catch(e){}
 
 function fmt(n){return '$'+parseFloat(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 
@@ -3343,6 +3316,7 @@ function ruleSuggest(holdingsQuotes){
 
 
 
+// plan:"gold" is a curriculum label for the original longer lessons. It does not lock them.
 const LESSONS=[
 {name:"What Schools Never Teach You About Money",desc:"The financial rules schools skip but the wealthy live by",cat:"Hidden Financial Knowledge",plan:"free",icon:"💰",content:`Schools spend years teaching algebra but not a single class on how money works. The wealthy know rules most people never learn.
 
@@ -3381,7 +3355,7 @@ THE WEALTH FORMULA:
 Buy assets. Reduce liabilities. Use income from assets to buy more assets. Repeat for decades.
 
 That is how every wealthy person in history built their fortune. Not by earning more but by converting earnings into things that generate money.`},
-{name:"What Billionaires Actually Invest In",desc:"The portfolios and strategies of the greatest investors revealed",cat:"Gold Investor Insights",plan:"gold",icon:"🏆",content:`The investing habits of the ultra wealthy are publicly reported through SEC 13F filings every quarter.
+{name:"What Billionaires Actually Invest In",desc:"The portfolios and strategies of the greatest investors revealed",cat:"Investor Insights",plan:"gold",icon:"🏆",content:`The investing habits of the ultra wealthy are publicly reported through SEC 13F filings every quarter.
 
 WARREN BUFFETT:
 Keeps most of his portfolio in a handful of companies he understands deeply. Top holdings (Q2 2026 13F): Apple 22%, American Express 17%, Alphabet 13%, Coca-Cola 11%. His favourite holding period is forever. He avoids anything he does not deeply understand.
@@ -3414,7 +3388,7 @@ WHAT THEY HAVE IN COMMON:
 They concentrate on businesses they deeply understand. They hold for years not weeks. They buy more when prices drop. They ignore short-term noise. They read everything including competitor filings and industry research.
 
 THE LESSON:
-The greatest investors tell you what they are buying every quarter. You just need to know where to look and what it means. That is what FinPath Gold shows you.`},
+The greatest investors tell you what they are buying every quarter. You just need to know where to look and what it means. That is what the Investor Moves page shows you.`},
 {name:"How to Actually Budget: The 50/30/20 Rule",desc:"A simple system to control your money",cat:"Saving & Budgeting",plan:"free",icon:"💳",content:`Most people fail at budgeting because they use systems that are too complicated.
 
 THE 50/30/20 RULE:
@@ -3511,7 +3485,7 @@ Roth IRA: money goes in after-tax, then qualified withdrawals in retirement are 
 HSA: if you are on a high-deductible health plan, this is the most tax-advantaged account most people can open. Contributions are pre-tax, growth is tax-free, and withdrawals for medical bills are tax-free.
 
 These are not secret loopholes. They are accounts written into the law so people will save. Use the ones you qualify for.`},
-{name:"How to Build Multiple Streams of Income",desc:"Creating income that works while you sleep",cat:"Gold Investor Insights",plan:"gold",icon:"💰",content:`The average millionaire has seven income streams. Here is how to build them.
+{name:"How to Build Multiple Streams of Income",desc:"Creating income that works while you sleep",cat:"Investor Insights",plan:"gold",icon:"💰",content:`The average millionaire has seven income streams. Here is how to build them.
 
 STREAM 1 - EARNED INCOME: Trade time for money. The starting point but not the destination.
 
@@ -3614,7 +3588,7 @@ Average millionaire has 7 income streams: salary, business, dividends, rental in
 
 FINANCIAL FREEDOM:
 When your assets generate enough passive income to cover all your expenses work becomes optional. That is the actual goal. Not a bigger salary but assets that pay for your life.`},
-{name:"The Real Estate Playbook",desc:"How to build serious wealth through real estate starting with almost nothing",cat:"Gold Investor Insights",plan:"gold",icon:"🏠",content:`Real estate has created more millionaires than any other asset class. You do not need to be rich to start.
+{name:"The Real Estate Playbook",desc:"How to build serious wealth through real estate starting with almost nothing",cat:"Investor Insights",plan:"gold",icon:"🏠",content:`Real estate has created more millionaires than any other asset class. You do not need to be rich to start.
 
 WHY REAL ESTATE BUILDS WEALTH:
 It appreciates over time. It generates monthly income. It can be purchased with borrowed money creating leverage.
@@ -3682,7 +3656,7 @@ Write them down. Put them somewhere you see daily. Review progress monthly.
 
 THE MOTIVATION TRICK:
 Calculate the weekly or daily number. A $10,000 goal in 12 months is $833 per month but more importantly it is $192 per week or $27 per day. Seeing the daily number makes the goal feel real and trackable.`},
-{name:"How to Analyse a Stock",desc:"The exact framework professional investors use",cat:"Gold Investor Insights",plan:"gold",icon:"🔍",content:`Before buying any stock run through this framework.
+{name:"How to Analyse a Stock",desc:"The exact framework professional investors use",cat:"Investor Insights",plan:"gold",icon:"🔍",content:`Before buying any stock run through this framework.
 
 STEP 1 - UNDERSTAND THE BUSINESS:
 Can you explain in one sentence what this company does and how it makes money? If not you do not understand it well enough to invest.
@@ -3760,7 +3734,7 @@ YOUR FIRST PAYCHECK, 5 STEPS:
 5. Save the pay stub. In January, save the W-2.
 
 Once you can name every line, you can change the ones that are actually choices.`},
-{name:"ETFs vs Individual Stocks",desc:"Understanding the difference and when to use each",cat:"Gold Investor Insights",plan:"gold",icon:"📊",content:`One of the most important decisions you will make as an investor.
+{name:"ETFs vs Individual Stocks",desc:"Understanding the difference and when to use each",cat:"Investor Insights",plan:"gold",icon:"📊",content:`One of the most important decisions you will make as an investor.
 
 WHAT IS AN ETF:
 A basket of stocks you buy with one purchase. VOO gives you ownership of all 500 largest US companies instantly. When one has a bad year the other 499 cushion the impact.
@@ -3833,7 +3807,7 @@ SALARY IS NOT THE ONLY LEVER:
 
 WHAT WILL NOT HAPPEN:
 The offer will not be rescinded because you negotiated professionally. Employers expect negotiation. A respectful ask is never a reason to pull an offer.`},
-{name:"Dollar Cost Averaging",desc:"The strategy that removes emotion from investing",cat:"Gold Investor Insights",plan:"gold",icon:"🔄",content:`Trying to time the stock market is one of the most costly mistakes investors make. Dollar cost averaging removes the temptation entirely.
+{name:"Dollar Cost Averaging",desc:"The strategy that removes emotion from investing",cat:"Investor Insights",plan:"gold",icon:"🔄",content:`Trying to time the stock market is one of the most costly mistakes investors make. Dollar cost averaging removes the temptation entirely.
 
 WHAT IT IS:
 Invest a fixed amount at regular intervals regardless of what the market is doing. Weekly, biweekly, or monthly.
@@ -3900,7 +3874,7 @@ WHAT ACTUALLY MATTERS IN FINANCIAL NEWS:
 - Macro data: unemployment, inflation, GDP growth
 
 Everything else is mostly noise. Successful long-term investors ignore most financial media entirely.`},
-{name:"Understanding Dividends",desc:"Getting paid to own stocks",cat:"Gold Investor Insights",plan:"gold",icon:"💵",content:`A dividend is a portion of company profits paid directly to shareholders quarterly. When you own dividend stocks you get paid just for holding them.
+{name:"Understanding Dividends",desc:"Getting paid to own stocks",cat:"Investor Insights",plan:"gold",icon:"💵",content:`A dividend is a portion of company profits paid directly to shareholders quarterly. When you own dividend stocks you get paid just for holding them.
 
 HOW DIVIDENDS WORK:
 If you own 100 shares of Coca-Cola paying $1.84 annual dividend you receive $184 per year in quarterly payments regardless of what the stock price does.
@@ -3962,7 +3936,7 @@ Fix: Always contribute at least enough to get the full employer match immediatel
 MISTAKE 5 - BUYING TOO MUCH CAR:
 A car that costs more than 15% of your gross annual income is a wealth destroyer. A $40,000 car on a $50,000 salary means 80% of your annual income tied up in a depreciating asset.
 Fix: Buy reliable used. The best car for wealth building is a paid-off Honda.`},
-{name:"Bonds Cash and Portfolio Diversification",desc:"Why the smartest investors do not put everything in stocks",cat:"Gold Investor Insights",plan:"gold",icon:"🛡️",content:`How you spread money across different asset types matters as much as which investments you pick.
+{name:"Bonds Cash and Portfolio Diversification",desc:"Why the smartest investors do not put everything in stocks",cat:"Investor Insights",plan:"gold",icon:"🛡️",content:`How you spread money across different asset types matters as much as which investments you pick.
 
 THE MAJOR ASSET CLASSES:
 
@@ -3986,7 +3960,7 @@ REBALANCING:
 If stocks rise and become 80% of your portfolio when you target 70%, sell some stocks and buy bonds. This forces you to sell high and buy low automatically.
 
 The goal is not to maximize returns. It is to achieve good returns with minimum anxiety that causes bad decisions.`},
-{name:"How to Read a Company Annual Report",desc:"The one document that tells you everything about a business",cat:"Gold Investor Insights",plan:"gold",icon:"📋",content:`Every public company files an annual report called a 10-K with detailed financial information. Learning to read this is one of the most valuable skills you can develop.
+{name:"How to Read a Company Annual Report",desc:"The one document that tells you everything about a business",cat:"Investor Insights",plan:"gold",icon:"📋",content:`Every public company files an annual report called a 10-K with detailed financial information. Learning to read this is one of the most valuable skills you can develop.
 
 WHERE TO FIND IT:
 SEC.gov or the company investor relations page. Every public company has one.
@@ -4007,7 +3981,7 @@ THE RISK FACTORS SECTION:
 A list of everything that could go wrong. Most investors skip this. Read it carefully. It tells you what management themselves are most worried about.
 
 Reading one 10-K per month in industries you are interested in will make you a significantly better investor within a year.`},
-{name:"Tax-Loss Harvesting",desc:"The advanced strategy that reduces your tax bill",cat:"Gold Investor Insights",plan:"gold",icon:"💡",content:`Tax-loss harvesting means selling investments that have lost value to offset capital gains taxes. You turn paper losses into real tax savings.
+{name:"Tax-Loss Harvesting",desc:"The advanced strategy that reduces your tax bill",cat:"Investor Insights",plan:"gold",icon:"💡",content:`Tax-loss harvesting means selling investments that have lost value to offset capital gains taxes. You turn paper losses into real tax savings.
 
 HOW IT WORKS:
 You made $10,000 profit selling Apple in December. You also hold a position down $8,000. By selling that position before December 31 you lock in the loss. Now you only owe capital gains tax on $2,000 instead of $10,000.
@@ -4024,7 +3998,7 @@ WHEN MOST VALUABLE:
 When you have significant capital gains to offset. In high-income years when your tax rate is higher. During market downturns when many positions are underwater.
 
 Always consult a qualified tax professional before implementing tax-loss harvesting since individual circumstances vary significantly.`},
-{name:"International Investing",desc:"Why your portfolio needs the world not just America",cat:"Gold Investor Insights",plan:"gold",icon:"🌍",content:`Most American investors put 90% of their money in US stocks. This concentration in a single country is a risk many people do not realize.
+{name:"International Investing",desc:"Why your portfolio needs the world not just America",cat:"Investor Insights",plan:"gold",icon:"🌍",content:`Most American investors put 90% of their money in US stocks. This concentration in a single country is a risk many people do not realize.
 
 THE CASE:
 The US represents about 60% of global stock market value. The other 40% including European companies, Asian technology firms, and emerging market growth stories are available to you.
@@ -4045,7 +4019,7 @@ Slightly higher costs than domestic ETFs.
 
 SUGGESTED ALLOCATION:
 60-70% US stocks. 20-30% international developed. 10% emerging markets. This provides global exposure while maintaining a home country bias most investors prefer.`},
-{name:"Building a Long-Term Investment Strategy",desc:"How to build a plan you can stick to through everything",cat:"Gold Investor Insights",plan:"gold",icon:"🎯",content:`The biggest predictor of investment success is not picking the right stocks. It is having a strategy you can stick to through market crashes, media panic, and your own emotions.
+{name:"Building a Long-Term Investment Strategy",desc:"How to build a plan you can stick to through everything",cat:"Investor Insights",plan:"gold",icon:"🎯",content:`The biggest predictor of investment success is not picking the right stocks. It is having a strategy you can stick to through market crashes, media panic, and your own emotions.
 
 STEP 1 - DEFINE YOUR TIME HORIZON:
 When will you need this money? Under 3 years: do not put it in stocks. The market can drop 40% and take years to recover. For 10 or more years: stocks have historically been the best performing asset class by far.
@@ -4605,7 +4579,7 @@ function renderLessons(filtered){
         <div class="lesson-cat">${l.cat}</div>
         <div class="lesson-title">${l.name}</div>
         <div class="lesson-desc">${l.desc}</div>
-        <span class="lesson-plan ${l.plan==='free'?'plan-free':'plan-gold'}">${l.plan==='free'?'Free':'Gold ✦'}</span><span class="lesson-time">~${lessonMinutes(l)} min read</span>
+        <span class="lesson-plan plan-free">Free</span><span class="lesson-time">~${lessonMinutes(l)} min read</span>
       </div>
     </div>`;
   }).join('') : '<div class="empty" style="grid-column:1/-1">No lessons match that search. Clear it to see all lessons, or browse the glossary below.</div>';
@@ -4670,9 +4644,9 @@ function learnPathShown(p){
 function lessonMinutes(l){ const w = String((l && l.content) || '').split(/\s+/).length; return Math.max(1, Math.round(w / 200)); }
 function lessonOrder(){ const o = []; LESSONS.forEach(function(l, i){ if(l) o.push(i); }); return o; }
 function adjacentLesson(i, dir){
-  const ord = lessonOrder(); let k = ord.indexOf(i) + dir;
-  while(k >= 0 && k < ord.length){ const j = ord[k]; if(IS_GOLD || LESSONS[j].plan === 'free') return j; k += dir; }
-  return -1;
+  const ord = lessonOrder();
+  const k = ord.indexOf(i) + dir;
+  return (k >= 0 && k < ord.length) ? ord[k] : -1;
 }
 function renderLearnRecommend(p, hidden){
   const el = document.getElementById('learnRecommend'); if(!el) return;
@@ -4778,23 +4752,12 @@ function openLesson(i, fromHash){
   document.getElementById('lessonDetail').classList.add('active');
   document.getElementById('detailCat').textContent=l.cat;
   document.getElementById('detailTitle').textContent=l.name;
-  if(l.plan==='gold'&&!IS_GOLD){
-    document.getElementById('detailBody').innerHTML=`
-      <p style="color:var(--muted);margin-bottom:24px">${l.desc}</p>
-      <div class="gold-lock">
-        <div style="font-size:36px;margin-bottom:12px">👑</div>
-        <h3>This is a Gold lesson</h3>
-        <p>Upgrade to FinPath Gold to access all 14 premium lessons, Investor Moves, and rule-based educational notes on your holdings.</p>
-        <button class="price-btn" style="width:auto;padding:12px 28px;margin-top:8px" onclick="openGoldPayment()">Upgrade to Gold — $4.99/mo</button>
-      </div>`;
-  } else {
-    document.getElementById('detailBody').innerHTML = buildLessonBody(l, i);
-    runLessonCalc();
-  }
+  document.getElementById('detailBody').innerHTML = buildLessonBody(l, i);
+  runLessonCalc();
   const ord = lessonOrder(), pos = ord.indexOf(i) + 1;
   const meta = document.createElement('div'); meta.className = 'lesson-meta';
-  meta.innerHTML = 'Lesson ' + pos + ' of ' + ord.length + ' · ~' + lessonMinutes(l) + ' min read · ' + (l.plan === 'free' ? 'Free' : 'Gold') +
-    ((l.plan === 'gold' && !IS_GOLD) ? '' : '<div style="margin-top:6px">Dotted words are defined. Tap or click one, or press Enter.</div>');
+  meta.innerHTML = 'Lesson ' + pos + ' of ' + ord.length + ' · ~' + lessonMinutes(l) + ' min read · Free' +
+    '<div style="margin-top:6px">Dotted words are defined. Tap or click one, or press Enter.</div>';
   const body = document.getElementById('detailBody'); body.insertBefore(meta, body.firstChild);
   const prev = adjacentLesson(i, -1), nxt = adjacentLesson(i, 1), isDone = isLessonDone(getLessonProgress(), i);
   const nav = document.createElement('div'); nav.className = 'lesson-nav';
@@ -4838,18 +4801,6 @@ function closeLessonDetail(){
 
 // ── GOLD PAGE ──
 function renderGold(){
-  if(!IS_GOLD){
-    document.getElementById('goldContent').innerHTML=`
-      <div class="f13-lag">${f13TimelineHtml(true)}</div>
-      <p class="landing-trust" style="margin:0 auto 18px;text-align:center">Research the filing. Do not copy the trade — a 13F is delayed, and it only lists long U.S. stocks.</p>
-      <div class="gold-gate">
-        <div style="font-size:36px;margin-bottom:12px">👑</div>
-        <h2 style="font-size:24px;font-weight:800;margin-bottom:8px">Upgrade to Gold</h2>
-        <p style="color:var(--muted);margin-bottom:24px;font-size:15px">Get full access to all ${MOVES.length} investor moves from ${INVESTORS.length} legendary investors — refreshed each quarter after 13F filings.</p>
-        <button class="price-btn" style="width:auto;padding:14px 36px;font-size:16px" onclick="openGoldPayment()">Upgrade to Gold — $4.99/mo</button>
-      </div>`;
-    return;
-  }
   movesAction='all';
   document.getElementById('goldContent').innerHTML=`
     <p class="moves-fresh">${escapeHtml(f13FreshnessNote())}</p>
@@ -5028,91 +4979,6 @@ function filterMoveAction(a){
 function toggleMoveHolds(){
   showMoveHolds=!showMoveHolds;
   renderMoves(movesFilter);
-}
-
-// ── STRIPE PAYMENT ──
-function openGoldPayment(){
-  track('upgrade_click');
-  const confirmed = confirm('You are about to be redirected to our secure payment page powered by Stripe.\n\nFinPath Gold — $4.99/month\n\nClick OK to continue to checkout, or Cancel to go back.');
-  if(confirmed){
-    // TODO(siddharth): replace test Payment Link with the LIVE Stripe Payment Link (Stripe dashboard → Payment Links).
-    window.open('https://buy.stripe.com/test_14A00lbnN0Gp9dd8s1g3600', '_blank', 'noopener,noreferrer');
-  }
-}
-
-// Check for successful payment return
-function checkPaymentReturn(){
-  const params = new URLSearchParams(window.location.search);
-  const goldParam = params.get('gold');
-  const sessionId = params.get('session_id');   // Stripe returns this on real successful checkout
-  if(goldParam !== 'success') return;
-  // Clean the URL immediately so anyone who tries a bookmark like ?gold=success
-  // doesn't leave that in their address bar or bookmarks
-  window.history.replaceState({}, document.title, window.location.pathname);
-
-  // ── DEFENSE-IN-DEPTH: never trust ?gold=success on its own ──
-  // The old code granted Gold from just the URL parameter. That meant anyone
-  // could type ?gold=success and get Gold for free. We now require:
-  //   1. A session_id parameter (Stripe includes this after a real checkout)
-  //   2. A logged-in user
-  //   3. Server-side verification against the payments table in Supabase
-  // If any check fails, Gold is NOT granted.
-  if(!sessionId || sessionId.length < 20){
-    console.warn('Gold activation ignored: no valid Stripe session ID present');
-    return;
-  }
-  // Kick off verification asynchronously — the user is still on the page.
-  verifyStripeSession(sessionId);
-}
-
-async function verifyStripeSession(sessionId){
-  try{
-    const { data: sess } = await supabaseClient.auth.getSession();
-    const user = sess && sess.session && sess.session.user;
-    if(!user){
-      // Not signed in — cannot grant Gold. Prompt sign-in and store the pending session.
-      try{ localStorage.setItem('fp_pending_gold', sessionId); }catch(e){}
-      alert('Please sign in with the same email you used at checkout so we can activate your Gold subscription.');
-      if(typeof openLogin === 'function') openLogin();
-      return;
-    }
-    // Ask Supabase to look up the payment — the payments table should be populated
-    // by your Stripe webhook (never by the browser). If it exists and belongs to this user,
-    // then and only then do we activate Gold.
-    const { data: pay, error } = await supabaseClient
-      .from('payments')
-      .select('id, user_id, session_id, status')
-      .eq('session_id', sessionId)
-      .eq('user_id', user.id)
-      .eq('status', 'paid')
-      .maybeSingle();
-    if(error || !pay){
-      console.warn('Gold activation blocked: Stripe session could not be verified for this user');
-      alert('We could not verify your payment yet. If you just completed checkout, wait a moment and refresh — the confirmation from Stripe can take up to a minute. If this keeps happening, contact support@finpath.app.');
-      return;
-    }
-    // Verified against the server's payments table.
-    // NOTE: We do NOT try to update profiles.is_gold from the client. Doing so would
-    // let anyone open the console and run supabaseClient.from('profiles').update({is_gold:true}).
-    // Instead the Stripe webhook (server-side) is the ONLY thing allowed to flip is_gold to true,
-    // which is enforced by the RLS policy on the profiles table. We just re-check status here.
-    await checkGoldStatus(user.id);
-    if(IS_GOLD){
-      showSuccessBanner();
-      if(typeof track === 'function') track('gold_activated', {source:'checkout_return'});
-    }
-  }catch(e){
-    console.error('Gold verification failed:', e);
-    alert('Payment verification hit an error. Please contact support@finpath.app.');
-  }
-}
-
-function showSuccessBanner(){
-  const banner = document.createElement('div');
-  banner.style.cssText='position:fixed;top:64px;left:0;right:0;background:#15803d;color:#fff;text-align:center;padding:14px;font-size:15px;font-weight:600;z-index:999';
-  banner.textContent='Welcome to FinPath Gold! All features are now unlocked.';
-  document.body.appendChild(banner);
-  setTimeout(()=>banner.remove(), 5000);
 }
 
 // ── PORTFOLIO / SUPABASE ──
@@ -5884,11 +5750,6 @@ function fillDetailSuggestion(ticker){
   const actionEl = document.getElementById('dAiAction');
   const textEl = document.getElementById('dAiText');
   if(!actionEl || !textEl) return;
-  if(!IS_GOLD){
-    actionEl.textContent = 'Gold plan';
-    textEl.textContent = 'Upgrade to Gold for a rule-based educational note on this holding. Nothing is hidden behind the lock — there is no recommendation yet.';
-    return;
-  }
   const h = portfolio.find(function(p){ return p.ticker === ticker; });
   if(!h){
     actionEl.textContent = 'Educational note';
@@ -5906,20 +5767,6 @@ function renderAlerts(quotes){
   const host = document.getElementById('alertsList');
   if(!host) return;
   // Holding alerts use the same ruleSuggest notes as Stock Suggestions.
-  // The note itself is Gold-only. Free users see the ticker and an upgrade
-  // teaser — never a canned recommendation behind the lock.
-  if(!IS_GOLD){
-    host.innerHTML = portfolio.map((h,i)=>{
-      const q = quotes && quotes[i] ? quotes[i].q : null;
-      return '<div class="alert-item">'+
-        '<div><div class="alert-ticker">'+escapeHtml(h.ticker)+' <span style="color:var(--muted)">🔒</span></div>'+
-        '<div class="alert-msg">Upgrade to Gold for a rule-based note on this holding. Nothing is hidden behind the lock — there is no recommendation yet.</div></div>'+
-        alertPctHtml(q)+
-        '</div>';
-    }).join('') +
-    (portfolio.length ? '<div style="text-align:center;margin-top:14px"><button onclick="openGoldPayment()" style="background:var(--green-dim);border:none;border-radius:10px;padding:11px 24px;color:#fff;font-size:13px;font-weight:600;cursor:pointer">👑 Unlock holding alerts with Gold — $4.99/mo</button></div>' : '');
-    return;
-  }
   const rows = suggestionRows(quotes);
   const notes = ruleSuggest(rows);
   host.innerHTML = notes.map(function(n, i){
@@ -5931,10 +5778,6 @@ function renderAlerts(quotes){
 let _suggestGen = 0;
 function runAI(){
   const recsEl = document.getElementById('aiRecs');
-  if(!IS_GOLD){
-    recsEl.innerHTML='<div style="background:linear-gradient(135deg,rgba(5,46,22,.6),var(--surface));border:1px solid var(--green-dim);border-radius:16px;padding:40px;text-align:center"><div style="font-size:32px;margin-bottom:12px">👑</div><div style="font-size:18px;font-weight:700;margin-bottom:8px">Gold Plan Required</div><p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6">Upgrade to FinPath Gold to unlock rule-based educational notes for every holding. Notes use position size, sector mix, and unrealized gain or loss. No live AI is involved.</p><button onclick="openGoldPayment()" style="background:var(--green-dim);border:none;border-radius:10px;padding:12px 28px;color:#fff;font-size:14px;font-weight:600;cursor:pointer">Upgrade to Gold — $4.99/mo</button></div>';
-    return;
-  }
   if(portfolio.length===0){
     recsEl.innerHTML='<div class="empty">Add stocks to your portfolio first, then come back for suggestions.</div>';
     return;
@@ -6076,7 +5919,6 @@ function setPeriod(btn,days){
 }
 
 async function openHourly(){
-  if(!IS_GOLD){toast('👑','The today’s-change breakdown is a Gold feature — see what Gold includes.');showPage('gold');return;}
   document.getElementById('hourlyModal').classList.add('open');
   const el=document.getElementById('hourlyContent');
   el.innerHTML='<div class="loading"><div class="spinner"></div>Loading today’s prices…</div>';
@@ -6211,8 +6053,6 @@ async function initAuth(){
       currentUser = session.user;
       onUserLoggedIn(session.user);
       closeLogin();
-      // (Removed: ?gold=success no longer grants Gold client-side. Gold status
-      //  must come from the server-verified check only.)
     } else if(event === 'SIGNED_OUT'){
       currentUser = null;
       onUserSignedOut();
@@ -6231,17 +6071,6 @@ function onUserLoggedIn(user){
     btn.style.background = '#052e16';
     btn.style.border = '1px solid #15803d';
   }
-  // Check gold status from DB
-  checkGoldStatus(user.id);
-  // If they completed Stripe checkout BEFORE signing in, verify that pending
-  // session now — without this, a pre-login payer would never get their Gold.
-  try{
-    const pending = localStorage.getItem('fp_pending_gold');
-    if(pending){
-      localStorage.removeItem('fp_pending_gold');
-      verifyStripeSession(pending);
-    }
-  }catch(e){}
   hideLoginNudge();
   if(typeof renderAsk==='function' && document.getElementById('page-ask') && document.getElementById('page-ask').classList.contains('active')) renderAsk();
   if(window.FPLife && typeof FPLife.syncNow === 'function') FPLife.syncNow();
@@ -6277,8 +6106,6 @@ window.addEventListener('load', function(){ setTimeout(showLoginNudge, 6000); })
 
 function onUserSignedOut(){
   UID = localStorage.getItem('fp_uid') || 'anon';
-  IS_GOLD = false;
-  localStorage.removeItem('fp_gold');
   const btn = document.getElementById('navAuthBtn');
   if(btn){
     btn.textContent = 'Get Started Free';
@@ -6290,56 +6117,14 @@ function onUserSignedOut(){
   if(window.FPIntelSync && typeof FPIntelSync.syncNow === 'function') FPIntelSync.syncNow();
 }
 
-async function checkGoldStatus(userId){
-  // This code was made by Siddharth Moosani © 2026 — github.com/finpathdev/FinPath
-  // Do not remove this attribution.
-  // ── SECURITY: server is the source of truth. Never trust localStorage
-  // alone, because the URL-bypass bug meant many users have a stale
-  // fp_gold='true' flag from the exploit. We always ask Supabase.
-  try {
-    const { data, error } = await supabaseClient
-      .from('gold_users')
-      .select('active')
-      .eq('user_id', userId)
-      .maybeSingle();
-    if(!error && data && data.active === true){
-      IS_GOLD = true;
-      try{ localStorage.setItem('fp_gold', 'true'); }catch(e){}
-    } else {
-      // Definitively NOT gold according to the server — clear any stale local flag
-      IS_GOLD = false;
-      try{ localStorage.removeItem('fp_gold'); }catch(e){}
-    }
-  } catch(e){
-    // If we truly cannot reach Supabase (offline etc.), be safe: assume NOT gold.
-    // Better UX for a rare edge case than a permanent free-Gold exploit.
-    console.warn('Could not verify Gold status; defaulting to non-Gold for safety.');
-    IS_GOLD = false;
-    try{ localStorage.removeItem('fp_gold'); }catch(e){}
-  }
-  updateGoldMenuStatus();
-}
-
-function updateGoldMenuStatus(){
-  const el = document.getElementById('goldStatusMenu');
-  if(!el) return;
-  if(IS_GOLD){
-    el.innerHTML = '<span style="color:#f59e0b;font-weight:600">✦ Gold Member</span>';
-  } else {
-    el.innerHTML = '<button onclick="openGoldPayment();closeUserMenu()" style="background:linear-gradient(135deg,#15803d,#052e16);border:none;border-radius:8px;padding:8px 14px;color:#4ade80;font-size:13px;font-weight:600;cursor:pointer;width:100%">Upgrade to Gold ✦</button>';
-  }
-  if(typeof renderAsk==='function' && document.getElementById('page-ask') && document.getElementById('page-ask').classList.contains('active')) renderAsk();
-}
-
+// This code was made by Siddharth Moosani © 2026 — github.com/finpathdev/FinPath
 function handleAuthClick(){
   if(currentUser){
-    // Show user menu
     const menu = document.getElementById('userMenu');
     if(menu.style.display === 'flex'){
       closeUserMenu();
     } else {
       document.getElementById('userEmailDisplay').textContent = currentUser.email;
-      updateGoldMenuStatus();
       menu.style.display = 'block';
     }
   } else {
@@ -7060,7 +6845,7 @@ function shareLesson(i){
   const l = LESSONS[i];
   const text = 'I just read "' + l.name + '" on FinPath — the financial playbook schools skipped.';
   const base = (location.protocol === 'http:' || location.protocol === 'https:') ? (location.origin + location.pathname) : 'https://finpathdev.github.io/FinPath/';
-  const url = base + '#lesson/' + i;   // opens this lesson directly (Gold lessons show their preview)
+  const url = base + '#lesson/' + i;   // opens this lesson directly
   if(navigator.share){ navigator.share({title:'FinPath', text:text, url:url}).catch(function(){}); }
   else window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank', 'noopener');
 }
@@ -7738,7 +7523,7 @@ const QUIZZES = {
  {q:"The test for any debt:",o:["Is the monthly payment small?","Will the borrowed money generate more value than its interest cost?","Is everyone else doing it?","Is the bank famous?"],a:1,w:"If borrowed money earns more than it costs, it can build wealth. If not, it drains you."},
  {q:"Debt above ~7% interest should be…",o:["Ignored","Paid off before serious investing","Refinanced into crypto","Kept for credit score"],a:1,w:"Paying off 20% debt is a guaranteed 20% return — better than the market’s average."}],
 "What Billionaires Actually Invest In":[
- {q:"How do we know what Buffett owns?",o:["Leaks","Quarterly SEC 13F filings — public for every big fund","His podcast","We don’t"],a:1,w:"Funds over $100M must disclose holdings quarterly in 13F filings. FinPath Gold tracks them."},
+ {q:"How do we know what Buffett owns?",o:["Leaks","Quarterly SEC 13F filings — public for every big fund","His podcast","We don’t"],a:1,w:"Funds over $100M must disclose holdings quarterly in 13F filings. Investor Moves tracks them."},
  {q:"Buffett’s favourite holding period is…",o:["One quarter","Until earnings","Forever","30 days"],a:2,w:"He buys businesses he’d happily own for decades."},
  {q:"What do Buffett, Ackman and Tepper share?",o:["Day-trading","Deep understanding + years-long holds + buying dips","Meme stocks","Never reading filings"],a:1,w:"Concentration in what they understand, patience, and buying when others panic."}],
 "Reading Market Signals":[
@@ -9336,7 +9121,7 @@ function analyzePortfolio(){
   const gurus = {}; INVESTORS.forEach(function(n){ gurus[n] = 0; });
   portfolio.forEach(function(h){ MOVES.forEach(function(m){ if(m.ticker === h.ticker) gurus[m.investor] = (gurus[m.investor]||0)+1; }); });
   const overlap = Object.entries(gurus).filter(function(e){ return e[1] > 0; }).map(function(e){ return e[0] + ' (' + e[1] + ')'; });
-  findings.push({b:'🏆 Guru alignment', t: overlap.length ? 'You share holdings with: ' + overlap.join(', ') + '. Check the Gold tab to see what they did with those positions in their latest 13F filing.' : 'None of your holdings overlap with the ' + INVESTORS.length + ' investors FinPath tracks — not wrong, but worth knowing you’re fully off the beaten path.'});
+  findings.push({b:'🏆 Guru alignment', t: overlap.length ? 'You share holdings with: ' + overlap.join(', ') + '. Open Investor Moves to see what they reported for those positions in their latest 13F filing.' : 'None of your holdings overlap with the ' + INVESTORS.length + ' investors FinPath tracks — not wrong, but worth knowing you’re fully off the beaten path.'});
   if(portfolio.length < 4) findings.push({b:'📊 Position count', t:'Only ' + portfolio.length + ' holding' + (portfolio.length===1?'':'s') + '. Under ~5 positions, single-company luck dominates your results. An index ETF like VOO fixes this in one purchase.'});
   recs.innerHTML = '<div class="ai-rec"><div class="ai-rec-head"><div class="ai-rec-ticker">Deep portfolio analysis</div><span class="ai-action-badge act-hold">' + portfolio.length + ' holdings · ' + fmt(tv) + '</span></div>' +
     findings.map(function(f){ return '<div style="margin-top:12px"><b>' + f.b + '</b><div class="ai-rec-text" style="margin-top:4px">' + f.t + '</div></div>'; }).join('') +
@@ -9537,8 +9322,9 @@ async function compareStocks(){
 
 
 // ── ASK FINPATH ──
-// Signed-in educational Q&A. The Edge Function enforces Gold and the daily cap.
+// Signed-in educational Q&A. The Edge Function enforces one daily cap for every account.
 // fp_ask_display is a leftover count for this browser only. It never grants a question.
+const ASK_DAILY = 50;
 let askHistory = [];
 let askLessonTitle = '';
 let askErrorNote = '';
@@ -9551,15 +9337,15 @@ function readAskDisplay(){
     if(!o || o.day !== askUtcDay()) return null;
     if(o.plan !== 'free' && o.plan !== 'gold') return null;
     if(typeof o.remaining !== 'number' || !isFinite(o.remaining) || o.remaining < 0) return null;
-    return { remaining: Math.floor(o.remaining), plan: o.plan };
+    return { remaining: Math.floor(o.remaining) };
   }catch(e){ return null; }
 }
-function writeAskDisplay(remaining, plan){
+function writeAskDisplay(remaining){
   try{
     localStorage.setItem('fp_ask_display', JSON.stringify({
       day: askUtcDay(),
       remaining: remaining,
-      plan: plan === 'gold' ? 'gold' : 'free'
+      plan: 'free'
     }));
   }catch(e){}
   paintAskQuota();
@@ -9570,18 +9356,21 @@ function askRemainingOf(body){
   if(typeof n !== 'number' || !isFinite(n) || n < 0) return null;
   return Math.floor(n);
 }
+function askLimitOf(body){
+  const n = body && body.limit;
+  if(typeof n === 'number' && isFinite(n) && n > 0) return Math.floor(n);
+  return ASK_DAILY;
+}
 function paintAskQuota(){
   const el = document.getElementById('askQuota');
   if(!el) return;
   if(!currentUser){ el.textContent = ''; return; }
   const saved = readAskDisplay();
   if(!saved){
-    el.textContent = 'Free accounts get 5 questions per UTC day. Gold gets 50. About 5 per minute. The server checks Gold on every question.';
+    el.textContent = ASK_DAILY + ' questions per UTC day. About 5 per minute. The server enforces the limit.';
     return;
   }
-  const cap = saved.plan === 'gold' ? 50 : 5;
-  const who = saved.plan === 'gold' ? 'Gold' : 'Free';
-  el.textContent = who + ' · ' + saved.remaining + ' of ' + cap + ' left today (UTC), last saved on this device. Display only. The server enforces the limit.';
+  el.textContent = saved.remaining + ' of ' + ASK_DAILY + ' left today (UTC), last saved on this device. Display only. The server enforces the limit.';
 }
 function paintAskLesson(){
   const el = document.getElementById('askLesson');
@@ -9614,10 +9403,9 @@ function renderAskThread(){
 function showAskUpsell(on){
   const el = document.getElementById('askUpsell');
   if(!el) return;
-  if(!on){ el.hidden = true; el.innerHTML = ''; return; }
+  if(!on){ el.hidden = true; el.textContent = ''; return; }
   el.hidden = false;
-  el.innerHTML = '<p>' + escapeHtml('You have used the 5 free questions for today. Gold includes 50 a day. Stock Suggestions stay rule-based either way.') + '</p>' +
-    '<button type="button" class="btn-secondary" onclick="showPage(\'gold\')">See Gold</button>';
+  el.textContent = 'You have used today’s ' + ASK_DAILY + ' questions. They reset at 00:00 UTC. Stock Suggestions stay rule-based.';
 }
 function setAskBusy(on){
   const btn = document.getElementById('askSend');
@@ -9722,16 +9510,14 @@ async function submitAsk(ev){
     const plan = askPlanOf(body);
     const remaining = askRemainingOf(body);
     if(status === 429){
-      if(remaining !== null) writeAskDisplay(remaining, plan);
+      if(remaining !== null) writeAskDisplay(remaining);
       track('ask_quota_hit', { plan: plan });
       if(body.reason === 'burst'){
         askErrorNote = remaining !== null
           ? 'About 5 questions a minute. Wait a minute and try again. ' + remaining + ' left today.'
           : 'About 5 questions a minute. Wait a minute and try again.';
-      } else if(plan === 'gold'){
-        askErrorNote = 'You have used the 50 Gold questions for today. They reset at 00:00 UTC.';
       } else {
-        askErrorNote = 'You have used the 5 free questions for today. They reset at 00:00 UTC.';
+        askErrorNote = 'You have used today’s ' + askLimitOf(body) + ' questions. They reset at 00:00 UTC.';
         showAskUpsell(true);
       }
       renderAskThread();
@@ -9747,7 +9533,7 @@ async function submitAsk(ev){
     if(error || status >= 400 || !body.answer){
       track('ask_error', { status: String(status || 'error') });
       askErrorNote = 'Ask FinPath is unavailable right now. Try again in a minute.';
-      if(remaining !== null && body.refunded === true) writeAskDisplay(remaining, plan);
+      if(remaining !== null && body.refunded === true) writeAskDisplay(remaining);
       renderAskThread();
       return;
     }
@@ -9758,11 +9544,11 @@ async function submitAsk(ev){
     while(askHistory.length > 6) askHistory.shift();
     if(input) input.value = '';
     updateAskCount();
-    if(remaining !== null) writeAskDisplay(remaining, plan);
+    if(remaining !== null) writeAskDisplay(remaining);
     else paintAskQuota();
     track('ask_sent', { plan: plan });
     if(refused) track('ask_refused');
-    if(plan !== 'gold' && remaining === 0) showAskUpsell(true);
+    if(remaining === 0) showAskUpsell(true);
     renderAskThread();
   }catch(e){
     track('ask_error', { status: 'network' });
@@ -9877,7 +9663,6 @@ if(location.hash && location.hash.indexOf('#p=')!==0) routeFromHash();
 function bootAuth(){
   if(!ensureSupabase()) console.warn('Sign-in is unavailable (Supabase did not load). Lessons and saved data still work.');
   initAuth();
-  checkPaymentReturn();
 }
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootAuth); else bootAuth();
 renderLessons();

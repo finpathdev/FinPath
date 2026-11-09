@@ -7,7 +7,7 @@
 //   supabase functions deploy ask-finpath
 // Leave the platform verify_jwt check ON (the default). Do not pass
 // --no-verify-jwt. This handler checks the user JWT again and ignores any
-// Gold flag in the body. Gold comes from gold_users.active via the service role.
+// plan or limit flag in the body. Every signed-in user gets the same daily cap.
 //
 // Model id grok-4.7 confirmed 2026-11-01 at https://docs.x.ai/docs/models.
 // Endpoint is the legacy Chat Completions API, not the Responses API.

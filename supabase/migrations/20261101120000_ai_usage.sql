@@ -1,8 +1,8 @@
 -- Ask FinPath daily and per-minute counters.
 -- Writes happen only from the ask-finpath Edge Function (service role).
--- The function decides free (5/UTC day) vs Gold (50/UTC day) after reading
--- gold_users itself. Clients cannot pass a limit or a day.
--- Question text is not stored here.
+-- The function applies one daily cap for every signed-in user (50/UTC day
+-- as of the free-for-everyone change). Clients cannot pass a limit or a day.
+-- Question text is not stored here. The gold_users table is not read here.
 
 create table public.ai_usage (
   user_id uuid not null references auth.users (id) on delete cascade,

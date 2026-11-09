@@ -3,14 +3,12 @@
 FinPath is a personal-finance learning app: bite-sized lessons and quizzes, a portfolio tracker, a stock screener, and a look at the latest billionaire 13F filings. It runs as a single-page progressive web app (PWA).
 
 ## Plans
-- **Free**: core lessons and tools.
-- **FinPath Gold**: $4.99/month, billed monthly through Stripe. An annual plan is coming soon.
+FinPath is 100% free. There is no paid plan and no checkout. Lessons, Investor Moves (13F filings), the portfolio tracker, rule-based notes, and Ask FinPath are included. Ask FinPath needs a sign-in and allows 50 questions per UTC day (about 5 per minute) so the Grok API stays within a budget. Sign-in is also how saved data can sync.
 
 ## Stack
 - One static `index.html` (vanilla HTML/CSS/JS), plus `manifest.json` and a service worker (`sw.js`)
 - Hosted on GitHub Pages (`_config.yml`)
 - [Supabase](https://supabase.com) for auth and optional sync
-- [Stripe](https://stripe.com) for Gold payments
 - Live quotes from the `market-quotes` Supabase Edge Function (Yahoo Finance, shared 30-second cache, `verify_jwt` off, GitHub Pages and localhost only). [Finnhub](https://finnhub.io) is the backup quote feed, and still supplies news and fundamentals. Price history uses `market-candles`. Data may be delayed.
 
 ## Run locally
