@@ -1623,7 +1623,7 @@ body.light .gs-item{background:#fff}
     <div id="loginStep1">
       <div style="font-size:18px;font-weight:700;margin-bottom:6px;text-align:center">Sign in or create account</div>
       <div style="font-size:13px;color:#888;margin-bottom:22px;text-align:center">We'll send a magic link to your email — no password needed</div>
-      <input id="loginEmail" type="email" placeholder="Enter your email address" autocomplete="email" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:13px;padding:14px;color:#eef5ee;font-size:15px;outline:none;margin-bottom:12px" onkeydown="if(event.key==='Enter')nextLoginStep()">
+      <input id="loginEmail" type="email" aria-label="Email address" inputmode="email" placeholder="Enter your email address" autocomplete="email" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:13px;padding:14px;color:#eef5ee;font-size:15px;outline:none;margin-bottom:12px" onkeydown="if(event.key==='Enter')nextLoginStep()">
       <button onclick="nextLoginStep()" id="loginBtn" style="width:100%;background:linear-gradient(135deg,#16a34a,#22c55e);border:none;border-radius:13px;padding:14px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(34,197,94,.3)">Continue</button>
       <div id="loginError" style="color:#f87171;font-size:13px;margin-top:10px;text-align:center;display:none"></div>
     </div>
@@ -1650,11 +1650,11 @@ body.light .gs-item{background:#fff}
       <div style="background:rgba(245,182,11,.08);border:1px solid rgba(245,182,11,.28);border-radius:12px;padding:14px;font-size:12px;color:#fde68a;line-height:1.55;margin-bottom:18px">
         <b>To the parent/guardian:</b> FinPath is an educational finance platform. It does NOT execute trades or hold funds. It includes paper trading (virtual money) and educational content. FinPath is 100% free — there is no subscription. Full terms: <a onclick="closeLogin();showPage('legal')" style="color:#f5b60b;cursor:pointer;text-decoration:underline">Legal &amp; Terms</a>
       </div>
-      <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600">Parent/guardian full name</label>
+      <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600" for="pcName">Parent/guardian full name</label>
       <input id="pcName" type="text" placeholder="e.g. Priya Patel" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:11px;padding:12px;color:#eef5ee;font-size:14px;outline:none;margin-bottom:12px">
-      <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600">Parent/guardian email <span style="color:var(--muted);font-weight:400">(a copy of consent will be sent here)</span></label>
-      <input id="pcEmail" type="email" placeholder="parent@example.com" autocomplete="off" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:11px;padding:12px;color:#eef5ee;font-size:14px;outline:none;margin-bottom:12px">
-      <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600">Relationship</label>
+      <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600" for="pcEmail">Parent/guardian email <span style="color:var(--muted);font-weight:400">(a copy of consent will be sent here)</span></label>
+      <input id="pcEmail" type="email" inputmode="email" placeholder="parent@example.com" autocomplete="off" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:11px;padding:12px;color:#eef5ee;font-size:14px;outline:none;margin-bottom:12px">
+      <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600" for="pcRel">Relationship</label>
       <select id="pcRel" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:11px;padding:12px;color:#eef5ee;font-size:14px;outline:none;margin-bottom:12px">
         <option value="Parent">Parent</option>
         <option value="Legal guardian">Legal guardian</option>
@@ -1664,7 +1664,7 @@ body.light .gs-item{background:#fff}
         <input type="checkbox" id="pcAgree" style="margin-top:3px;flex-shrink:0;accent-color:#22c55e">
         <span>I confirm I am the parent or legal guardian of this user, I have read and agree to the <a onclick="event.stopPropagation();closeLogin();showPage('legal')" style="color:#22c55e;cursor:pointer;text-decoration:underline">Terms &amp; Legal</a>, and I consent to my child using FinPath, including its lessons, practice tools, and saved progress.</span>
       </label>
-      <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600">Type your full name below as your electronic signature</label>
+      <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600" for="pcSig">Type your full name below as your electronic signature</label>
       <input id="pcSig" type="text" placeholder="Type your name here to sign" style="width:100%;background:rgba(6,12,7,.7);border:1px solid rgba(134,239,172,.12);border-radius:11px;padding:12px;color:#eef5ee;font-size:16px;font-family:'Caveat',cursive;letter-spacing:.5px;outline:none;margin-bottom:16px">
       <button onclick="submitParentalConsent()" id="pcSubmit" style="width:100%;background:linear-gradient(135deg,#16a34a,#22c55e);border:none;border-radius:13px;padding:14px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(34,197,94,.3)">Sign and continue</button>
       <button onclick="backToStep1()" style="width:100%;background:none;border:none;color:#888;font-size:13px;cursor:pointer;margin-top:10px">← Back</button>
@@ -2700,8 +2700,8 @@ body.light .gs-item{background:#fff}
       <div id="goalsList"></div>
       <button class="btn-secondary" style="padding:12px 22px;font-size:13px" onclick="openGoalForm()">+ New goal</button>
       <div id="goalForm" style="display:none;margin-top:14px" class="goal-card">
-        <input class="modal-input" id="gName" placeholder="Goal name (e.g. Emergency fund)">
-        <input class="modal-input" id="gTarget" type="number" placeholder="Target amount ($)">
+        <input class="modal-input" id="gName" aria-label="Goal name" placeholder="Goal name (e.g. Emergency fund)">
+        <input class="modal-input" id="gTarget" type="number" inputmode="decimal" min="0" aria-label="Target amount in dollars" placeholder="Target amount ($)">
         <input class="modal-input" id="gDate" type="date" aria-label="Deadline">
         <button class="price-btn" style="width:auto;padding:11px 24px" onclick="saveGoal()">Create goal</button>
       </div>
@@ -2735,12 +2735,12 @@ body.light .gs-item{background:#fff}
     <div class="mk-section"><div class="mk-title">Sector heat map</div><div class="mk-sub">Today’s performance by sector (SPDR sector ETFs). Tap a sector for detail.</div><div class="heat-legend" id="heatLegend"><span class="heat-legend-item"><span class="heat-swatch heat-swatch-up" aria-hidden="true"></span>Green = up today</span><span class="heat-legend-item"><span class="heat-swatch heat-swatch-down" aria-hidden="true"></span>Red = down</span><span class="heat-legend-item"><span class="heat-scale" aria-hidden="true"></span>Stronger color ≈ a larger move</span></div><div class="heat-grid" id="heatGrid"><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div><div class="skel-row" style="height:70px"></div></div><div id="heatDetail" style="margin-top:14px;font-size:13px;color:var(--muted)"></div></div>
     <div class="mk-section"><div class="mk-title">Stock screener</div><div class="mk-sub">Discover stocks by fundamentals across FinPath’s tracked universe.</div>
       <div class="scr-filters">
-        <div><label><span class="term" role="button" tabindex="0" data-term="sector" onclick="showTerm(event,this.dataset.term)">Sector</span></label><select id="scrSector"><option value="">All sectors</option></select></div>
-        <div><label>Max price ($)</label><input id="scrPrice" type="number" placeholder="Any"></div>
-        <div><label><span class="term" role="button" tabindex="0" data-term="P/E ratio" onclick="showTerm(event,this.dataset.term)">Max P/E</span></label><input id="scrPE" type="number" placeholder="Any"></div>
-        <div><label><span class="term" role="button" tabindex="0" data-term="dividend yield" onclick="showTerm(event,this.dataset.term)">Min dividend yield %</span></label><input id="scrDiv" type="number" step="0.1" placeholder="Any"></div>
-        <div><label><span class="term" role="button" tabindex="0" data-term="market cap" onclick="showTerm(event,this.dataset.term)">Min market cap ($B)</span></label><input id="scrCap" type="number" placeholder="Any"></div>
-        <div><label><span class="term" role="button" tabindex="0" data-term="Guru-owned" onclick="showTerm(event,this.dataset.term)">Guru-owned</span></label><select id="scrGuru"><option value="">Any</option></select></div>
+        <div><label for="scrSector"><span class="term" role="button" tabindex="0" data-term="sector" onclick="showTerm(event,this.dataset.term)">Sector</span></label><select id="scrSector"><option value="">All sectors</option></select></div>
+        <div><label for="scrPrice">Max price ($)</label><input id="scrPrice" type="number" inputmode="decimal" placeholder="Any"></div>
+        <div><label for="scrPE"><span class="term" role="button" tabindex="0" data-term="P/E ratio" onclick="showTerm(event,this.dataset.term)">Max P/E</span></label><input id="scrPE" type="number" inputmode="decimal" placeholder="Any"></div>
+        <div><label for="scrDiv"><span class="term" role="button" tabindex="0" data-term="dividend yield" onclick="showTerm(event,this.dataset.term)">Min dividend yield %</span></label><input id="scrDiv" type="number" inputmode="decimal" step="0.1" placeholder="Any"></div>
+        <div><label for="scrCap"><span class="term" role="button" tabindex="0" data-term="market cap" onclick="showTerm(event,this.dataset.term)">Min market cap ($B)</span></label><input id="scrCap" type="number" inputmode="decimal" placeholder="Any"></div>
+        <div><label for="scrGuru"><span class="term" role="button" tabindex="0" data-term="Guru-owned" onclick="showTerm(event,this.dataset.term)">Guru-owned</span></label><select id="scrGuru"><option value="">Any</option></select></div>
       </div>
       <button class="ai-run-btn" onclick="runScreener()">Run screener</button>
       <div id="scrResults"><div class="empty">Set your filters and hit Run screener.</div></div>
@@ -2759,9 +2759,9 @@ body.light .gs-item{background:#fff}
         <div class="sp-hero-title">If that rate never changed…</div>
         <div class="sp-hero-sub">Set a monthly amount, a long-run average rate, and how many years. Those rates are hindsight averages — nobody knew them in advance — and the math uses the same rate every year.</div>
         <div class="sp-controls">
-          <div><label>Monthly amount</label><input id="btAmt" type="number" value="100" min="1" max="50000"></div>
-          <div><label>Years</label><input id="btYears" type="number" value="10" min="1" max="40"></div>
-          <div><label>Asset</label>
+          <div><label for="btAmt">Monthly amount</label><input id="btAmt" type="number" inputmode="decimal" value="100" min="1" max="50000"></div>
+          <div><label for="btYears">Years</label><input id="btYears" type="number" inputmode="numeric" value="10" min="1" max="40"></div>
+          <div><label for="btAsset">Asset</label>
             <select id="btAsset">
               <option value="10">S&amp;P 500 index (~10%/yr)</option>
               <option value="24">Apple / AAPL (~24%/yr)</option>
@@ -3011,7 +3011,7 @@ body.light .gs-item{background:#fff}
 <div class="modal-overlay" id="searchModal" role="dialog" aria-modal="true" aria-label="Add a stock">
   <div class="modal">
     <h2>Add stock</h2>
-    <input class="modal-input" placeholder="Search stocks or crypto (AAPL, BTC, ETH)…" id="searchInput" oninput="handleSearch(this.value)" autocomplete="off">
+    <input class="modal-input" placeholder="Search stocks or crypto (AAPL, BTC, ETH)…" id="searchInput" aria-label="Search stocks or crypto" type="search" enterkeyhint="search" oninput="handleSearch(this.value)" autocomplete="off">
     <div id="searchResults"><div class="loading"><div class="spinner"></div>Loading live prices...</div></div>
     <button class="modal-close-btn" onclick="closeSearch()">Cancel</button>
   </div>
@@ -3026,7 +3026,7 @@ body.light .gs-item{background:#fff}
       <div style="font-size:14px;color:#d1fae5;line-height:1.6" id="sharesInsight">Loading...</div>
     </div>
     <div style="font-size:13px;color:var(--muted);margin-bottom:8px" id="sharesLabel">How many shares do you own?</div>
-    <input class="modal-input" type="number" id="sharesInput" placeholder="e.g. 10" min="0.001" step="any" oninput="updatePreview()">
+    <input class="modal-input" type="number" id="sharesInput" inputmode="decimal" aria-labelledby="sharesLabel" placeholder="e.g. 10" min="0.001" step="any" oninput="updatePreview()">
     <div id="paperThesisBox" style="display:none">
       <div id="paperPlanLock" hidden></div>
       <div id="paperPlanFields" class="thesis-fields">
@@ -3162,7 +3162,7 @@ body.light .gs-item{background:#fff}
         <select id="alertDir" aria-label="Alert when the price" class="modal-input" style="width:auto;margin:0;padding:11px">
           <option value="below">Drops below</option><option value="above">Rises above</option>
         </select>
-        <input id="alertPrice" type="number" step="any" class="modal-input" style="width:130px;margin:0" placeholder="$ price">
+        <input id="alertPrice" type="number" inputmode="decimal" min="0" aria-label="Alert price in dollars" step="any" class="modal-input" style="width:130px;margin:0" placeholder="$ price">
         <button class="price-btn" style="width:auto;padding:11px 20px" onclick="addAlertFromDetail()">🔔 Set alert</button>
       </div>
       <div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.45">Alerts only run while this FinPath tab is open. Closing the tab pauses them.</div>
