@@ -262,7 +262,7 @@ test('life path is ready only after the learner saves it', function(){
   assert.equal(lifePathReady({ touched: true, inputs: { currentAge: 22 } }), true);
 });
 
-test('the future panel names both ages and the service worker is finpath-v40', function(){
+test('the future panel names both ages and the service worker is finpath-v41', function(){
   const html = readFileSync(new URL('../../../index.html', import.meta.url), 'utf8');
   const sw = readFileSync(new URL('../../../sw.js', import.meta.url), 'utf8');
   const boot = readFileSync(new URL('./boot.js', import.meta.url), 'utf8');
@@ -278,7 +278,7 @@ test('the future panel names both ages and the service worker is finpath-v40', f
   assert.match(boot, /What changed this/);
   assert.match(boot, /lifePathReady/);
   assert.match(boot, /#life\/compare\//);
-  assert.match(sw, /finpath-v40/);
+  assert.match(sw, /finpath-v41/);
   assert.doesNotMatch(sw, /finpath-v39/);
   assert.match(sw, /js\/intel\/life\/future\.js/);
 });

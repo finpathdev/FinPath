@@ -226,9 +226,9 @@ test('formulas stay educational and cover the four scores', function(){
   assert.doesNotMatch(blob, /you should (buy|sell)|i recommend|buy signal|sell signal/i);
 });
 
-test('service worker cache is finpath-v40 and the page keeps the yellow disclaimer', function(){
+test('service worker cache is finpath-v41 and the page keeps the yellow disclaimer', function(){
   const sw = readFileSync(new URL('../../../sw.js', import.meta.url), 'utf8');
-  assert.match(sw, /finpath-v40/);
+  assert.match(sw, /finpath-v41/);
   assert.doesNotMatch(sw, /finpath-v39/);
   assert.match(sw, /js\/intel\/paper\/thesis\.js/);
   assert.match(sw, /js\/intel\/paper\/boot\.js/);
