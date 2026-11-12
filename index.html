@@ -4415,7 +4415,7 @@ function renderCertificateCTA(done){
   if(!host) return;
   const free = LESSONS.filter(function(l){ return l.plan === 'free'; }).length;
   const milestones = [
-    {n: free, label: 'Finished all free lessons', key: 'free'},
+    {n: free, label: 'Finished all ' + free + ' core lessons', key: 'free'},
     {n: LESSONS.filter(Boolean).length, label: 'Completed the entire Financial Playbook', key: 'all'}
   ];
   const hit = milestones.filter(function(m){ return done >= m.n; }).pop();
@@ -4680,10 +4680,10 @@ function renderLearnPath(hidden){
     const label = escapeHtml(GOAL_PATH_LABEL[p.goal] || 'Your path');
     sub = p.time === '5'
       ? label + ' — 2 quick reads, about ' + mins + ' minutes. Saved on this device.'
-      : label + ' — ' + shown.length + ' free lessons, about ' + mins + ' minutes. ' + doneN + ' of ' + shown.length + ' done. Saved on this device.';
+      : label + ' — ' + shown.length + ' lessons, about ' + mins + ' minutes. ' + doneN + ' of ' + shown.length + ' done. Saved on this device.';
   } else {
     head = '<h3>' + (doneN ? 'Your beginner path' : 'New to investing? Start here') + '</h3>';
-    sub = shown.length + ' short free lessons in a sensible order — about ' + mins + ' minutes total. ' + doneN + ' of ' + shown.length + ' done.';
+    sub = shown.length + ' short lessons in a sensible order — about ' + mins + ' minutes total. ' + doneN + ' of ' + shown.length + ' done.';
   }
   let foot;
   if(shownNext !== undefined){
@@ -6957,7 +6957,7 @@ function initOnboarding(){
   const steps = [
     {icon:'👋', title:'Welcome to FinPath', body:'The financial playbook schools skipped. Three small steps and you\u2019ll have the hang of it — this takes about a minute.'},
     {icon:'📈', title:'Step 1 — Add your first stock', body:'Track a real stock with live prices, or practice risk-free with $100,000 of virtual paper-trading cash. Not sure where to start? Try the one-tap demo portfolio.'},
-    {icon:'🎯', title:'Step 2 — Set a goal, then learn', body:'Set a concrete savings goal (like a $1,000 emergency fund), then start the beginner path: 6 short free lessons, about 1–2 minutes each. A checklist on your Portfolio page tracks your progress.'},
+    {icon:'🎯', title:'Step 2 — Set a goal, then learn', body:'Set a concrete savings goal (like a $1,000 emergency fund), then start the beginner path: 6 short lessons, about 1–2 minutes each. A checklist on your Portfolio page tracks your progress.'},
     {icon:'🧭', title:'Good to know', body:'FinPath is for learning, not financial advice. Notes on holdings are rule-based and educational, investor moves come from SEC filings that are weeks old, and paper trading uses virtual money only.'}
   ];
   let step = 0;
@@ -7784,7 +7784,7 @@ const ACHVS = [
   {id:'streak_7', icon:'🔥', name:'On Fire', desc:'7-day visit streak'},
   {id:'paper_trader', icon:'📄', name:'Paper Trader', desc:'Make your first paper trade'},
   {id:'analyzer', icon:'🔬', name:'Self-Aware', desc:'Run the portfolio analyzer'},
-  {id:'graduate', icon:'🎓', name:'FinPath Graduate', desc:'Complete all 20 free lessons'}
+  {id:'graduate', icon:'🎓', name:'FinPath Graduate', desc:'Complete all 20 core lessons'}
 ];
 function getAchv(){ try{ return JSON.parse(localStorage.getItem('fp_achv')||'{}'); }catch(e){ return {}; } }
 function unlockAchv(id){
