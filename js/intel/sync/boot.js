@@ -11,7 +11,8 @@ import {
   timeMs, conceptClocks, conceptRows, appendLiteracy, thesisRowsFromPaper, thesisEntryId,
   normalizeThesis, normalizeBehavior, normalizeRisk, normalizePlan, behaviorSnapshot,
   riskSnapshot, appendSnapshot, mergeRecords, mergeThesisIntoPaper, syncCollections,
-  tableSpec, conceptFromDb, literacyFromDb, thesisFromDb, behaviorFromDb, riskFromDb, planFromDb
+  tableSpec, conceptFromDb, literacyFromDb, thesisFromDb, behaviorFromDb, riskFromDb, planFromDb,
+  lessonFromDb, lessonRowsFromProgress, progressFromLessonRows
 } from './merge.js';
 
 const KEYS = {
@@ -122,6 +123,7 @@ function collectLocal(){
     plans: plans,
     literacyResult: literacy,
     progress: progress,
+    lessons: lessonRowsFromProgress(progress),
     log: log,
     paper: paper
   };
@@ -143,6 +145,17 @@ function applyMerged(local, plan){
   if(writeJSON(KEYS.behavior, { v: 1, entries: plan.merged.behavior })) changed = true;
   if(writeJSON(KEYS.risk, { v: 1, entries: plan.merged.risk })) changed = true;
   if(writeJSON(KEYS.plans, { v: 1, plans: plan.merged.plans })) changed = true;
+  if(Array.isArray(plan.merged.lessons)){
+    const store = progressFromLessonRows(plan.merged.lessons);
+    if(writeJSON('fp_lessons', store)){
+      changed = true;
+      try{
+        if(typeof window.updateLessonProgress === 'function') window.updateLessonProgress();
+        const lessonsPage = document.getElementById('page-lessons');
+        if(lessonsPage && lessonsPage.classList.contains('active') && typeof window.renderLessons === 'function') window.renderLessons();
+      }catch(e){}
+    }
+  }
   const paperMerge = mergeThesisIntoPaper(local.paper || { pos: [], journal: [] }, plan.merged.thesis);
   if(local.paper && JSON.stringify(paperMerge.paper) !== JSON.stringify(local.paper)){
     if(writeJSON('fp_paper', paperMerge.paper)) changed = true;
@@ -170,7 +183,8 @@ async function pullRemote(ctx){
     ['thesis', 'entry_id,ticker,thesis,falsifier,expected_move,timeframe_days,confidence,max_stake_pct,stake_pct,status,scores,captured_at', thesisFromDb],
     ['behavior', 'snapshot_id,captured_at,cards', behaviorFromDb],
     ['risk', 'snapshot_id,source,captured_at,metrics', riskFromDb],
-    ['plans', 'week_key,profile_id,generated_at,items', planFromDb]
+    ['plans', 'week_key,profile_id,generated_at,items', planFromDb],
+    ['lessons', 'lesson_id,completed_at', lessonFromDb]
   ];
   const remote = {};
   for(let i = 0; i < specs.length; i++){

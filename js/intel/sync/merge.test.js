@@ -4,7 +4,8 @@ import { readFileSync } from 'node:fs';
 import {
   mergeRecords, pushWinners, batchRows, syncCollections, conceptRows, appendLiteracy,
   thesisRowsFromPaper, mergeThesisIntoPaper, normalizeThesis, conceptDbRow, pickMastery,
-  behaviorSnapshot, riskSnapshot, BATCH_SIZE
+  behaviorSnapshot, riskSnapshot, BATCH_SIZE,
+  lessonRowsFromProgress, progressFromLessonRows, lessonDbRow, lessonFromDb, normalizeLesson
 } from './merge.js';
 
 const localConcept = { id: 'saving', at: 2000, score: 40, status: 'practicing', lessonsDone: 1, lessonsTotal: 4, quizCorrect: 1, quizTotal: 3 };
@@ -156,4 +157,31 @@ test('intelligence migration locks rows to the signed-in user and hides the stud
   assert.match(raw, /no user_id/i);
   const studyTable = sql.slice(sql.indexOf('create table if not exists public.efficacy_events'), sql.indexOf('comment on table public.efficacy_events'));
   assert.doesNotMatch(studyTable, /user_id/);
+});
+
+test('lesson progress unions across devices and restores slug timestamps', function(){
+  const local = lessonRowsFromProgress({ _v: 1, 'compound-interest': 1000, 'taxes': 3000, _skip: 1 });
+  assert.deepEqual(local.map(function(row){ return row.id; }).sort(), ['compound-interest', 'taxes']);
+  const remote = [normalizeLesson({ lesson_id: 'compound-interest', completed_at: 5000 }), normalizeLesson({ id: 'paycheck', at: 2000 })];
+  const plan = syncCollections({
+    signedIn: true,
+    userId: 'user-1',
+    local: { lessons: local },
+    remote: { lessons: remote }
+  });
+  const ids = plan.merged.lessons.map(function(row){ return row.id; }).sort();
+  assert.deepEqual(ids, ['compound-interest', 'paycheck', 'taxes']);
+  const store = progressFromLessonRows(plan.merged.lessons);
+  assert.equal(store['compound-interest'], 5000);
+  assert.equal(store.paycheck, 2000);
+  assert.equal(store._v, 1);
+  assert.equal(plan.batches.some(function(batch){ return batch.table === 'lessons' && batch.rows.some(function(row){ return row.id === 'taxes'; }); }), true);
+  const row = lessonDbRow('user-1', { id: 'compound-interest', at: 1000 });
+  assert.equal(row.user_id, 'user-1');
+  assert.equal(row.lesson_id, 'compound-interest');
+  assert.equal(JSON.stringify(row).includes('@'), false);
+  const back = lessonFromDb({ lesson_id: 'compound-interest', completed_at: '2026-11-01T18:00:00.000Z' });
+  assert.equal(back.id, 'compound-interest');
+  assert.ok(back.at > 0);
+  assert.equal(normalizeLesson({ id: '_v', at: 1 }), null);
 });

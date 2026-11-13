@@ -8,7 +8,7 @@ export const BATCH_SIZE = 50;
 const STATUSES = { not_started: 1, just_met: 1, practicing: 1, steady: 1 };
 const TIMEFRAMES = { 7: 1, 30: 1, 90: 1, 365: 1 };
 const PLAN_TYPES = { lesson: 1, quiz: 1 };
-const COLLECTIONS = ['concepts', 'literacy', 'thesis', 'behavior', 'risk', 'plans'];
+const COLLECTIONS = ['lessons', 'concepts', 'literacy', 'thesis', 'behavior', 'risk', 'plans'];
 
 export function timeMs(value){
   if(typeof value === 'number' && isFinite(value)) return value;
@@ -398,6 +398,36 @@ export function appendSnapshot(list, row, cap){
   return prev.slice(-(cap || 90));
 }
 
+export function normalizeLesson(row){
+  if(!row || typeof row !== 'object') return null;
+  const id = String(row.id != null ? row.id : row.lesson_id || '').trim();
+  if(!id || id === '_v' || id.length > 80 || !/^[a-z0-9-]+$/i.test(id)) return null;
+  const at = timeMs(row.at != null ? row.at : row.completed_at);
+  if(at <= 0) return null;
+  return { id: id, at: at };
+}
+
+export function lessonRowsFromProgress(progress){
+  const src = progress && typeof progress === 'object' && !Array.isArray(progress) ? progress : {};
+  const out = [];
+  Object.keys(src).forEach(function(k){
+    if(k === '_v') return;
+    const row = normalizeLesson({ id: k, at: src[k] });
+    if(row) out.push(row);
+  });
+  return out.sort(function(a, b){ return timeMs(b.at) - timeMs(a.at); });
+}
+
+export function progressFromLessonRows(rows){
+  const store = { _v: 1 };
+  (Array.isArray(rows) ? rows : []).forEach(function(row){
+    const next = normalizeLesson(row);
+    if(!next) return;
+    if(!store[next.id] || next.at < store[next.id]) store[next.id] = next.at;
+  });
+  return store;
+}
+
 export function mergeRecords(local, remote){
   const map = new Map();
   function take(row){
@@ -659,13 +689,30 @@ export function pickMastery(computed, storedRows, clocks){
   return { mastery: out, fromAccount: Object.keys(fromAccount).length };
 }
 
+export function lessonDbRow(userId, row){
+  const next = normalizeLesson(row);
+  if(!userId || !next) return null;
+  return {
+    user_id: userId,
+    lesson_id: next.id,
+    completed_at: iso(next.at),
+    updated_at: iso(next.at)
+  };
+}
+
+export function lessonFromDb(row){
+  if(!row) return null;
+  return normalizeLesson({ id: row.lesson_id, at: row.completed_at });
+}
+
 const DB = {
   concepts: { table: 'concept_mastery', conflict: 'user_id,concept_id', toRow: conceptDbRow, fromRow: conceptFromDb },
   literacy: { table: 'literacy_scores', conflict: 'user_id,snapshot_id', toRow: literacyDbRow, fromRow: literacyFromDb },
   thesis: { table: 'thesis_entries', conflict: 'user_id,entry_id', toRow: thesisDbRow, fromRow: thesisFromDb },
   behavior: { table: 'behavior_snapshots', conflict: 'user_id,snapshot_id', toRow: behaviorDbRow, fromRow: behaviorFromDb },
   risk: { table: 'risk_snapshots', conflict: 'user_id,snapshot_id', toRow: riskDbRow, fromRow: riskFromDb },
-  plans: { table: 'study_plans', conflict: 'user_id,week_key', toRow: planDbRow, fromRow: planFromDb }
+  plans: { table: 'study_plans', conflict: 'user_id,week_key', toRow: planDbRow, fromRow: planFromDb },
+  lessons: { table: 'lesson_progress', conflict: 'user_id,lesson_id', toRow: lessonDbRow, fromRow: lessonFromDb }
 };
 
 export function tableSpec(key){
