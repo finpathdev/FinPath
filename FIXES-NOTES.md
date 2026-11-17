@@ -433,3 +433,37 @@ Cancel while a paper sell was waiting on a quote closed the dialog (Escape alrea
 ## 2026-11-09 — FinPath is free (finpath-v40)
 
 The paid FinPath Gold plan is gone. Every lesson, Investor Moves, rule-based holding notes, and the today’s-change breakdown open for everyone, signed in or not. Sign-in is still required for Ask FinPath and for account sync. Ask FinPath uses one cap for every signed-in account: 50 questions per UTC day and about 5 per minute. The edge function no longer reads `gold_users` to pick a limit. The client no longer calls `gold_users` or `payments`, and the Stripe test Payment Link is gone. Home pricing now says FinPath is 100% free. Legal section 8 no longer describes a subscription, and the 18+ purchase rule is gone. Under-13 and under-18 consent rules stay. `plan:"gold"` remains a curriculum label so the beginner path and the foundations certificate still use the original shorter set. Tables were not dropped. `sw.js` cache is `finpath-v40`. Older notes in this file still describe the retired checkout.
+
+## 2026-11-17 — Q3 2026 13F refresh (finpath-v48)
+
+All nine tracked managers had a Form 13F-HR on EDGAR for the quarter ended September 30, 2026. `MOVES` went from 67 Q2 rows to 85 Q3 rows. No filer was left on Q2, and no "Q3 not yet filed" note was needed. Share changes are versus that filer's own June 30, 2026 information table. Dollars on the cards are rounded. "% of portfolio" is the reported value divided by that filer's long-equity total, with puts and calls left out. Stripe, pricing, auth, the Finnhub key, `COMPANIES`, `SECTORS`, and `POP` were not touched.
+
+Direct requests to sec.gov and data.sec.gov returned 403 from this network. The same EDGAR URLs were read with User-Agent `FinPath finpathdev@users.noreply.github.com` through a fetch that returned the raw submission JSON and the information-table XML. Every card was then checked again against those XML share counts and values. Cover-page `tableValueTotal` matches the sum of the value column except Duquesne, where the cover is 4,470,866 (thousands) and the lines sum to 4,470,867.
+
+Filings opened:
+
+| Investor | Filer | CIK | Filed | Accession |
+| --- | --- | --- | --- | --- |
+| Warren Buffett | Berkshire Hathaway | 1067983 | 2026-11-16 | 0001193125-26-463399 |
+| Bill Ackman | Pershing Square Inc. | 2026053 | 2026-11-16 | 0001172661-26-005427 |
+| David Tepper | Appaloosa LP | 1656456 | 2026-11-16 | 0001656456-26-000004 |
+| Stanley Druckenmiller | Duquesne Family Office | 1536411 | 2026-11-16 | 0001536411-26-000011 |
+| Li Lu | Himalaya Capital Management | 1709323 | 2026-11-16 | 0002043585-26-000030 |
+| Seth Klarman | Baupost Group | 1061768 | 2026-11-13 | 0001061768-26-000015 |
+| Bill Gates | Gates Foundation Trust | 1166559 | 2026-11-16 | 0001104659-26-128337 |
+| Chase Coleman | Tiger Global Management | 1167483 | 2026-11-16 | 0000919574-26-008062 |
+| Terry Smith | Fundsmith LLP | 1569205 | 2026-11-16 | 0001569205-26-000014 |
+
+Q2 comparison filings were the Aug 13–14 13F-HRs, plus Pershing's Nov 16 13F-HR/A (accession 0001172661-26-005426). That amendment is type NEW HOLDINGS. It adds 184,289,699 shares of Pershing Square Inc. and does not replace the August table. Pershing Square Capital Management (CIK 1336528) filed a 13F-NT for Q3, not a holdings table. The Q3 cards use Pershing Square Inc.
+
+Baupost and Duquesne still report the value column in thousands of dollars (same pattern as Q2: a value divided by the share count is about 1/1000 of a real price, and the cover total equals the unscaled sum). Those values are multiplied by 1,000. Duquesne's five call rows are excluded from the $4.149B long-equity total. Appaloosa has no put or call row in Q3. The June Apple put (835,000 shares, $241,615,600 notional) is a sold-out card.
+
+Same-CUSIP lines are summed across sub-managers. Berkshire and Himalaya Alphabet cards combine Class A and Class C. Lennar's percent is Class A only; Class B is described in the note. Tepper, Tiger, Fundsmith, and Baupost Alphabet cards are the single class on the form.
+
+`F13` is now Q3 2026, as of September 30, 2026, filed Nov 13–16, 2026. Next quarter is Q4 2026, due 2027-02-16 (December 31 plus 45 days is Sunday February 14, and Monday February 15 is Presidents Day). Landing preview cards are Apple Hold, ICE Buy, Micron Add 28.2%, and Natera Reduce 0.8%, each copied from a `MOVES` row. The lesson, the four `AI_INSIGHT` lines, and the glossary "Add 28.2%" example were updated. `AI_ADVISOR` was already gone.
+
+Left off the cards, on purpose: the rest of each book. Examples include Berkshire's unchanged Moody's, Chubb, and Kraft lines and a small Capital One trim; Pershing Square USA Ltd (4,000,000 shares, unchanged, $148M) and a small Hertz exit; Tepper's smaller new lines and exits (Whirlpool, Qualcomm, Goodyear, Broadcom); most of Duquesne's 65 lines and the call rows other than the notes on the Amazon and Seagate calls; Himalaya's Crocs and Apple holds; Baupost's smaller lines (SiteOne is a new $112M stake and is not a card); Gates's unchanged Deere, Ecolab, Walmart, and FedEx lines; most of Tiger's and Fundsmith's smaller trims. No new manager was added. Fundsmith Investment Services Ltd was not added. Burry, Bridgewater, Oaktree, and Pabrai stayed off.
+
+Ticker notes: OpenFIGI mapped Pershing Square Inc. to PS, SpaceX Class A to SPCX, Honeywell Aerospace to HONA, Cerebras to CBRS, and Bending Spoons to BSP. Alcon's CUSIP H01301128 did not resolve there; the card uses ALC, the U.S. listing, and the note names the CUSIP. Seagate's CUSIP G7997R103 did not resolve; the issuer is Seagate Technology Holdings and the U.S. ticker is STX. Canadian National's U.S. ticker on that CUSIP is CNI.
+
+`node --check` passed on all three inline scripts and on `sw.js`. Cache is `finpath-v48`.
