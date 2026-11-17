@@ -1,5 +1,15 @@
 # Q3 2026 13F refresh checklist
 
+## Done — 2026-11-17
+
+- [x] Every tracked filer had a Form 13F-HR with period of report 2026-09-30. None were left on Q2.
+- [x] Q2 cards were replaced with Q3 moves from each filer's information table, compared with that filer's own Q2 table.
+- [x] Lesson, AI_INSIGHT, glossary example, landing cards, landing note, and `F13` now describe Q3. `AI_ADVISOR` had already been removed, so there was no advisor essay left to update.
+- [x] Every new `MOVES` row was re-checked against the information-table shares and values.
+- [x] `sw.js` cache bumped from `finpath-v47` to `finpath-v48`.
+- [x] `node --check` passed on the three inline scripts and on `sw.js`.
+- [x] Note added to `FIXES-NOTES.md`.
+
 Do this only after the real Form 13F-HR filings are on EDGAR. Q3 2026 ended September 30, 2026. The usual deadline is 45 days later, **November 16, 2026** (a Monday). Until a filing is on EDGAR, leave `MOVES` on Q2 2026. Do not draft, estimate, or “preview” Q3 positions from letters, interviews, 13D/13G filings, or last quarter’s trend.
 
 The app still shows Q2 on purpose. `F13.nextDue` is `2026-11-16`. After that date the freshness line and the landing note say Q3 is due and that the cards are still Q2 until someone reviews them.
@@ -56,15 +66,15 @@ Search the repo for `Q2 2026` and `9 legendary` before you ship.
 
 ## After the data change
 
-1. Bump `CACHE` in `sw.js` (this UX pass is `finpath-v19`, after the Markets pass at `finpath-v18`; the refresh needs the next name, e.g. `finpath-v20`).
-2. `node --check` the inline scripts you touched, and `sw.js`.
-3. Add a short note to `FIXES-NOTES.md`: which filings you opened, what you changed, and what you left out.
-4. Confirm the Investor Moves grid still defaults to non-Hold moves, Show holds still reveals Holds, and Buy / Add / Reduce / Sold out still combine with the investor tabs. A signed-out visit should show the grid with no upgrade prompt.
+- [x] Bump `CACHE` in `sw.js` (done 2026-11-17: `finpath-v47` → `finpath-v48`).
+- [x] `node --check` the inline scripts you touched, and `sw.js`.
+- [x] Add a short note to `FIXES-NOTES.md`: which filings you opened, what you changed, and what you left out.
+- [x] Confirm the Investor Moves grid still defaults to non-Hold moves, Show holds still reveals Holds, and Buy / Add / Reduce / Sold out still combine with the investor tabs. A signed-out visit should show the grid with no upgrade prompt. Filter code was not edited. `showMoveHolds` still starts false, and `renderGold` still resets the action filter to All.
 
 ## Do not invent
 
 - No Q3 (or later) row, dollar figure, percent, or “he probably sold” note without that quarter’s information table.
-- A letter or a 13F-NT is not a holdings table. Post-quarter trades wait for the next 13F. (Ackman’s Aug 12, 2026 letter named Alcon and ICE; they were not in the June 30 filing and they are not cards.)
+- A letter or a 13F-NT is not a holdings table. Post-quarter trades wait for the next 13F. (Ackman’s Aug 12, 2026 letter named Alcon and ICE. They were not in the June 30 filing. They are in the September 30, 2026 information table, and the 2026-11-17 refresh added them as cards from that table, not from the letter.)
 - Do not relabel a put, a call, or a spin-off as Buy.
 - Do not touch auth, the Finnhub key, or `COMPANIES` / `SECTORS` / `POP`. A card can show a ticker that is not in the market universe; track search already accepts a typed symbol. Universe edits belong to the stocks owner. FinPath has no checkout.
 - Do not add a manager just to raise the count. Q2 left out Burry (no 2026 13F-HR), Bridgewater, Oaktree, Pabrai, and the second Fundsmith entity for the reasons in `FIXES-NOTES.md`.
