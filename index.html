@@ -3422,25 +3422,25 @@ BUILDING FROM ZERO:
 5. After 12 months your score will be in solid shape
 
 A 750+ score saves you more money over your lifetime than almost any other single financial decision.`},
-{name:"Reading Market Signals",desc:"The indicators that predict market movements before they happen",cat:"Market Signals",plan:"gold",icon:"📡",content:`Professional investors read signals. Here are the most important ones.
+{name:"Reading Market Signals",desc:"What the big economic indicators tell you — and what they can’t",cat:"Market Signals",plan:"gold",icon:"📡",content:`Headlines are full of "signals." Learning what each one actually measures helps you understand the news without overreacting to it. None of them can tell you what prices will do next.
 
 THE YIELD CURVE:
-Normally long-term interest rates exceed short-term rates. When this inverts (short-term higher than long-term) it has preceded every US recession for the past 50 years.
+Normally long-term interest rates are higher than short-term rates. When the curve inverts (short-term higher than long-term), a U.S. recession has often followed — inversions came before every recession since the late 1960s. But the gap between inversion and recession has ranged from months to about two years, and an inversion can pass with no recession at all. It is a warning light about the economy, not a timer for the stock market.
 
 THE FED FUNDS RATE:
-When the Federal Reserve raises rates borrowing becomes expensive. This slows spending, reduces profits, and pressures stocks. When they cut rates the opposite happens.
+When the Federal Reserve raises rates, borrowing gets more expensive. That tends to slow spending and can weigh on company profits and stock prices. Cuts tend to do the opposite. Markets often react to what they expect the Fed to do, so prices can move before a decision is announced.
 
 EARNINGS GROWTH:
-The most important question about any stock: will this company earn more in 5 years than today? If yes the stock price will likely follow.
+Over long periods, stock prices have tended to follow company earnings. A useful question about any company: is it likely to earn more in 5–10 years than today? Even when the answer is yes, the price can lag or overshoot for years, and a high price can already include that growth.
 
 INSIDER BUYING:
-When executives buy their own company shares with personal money that is a powerful signal. Multiple insiders buying simultaneously is worth paying close attention to.
+Company executives must publicly report when they buy or sell their own company's stock. Buying with personal money can show confidence, but insiders are often wrong too, and they sell for many ordinary reasons (taxes, a house, spreading out risk). Treat it as one piece of research, not a reason on its own.
 
 THE VIX:
-Measures market volatility expectations. Above 30 means fear. Historically one of the best times to buy. Below 15 means complacency. Be cautious.
+The VIX measures how big a move options traders expect in the S&P 500 over the next 30 days. Above 30 means fear and choppy prices. Below 15 means calm. It measures nervousness, not direction, so it does not tell you when to buy or sell.
 
 HOW TO USE THESE:
-No single signal is reliable alone. Look for multiple signals pointing the same direction. One indicator is a hint. Three pointing the same way is a conviction.`},
+Think of these as a dashboard for understanding the economy, not a trading system. Even professionals who watch all of them struggle to time the market. For most long-term investors, a steady plan (regular investing, diversification, low fees) matters far more than any single indicator.`},
 {name:"The Power of Compound Interest",desc:"Why starting at 16 beats starting at 30 by hundreds of thousands",cat:"Saving & Budgeting",plan:"free",icon:"📈",content:`Compound interest means your returns earn their own returns. Leave it alone and the growth speeds up. Starting later costs more than it looks.
 
 THE NUMBERS (AN ILLUSTRATION, NOT A PROMISE):
@@ -7340,6 +7340,10 @@ const GLOSSARY = {
   'emerging markets':'Developing economies like India, Brazil or China — more growth potential, more risk.',
   'Nasdaq 100':'An index of 100 of the largest non-financial companies on the Nasdaq exchange. It is heavy in big technology firms, so it can rise and fall faster than the S&P 500. QQQ is an ETF that tracks it.',
   'Guru-owned':'Held by at least one famous investor FinPath tracks, based on their latest public quarterly filing. The filing is weeks old and is not a recommendation to copy the trade.',
+  'recession':'A broad drop in economic activity that lasts months — fewer jobs, less spending, falling business profits. In the U.S., economists at the NBER officially date when recessions start and end.',
+  'GDP':'Gross Domestic Product — the total value of everything a country produces in a year. Rising GDP means the economy is growing; shrinking GDP for a while is a common sign of a recession.',
+  'balance sheet':'A company’s snapshot of what it owns (assets), what it owes (liabilities), and what is left for shareholders (equity) on a given date. Assets = liabilities + equity.',
+  'tax-loss harvesting':'Selling an investment at a loss in a taxable account so the loss can offset gains (and up to $3,000 a year of ordinary income in the U.S.). Watch the wash-sale rule if you buy it back within 30 days.',
   'positions value':'What your shares are worth at the latest price. Cash you have not invested yet is not included.'
 };
 // Moves-page terms. Kept out of GLOSSARY so words like Buy are not underlined inside every lesson.
@@ -7571,9 +7575,9 @@ const QUIZZES = {
  {q:"Buffett’s favourite holding period is…",o:["One quarter","Until earnings","Forever","30 days"],a:2,w:"He buys businesses he’d happily own for decades."},
  {q:"What do Buffett, Ackman and Tepper share?",o:["Day-trading","Deep understanding + years-long holds + buying dips","Meme stocks","Never reading filings"],a:1,w:"Concentration in what they understand, patience, and buying when others panic."}],
 "Reading Market Signals":[
- {q:"An inverted yield curve has historically preceded…",o:["Bull runs","Every US recession for ~50 years","Rate cuts only","Nothing"],a:1,w:"Short rates above long rates = the market’s most famous recession warning."},
+ {q:"An inverted yield curve has historically come before…",o:["Bull runs","Most U.S. recessions since the 1960s — with a lag of months to about two years","Rate cuts only","Nothing"],a:1,w:"Short rates above long rates is a famous recession warning light — but the timing varies a lot, and it does not tell you when stocks will move."},
  {q:"A VIX above 30 signals…",o:["Complacency","High fear — traders expect big price swings","Guaranteed crash","Low volume"],a:1,w:"The VIX measures expected swings, not direction. High readings mean nervous, choppy markets — not a guaranteed crash, and not a buy or sell signal."},
- {q:"Multiple insiders buying their own stock usually means…",o:["Nothing","They know the business best and like the price","A scandal","Dilution"],a:1,w:"Executives buying with their own money is one of the strongest bullish signals."}],
+ {q:"Several insiders buying their own company’s stock most likely means…",o:["A guaranteed price rise","They feel confident about the business — but they can be wrong","A scandal","Dilution"],a:1,w:"Insider buying can show confidence, but insiders are often wrong too. It is one piece of research, not a reason on its own."}],
 "Dollar Cost Averaging":[
  {q:"Missing the 10 best market days over 20 years cuts returns by about…",o:["5%","Half","Nothing","10%"],a:1,w:"And those best days cluster near the scariest ones — which is why timing fails."},
  {q:"DCA automatically makes you…",o:["Buy more shares when prices are low","Sell at bottoms","Trade daily","Pay more fees"],a:0,w:"A fixed dollar amount buys MORE shares when prices drop — the opposite of panic."},
