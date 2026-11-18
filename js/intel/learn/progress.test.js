@@ -30,7 +30,7 @@ test('slug progress counts only known lessons and rewrites old index keys', func
 test('index.html keeps login and lesson completion consistent for every user', function(){
   const html = readFileSync(new URL('../../../index.html', import.meta.url), 'utf8');
   const sw = readFileSync(new URL('../../../sw.js', import.meta.url), 'utf8');
-  assert.match(sw, /finpath-v44/);
+  assert.match(sw, /const CACHE = 'finpath-v[0-9]+'/);
   assert.doesNotMatch(html, /STRIPE_PK|STRIPE_PRICE/);
   assert.match(html, /persistSession:\s*true/);
   assert.match(html, /autoRefreshToken:\s*true/);

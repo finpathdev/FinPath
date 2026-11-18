@@ -7364,7 +7364,25 @@ const GLOSSARY = {
   'GDP':'Gross Domestic Product — the total value of everything a country produces in a year. Rising GDP means the economy is growing; shrinking GDP for a while is a common sign of a recession.',
   'balance sheet':'A company’s snapshot of what it owns (assets), what it owes (liabilities), and what is left for shareholders (equity) on a given date. Assets = liabilities + equity.',
   'tax-loss harvesting':'Selling an investment at a loss in a taxable account so the loss can offset gains (and up to $3,000 a year of ordinary income in the U.S.). Watch the wash-sale rule if you buy it back within 30 days.',
-  'positions value':'What your shares are worth at the latest price. Cash you have not invested yet is not included.'
+  'positions value':'What your shares are worth at the latest price. Cash you have not invested yet is not included.',
+  'market order':'An order to buy or sell right away at the best price available at that moment. It almost always fills, but the exact price can differ a little from the last quote you saw, especially when prices are moving fast.',
+  'limit order':'An order that names the worst price you will accept — the most you will pay to buy, or the least you will take to sell. You control the price, but if the stock never reaches it, the order may not fill.',
+  'bid-ask spread':'The gap between the highest price a buyer is offering (the bid) and the lowest price a seller will take (the ask). It is a small hidden cost each time you trade. Big, heavily traded stocks and funds usually have tiny spreads.',
+  'fractional shares':'Owning part of one share, such as 0.25 of a share. Many brokerages let you invest a dollar amount (for example $10) instead of buying whole shares, which makes expensive stocks and funds reachable for beginners.',
+  'stock split':'When a company turns each share into several cheaper ones — in a 2-for-1 split, one $200 share becomes two $100 shares. The total value you own does not change.',
+  'IPO':'Initial Public Offering — the first time a private company sells shares to the public on a stock exchange. New listings are often very volatile in their first months.',
+  'blue-chip stock':'A share of a large, long-established company with a long record of operating through good and bad economies. Well known does not mean risk-free — blue chips can still fall a lot.',
+  'target-date fund':'A single fund built for a retirement year, like a 2070 fund. It starts mostly in stocks and slowly shifts toward bonds as that year gets closer, rebalancing for you. Compare expense ratios — they vary a lot.',
+  'robo-advisor':'A service that builds and rebalances a portfolio of low-cost funds for you based on a short questionnaire about your goals and risk tolerance. It usually charges a yearly fee on top of the funds’ expense ratios.',
+  'fiduciary':'Someone legally required to put your interests first when giving financial advice. Not every person called an “advisor” is a fiduciary, so it is fair to ask directly. FinPath teaches; it is not a fiduciary and gives no personal advice.',
+  'beta':'How much an investment’s daily ups and downs have matched the overall market (often the S&P 500) in the past. About 1 means similar-sized moves, above 1 means bigger swings, below 1 means smaller. It describes the past, not the future.',
+  'standard deviation':'A measure of how spread out returns are around their average. A bigger number means a bumpier ride — returns that swing further from normal. Investors often use it as a simple way to describe volatility.',
+  'Sharpe ratio':'Return earned above a “safe” rate (such as Treasury bills), divided by how bumpy the returns were. Higher means more return per unit of bumpiness over the period measured. It looks backward and is not a promise.',
+  'max drawdown':'The biggest drop from a high point to a later low point over a period, shown as a percent. A −30% max drawdown means the value fell by almost a third at its worst before any recovery. It is a way to picture how painful a rough patch could feel.',
+  'Monte Carlo simulation':'Running thousands of possible futures with randomly varied returns to see a range of outcomes instead of one guess. It shows how likely different results are under the assumptions used — not what will actually happen.',
+  'investing thesis':'A short written reason for owning an investment: why you think it will work, over what time frame, and what would prove you wrong. Writing it before you buy makes it easier to judge decisions honestly later.',
+  'loss aversion':'The tendency to feel a loss more strongly than a gain of the same size. It can push people to sell in a panic or hold a losing investment too long just to avoid admitting the loss.',
+  'confirmation bias':'The habit of noticing information that supports what you already believe and ignoring what challenges it. Writing down what would change your mind is one simple guard against it.'
 };
 // Moves-page terms. Kept out of GLOSSARY so words like Buy are not underlined inside every lesson.
 const F13_TERMS = {
@@ -7399,7 +7417,17 @@ const GLOSSARY_ALIASES = {
   'equities': 'equity',
   'series i savings bonds': 'I bonds',
   'series i bonds': 'I bonds',
-  'capital gain': 'capital gains'
+  'capital gain': 'capital gains',
+  'bid/ask spread': 'bid-ask spread',
+  'fractional share': 'fractional shares',
+  'blue chip': 'blue-chip stock',
+  'blue-chip': 'blue-chip stock',
+  'target date fund': 'target-date fund',
+  'robo-advisors': 'robo-advisor',
+  'robo advisor': 'robo-advisor',
+  'monte carlo': 'Monte Carlo simulation',
+  'maximum drawdown': 'max drawdown',
+  'sharpe': 'Sharpe ratio'
 };
 // Single pass over plain text, so a term can never match inside markup inserted for another term.
 function glossaryMatchers(){
