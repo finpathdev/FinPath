@@ -3510,7 +3510,7 @@ HOW MUCH:
 WHERE TO KEEP IT:
 NOT in your checking account (you will spend it).
 NOT in the stock market (it can drop 40% when you need it most).
-YES in a high-yield savings account currently paying 4-5% interest with FDIC insurance up to $250,000. Options: Marcus by Goldman Sachs, Ally Bank, SoFi.
+YES in a high-yield savings account (HYSA). These usually pay several times a regular savings account, but rates move with the Fed, so compare current APYs before you open one. Make sure it is FDIC-insured (or NCUA-insured at a credit union), which covers up to $250,000 per depositor, per bank, per ownership category.
 
 HOW TO BUILD IT:
 Set an automatic transfer on payday to your HYSA. Treat it like a bill. Non-negotiable.
@@ -3609,24 +3609,24 @@ Build knowledge and credit now. When the opportunity comes you will be ready.`},
 {name:"How Inflation Works and How to Beat It",desc:"Why your money loses value every year and exactly what to do about it",cat:"Hidden Financial Knowledge",plan:"free",icon:"📉",content:`Inflation is the silent tax that nobody votes for. It is the reason $100 in 2000 only buys about $55 worth of goods today.
 
 WHAT INFLATION ACTUALLY IS:
-Inflation is the rate at which prices rise over time. When the government prints more money, each dollar in circulation becomes worth slightly less. The purchasing power of your savings quietly erodes every single year.
+Inflation is the rate at which prices rise over time. It has several causes: strong demand, higher costs for things like energy and wages, and more money and credit in the economy. In the U.S. it is usually measured with the Consumer Price Index (CPI). When prices rise, each dollar buys a little less, so savings that earn less than inflation lose purchasing power.
 
 At 3% annual inflation:
 - $10,000 today is worth $8,600 in 5 years
 - $10,000 today is worth $7,400 in 10 years
 - $10,000 today is worth $5,500 in 20 years
 
-Keeping money in cash is not safe. It is a guaranteed slow loss.
+Cash still has a job: your emergency fund and money you need within a few years belong somewhere safe and easy to reach. But cash earning less than inflation loses purchasing power, so it is a poor home for money you won't need for 10+ years.
 
 HOW TO BEAT INFLATION:
-1. Stocks: the S&P 500 has averaged about 10% per year historically — well above any inflation rate
+1. Stocks: the S&P 500 has averaged about 10% per year over many decades (dividends included), well above long-run inflation. Some years it falls sharply, so this works best for money you can leave alone for years
 2. Real estate: property values and rents tend to rise with inflation
 3. Treasury Inflation-Protected Securities (TIPS): government bonds that adjust with inflation
-4. Series I Savings Bonds: currently paying 4-5% and adjust automatically with CPI
-5. Commodities: gold and oil tend to rise during inflationary periods
+4. Series I Savings Bonds: U.S. savings bonds whose rate resets every 6 months with CPI. Check TreasuryDirect.gov for today's rate
+5. Commodities: gold and oil have sometimes risen during inflationary periods, but they are volatile and pay no interest or dividends
 
 THE MINIMUM GOAL:
-Your money must grow faster than inflation or you are getting poorer every year even if your bank balance stays the same. A 5% HYSA right now beats 3% inflation. A stock portfolio at 8-10% beats it significantly.
+Your money must grow faster than inflation or you are getting poorer every year even if your bank balance stays the same. Compare your savings rate with the latest inflation rate: a savings account paying more than inflation keeps up, one paying less falls behind. Over long periods a diversified stock portfolio has beaten inflation by a wide margin, with big swings along the way. Rates change, so check current numbers instead of trusting any article's "right now."
 
 The enemy is not market volatility. The enemy is doing nothing while inflation quietly destroys your purchasing power.`},
 {name:"How to Set Financial Goals That Actually Work",desc:"The goal-setting system that turns financial dreams into a specific plan",cat:"Saving & Budgeting",plan:"free",icon:"🎯",content:`Most people have vague financial goals like save more money or get rich. These never work because there is no plan attached to them.
@@ -3641,7 +3641,7 @@ Every financial goal needs to be:
 
 EXAMPLES OF REAL GOALS:
 Vague: I want to invest more
-SMART: I will invest $300 per month in VOO starting September 1 and reach $10,000 by December 2027
+SMART: I will invest $500 per month in VOO starting January 1 and have $6,000 invested by December 31
 
 Vague: I want to pay off debt
 SMART: I will pay $500 extra per month on my $6,000 credit card balance and be debt-free by March 2027
@@ -7520,12 +7520,12 @@ const QUIZZES = {
  {q:"Why can a primary residence be a cheaper way to start?",o:["No taxes ever","Primary-residence mortgages can require as little as 3–5% down vs ~20% for investment property","Banks give them away","Rent is always higher"],a:1,w:"Owner-occupied loans have far lower down-payment requirements than pure investment-property loans."}],
 "How Inflation Works and How to Beat It":[
  {q:"What is inflation?",o:["A tax you vote for","The rate at which prices rise and your money's purchasing power falls","A type of investment","When the stock market crashes"],a:1,w:"Inflation is rising prices — each dollar buys a little less over time, quietly eroding savings."},
- {q:"At ~3% inflation, roughly what is $10,000 worth in 20 years?",o:["Still $10,000","About $5,500","About $9,000","About $12,000"],a:1,w:"Around $5,500 — nearly half its purchasing power gone. Cash is a guaranteed slow loss."},
- {q:"Why is holding all your money in cash risky long-term?",o:["Banks can't be trusted","Inflation guarantees it loses purchasing power every year","Cash can't be spent","It's illegal"],a:1,w:"Cash feels safe but loses value to inflation every year — you need assets that grow faster than prices rise."}],
+ {q:"At ~3% inflation, roughly what is $10,000 worth in 20 years?",o:["Still $10,000","About $5,500","About $9,000","About $12,000"],a:1,w:"Around $5,500 — nearly half its purchasing power gone. That is why long-term money needs to grow faster than inflation."},
+ {q:"Why is holding all your money in cash risky long-term?",o:["Banks can't be trusted","If it earns less than inflation, it loses purchasing power year after year","Cash can't be spent","It's illegal"],a:1,w:"Cash is right for emergencies and short-term needs, but over decades money earning less than inflation buys less and less. Long-term money needs assets that can grow faster than prices."}],
 "How to Set Financial Goals That Actually Work":[
  {q:"Why do vague goals like 'save more money' usually fail?",o:["They're too ambitious","There's no specific plan, number or deadline attached","Saving is impossible","They're too specific"],a:1,w:"Without a specific amount, deadline and plan, a goal is just a wish. SMART goals give you something to track."},
- {q:"What does the 'T' in a SMART goal stand for?",o:["Taxable","Time-bound (has a deadline)","Theoretical","Tax-free"],a:1,w:"Time-bound — a real goal has a specific deadline, like 'reach $10,000 by December'."},
- {q:"Which is the stronger, SMART version of a goal?",o:["I want to invest more","I'll invest $300/month in VOO starting Sept 1 to reach $10,000 by December","I'll get rich someday","I'll try to save"],a:1,w:"Specific amount, specific fund, specific start date and deadline — that's what makes a goal actionable."}],
+ {q:"What does the 'T' in a SMART goal stand for?",o:["Taxable","Time-bound (has a deadline)","Theoretical","Tax-free"],a:1,w:"Time-bound — a real goal has a specific deadline, like 'have $6,000 invested by December 31'."},
+ {q:"Which is the stronger, SMART version of a goal?",o:["I want to invest more","I'll invest $500/month in VOO starting Jan 1 to have $6,000 invested by Dec 31","I'll get rich someday","I'll try to save"],a:1,w:"Specific amount, specific fund, specific start date and deadline — that's what makes a goal actionable."}],
 "How to Analyse a Stock":[
  {q:"What's step one before buying any stock?",o:["Check the price chart","Be able to explain in one sentence what the company does and how it makes money","Ask friends","Look at the logo"],a:1,w:"If you can't explain how it makes money in one sentence, you don't understand it well enough to invest."},
  {q:"What is a 'moat'?",o:["A company's debt","A durable competitive advantage that protects it from rivals","A type of dividend","A stock exchange"],a:1,w:"A moat is a sustainable edge — brand loyalty, network effects, cost advantages or switching costs."},
@@ -7608,7 +7608,7 @@ const QUIZZES = {
  {q:"The best day to start investing was yesterday. The second best is…",o:["After the next crash","When you earn six figures","Today","At 30"],a:2,w:"Waiting for perfect timing costs more than any crash."}],
 "Emergency Funds: The Foundation of Everything":[
  {q:"A standard emergency fund covers…",o:["1 week of costs","3–6 months of living expenses","5 years","One rent payment"],a:1,w:"3–6 months of essentials; 6–12 if your income is volatile."},
- {q:"Where should it live?",o:["Stocks for growth","Checking account","High-yield savings account (HYSA)","Crypto"],a:2,w:"HYSA: ~4–5% interest, FDIC-insured, accessible in a day — and you won’t accidentally spend it."},
+ {q:"Where should it live?",o:["Stocks for growth","Checking account","High-yield savings account (HYSA)","Crypto"],a:2,w:"HYSA: pays more than a regular savings account (rates change, so compare current APYs), FDIC-insured, reachable in a day or two — and you won’t accidentally spend it."},
  {q:"Why build it BEFORE investing?",o:["Banks require it","So a surprise bill never forces you to sell investments at the worst time","Tax reasons","It earns more than stocks"],a:1,w:"No buffer = panic-selling during dips. The fund lets your investments ride out storms."}],
 "How the Stock Market Actually Works":[
  {q:"Buying a share of Apple means…",o:["Lending Apple money","Owning a real slice of the company and its profits","Buying an iPhone voucher","Betting against Apple"],a:1,w:"A share is genuine part-ownership of the business."},
