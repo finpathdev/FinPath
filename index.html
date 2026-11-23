@@ -3200,7 +3200,11 @@ let UID=localStorage.getItem('fp_uid')||(()=>{const id='u_'+Math.random().toStri
 // FinPath is free. Drop leftover client flags from the retired paid plan.
 try{ localStorage.removeItem('fp_gold'); localStorage.removeItem('fp_pending_gold'); }catch(e){}
 
-function fmt(n){return '$'+parseFloat(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmt(n){
+  const x = typeof n === 'number' ? n : parseFloat(n);
+  if(!isFinite(x)) return '\u2014';
+  return '$'+x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
 
 let portfolio=[],selectedStock=null,pChart=null,dChart=null,priceCache={},stTimeout=null;
 
@@ -5387,9 +5391,12 @@ function syncPaperPlanForm(ticker){
 function closeDetail(){document.getElementById('detailModal').classList.remove('open');}
 function closeHourly(){document.getElementById('hourlyModal').classList.remove('open');}
 
+let _searchGen = 0;
 async function loadSearchResults(){
+  const gen = ++_searchGen;
   document.getElementById('searchResults').innerHTML='<div class="skel-row" style="height:60px;margin-bottom:8px"></div>'.repeat(6);
   const quotes=await Promise.all(POP.map(async t=>({t,q:await fetchQ(t)})));
+  if(gen !== _searchGen) return;
   const priced=quotes.filter(x=>x.q);
   if(!priced.length && quotes.length){
     document.getElementById('searchResults').innerHTML='<div class="empty">Market data unavailable right now — live prices can\u2019t load. Please check back later.</div>';
@@ -5431,8 +5438,10 @@ async function handleSearch(v){
     let matched=[...exact,...pref,...byName].slice(0,12);
     // Allow a typed ticker that isn't in FinPath's list (e.g. "IBM") — price comes from the live quote if available.
     if(!exact.length&&/^[A-Z.]{1,6}$/.test(up)) matched=[up,...matched].slice(0,12);
+    const gen = ++_searchGen;
     if(!matched.length){renderSearchResults([]);return;}
     const qs=await Promise.all(matched.map(async t=>({t,q:await fetchQ(t)})));
+    if(gen !== _searchGen) return;
     renderSearchResults(qs);
   },400);
 }
@@ -5448,6 +5457,9 @@ async function openAddShares(ticker){
   document.getElementById('sharesPreview').textContent='';
   syncPaperPlanForm(ticker);
   const q=await fetchQ(ticker);
+  // A second tap can open another name before this quote returns. Do not
+  // write that price onto the stock the dialog is showing now.
+  if(!selectedStock || selectedStock.ticker !== ticker) return;
   if(q && !q.stale && isFinite(q.c) && q.c>0){selectedStock.price=q.c;document.getElementById('sharesLabel').textContent='Current price: $'+q.c.toFixed(2)+' per share';}
   else {selectedStock.price=0;document.getElementById('sharesLabel').textContent='Live price unavailable right now — try again in a moment.';}
   document.getElementById('sharesModal').classList.add('open');
@@ -5459,7 +5471,13 @@ function updatePreview(){
   else document.getElementById('sharesPreview').textContent='';
 }
 
+let ADDING = false;
 async function confirmAdd(){
+  if(ADDING) return;
+  ADDING = true;
+  const addBtn = document.getElementById('confirmAddBtn');
+  if(addBtn) addBtn.disabled = true;
+  try{
   const shares=parseFloat(document.getElementById('sharesInput').value)||0;
   if(!isFinite(shares)||shares<=0){alert('Please enter how many shares you own');return;}
   const paper = (typeof PAPER_MODE!=='undefined' && PAPER_MODE);
@@ -5504,6 +5522,10 @@ async function confirmAdd(){
   await saveToDB();
   closeShares();
   renderPortfolio();
+  } finally {
+    ADDING = false;
+    if(addBtn) addBtn.disabled = false;
+  }
 }
 
 async function removeStock(){
@@ -5648,7 +5670,9 @@ document.addEventListener('click', function(e){
 });
 
 // ── PORTFOLIO RENDER ──
+let _portfolioRenderGen = 0;
 async function renderPortfolio(){
+  const gen = ++_portfolioRenderGen;
   const empty='<div class="empty empty-start" style="grid-column:1/-1"><div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px">Your portfolio is empty — pick a way to start</div><div style="font-size:13px;line-height:1.6;max-width:520px;margin:0 auto 16px">New to investing? Load a demo to see how tracking works, add a stock you already own (or are curious about), or practice risk-free with $100,000 of virtual cash.</div><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button class="btn-primary" style="padding:12px 22px;font-size:14px" onclick="loadDemoPortfolio()">Try a demo portfolio</button> <button class="btn-secondary" style="padding:12px 22px;font-size:14px" onclick="openSearch()">+ Add a stock</button> <button class="btn-secondary" style="padding:12px 22px;font-size:14px" onclick="setMode(\'paper\')">Practice with paper money</button></div><div style="font-size:11px;color:var(--muted2);margin-top:12px">The demo is a sample mix of well-known companies and an index fund — not a recommendation.</div></div>';
   if(portfolio.length===0){
     document.getElementById('totalValue').textContent='$0.00';
@@ -5669,6 +5693,8 @@ async function renderPortfolio(){
   }
   document.getElementById('stocksGrid').innerHTML=Array.from({length:Math.min(portfolio.length,6)},function(){return '<div class="skel-row"></div>';}).join('');
   const quotes=await Promise.all(portfolio.map(async h=>({h,q:await fetchQ(h.ticker)})));
+  // A remove or a newer render can land while quotes are in flight. Do not paint the old book.
+  if(gen !== _portfolioRenderGen) return;
   let totalVal=0,totalInvested=0,totalDayChg=0;
 
   document.getElementById('stocksGrid').innerHTML=quotes.map(({h,q})=>{
@@ -5979,7 +6005,9 @@ async function openDetail(ticker){
   document.getElementById('dPnl').textContent='--';
   fillDetailSuggestion(ticker);
   const q=await fetchQ(ticker);
-  if(selectedStock && selectedStock.ticker === ticker) fillDetailSuggestion(ticker);
+  // Opening another holding while this quote is in flight must not paint the old price here.
+  if(!selectedStock || selectedStock.ticker !== ticker) return;
+  fillDetailSuggestion(ticker);
   if(q){
     const val=q.c*selectedStock.shares;
     const pnl=(q.c-selectedStock.buyPrice)*selectedStock.shares;
@@ -6107,7 +6135,8 @@ function onUserLoggedIn(user){
   // Update nav button
   const btn = document.getElementById('navAuthBtn');
   if(btn){
-    const name = user.email.split('@')[0];
+    const email = (user && user.email) || '';
+    const name = email.split('@')[0] || 'You';
     btn.textContent = name.charAt(0).toUpperCase() + name.slice(1);
     btn.style.background = '#052e16';
     btn.style.border = '1px solid #15803d';
@@ -7635,8 +7664,14 @@ const QUIZZES = {
 function getQuizScore(){ try{ return JSON.parse(localStorage.getItem('fp_quiz')||'{}'); }catch(e){ return {}; } }
 function financeIQ(){
   const s = getQuizScore(); let c = 0, t = 0;
-  Object.values(s).forEach(function(v){ c += v.c; t += v.t; });
-  return t ? Math.round(c/t*100) : null;
+  Object.values(s).forEach(function(v){
+    if(!v || typeof v !== 'object') return;
+    const cc = Number(v.c), tt = Number(v.t);
+    if(!isFinite(cc) || !isFinite(tt) || cc < 0 || tt <= 0) return;
+    c += cc; t += tt;
+  });
+  if(!t || !isFinite(c / t)) return null;
+  return Math.round(c / t * 100);
 }
 let _quizState = null;
 function startQuiz(name){
@@ -7679,7 +7714,7 @@ function renderQuizQ(){
     unlockAchv('quiz_whiz');
     box.innerHTML = '<div style="text-align:center"><div style="font-size:38px;margin-bottom:10px">' + (_quizState.correct === qz.length ? '🏆' : '📚') + '</div>' +
       '<div style="font-size:19px;font-weight:700;font-family:var(--font-display)">You scored ' + _quizState.correct + '/' + qz.length + '</div>' +
-      '<div style="font-size:13px;color:var(--muted);margin-top:6px">Your overall Finance IQ: <b style="color:var(--mint)">' + financeIQ() + '%</b></div>' +
+      '<div style="font-size:13px;color:var(--muted);margin-top:6px">Your overall Finance IQ: <b style="color:var(--mint)">' + (function(){ const iq = financeIQ(); return iq == null ? '\u2014' : iq + '%'; })() + '</b></div>' +
       '<button class="btn-secondary" style="margin-top:16px;padding:11px 22px;font-size:13px" onclick="startQuiz(_quizState.name)">Retake quiz</button></div>';
     if(_quizState.correct === qz.length) confettiBurst();
     return;
@@ -7999,13 +8034,20 @@ function startAlertLoop(){
 function getGoals(){ try{ return JSON.parse(localStorage.getItem('fp_goals')||'[]'); }catch(e){ return []; } }
 function saveGoals(g){ localStorage.setItem('fp_goals', JSON.stringify(g)); renderGoals(); }
 function openGoalForm(){ const f = document.getElementById('goalForm'); f.style.display = f.style.display === 'none' ? 'block' : 'none'; }
+// <input type="date"> is a calendar day, not a UTC instant. Parse it as local
+// end-of-day so "days left" matches the deadline the form just accepted.
+function goalDeadlineMs(date){
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(date || ''));
+  if(!m) return NaN;
+  return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), 23, 59, 59, 999).getTime();
+}
 function saveGoal(){
   const name = document.getElementById('gName').value.trim();
   const target = parseFloat(document.getElementById('gTarget').value);
   const date = document.getElementById('gDate').value;
   if(!name || !target || !date){ toast('⚠️','Fill in all three fields.'); return; }
   if(!isFinite(target) || target <= 0){ toast('⚠️','Target amount must be more than $0.'); return; }
-  if(new Date(date + 'T23:59:59') < new Date()){ toast('⚠️','Pick a deadline in the future.'); return; }
+  if(!(goalDeadlineMs(date) >= Date.now())){ toast('⚠️','Pick a deadline in the future.'); return; }
   if(name.length > 60){ toast('⚠️','Keep the goal name under 60 characters.'); return; }
   const g = getGoals();
   g.push({name:name, target:target, date:date, saved:0, hit:{}});
@@ -8034,7 +8076,8 @@ function renderGoals(){
   const g = getGoals();
   list.innerHTML = g.length ? g.map(function(goal, i){
     const pct = Math.min(100, goal.saved/goal.target*100);
-    const daysLeft = Math.max(0, Math.ceil((new Date(goal.date) - Date.now())/86400000));
+    const deadline = goalDeadlineMs(goal.date);
+    const daysLeft = isFinite(deadline) ? Math.max(0, Math.ceil((deadline - Date.now())/86400000)) : 0;
     const weeksLeft = Math.max(1, daysLeft/7);
     const weekly = Math.max(0, (goal.target - goal.saved)/weeksLeft);
     const elapsedPct = 100 - (daysLeft / Math.max(1,(new Date(goal.date) - new Date(goal.date).setFullYear(new Date(goal.date).getFullYear()-1))/86400000))*100;
@@ -8478,11 +8521,14 @@ function renderTradeJournal(p){
   }).join('') + (allClosed.length > 20 ? '<div class="thesis-more" style="color:var(--muted);padding:8px 0 4px">Showing the 20 most recent closed trades.</div>' : '') + accountThesisHtml();
   renderCalibration(allClosed);
 }
+let _paperRenderGen = 0;
 async function renderPaper(){
+  const gen = ++_paperRenderGen;
   let p = getPaper();
   renderTradeJournal(p);
   if(p.spyStart === null){
     const q = await fetchQ('SPY');
+    if(gen !== _paperRenderGen) return;
     // Re-read after the quote await so a buy or sell that landed mid-fetch isn't overwritten.
     p = getPaper();
     if(q && p.spyStart == null){ p.spyStart = q.c; savePaper(p); }
@@ -8494,9 +8540,10 @@ async function renderPaper(){
   } else {
     grid.innerHTML = p.pos.map(function(){ return '<div class="skel-row"></div>'; }).join('');
     const qs = await Promise.all(p.pos.map(async function(x){ return {x:x, q: await fetchQ(x.t)}; }));
+    if(gen !== _paperRenderGen) return;
     grid.innerHTML = qs.map(function(r, i){
       const price = r.q ? r.q.c : r.x.price;
-      const val = price * r.x.sh, pnl = (price - r.x.price)*r.x.sh, pct = (price - r.x.price)/r.x.price*100;
+      const val = price * r.x.sh, pnl = (price - r.x.price)*r.x.sh, pct = (r.x.price > 0 && isFinite(price)) ? (price - r.x.price)/r.x.price*100 : 0;
       const note = r.x.thesis ? '<div class="s-thesis">' + escapeHtml(clipText(r.x.thesis, 90)) + '</div>' : '';
       const fals = r.x.falsifier ? '<div class="s-thesis">Falsifier: ' + escapeHtml(clipText(r.x.falsifier, 80)) + '</div>' : '';
       return '<div class="stock-row"><div class="s-icon">' + escapeHtml(r.x.t.slice(0,2)) + '</div><div class="s-info"><div class="s-name">' + escapeHtml(r.x.t) + '</div><div class="s-meta">' + escapeHtml(r.x.sh) + ' sh · ' + termLabel('cost basis') + ' ' + fmt(r.x.price) + quoteAsOfFlag(r.q) + '</div>' + note + fals + '</div><div class="s-right"><div class="s-price">' + fmt(val) + '</div><div class="s-pct ' + (pnl>=0?'up':'down') + '">' + (pnl>=0?'▲ +':'▼ ') + pct.toFixed(2) + '%</div><button class="btn-secondary" style="padding:6px 14px;font-size:11px;margin-top:6px" data-paper-sell="' + i + '" onclick="paperAskSell(' + i + ')">Sell</button></div></div>';
@@ -9133,7 +9180,11 @@ function runBacktest(){
   const fv = _fv(amt, rate, years);
   const inv = amt*12*years;
   const gain = fv - inv;
-  const real = _fv(amt, Math.max(-3, rate-3), years);
+  // Same purchasing-power step as the compound-interest lesson: deflate the
+  // ending balance. Re-running the annuity at (rate − 3) is a different number.
+  const real = (window.FPLife && typeof FPLife.deflate === 'function')
+    ? FPLife.deflate(fv, 0.03, years)
+    : fv / Math.pow(1.03, years);
   const pctGain = inv ? ((fv/inv-1)*100) : 0;
   // build year-by-year for the chart
   const yrs = [], vals = [], contribs = [];
@@ -9205,12 +9256,12 @@ function analyzePortfolio(){
   portfolio.forEach(function(h){ const q = priceCache[h.ticker]; const v = (q?q.c:h.buyPrice)*h.shares; tv += v; const s = SECTORS[h.ticker]||'Other'; sec[s] = (sec[s]||0)+v; });
   const findings = [];
   Object.entries(sec).forEach(function(e){
-    const pct = e[1]/tv*100;
-    if(pct > 45) findings.push({b:'⚠️ Concentration risk', t: pct.toFixed(0) + '% of your portfolio is ' + e[0] + '. A single-sector downturn would hit hard — consider diversifying below ~35%.'});
+    const pct = tv > 0 ? e[1]/tv*100 : 0;
+    if(pct > 45) findings.push({b:'⚠️ Concentration risk', t: pct.toFixed(0) + '% of your portfolio is ' + escapeHtml(e[0]) + '. A single-sector downturn would hit hard — spreading across sectors is one way people reduce that.'});
   });
   portfolio.forEach(function(h){
     const q = priceCache[h.ticker]; const v = (q?q.c:h.buyPrice)*h.shares;
-    if(v/tv > 0.3) findings.push({b:'⚠️ Single-stock risk', t: h.ticker + ' is ' + (v/tv*100).toFixed(0) + '% of your portfolio. Great companies still crash — most pros cap any one position at 10–20%.'});
+    if(tv > 0 && v/tv > 0.3) findings.push({b:'⚠️ Single-stock risk', t: escapeHtml(h.ticker) + ' is ' + (v/tv*100).toFixed(0) + '% of your portfolio. One company can still fall a long way. Many people keep a single position under about 10–20% of the mix. That is a description, not a suggestion to sell.'});
   });
   const majors = ['Technology','Healthcare','Financials','Consumer Staples','Energy'];
   const missing = majors.filter(function(m){ return !sec[m]; });
@@ -9219,7 +9270,7 @@ function analyzePortfolio(){
   portfolio.forEach(function(h){ MOVES.forEach(function(m){ if(m.ticker === h.ticker) gurus[m.investor] = (gurus[m.investor]||0)+1; }); });
   const overlap = Object.entries(gurus).filter(function(e){ return e[1] > 0; }).map(function(e){ return e[0] + ' (' + e[1] + ')'; });
   findings.push({b:'🏆 Guru alignment', t: overlap.length ? 'You share holdings with: ' + overlap.join(', ') + '. Open Investor Moves to see what they reported for those positions in their latest 13F filing.' : 'None of your holdings overlap with the ' + INVESTORS.length + ' investors FinPath tracks — not wrong, but worth knowing you’re fully off the beaten path.'});
-  if(portfolio.length < 4) findings.push({b:'📊 Position count', t:'Only ' + portfolio.length + ' holding' + (portfolio.length===1?'':'s') + '. Under ~5 positions, single-company luck dominates your results. An index ETF like VOO fixes this in one purchase.'});
+  if(portfolio.length < 4) findings.push({b:'📊 Position count', t:'Only ' + portfolio.length + ' holding' + (portfolio.length===1?'':'s') + '. With only a few positions, one company’s result can dominate. Spreading money across many companies, for example with a broad index fund, is one way people reduce that. This describes diversification. It is not a suggestion to buy any fund.'});
   recs.innerHTML = '<div class="ai-rec"><div class="ai-rec-head"><div class="ai-rec-ticker">Deep portfolio analysis</div><span class="ai-action-badge act-hold">' + portfolio.length + ' holdings · ' + fmt(tv) + '</span></div>' +
     findings.map(function(f){ return '<div style="margin-top:12px"><b>' + f.b + '</b><div class="ai-rec-text" style="margin-top:4px">' + f.t + '</div></div>'; }).join('') +
     '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted2)">Rule-based educational analysis — not financial advice.</div></div>';
@@ -9715,6 +9766,11 @@ function routeFromHash(){
       openLesson(i, true);
       return;
     }
+    // Index 15 is an empty slot kept so later lesson numbers stay put.
+    if(!document.getElementById('page-lessons').classList.contains('active')) showPage('lessons', true);
+    else if(typeof closeLessonDetail === 'function') closeLessonDetail();
+    if(typeof toast === 'function') toast('📚', 'That lesson number is not in the catalog.');
+    return;
   }
   if(momentOn){
     openPaycheckMoment(true);
