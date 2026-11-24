@@ -23,9 +23,9 @@ function grab(source, name){
   throw new Error('unclosed ' + name);
 }
 
-test('service worker cache is finpath-v53', function(){
-  assert.match(sw, /const CACHE = 'finpath-v53'/);
-  assert.doesNotMatch(sw, /finpath-v52/);
+test('service worker cache is finpath-v54', function(){
+  assert.match(sw, /const CACHE = 'finpath-v54'/);
+  assert.doesNotMatch(sw, /finpath-v53/);
 });
 
 test('playground deflates the ending balance instead of rerunning the annuity at rate minus 3', function(){
@@ -94,4 +94,71 @@ test('the portfolio public policy is dropped and the anon key loses table grants
   assert.match(portfolioSql, /revoke execute on function public\.handle_new_user\(\)/);
   assert.match(portfolioSql, /revoke execute on function public\.rls_auto_enable\(\)/);
   assert.doesNotMatch(html, /fixes this in one purchase/);
+});
+
+function grabConst(source, name, open, close){
+  const start = source.indexOf('const ' + name + ' =') > -1 ? source.indexOf('const ' + name + ' =') : source.indexOf('const ' + name + '=');
+  assert.ok(start > -1, name);
+  let i = source.indexOf(open, start);
+  let depth = 0;
+  for(; i < source.length; i++){
+    if(source[i] === open) depth++;
+    else if(source[i] === close){
+      depth--;
+      if(depth === 0) return source.slice(source.indexOf(open, start), i + 1);
+    }
+  }
+  throw new Error('unclosed ' + name);
+}
+
+const LESSONS = vm.runInNewContext('(' + grabConst(html, 'LESSONS', '[', ']') + ')');
+const QUIZZES = vm.runInNewContext('(' + grabConst(html, 'QUIZZES', '{', '}') + ')');
+function lesson(name){
+  const l = LESSONS.find(function(x){ return x && x.name === name; });
+  assert.ok(l, name);
+  return l;
+}
+
+test('crash lesson teaches steadiness instead of calling tops or buying dips', function(){
+  const l = lesson('Understanding Economic Crashes');
+  assert.doesNotMatch(l.desc, /see a market crash coming|benefit from it/);
+  assert.doesNotMatch(l.content, /predictable pattern|price targets|at a discount|largest fortunes/);
+  assert.match(l.content, /J\.P\. Morgan/);
+  assert.match(l.content, /about 57%/);
+  assert.match(l.content, /do not guarantee/);
+});
+
+test('international and long-term strategy lessons drop ticker picks and fixed allocations', function(){
+  const intl = lesson('International Investing');
+  const plan = lesson('Building a Long-Term Investment Strategy');
+  for(const t of ['VEA', 'VWO', 'VXUS', 'VTI', 'BND']){
+    assert.doesNotMatch(intl.content + plan.content, new RegExp('\\b' + t + '\\b'), t);
+  }
+  assert.doesNotMatch(intl.content, /SUGGESTED ALLOCATION|90% of their money/);
+  assert.match(intl.content, /2010s/);
+  assert.doesNotMatch(plan.content, /at 60%|at 30%|at 10%|drop 40%/);
+  assert.match(plan.content, /rule of thumb/);
+  assert.doesNotMatch(JSON.stringify(QUIZZES['International Investing']), /VEA/);
+});
+
+test('tax-loss harvesting states the two-sided wash-sale window and taxable-account scope', function(){
+  const l = lesson('Tax-Loss Harvesting');
+  assert.match(l.content, /30 days before or after/);
+  assert.match(l.content, /61-day/);
+  assert.match(l.content, /taxable brokerage account/);
+  assert.match(l.content, /\$1,500 if married filing separately/);
+  assert.match(l.content, /Publication 550/);
+  const q = QUIZZES['Tax-Loss Harvesting'][2];
+  assert.match(q.o[q.a], /before or after/);
+});
+
+test('every rewritten lesson keeps a three-question quiz with a valid answer index', function(){
+  for(const name of ['Understanding Economic Crashes', 'International Investing', 'Building a Long-Term Investment Strategy', 'Tax-Loss Harvesting']){
+    const qz = QUIZZES[name];
+    assert.equal(qz.length, 3, name);
+    for(const item of qz){
+      assert.ok(item.a >= 0 && item.a < item.o.length, name);
+      assert.ok(item.w.length > 20, name);
+    }
+  }
 });
