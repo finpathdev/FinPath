@@ -23,9 +23,9 @@ function grab(source, name){
   throw new Error('unclosed ' + name);
 }
 
-test('service worker cache is finpath-v54', function(){
-  assert.match(sw, /const CACHE = 'finpath-v54'/);
-  assert.doesNotMatch(sw, /finpath-v53/);
+test('service worker cache is finpath-v55', function(){
+  assert.match(sw, /const CACHE = 'finpath-v55'/);
+  assert.doesNotMatch(sw, /finpath-v54/);
 });
 
 test('playground deflates the ending balance instead of rerunning the annuity at rate minus 3', function(){
@@ -159,6 +159,73 @@ test('every rewritten lesson keeps a three-question quiz with a valid answer ind
     for(const item of qz){
       assert.ok(item.a >= 0 && item.a < item.o.length, name);
       assert.ok(item.w.length > 20, name);
+    }
+  }
+});
+
+test('schools-never-teach lesson uses the same $200/month math as its quiz and drops the 7-streams claim', function(){
+  const l = lesson('What Schools Never Teach You About Money');
+  assert.doesNotMatch(l.content, /\$350,000|one bad month|The average millionaire has 7/);
+  assert.match(l.content, /no solid data behind that number/);
+  assert.match(l.content, /about \$1\.24 million/);
+  assert.match(l.content, /about \$459,000/);
+  assert.match(l.content, /never guaranteed/);
+  assert.match(l.content, /0%, 15% or 20%/);
+  const r = 0.08 / 12;
+  const f = function(n){ return 200 * (Math.pow(1 + r, n) - 1) / r; };
+  assert.ok(Math.abs(f(47 * 12) - 1242475) < 1000);
+  assert.ok(Math.abs(f(35 * 12) - 458776) < 1000);
+  const q = QUIZZES['What Schools Never Teach You About Money'][2];
+  assert.match(q.o[q.a], /780k/);
+});
+
+test('income-streams lesson treats 7 streams as a myth and drops the dated 4-5% savings rate', function(){
+  const l = lesson('How to Build Multiple Streams of Income');
+  assert.doesNotMatch(l.content, /earning 4-5%|Start with \$500 in dividend stocks|earn forever/);
+  assert.match(l.content, /no solid study/);
+  assert.match(l.content, /Dividends are not guaranteed/);
+  assert.match(l.content, /\$250,000 per depositor/);
+  const qz = QUIZZES['How to Build Multiple Streams of Income'];
+  assert.doesNotMatch(JSON.stringify(qz), /4–5% automatically|About seven/);
+  assert.match(qz[0].o[qz[0].a], /no solid data/);
+  assert.match(qz[2].o[qz[2].a], /changes over time/);
+});
+
+test('stock-market lesson explains index funds without a VOO buy prompt and qualifies the 10% history', function(){
+  const l = lesson('How the Stock Market Actually Works');
+  assert.doesNotMatch(l.content, /\bVOO\b|Buy VOO|Buy a little every month/);
+  assert.match(l.content, /since 1926/);
+  assert.match(l.content, /before inflation/);
+  assert.match(l.content, /Trading Is Hazardous to Your Wealth/);
+  assert.match(l.content, /does not recommend any specific fund/);
+  const qz = QUIZZES['How the Stock Market Actually Works'];
+  assert.match(qz[1].o[qz[1].a], /10%\/yr with dividends, before inflation/);
+  assert.match(qz[2].o[qz[2].a], /Holds every company in an index/);
+});
+
+test('analyse-a-stock lesson is a research framework, not a buy signal', function(){
+  const l = lesson('How to Analyse a Stock');
+  assert.doesNotMatch(l.desc, /exact framework/);
+  assert.doesNotMatch(l.content, /Before buying any stock|PEG ratio below 1 is generally undervalued|SET A TARGET PRICE|excited to pay/);
+  for(const t of ['Apple', 'Coca-Cola', 'Visa', 'Meta', 'Amazon', 'Walmart', 'Microsoft']){
+    assert.doesNotMatch(l.content, new RegExp('\\b' + t + '\\b'), t);
+  }
+  assert.match(l.content, /SPIVA/);
+  assert.match(l.content, /EDGAR/);
+  assert.match(l.content, /WRITE DOWN YOUR THESIS/);
+  const qz = QUIZZES['How to Analyse a Stock'];
+  assert.doesNotMatch(JSON.stringify(qz), /before buying any stock|buy it"\]/i);
+  assert.match(qz[2].o[qz[2].a], /bargain or a business in trouble/);
+});
+
+test('v55 rewritten lessons keep three-question quizzes with valid answers and no buy prompts', function(){
+  for(const name of ['What Schools Never Teach You About Money', 'How to Build Multiple Streams of Income', 'How the Stock Market Actually Works', 'How to Analyse a Stock']){
+    const qz = QUIZZES[name];
+    assert.equal(qz.length, 3, name);
+    for(const item of qz){
+      assert.ok(item.a >= 0 && item.a < item.o.length, name);
+      assert.ok(item.w.length > 20, name);
+      assert.doesNotMatch(item.o[item.a], /\bbuy\b/i, name);
     }
   }
 });
