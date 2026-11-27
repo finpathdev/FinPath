@@ -1433,6 +1433,9 @@ body.light .calc-out{background:rgba(20,83,45,.06);color:#1d4028}
 .pay-lead{font-size:14px;color:var(--muted);line-height:1.55;margin:-6px 0 16px}
 .pay-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600;display:block;margin-bottom:5px}
 .pay-hint{font-size:12.5px;color:var(--muted);line-height:1.45;margin:-2px 0 14px}
+.pay-next{display:grid;gap:8px;margin:16px 0 20px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.pay-next p{font-size:13px;line-height:1.45;color:var(--muted);margin:0}
+.pay-next button{min-height:44px;width:100%;white-space:normal}
 .pay-split{display:flex;flex-direction:column;gap:10px;margin:0 0 12px}
 .pay-row{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
 .pay-k{font-size:14px;font-weight:700}
@@ -3157,6 +3160,10 @@ body:has(#paycheckModal.open) #loginNudge { display:none !important; }
         <div class="pay-track" aria-hidden="true"><div class="pay-fill future"></div></div>
       </div>
     </div>
+    <div class="pay-next">
+      <p>See how well you can sort expenses into needs, wants, and savings.</p>
+      <button type="button" class="btn-primary" id="payBudgetQuiz" onclick="openLessonQuiz('budget-50-30-20')">Take the 3-question budgeting quiz</button>
+    </div>
     <div class="pay-ef">
       <div class="pay-k">Emergency fund target</div>
       <div class="pay-amt" id="payEf">—</div>
@@ -3171,8 +3178,6 @@ body:has(#paycheckModal.open) #loginNudge { display:none !important; }
     <p id="payMatchNote" class="pay-note" hidden></p>
     <div class="pay-actions">
       <button type="button" class="price-btn" id="payCreateGoal" onclick="createPaycheckGoal()">Create emergency-fund goal</button>
-      <button type="button" class="btn-secondary" id="payBudgetLesson" style="padding:12px 18px;font-size:14px" onclick="openLessonById('budget-50-30-20')">Read the 50/30/20 lesson</button>
-      <button type="button" class="btn-secondary" id="payBudgetQuiz" onclick="openLessonQuiz('budget-50-30-20')">Take the short budgeting quiz</button>
     </div>
     <p class="pay-disclaimer">Educational only — not personal financial advice.</p>
     <button type="button" class="modal-close-btn" onclick="closePaycheckMoment()">Close</button>
