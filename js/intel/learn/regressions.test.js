@@ -23,9 +23,10 @@ function grab(source, name){
   throw new Error('unclosed ' + name);
 }
 
-test('service worker cache is finpath-v56', function(){
-  assert.match(sw, /const CACHE = 'finpath-v56'/);
-  assert.doesNotMatch(sw, /finpath-v55/);
+test('service worker cache includes the shared stylesheet', function(){
+  assert.match(sw, /const CACHE = 'finpath-v57'/);
+  assert.match(sw, /css\/finpath\.css/);
+  assert.doesNotMatch(sw, /finpath-v56/);
 });
 
 test('playground deflates the ending balance instead of rerunning the annuity at rate minus 3', function(){
@@ -250,7 +251,7 @@ test('the offline shell is scoped to app entry pages and its own cache', async f
     },
     caches: {
       open: async function(){ return cache; },
-      keys: async function(){ return ['finpath-v55', 'finpath-v56', 'another-app']; },
+      keys: async function(){ return ['finpath-v56', 'finpath-v57', 'another-app']; },
       delete: async function(key){ deleted.push(key); }
     },
     fetch: async function(){
@@ -261,7 +262,7 @@ test('the offline shell is scoped to app entry pages and its own cache', async f
   let activation;
   listeners.activate({ waitUntil: function(task){ activation = task; } });
   await activation;
-  assert.deepEqual(deleted, ['finpath-v55']);
+  assert.deepEqual(deleted, ['finpath-v56']);
 
   function request(url, mode){
     let response;
