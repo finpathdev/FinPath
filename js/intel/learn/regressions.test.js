@@ -23,9 +23,9 @@ function grab(source, name){
   throw new Error('unclosed ' + name);
 }
 
-test('service worker cache is finpath-v55', function(){
-  assert.match(sw, /const CACHE = 'finpath-v55'/);
-  assert.doesNotMatch(sw, /finpath-v54/);
+test('service worker cache is finpath-v56', function(){
+  assert.match(sw, /const CACHE = 'finpath-v56'/);
+  assert.doesNotMatch(sw, /finpath-v55/);
 });
 
 test('playground deflates the ending balance instead of rerunning the annuity at rate minus 3', function(){
@@ -228,4 +228,86 @@ test('v55 rewritten lessons keep three-question quizzes with valid answers and n
       assert.doesNotMatch(item.o[item.a], /\bbuy\b/i, name);
     }
   }
+});
+
+test('the offline shell is scoped to app entry pages and its own cache', async function(){
+  const listeners = {};
+  const deleted = [];
+  const saved = new Map();
+  const scope = 'https://example.com/FinPath/';
+  const cache = {
+    put: async function(url, response){ saved.set(String(url), response); },
+    match: async function(url){ return saved.get(String(url)); }
+  };
+  let offline = false;
+  const shell = new Response('FinPath app', { headers: { 'content-type': 'text/html' } });
+  vm.runInNewContext(sw, {
+    URL, Response,
+    self: {
+      registration: { scope },
+      clients: { claim: async function(){} },
+      addEventListener: function(event, fn){ listeners[event] = fn; }
+    },
+    caches: {
+      open: async function(){ return cache; },
+      keys: async function(){ return ['finpath-v55', 'finpath-v56', 'another-app']; },
+      delete: async function(key){ deleted.push(key); }
+    },
+    fetch: async function(){
+      if(offline) throw new Error('offline');
+      return shell;
+    }
+  });
+  let activation;
+  listeners.activate({ waitUntil: function(task){ activation = task; } });
+  await activation;
+  assert.deepEqual(deleted, ['finpath-v55']);
+
+  function request(url, mode){
+    let response;
+    listeners.fetch({ request: { url, mode, method: 'GET' }, respondWith: function(task){ response = task; } });
+    return response;
+  }
+  assert.equal(await request(scope + '?p=share', 'navigate'), shell);
+  assert.equal(request(scope + 'unrelated.html', 'navigate'), undefined);
+  assert.equal(request(scope + 'unlisted.json', 'cors'), undefined);
+  assert.equal(request('https://api.example.com/quotes', 'cors'), undefined);
+  offline = true;
+  assert.equal(await (await request(scope, 'navigate')).text(), 'FinPath app');
+});
+
+test('intelligence sync keeps local changes made during the pull and a failed push', async function(){
+  const source = readFileSync(new URL('../sync/boot.js', import.meta.url), 'utf8');
+  const code = source.slice(source.indexOf('function refreshLocal(){'), source.indexOf('function enqueue(){'));
+  const ctx = { userId: 'learner' };
+  let progress = [];
+  let pulled;
+  let status = '';
+  let active = true;
+  const sync = vm.runInNewContext(code + '\nsyncNow', {
+    cloudCtx: function(){ return ctx; },
+    sameAccount: function(){ return active; },
+    collectLocal: function(){ return { progress }; },
+    observeStudy: function(){},
+    pullRemote: function(){ return new Promise(function(resolve){ pulled = resolve; }); },
+    syncCollections: function(input){ return input; },
+    applyMerged: function(local, plan){ progress = [...plan.local.progress, ...plan.remote.progress]; },
+    pushBatches: async function(){
+      progress = [...progress, 'during-push'];
+      throw new Error('offline');
+    },
+    setStatus: function(text){ status = text; }
+  });
+  const run = sync();
+  progress = ['during-pull'];
+  pulled({ progress: ['cloud'] });
+  await run;
+  assert.deepEqual(progress, ['during-pull', 'cloud', 'during-push']);
+  assert.match(status, /account didn’t update/);
+
+  const switching = sync();
+  active = false;
+  pulled({ progress: ['previous-account'] });
+  await switching;
+  assert.deepEqual(progress, ['during-pull', 'cloud', 'during-push']);
 });

@@ -68,6 +68,11 @@ function cloudCtx(){
   return { client: client, userId: user.id };
 }
 
+function sameAccount(ctx){
+  const current = cloudCtx();
+  return !!current && current.client === ctx.client && current.userId === ctx.userId;
+}
+
 function scoreClosed(paper, rows){
   const journal = paper && Array.isArray(paper.journal) ? paper.journal : [];
   return rows.map(function(row){
@@ -91,7 +96,7 @@ function scoreClosed(paper, rows){
 }
 
 function collectLocal(){
-  const progress = readJSON('fp_lessons', {});
+  const progress = typeof window.getLessonProgress === 'function' ? window.getLessonProgress() : readJSON('fp_lessons', {});
   const log = readJSON('fp_quiz_log', { v: 1, attempts: [] });
   if(!Array.isArray(log.attempts)) log.attempts = [];
   const literacy = literacyScore(progress, log);
@@ -188,6 +193,7 @@ async function pullRemote(ctx){
   ];
   const remote = {};
   for(let i = 0; i < specs.length; i++){
+    if(!sameAccount(ctx)) return null;
     const spec = tableSpec(specs[i][0]);
     const { data, error } = await ctx.client.from(spec.table).select(specs[i][1]).eq('user_id', ctx.userId);
     if(error) throw error;
@@ -198,6 +204,7 @@ async function pullRemote(ctx){
 
 async function pushBatches(ctx, batches){
   for(let i = 0; i < batches.length; i++){
+    if(!sameAccount(ctx)) return;
     const batch = batches[i];
     const spec = tableSpec(batch.table);
     if(!spec) continue;
@@ -210,11 +217,10 @@ async function pushBatches(ctx, batches){
 
 async function uploadStudy(client, state){
   const body = buildRecordBody(state, true);
-  if(!body || !client || !client.functions || typeof client.functions.invoke !== 'function') return state;
+  if(!body || !client || !client.functions || typeof client.functions.invoke !== 'function') return [];
   const { data, error } = await client.functions.invoke('efficacy-summary', { body: body });
-  if(error || !data || data.ok !== true) return state;
-  const ids = Array.isArray(data.accepted) ? data.accepted : body.events.map(function(event){ return event.eventId; });
-  return markUploaded(state, ids);
+  if(error || !data || data.ok !== true) return [];
+  return Array.isArray(data.accepted) ? data.accepted : body.events.map(function(event){ return event.eventId; });
 }
 
 function refreshOpenPages(){
@@ -228,33 +234,49 @@ function refreshOpenPages(){
   }
 }
 
-async function syncNow(){
+function refreshLocal(){
   const local = collectLocal();
-  let study = observeStudy(local);
+  observeStudy(local);
+  applyMerged(local, syncCollections({ signedIn: false, local: local, remote: null }));
+}
+
+async function syncNow(){
   const ctx = cloudCtx();
-  const plan = syncCollections({
-    signedIn: !!ctx,
-    userId: ctx ? ctx.userId : null,
-    local: local,
-    remote: null
-  });
   if(!ctx){
-    applyMerged(local, plan);
+    refreshLocal();
     setStatus('Saved on this device. Sign in if you want a copy on your account. Nothing is sent while you are signed out.');
     return;
   }
+
+  let remote;
   try{
-    const remote = await pullRemote(ctx);
-    const merged = syncCollections({ signedIn: true, userId: ctx.userId, local: local, remote: remote });
-    const changed = applyMerged(local, merged);
-    await pushBatches(ctx, merged.batches);
-    study = await uploadStudy(ctx.client, study);
-    writeJSON(KEYS.efficacy, study);
-    setStatus('Saved on this device and on your account.');
-    if(changed) refreshOpenPages();
+    remote = await pullRemote(ctx);
   }catch(e){
-    applyMerged(local, plan);
+    if(!sameAccount(ctx)) return;
+    refreshLocal();
     setStatus('Saved on this device. Your account didn’t update just now.');
+    return;
+  }
+  if(!remote || !sameAccount(ctx)) return;
+
+  // Learners can complete a lesson or make a paper trade during the pull.
+  const local = collectLocal();
+  observeStudy(local);
+  const merged = syncCollections({ signedIn: true, userId: ctx.userId, local: local, remote: remote });
+  if(applyMerged(local, merged)) refreshOpenPages();
+
+  try{
+    await pushBatches(ctx, merged.batches);
+    if(!sameAccount(ctx)) return;
+    const submittedStudy = readEfficacy();
+    const ids = await uploadStudy(ctx.client, submittedStudy);
+    const currentStudy = readEfficacy();
+    if(ids.length && currentStudy.token === submittedStudy.token){
+      writeJSON(KEYS.efficacy, markUploaded(currentStudy, ids));
+    }
+    if(sameAccount(ctx)) setStatus('Saved on this device and on your account.');
+  }catch(e){
+    if(sameAccount(ctx)) setStatus('Saved on this device. Your account didn’t update just now.');
   }
 }
 

@@ -1,9 +1,11 @@
-// FinPath Service Worker — cache finpath-v55
+// FinPath Service Worker — cache finpath-v56
 // Handles offline caching so lessons and the shell keep working with no signal.
 // Live prices, filings, and API responses are intentionally NOT cached — those
 // must always be fresh.
 
-const CACHE = 'finpath-v55';
+const CACHE = 'finpath-v56';
+const scope = new URL(self.registration.scope);
+const shellPage = new URL('index.html', scope);
 const SHELL = [
   './',
   './index.html',
@@ -45,7 +47,7 @@ const SHELL = [
 self.addEventListener('install', function(event){
   event.waitUntil(
     caches.open(CACHE)
-      .then(function(cache){ return cache.addAll(SHELL); })
+      .then(function(cache){ return cache.addAll(SHELL.map(function(path){ return new Request(new URL(path, scope), {cache:'reload'}); })); })
       .then(function(){ return self.skipWaiting(); })
   );
 });
@@ -59,63 +61,48 @@ self.addEventListener('message', function(event){
 self.addEventListener('activate', function(event){
   event.waitUntil(
     caches.keys().then(function(keys){
-      return Promise.all(keys.filter(function(k){ return k !== CACHE; }).map(function(k){ return caches.delete(k); }));
+      return Promise.all(keys.filter(function(k){ return /^finpath-v\d+$/.test(k) && k !== CACHE; }).map(function(k){ return caches.delete(k); }));
     }).then(function(){ return self.clients.claim(); })
   );
 });
 
-// Fetch strategy:
-//  - Live-data APIs → always go to network (never serve stale prices).
-//  - Everything else → try cache first for speed, fall back to network.
-//  - Full network fail → fall back to the cached homepage so the app still opens.
+// Only app entry URLs use the cached homepage as an offline fallback.
+function isAppPage(url){
+  return url.origin === scope.origin &&
+    (url.pathname === scope.pathname || url.pathname === shellPage.pathname);
+}
+
+const SHELL_ASSETS = new Set(SHELL.map(function(path){ return new URL(path, scope).href; }));
+const OFFLINE = {status: 504, statusText: 'Offline'};
+
+async function serveAppPage(req){
+  const cache = await caches.open(CACHE).catch(function(){ return null; });
+  try{
+    const res = await fetch(req);
+    if(cache && res.ok && !res.redirected && (res.headers.get('content-type') || '').includes('text/html')){
+      await cache.put(shellPage, res.clone()).catch(function(){});
+    }
+    return res;
+  }catch(e){
+    const saved = cache && await cache.match(shellPage).catch(function(){ return null; });
+    return saved || new Response('FinPath is unavailable offline.', OFFLINE);
+  }
+}
+
+async function serveShellAsset(req){
+  const cache = await caches.open(CACHE).catch(function(){ return null; });
+  const saved = cache && await cache.match(req).catch(function(){ return null; });
+  return saved || fetch(req);
+}
+
 self.addEventListener('fetch', function(event){
   const req = event.request;
   if(req.method !== 'GET') return;
 
   const url = new URL(req.url);
-  const alwaysNetwork = [
-    'finnhub.io',
-    'supabase.co',
-    'sec.gov',
-    'openai.com',
-    'anthropic.com',
-    'x.ai',
-    'api.',
-    'plausible.io'
-  ];
-  if(alwaysNetwork.some(function(host){ return url.hostname.indexOf(host) !== -1; })){
-    return;   // let the browser handle it normally, no caching
+  if(req.mode === 'navigate'){
+    if(isAppPage(url)) event.respondWith(serveAppPage(req));
+    return;
   }
-
-  event.respondWith(
-    // Network-first for HTML navigations — this way, any HTML update we push
-    // deploys instantly for existing users instead of being trapped in cache.
-    // We only fall back to cache when the network fails (true offline mode).
-    req.mode === 'navigate' || (req.headers.get('accept')||'').indexOf('text/html') !== -1
-      ? fetch(req).then(function(res){
-          // Store the fresh shell under one key only. Caching every navigation URL would keep
-          // query-string variants (e.g. ?p=… share links) in the cache.
-          if(res && res.ok && url.origin === self.location.origin){
-            const clone = res.clone();
-            caches.open(CACHE).then(function(cache){ cache.put('./index.html', clone); });
-          }
-          return res;
-        }).catch(function(){ return caches.match('./index.html').then(function(m){ return m || caches.match('./'); }); })
-      : caches.match(req).then(function(cached){
-      if(cached) return cached;
-      return fetch(req).then(function(res){
-        // opportunistically cache successful same-origin GETs (fonts, images, etc.)
-        // Google Fonts (CORS responses) are cached too, so lessons keep their typography offline.
-        const isFont = url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com';
-        if(res && res.ok && (res.type === 'basic' || (isFont && res.type === 'cors'))){
-          const clone = res.clone();
-          caches.open(CACHE).then(function(cache){ cache.put(req, clone); });
-        }
-        return res;
-      }).catch(function(){
-        if(req.mode === 'navigate') return caches.match('./index.html');
-        return new Response('', {status: 504, statusText: 'Offline'});
-      });
-    })
-  );
+  if(SHELL_ASSETS.has(url.href)) event.respondWith(serveShellAsset(req));
 });
