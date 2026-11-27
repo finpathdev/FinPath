@@ -3,16 +3,20 @@
   const viewport = page.querySelector('.ach-map');
   const world = page.querySelector('.ach-world');
   const detail = page.querySelector('.ach-detail');
-  const width = 840, height = 460;
+  const width = 1680, height = 540;
   const primary = [
     { id:'first_lesson', name:'First Lesson', x:100, y:218, goal:1, desc:'Complete your first lesson.' },
     { id:'quiz_whiz', name:'Quiz Starter', x:290, y:255, goal:1, desc:'Finish a lesson knowledge check.' },
     { id:'money_basics', name:'Money Basics', x:480, y:218, goal:3, desc:'Complete three different lessons.' },
-    { id:'budget_builder', name:'Budget Builder', x:710, y:125, goal:1, desc:'Complete the 50/30/20 budgeting lesson.' },
-    { id:'paper_trader', name:'Paper Trader', x:710, y:330, goal:1, desc:'Make your first practice trade with virtual money.' }
+    { id:'budget_builder', name:'Budget Builder', x:710, y:110, goal:1, desc:'Complete the 50/30/20 budgeting lesson.' },
+    { id:'paper_trader', name:'Paper Trader', x:710, y:375, goal:1, desc:'Make your first practice trade with virtual money.' }
   ];
+  const positions = {
+    goal_setter:[950,110], first_stock:[950,375], scholar:[735,245], streak_7:[990,245],
+    analyzer:[1180,375], diamond_hands:[1410,440], buffett_shadow:[1550,330], graduate:[1435,160]
+  };
   const extras = ACHVS.filter(b => !primary.some(p => p.id === b.id)).map(b => ({
-    ...b, goal:b.id === 'scholar' ? 5 : b.id === 'graduate' ? coreLessonCount() : b.id === 'streak_7' ? 7 : 1,
+    ...b, x:positions[b.id][0], y:positions[b.id][1], goal:b.id === 'scholar' ? 5 : b.id === 'graduate' ? coreLessonCount() : b.id === 'streak_7' ? 7 : 1,
     desc:b.id === 'graduate' ? 'Complete all ' + coreLessonCount() + ' core lessons.' : b.desc
   }));
   const badges = [...primary, ...extras];
@@ -20,12 +24,17 @@
   let selected, scale = 1, ready = false, blockClick = false;
   const pointers = new Map();
   const svg = world.querySelector('svg');
+  const badgeById = new Map(badges.map(badge => [badge.id,badge]));
   const paths = [
-    ['quiz_whiz','M100 218 C180 218 209 255 290 255'],
-    ['money_basics','M290 255 C370 255 402 218 480 218'],
-    ['budget_builder','M480 218 C600 218 605 125 710 125'],
-    ['paper_trader','M480 218 C600 218 605 330 710 330']
-  ].map(([id,d]) => {
+    ['first_lesson','quiz_whiz'], ['quiz_whiz','money_basics'],
+    ['money_basics','budget_builder'], ['budget_builder','goal_setter'],
+    ['money_basics','scholar'], ['scholar','streak_7'], ['streak_7','graduate'],
+    ['money_basics','paper_trader'], ['paper_trader','first_stock'],
+    ['first_stock','analyzer'], ['analyzer','diamond_hands'], ['analyzer','buffett_shadow']
+  ].map(([from,id]) => {
+    const a = badgeById.get(from), b = badgeById.get(id);
+    const mid = (a.x + b.x) / 2;
+    const d = 'M' + a.x + ' ' + a.y + ' C' + mid + ' ' + a.y + ' ' + mid + ' ' + b.y + ' ' + b.x + ' ' + b.y;
     const path = document.createElementNS('http://www.w3.org/2000/svg','path');
     path.setAttribute('d',d);
     svg.append(path);
@@ -35,11 +44,9 @@
   function addBadge(badge) {
     const button = document.createElement('button');
     button.type = 'button';
-    button.className = badge.x ? 'ach-node' : 'ach-extra';
-    if (badge.x) {
-      button.style.left = badge.x / width * 100 + '%';
-      button.style.top = badge.y / height * 100 + '%';
-    }
+    button.className = 'ach-node';
+    button.style.left = badge.x / width * 100 + '%';
+    button.style.top = badge.y / height * 100 + '%';
     const icon = document.createElement('span');
     icon.className = 'ach-icon';
     icon.setAttribute('aria-hidden','true');
@@ -50,12 +57,12 @@
     hint.className = 'ach-hint';
     hint.setAttribute('aria-hidden','true');
     button.append(icon,label,hint);
-    (badge.x ? world : page.querySelector('.ach-extras')).append(button);
+    world.append(button);
     button.addEventListener('click', event => {
       if (blockClick && event.detail) return;
       selected = badge;
       render();
-      if (!badge.x || matchMedia('(max-width: 760px)').matches) {
+      if (matchMedia('(max-width: 760px)').matches) {
         detail.focus({preventScroll:true});
         detail.scrollIntoView({block:'nearest'});
       }
@@ -84,7 +91,7 @@
       streak_7: getStreak()?.count
     };
     const progress = new Map(badges.map(b => [b.id, earned[b.id] ? b.goal : Math.min(b.goal, counts[b.id] || 0)]));
-    if (!selected) selected = primary.find(b => progress.get(b.id) < b.goal) || primary[0];
+    if (!selected) selected = badges.find(b => progress.get(b.id) < b.goal) || badges[0];
     for (const b of badges) {
       const {button,icon,hint} = buttons.get(b.id);
       const value = progress.get(b.id);
@@ -97,7 +104,7 @@
     }
     for (const [id,path] of paths) path.classList.toggle('earned',buttons.get(id).button.dataset.state === 'Earned');
     const count = progress.get(selected.id);
-    page.querySelector('.ach-count').textContent = primary.filter(b => progress.get(b.id) === b.goal).length + ' of ' + primary.length + ' map badges earned';
+    page.querySelector('.ach-count').textContent = badges.filter(b => progress.get(b.id) === b.goal).length + ' of ' + badges.length + ' map badges earned';
     detail.querySelector('h2').textContent = selected.name;
     detail.querySelector('.ach-status').textContent = buttons.get(selected.id).button.dataset.state;
     detail.querySelector('.ach-requirement').textContent = selected.desc;
@@ -127,7 +134,7 @@
     world.style.height = height * scale + 'px';
   }
   function minimum() {
-    return Math.min(.8, viewport.clientWidth / width, viewport.clientHeight / height);
+    return Math.max(.52, Math.min(.8, viewport.clientWidth / width, viewport.clientHeight / height));
   }
   function zoom(target, x, y, fromX = x, fromY = y) {
     const before = scale;
@@ -142,7 +149,7 @@
     scale = Math.max(.85, Math.min(1,viewport.clientWidth / width));
     size();
     viewport.scrollLeft = 0;
-    viewport.scrollTop = Math.max(0,(world.offsetHeight - viewport.clientHeight) / 2);
+    viewport.scrollTop = Math.max(0,218 * scale - viewport.clientHeight / 2);
   }
   function centerZoom(factor) { zoom(scale * factor, viewport.clientWidth / 2, viewport.clientHeight / 2); }
   page.querySelector('[data-ach-zoom="in"]').onclick = () => centerZoom(1.25);

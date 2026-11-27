@@ -229,19 +229,19 @@ body:has(#page-home.active) #loginNudge { display: none !important; }
 }
 
 /* Achievement journey */
-.ach-wrap { max-width: 1240px; margin: auto; padding: 0 5% 72px; }
+.ach-wrap { max-width: 1540px; margin: auto; padding: 0 clamp(16px,4vw,60px) 72px; }
 .ach-wrap .page-header { padding-inline: 0; }
 .ach-layout { display: grid; grid-template-columns: minmax(0,2.15fr) minmax(265px,1fr); gap: 16px; }
 .ach-board, .ach-detail { border: 1px solid var(--line); border-radius: 20px; background: var(--panel); box-shadow: var(--surface-shadow); min-width: 0; }
 .ach-board { position: relative; overflow: hidden; }
-.ach-map { height: clamp(325px,45vw,490px); overflow: auto; scrollbar-width: thin; touch-action: none; overscroll-behavior: contain; cursor: grab; }
+.ach-map { height: clamp(430px,52vw,640px); overflow: auto; scrollbar-width: thin; touch-action: none; overscroll-behavior: contain; cursor: grab; }
 .ach-map.dragging, .ach-map.dragging button { cursor: grabbing; }
 .ach-map:focus-visible { outline-offset: -4px; }
 .ach-world { position: relative; min-width: 100%; min-height: 100%; user-select: none; background: repeating-radial-gradient(ellipse at 28% 68%, transparent 0 34px, var(--line) 35px, transparent 36px 58px); }
 .ach-world svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .ach-world path { fill: none; stroke: var(--line-strong); stroke-width: 3; stroke-dasharray: 7 8; stroke-linecap: round; }
 .ach-world path.earned { stroke: var(--ink-accent); stroke-dasharray: none; }
-.ach-node, .ach-extra { color: var(--text); font: inherit; cursor: pointer; }
+.ach-node { color: var(--text); font: inherit; cursor: pointer; }
 .ach-node { position: absolute; transform: translate(-50%,-31px); display: grid; justify-items: center; gap: 8px; border: 0; background: none; padding: 0; border-radius: 12px; white-space: nowrap; }
 .ach-icon { display: grid; place-items: center; width: 62px; height: 62px; border: 2px dashed var(--line-strong); border-radius: 50%; background: var(--bg2); font-size: 23px; }
 .ach-name { background: var(--panel-solid); border: 1px solid var(--line-strong); border-radius: 10px; padding: 6px 10px; font-size: 14px; font-weight: 700; }
@@ -262,14 +262,7 @@ body:has(#page-home.active) #loginNudge { display: none !important; }
 .ach-action[hidden] { display: none; }
 .ach-legend { border-top: 1px solid var(--line); margin-top: 24px; padding-top: 16px; }
 .ach-count { margin-bottom: 12px; }
-.ach-more { margin-top: 25px; }
-.ach-more summary { cursor: pointer; color: var(--ink-accent); font-weight: 700; }
-.ach-extras { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,170px),1fr)); gap: 8px; margin-top: 12px; }
-.ach-extra { display: flex; align-items: center; gap: 8px; text-align: left; min-height: 44px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 7px 9px; }
-.ach-extra[aria-pressed="true"] { border-color: var(--ink-accent); }
-.ach-extra .ach-icon { width: 26px; height: 26px; font-size: 13px; flex: none; border: 0; }
-.ach-extra .ach-name { padding: 0; border: 0; background: none; }
 @media (max-width: 760px) {
   .ach-layout { grid-template-columns: minmax(0,1fr); }
-  .ach-map { height: 350px; }
+  .ach-map { height: clamp(380px,60svh,520px); }
 }
