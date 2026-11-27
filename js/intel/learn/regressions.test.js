@@ -24,9 +24,9 @@ function grab(source, name){
 }
 
 test('service worker cache includes the shared stylesheet', function(){
-  assert.match(sw, /const CACHE = 'finpath-v57'/);
+  assert.match(sw, /const CACHE = 'finpath-v58'/);
   assert.match(sw, /css\/finpath\.css/);
-  assert.doesNotMatch(sw, /finpath-v56/);
+  assert.doesNotMatch(sw, /finpath-v57/);
 });
 
 test('playground deflates the ending balance instead of rerunning the annuity at rate minus 3', function(){
@@ -251,7 +251,7 @@ test('the offline shell is scoped to app entry pages and its own cache', async f
     },
     caches: {
       open: async function(){ return cache; },
-      keys: async function(){ return ['finpath-v56', 'finpath-v57', 'another-app']; },
+      keys: async function(){ return ['finpath-v57', 'finpath-v58', 'another-app']; },
       delete: async function(key){ deleted.push(key); }
     },
     fetch: async function(){
@@ -262,7 +262,7 @@ test('the offline shell is scoped to app entry pages and its own cache', async f
   let activation;
   listeners.activate({ waitUntil: function(task){ activation = task; } });
   await activation;
-  assert.deepEqual(deleted, ['finpath-v56']);
+  assert.deepEqual(deleted, ['finpath-v57']);
 
   function request(url, mode){
     let response;

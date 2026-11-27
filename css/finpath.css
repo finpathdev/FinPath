@@ -37,6 +37,7 @@ body.light {
   --muted: #4b6354;
   --muted2: #526958;
   --ink-accent: #176342;
+  --mint: var(--ink-accent);
   --action: #176342;
   --action-text: #fff;
   --surface-shadow: 0 10px 28px #1c442113;
@@ -159,13 +160,25 @@ body .mobile-menu a[aria-current="page"] {
 .hero-tool:focus-visible { outline-offset: -3px; }
 .hero-tool strong, .hero-tool small { display: block; }
 .hero-tool small { color: var(--muted); font-size: 13px; }
-.hero-tool .stat-num, .hero-tool > span { color: var(--ink-accent); }
+body .hero-tool .stat-num, .hero-tool > span { color: var(--ink-accent); }
 .hero-tool .stat-num { font-size: clamp(25px, 3vw, 43px) !important; }
 
 #liveActivity {
   grid-column: 1 / -1;
   justify-content: flex-start !important;
   margin-top: 0 !important;
+}
+
+#loginNudge {
+  background: var(--panel-solid) !important;
+  border-color: var(--line-strong) !important;
+  box-shadow: var(--surface-shadow) !important;
+}
+
+#loginNudge > div:nth-child(2) > div:first-child { color: var(--text) !important; }
+#loginNudge button[aria-label="Sign in"] {
+  background: var(--action) !important;
+  color: var(--action-text) !important;
 }
 
 body:has(#page-home.active) #loginNudge { display: none !important; }
