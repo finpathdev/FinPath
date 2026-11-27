@@ -271,6 +271,7 @@ nav{position:fixed;top:14px;left:50%;transform:translateX(-50%);width:min(1140px
 /* ── PAGES ── */
 .page{display:none;padding-top:100px;min-height:100vh;position:relative;z-index:2}
 .page.active{display:block}
+body:has(#page-home.active) .app-footer{display:none}
 
 /* ── HERO ── */
 .hero{min-height:calc(100vh - 100px);display:flex;align-items:center;justify-content:center;text-align:center;padding:60px 5% 40px;position:relative;overflow:hidden}
@@ -2534,7 +2535,6 @@ body.light .gs-item{background:#fff}
     <div id="detailBody"></div>
   </div>
 
-<div style="text-align:center;padding:22px;font-size:12px;color:var(--muted);border-top:1px solid rgba(134,239,172,.08);position:relative;z-index:2">Built by <span style="color:#22c55e;font-weight:600">Siddharth Moosani</span> · © 2026 FinPath</div>
 </div>
 
 <!-- ASK -->
@@ -2576,7 +2576,6 @@ body.light .gs-item{background:#fff}
   </div>
   <div id="goldContent"></div>
 
-<div style="text-align:center;padding:22px;font-size:12px;color:var(--muted);border-top:1px solid rgba(134,239,172,.08);position:relative;z-index:2">Built by <span style="color:#22c55e;font-weight:600">Siddharth Moosani</span> · © 2026 FinPath</div>
 </div>
 
 <!-- PORTFOLIO -->
@@ -2732,7 +2731,6 @@ body.light .gs-item{background:#fff}
     </div>
   </div>
 
-<div style="text-align:center;padding:22px;font-size:12px;color:var(--muted);border-top:1px solid rgba(134,239,172,.08);position:relative;z-index:2">Built by <span style="color:#22c55e;font-weight:600">Siddharth Moosani</span> · © 2026 FinPath</div>
 </div>
 
 <!-- MARKETS -->
@@ -9849,7 +9847,7 @@ renderLessons();
 </script>
 
 
-<div style="text-align:center;padding:22px;font-size:12px;color:var(--muted);border-top:1px solid rgba(134,239,172,.08);position:relative;z-index:2">Built by <span style="color:#22c55e;font-weight:600">Siddharth Moosani</span> · © 2026 FinPath</div>
+<div class="app-footer" style="text-align:center;padding:22px;font-size:12px;color:var(--muted);border-top:1px solid rgba(134,239,172,.08);position:relative;z-index:2">Built by <span style="color:#22c55e;font-weight:600">Siddharth Moosani</span> · © 2026 FinPath</div>
 
 <!-- ANIMATED BACKGROUND LINES - Pure CSS -->
 <style>
