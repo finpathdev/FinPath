@@ -579,8 +579,8 @@ body.light .ask-upsell p{color:#854d0e}
 
 /* ── PORTFOLIO ── */
 .portfolio-wrap{max-width:1200px;margin:0 auto;padding:40px 5% 90px}
-.port-top-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;margin-bottom:26px}
-.port-card{background:var(--panel);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:var(--radius-lg);padding:30px}
+.port-top-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;margin-bottom:26px}
+.port-card{min-width:0;background:var(--panel);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:var(--radius-lg);padding:30px}
 .port-card.green-card{background:linear-gradient(150deg,rgba(34,197,94,.12),var(--panel) 55%);border-color:var(--line-strong)}
 .port-label{font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;font-weight:600}
 .port-value{font-size:42px;font-weight:700;letter-spacing:-2px;cursor:pointer;transition:color .15s;line-height:1.1}
@@ -590,7 +590,12 @@ body.light .ask-upsell p{color:#854d0e}
 .daily-up{background:rgba(74,222,128,.12);color:#4ade80}
 .daily-down{background:rgba(248,113,113,.12);color:var(--red)}
 .up{color:#4ade80}.down{color:var(--red)}
-.chart-wrap{position:relative;height:200px;margin-top:18px}
+.chart-wrap{position:relative;min-width:0;max-width:100%;height:200px;margin-top:18px}
+.chart-wrap canvas{max-width:100%}
+.risk-data{display:inline-block;font-size:11px;line-height:1.4;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 7px;margin-inline-start:6px}
+.risk-value-group{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+.risk-explain{margin-top:10px;font-size:12px;color:var(--muted)}
+.risk-explain summary{cursor:pointer;color:var(--ink-accent)}
 .chart-note{font-size:12px;color:var(--muted);line-height:1.45;margin:8px 0 0}
 .chart-note[hidden],.chart-retry[hidden]{display:none !important}
 .chart-retry{margin-top:8px;padding:7px 14px;font-size:12px}
@@ -777,7 +782,7 @@ footer{background:rgba(6,10,7,.6);border-top:1px solid var(--line);padding:64px 
 
 @media(max-width:900px){
   .nav-links{display:none}.hamburger{display:flex}
-  .port-top-grid{grid-template-columns:1fr}
+  .port-top-grid{grid-template-columns:minmax(0,1fr)}
   .d-metrics{grid-template-columns:1fr 1fr}
   .stats-row{grid-template-columns:1fr;gap:10px}
   .hero h1 span::after{display:none}
@@ -888,7 +893,7 @@ body.light .t-price{color:#47604e}
   .filter-tabs{flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .filter-tabs::-webkit-scrollbar{display:none}
   .filter-tab{flex-shrink:0}
-  .analytics-grid,.risk-grid{grid-template-columns:1fr}
+  .analytics-grid,.risk-grid{grid-template-columns:minmax(0,1fr)}
   .hero-btns{flex-direction:column;max-width:340px;margin:0 auto}
   .hero-btns .btn-primary,.hero-btns .btn-secondary{width:100%}
   .tape-track{gap:34px}
@@ -1747,7 +1752,8 @@ body.light .gs-item{background:#fff}
         <p>Learn the basics in plain English, practice investing with virtual cash, and build a plan for your future.</p>
       <div class="hero-btns">
         <button class="btn-primary" onclick="handleAuthClick()">Get Started Free</button>
-        <button class="btn-secondary" onclick="startDemoMode()">Try the demo</button>
+        <button class="btn-secondary" onclick="openPaycheckMoment()">Try the paycheck planner</button>
+        <button class="btn-secondary" onclick="startDemoMode()">Explore the portfolio demo</button>
       </div>
       </div>
       <div class="hero-tools">
@@ -2644,11 +2650,11 @@ body.light .gs-item{background:#fff}
     </div>
     <section class="risk-check" id="riskCheck" aria-labelledby="riskCheckTitle">
       <h2 id="riskCheckTitle">Risk check</h2>
-      <p class="risk-sub">Educational only. About one year of daily closes, using today’s share counts. Each card shows the formula. This is not a forecast and not a reason to buy or sell.</p>
+      <p class="risk-sub">Educational only. About one year of daily closes, using today’s share counts. Open a card’s explanation to see the formula. This is not a forecast and not a reason to buy or sell.</p>
       <div id="riskCheckBody"><p class="risk-sub">Add a stock to see volatility, the deepest drop, beta versus SPY, Sharpe, and concentration.</p></div>
     </section>
     <div style="font-size:16px;font-weight:700;margin-bottom:12px">Your stocks</div>
-    <div class="stocks-grid" id="stocksGrid"><div class="empty empty-start" style="grid-column:1/-1"><div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px">Your portfolio is empty — pick a way to start</div><div style="font-size:13px;line-height:1.6;max-width:520px;margin:0 auto 16px">New to investing? Load a demo to see how tracking works, add a stock you already own (or are curious about), or practice risk-free with $100,000 of virtual cash.</div><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button class="btn-primary" style="padding:12px 22px;font-size:14px" onclick="loadDemoPortfolio()">Try a demo portfolio</button> <button class="btn-secondary" style="padding:12px 22px;font-size:14px" onclick="openSearch()">+ Add a stock</button> <button class="btn-secondary" style="padding:12px 22px;font-size:14px" onclick="setMode('paper')">Practice with paper money</button></div><div style="font-size:11px;color:var(--muted2);margin-top:12px">The demo is a sample mix of well-known companies and an index fund — not a recommendation.</div></div></div>
+    <div class="stocks-grid" id="stocksGrid"><div class="empty empty-start" style="grid-column:1/-1"><div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px">Your portfolio is empty — pick a way to start</div><div style="font-size:13px;line-height:1.6;max-width:520px;margin:0 auto 16px">New here? Start with a sample paycheck, then explore how portfolio tracking works.</div><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button class="btn-primary" style="padding:12px 22px;font-size:14px" onclick="openPaycheckMoment()">Try the paycheck planner</button> <button class="btn-secondary" style="padding:12px 22px;font-size:14px" onclick="loadDemoPortfolio()">Try a demo portfolio</button> <button class="btn-secondary" style="padding:12px 22px;font-size:14px" onclick="openSearch()">+ Add a stock</button> <button class="btn-secondary" style="padding:12px 22px;font-size:14px" onclick="setMode('paper')">Practice with paper money</button></div><div style="font-size:11px;color:var(--muted2);margin-top:12px">The demo is a sample mix of well-known companies and an index fund — not a recommendation.</div></div></div>
     <div class="alerts-section">
       <div style="font-size:16px;font-weight:700;margin-bottom:12px">Holding alerts</div>
       <div id="alertsList"><div class="empty">Add stocks to see alerts.</div></div>
@@ -3103,7 +3109,7 @@ body.light .gs-item{background:#fff}
     <h2 id="paycheckTitle">First paycheck planner</h2>
     <p class="pay-lead">A simple look at where monthly take-home pay can go. For anyone learning — not a plan written for you.</p>
     <label class="pay-label" for="payTakeHome">Monthly take-home pay</label>
-    <input class="modal-input" id="payTakeHome" type="number" inputmode="decimal" min="0" step="any" placeholder="e.g. 4000" autocomplete="off" aria-describedby="payHint" oninput="renderPaycheckMoment()">
+    <input class="modal-input" id="payTakeHome" type="number" inputmode="decimal" min="0" step="any" placeholder="e.g. 4000" autocomplete="off" aria-describedby="payHint" oninput="paycheckSample=false;renderPaycheckMoment()">
     <div id="payHint" class="pay-hint">Net pay, after tax — the amount that lands in your bank account.</div>
     <div class="pay-split" id="payResults" aria-live="polite">
       <div>
@@ -3133,7 +3139,8 @@ body.light .gs-item{background:#fff}
     <p id="payMatchNote" class="pay-note" hidden></p>
     <div class="pay-actions">
       <button type="button" class="price-btn" id="payCreateGoal" onclick="createPaycheckGoal()">Create emergency-fund goal</button>
-      <button type="button" class="btn-secondary" id="payBudgetLesson" style="padding:12px 18px;font-size:14px" onclick="openPaycheckLesson('budget')">Read the 50/30/20 lesson</button>
+      <button type="button" class="btn-secondary" id="payBudgetLesson" style="padding:12px 18px;font-size:14px" onclick="openLessonById('budget-50-30-20')">Read the 50/30/20 lesson</button>
+      <button type="button" class="btn-secondary" id="payBudgetQuiz" onclick="openLessonQuiz('budget-50-30-20')">Take the short budgeting quiz</button>
     </div>
     <p class="pay-disclaimer">Educational only — not personal financial advice.</p>
     <button type="button" class="modal-close-btn" onclick="closePaycheckMoment()">Close</button>
@@ -5608,18 +5615,24 @@ function riskLessonHtml(lesson){
     '<div class="pattern-lesson-title">' + escapeHtml(lesson && lesson.title || 'Open the lesson') + '</div>' +
     '<div class="pattern-lesson-blurb">' + escapeHtml(lesson && lesson.blurb || '') + '</div></a>';
 }
-function riskCardHtml(m){
+function riskCardHtml(m, report, mode){
+  const labels = [];
+  if(mode === 'paper' || report.sample) labels.push('Sample portfolio');
+  if(m.status !== 'ok') labels.push('Unavailable');
+  else if(m.id === 'concentration' ? report.savedValues : report.stale) labels.push('Delayed data');
+  const badges = labels.map(label => '<span class="risk-data">' + escapeHtml(label) + '</span>').join('');
   return '<article class="risk-card" data-metric="' + escapeHtml(m.id || '') + '" data-status="' + escapeHtml(m.status || '') + '">' +
-    '<div class="risk-card-top"><h3>' + escapeHtml(m.title || '') + '</h3><div class="risk-value">' + escapeHtml(m.display || '—') + '</div></div>' +
-    '<p class="risk-formula"><span class="thesis-kicker">Formula</span> ' + escapeHtml(m.formula || '') + '</p>' +
+    '<h3>' + escapeHtml(m.title || '') + '</h3>' +
     '<p class="risk-teen">' + escapeHtml(m.teen || '') + '</p>' +
+    '<div class="risk-value-group"><span class="risk-value">' + escapeHtml(m.display || '—') + '</span>' + badges + '</div>' +
     '<p class="risk-you"><span class="thesis-kicker">What this means for you</span> ' + escapeHtml(m.you || '') + '</p>' +
+    '<details class="risk-explain"><summary>How this is calculated</summary><p class="risk-formula">' + escapeHtml(m.formula || '') + '</p></details>' +
     riskLessonHtml(m.lesson) +
     '</article>';
 }
 function riskBodyHtml(report, mode){
   const order = ['vol', 'drawdown', 'beta', 'sharpe', 'concentration'];
-  const cards = order.map(function(id){ return report.metrics[id] ? riskCardHtml(report.metrics[id]) : ''; }).join('');
+  const cards = order.map(function(id){ return report.metrics[id] ? riskCardHtml(report.metrics[id], report, mode) : ''; }).join('');
   const notes = [];
   if(report.windowNote) notes.push(report.windowNote);
   if(report.missing && report.missing.length){
@@ -5681,6 +5694,17 @@ async function paintRiskCheck(key, book, gen, force){
     return !!(row && row.stale);
   });
   const report = fpRiskReport({ holdings: holdings, benchmarkPoints: bench.points || [], benchmark: 'SPY', stale: stale });
+  if(key === 'live'){
+    const lastChange = new Map();
+    for(const txn of getTxns()){
+      if(txn && txn.mode === 'live' && txn.t && !lastChange.has(txn.t)) lastChange.set(txn.t, txn);
+    }
+    report.sample = book.some(h => lastChange.get(h.ticker)?.demo === true);
+  }
+  report.savedValues = book.some(h => {
+    const q = priceCache[h.ticker];
+    return !q || !Number.isFinite(q.c) || q.c <= 0 || !q.ts || Date.now() - q.ts > 300000;
+  });
   report.retry = !!(stale || report.benchmarkMissing || (report.missing && report.missing.length));
   if(window.FPIntelSync && typeof FPIntelSync.noteRisk === 'function') FPIntelSync.noteRisk(key, report);
   if(gen !== _riskGen[key]) return;
@@ -8123,6 +8147,7 @@ function renderGoals(){
 // Local teaching tool. Take-home stays in fp_moment_paycheck on this device.
 // The emergency-fund goal uses the same fp_goals shape as saveGoal.
 let paycheckMatch = '';
+let paycheckSample = false;
 let paycheckReturnFocus = null;
 function paycheckHashOn(){
   const raw = location.hash.replace(/^#/, '').split(/[?#]/)[0];
@@ -8190,6 +8215,7 @@ function renderPaycheckMoment(){
   if(hint){
     hint.textContent = bad
       ? (parseFloat(raw) > 1000000000 ? 'Enter a monthly take-home up to $1,000,000,000.' : 'Enter monthly take-home pay above $0.')
+      : paycheckSample ? 'Sample data · $2,000 after tax. Edit the amount to try your own numbers.'
       : 'Net pay, after tax — the amount that lands in your bank account.';
   }
   const needs = document.getElementById('payNeeds');
@@ -8200,7 +8226,9 @@ function renderPaycheckMoment(){
   if(wants) wants.textContent = split ? fmt(split.wants) : '—';
   if(future) future.textContent = split ? fmt(split.future) : '—';
   if(ef) ef.textContent = split ? fmt(split.ef) : '—';
-  if(split) writePaycheckStore(split.pay, paycheckMatch);
+  const goal = document.getElementById('payCreateGoal');
+  if(goal) goal.disabled = paycheckSample || !split;
+  if(split && !paycheckSample) writePaycheckStore(split.pay, paycheckMatch);
 }
 function hydratePaycheckForm(){
   const saved = readPaycheckStore();
@@ -8208,7 +8236,8 @@ function hydratePaycheckForm(){
   const input = document.getElementById('payTakeHome');
   if(input){
     const n = saved ? parseFloat(saved.takeHome) : NaN;
-    input.value = (isFinite(n) && n > 0) ? String(n) : '';
+    paycheckSample = !(isFinite(n) && n > 0);
+    input.value = paycheckSample ? '2000' : String(n);
   }
   syncPaycheckMatch();
   renderPaycheckMoment();
@@ -8219,7 +8248,7 @@ function setPaycheckMatch(id){
   syncPaycheckMatch();
   const input = document.getElementById('payTakeHome');
   const split = paycheckSplit(input ? input.value : '');
-  writePaycheckStore(split ? split.pay : NaN, paycheckMatch);
+  if(!paycheckSample) writePaycheckStore(split ? split.pay : NaN, paycheckMatch);
 }
 function hidePaycheckModal(){
   const modal = document.getElementById('paycheckModal');
@@ -8277,6 +8306,7 @@ function scrollSavingsGoals(){
   root.style.scrollBehavior = prev;
 }
 function createPaycheckGoal(){
+  if(paycheckSample) return;
   const input = document.getElementById('payTakeHome');
   const split = paycheckSplit(input ? input.value : '');
   if(!split){
