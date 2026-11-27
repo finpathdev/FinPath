@@ -1604,6 +1604,7 @@ body.light .gs-item{background:#fff}
 .cs-stat-val{font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--green)}
 .cs-try{font-size:12px;font-weight:700;color:var(--green);margin-top:10px}
 </style>
+<link rel="stylesheet" href="css/finpath.css">
 </head><body>
 
 
@@ -1688,7 +1689,7 @@ body.light .gs-item{background:#fff}
 <!-- SIGN-IN NUDGE PILL (shows only when signed out; disappears once logged in) -->
 <div id="loginNudge" role="complementary" aria-label="Sign in to sync" style="display:none;position:fixed;bottom:20px;left:20px;z-index:930;background:linear-gradient(135deg,#052e16,#0b1a10);border:1px solid rgba(134,239,172,.28);border-radius:16px;padding:14px 18px;box-shadow:0 20px 50px rgba(0,0,0,.5);max-width:calc(100% - 40px);font-family:var(--font-body);align-items:center;gap:12px;opacity:0;transform:translateY(20px);transition:transform .4s cubic-bezier(.2,.9,.3,1.2),opacity .3s">
   <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0" aria-hidden="true">👤</div>
-  <div style="min-width:0;flex:1"><div style="font-size:14px;font-weight:700;color:#eef5ee">Sign in to save your progress</div><div style="font-size:12px;color:var(--muted);margin-top:1px">Sync your portfolio, goals, and streaks across devices</div></div>
+  <div style="min-width:0;flex:1"><div style="font-size:14px;font-weight:700;color:#eef5ee">Sign in to save your progress</div><div style="font-size:12px;color:var(--muted);margin-top:1px">Keep your lesson progress across devices</div></div>
   <button onclick="openLogin();hideLoginNudge()" style="background:linear-gradient(135deg,#16a34a,#22c55e);color:#fff;border:none;padding:9px 15px;border-radius:99px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0" aria-label="Sign in">Sign in</button>
   <button onclick="dismissLoginNudge()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding:4px 8px;line-height:1;flex-shrink:0" aria-label="Not now">×</button>
 </div>
@@ -1738,18 +1739,30 @@ body.light .gs-item{background:#fff}
   <section class="hero">
     <div class="hero-bg"></div>
     <div class="hero-inner">
-      <div class="hero-tag">🚀 Just launched · Early access · Built by a high schooler</div>
-      <h1>Money doesn't come with a manual.<br><span>Now it does.</span></h1>
-      <p>34 no-fluff lessons, the latest SEC 13F trades from 9 legendary investors like Buffett, Ackman, Gates and Druckenmiller, and a live portfolio tracker with rule-based educational notes — built for people starting from zero.</p>
+      <div class="hero-copy">
+        <h1>Learn money skills.<br><span>Put them to work.</span></h1>
+        <p>Learn the basics in plain English, practice investing with virtual cash, and build a plan for your future.</p>
       <div class="hero-btns">
         <button class="btn-primary" onclick="handleAuthClick()">Get Started Free</button>
-        <button class="btn-secondary" onclick="startDemoMode()">👀 Try the Demo — no sign-in</button>
+        <button class="btn-secondary" onclick="startDemoMode()">Try the demo</button>
       </div>
-      <p class="hero-learn"><a href="#life" onclick="showPage('life');return false;">Life Path</a> is the yearly model. <a href="#life/future">Future Self</a> is you at 40 and you at 60. <a href="#identity" onclick="showPage('identity');return false;">Identity</a> is the literacy score and this week’s plan. The journal’s year in review lives under Life.</p>
-      <div class="stats-row">
-        <div class="stat"><div class="stat-num" id="heroStat1">34</div><div class="stat-label">Expert lessons</div></div>
-        <div class="stat"><div class="stat-num" id="heroStat2">$100k</div><div class="stat-label">Paper trading cash · per user</div></div>
-        <div class="stat"><div class="stat-num" id="heroStat3">9</div><div class="stat-label">Legendary investors tracked</div></div>
+      </div>
+      <div class="hero-tools">
+        <a class="hero-tool" href="#lessons">
+          <div class="stat-num" id="heroStat1">34</div>
+          <div><strong>Lessons and quizzes</strong><small>Build your financial vocabulary</small></div>
+          <span aria-hidden="true">↗</span>
+        </a>
+        <a class="hero-tool" href="#portfolio">
+          <div class="stat-num" id="heroStat2">$100k</div>
+          <div><strong>Virtual trading cash</strong><small>Practice in the Paper tab</small></div>
+          <span aria-hidden="true">↗</span>
+        </a>
+        <a class="hero-tool" href="#gold">
+          <div class="stat-num" id="heroStat3">9</div>
+          <div><strong>Investors tracked</strong><small>Explore their recent SEC filings</small></div>
+          <span aria-hidden="true">↗</span>
+        </a>
       </div>
       <div id="liveActivity" style="margin-top:40px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;color:var(--muted);opacity:0;transition:opacity .6s">
         <span style="width:8px;height:8px;border-radius:50%;background:var(--green);animation:blip 2s ease-in-out infinite;flex-shrink:0"></span>
@@ -1768,35 +1781,30 @@ body.light .gs-item{background:#fff}
   </div>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
     <div class="hiw-card" role="button" tabindex="0" onclick="showPage('lessons')">
-      <div class="hiw-num">1</div>
       <div class="hiw-icon">📚</div>
       <div class="hiw-title">Learn the fundamentals</div>
       <div class="hiw-body">34 five-minute lessons in plain English. Compound interest, index funds, taxes — the stuff school skipped.</div>
       <div class="hiw-cta">Open lessons →</div>
     </div>
     <div class="hiw-card" role="button" tabindex="0" onclick="showPage('portfolio')">
-      <div class="hiw-num">2</div>
       <div class="hiw-icon">🎮</div>
       <div class="hiw-title">Practice risk-free</div>
       <div class="hiw-body">Get $100,000 of virtual cash and trade real stocks at real live prices. Losses cost you nothing but a lesson.</div>
       <div class="hiw-cta">Start paper trading →</div>
     </div>
     <div class="hiw-card" role="button" tabindex="0" onclick="showPage('gold')">
-      <div class="hiw-num">3</div>
       <div class="hiw-icon">📈</div>
       <div class="hiw-title">Follow the pros</div>
       <div class="hiw-body">See what 9 legendary investors — Buffett, Ackman, Tepper, Druckenmiller, Li Lu, Klarman, Gates, Coleman and Smith — reported in their latest SEC 13F filings.</div>
       <div class="hiw-cta">See investor moves →</div>
     </div>
     <div class="hiw-card" role="button" tabindex="0" onclick="showPage('life')">
-      <div class="hiw-num">4</div>
       <div class="hiw-icon">🧭</div>
       <div class="hiw-title">See a life path</div>
       <div class="hiw-body">A yearly model from your age to 65. Snapshots, two paths side by side, five what-ifs, and a journal year in review. Educational numbers, not a prediction.</div>
       <div class="hiw-cta">Open Life Path →</div>
     </div>
     <div class="hiw-card" role="button" tabindex="0" onclick="showPage('identity')">
-      <div class="hiw-num">5</div>
       <div class="hiw-icon">🪪</div>
       <div class="hiw-title">Pick a study profile</div>
       <div class="hiw-body">Identity turns lessons and quizzes on this device into a 0–1000 literacy score and a weekly plan of at most four items. Not a credit score, and not advice.</div>
