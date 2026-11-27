@@ -1610,6 +1610,7 @@ body.light .gs-item{background:#fff}
 .cs-stat-val{font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--green)}
 .cs-try{font-size:12px;font-weight:700;color:var(--green);margin-top:10px}
 
+body:has(#paycheckModal.open) #loginNudge { display:none !important; }
 #page-portfolio .portfolio-tools { display:flex; flex-wrap:wrap; align-items:flex-start; gap:8px; margin:0 0 22px; }
 .portfolio-more { min-width:0; }
 .portfolio-more summary { display:list-item; width:max-content; max-width:100%; }
@@ -1626,6 +1627,7 @@ body.light .gs-item{background:#fff}
   #page-portfolio .risk-teen, #page-portfolio .risk-you, #page-portfolio .risk-explain { font-size:14px; line-height:1.5; }
   #page-portfolio .pulse-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
   #page-portfolio .pulse-grid .p-val { overflow-wrap:anywhere; }
+  #paycheckModal { padding-top:24px; }
   #paycheckModal .modal { padding:20px 16px; }
   #paycheckModal .pay-row { align-items:flex-start; gap:10px; }
   #paycheckModal .pay-row > :first-child { min-width:0; }
