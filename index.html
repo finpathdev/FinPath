@@ -1609,6 +1609,31 @@ body.light .gs-item{background:#fff}
 .cs-stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
 .cs-stat-val{font-family:var(--font-display);font-size:16px;font-weight:800;color:var(--green)}
 .cs-try{font-size:12px;font-weight:700;color:var(--green);margin-top:10px}
+
+#page-portfolio .portfolio-tools { display:flex; flex-wrap:wrap; align-items:flex-start; gap:8px; margin:0 0 22px; }
+.portfolio-more { min-width:0; }
+.portfolio-more summary { display:list-item; width:max-content; max-width:100%; }
+.portfolio-more .chip-row { margin:8px 0 0; }
+.portfolio-tools .chip { min-height:44px; }
+@media (max-width:600px) {
+  #page-portfolio .portfolio-wrap { padding-inline:16px; }
+  #page-portfolio .mode-tabs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); width:100%; margin-bottom:12px; gap:4px; }
+  #page-portfolio .mode-tab { min-height:48px; min-width:0; padding:8px; white-space:normal; font-size:14px; }
+  #tabPaper .pill { display:none; }
+  #page-portfolio .portfolio-tools { margin-bottom:18px; }
+  #page-portfolio .port-card, #page-portfolio .risk-card { padding:16px; }
+  #page-portfolio .risk-grid { gap:12px; }
+  #page-portfolio .risk-teen, #page-portfolio .risk-you, #page-portfolio .risk-explain { font-size:14px; line-height:1.5; }
+  #page-portfolio .pulse-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  #page-portfolio .pulse-grid .p-val { overflow-wrap:anywhere; }
+  #paycheckModal .modal { padding:20px 16px; }
+  #paycheckModal .pay-row { align-items:flex-start; gap:10px; }
+  #paycheckModal .pay-row > :first-child { min-width:0; }
+  #paycheckModal .pay-amt { flex:none; font-size:clamp(15px,4.4vw,20px); }
+  #paycheckModal .pay-split { gap:16px; margin-bottom:16px; }
+  #paycheckModal .pay-actions button { min-height:44px; }
+}
+
 </style>
 <link rel="stylesheet" href="css/finpath.css">
 </head><body>
@@ -2597,15 +2622,20 @@ body.light .gs-item{background:#fff}
 <div id="page-portfolio" class="page">
   <div class="portfolio-wrap">
     <div id="startChecklist"></div>
-    <div class="chip-row">
-      <button class="chip" id="chipAchv" onclick="document.getElementById('achvGrid').scrollIntoView({behavior:'smooth'})">🏅 0 achievements</button>
-      <button class="chip" id="chipStreak" onclick="document.getElementById('achvGrid').scrollIntoView({behavior:'smooth'})">🔥 1-day streak</button>
-      <button class="chip" onclick="sharePortfolio()">🔗 Share portfolio</button>
-      <button class="chip" onclick="setMode('live');analyzePortfolio();document.getElementById('aiRecs').scrollIntoView({behavior:'smooth'})">🧠 Portfolio check-up</button>
-      <button class="chip" onclick="scrollRiskCheck()">📉 Risk check</button>
-      <button class="chip" onclick="exportCSV()">📥 Export CSV</button>
-    </div>
     <div class="mode-tabs" role="tablist"><button class="mode-tab active" id="tabLive" role="tab" onclick="setMode('live')">My portfolio</button><button class="mode-tab" id="tabPaper" role="tab" onclick="setMode('paper')">Paper trading<span class="pill">practice</span></button></div>
+    <div class="portfolio-tools">
+      <button class="chip" onclick="scrollRiskCheck()">📉 Risk check</button>
+      <details class="portfolio-more">
+        <summary class="chip">Portfolio tools</summary>
+        <div class="chip-row">
+          <button class="chip" id="chipAchv" onclick="document.getElementById('achvGrid').scrollIntoView({behavior:'smooth'})">🏅 0 achievements</button>
+          <button class="chip" id="chipStreak" onclick="document.getElementById('achvGrid').scrollIntoView({behavior:'smooth'})">🔥 1-day streak</button>
+          <button class="chip" onclick="sharePortfolio()">🔗 Share portfolio</button>
+          <button class="chip" onclick="setMode('live');analyzePortfolio();document.getElementById('aiRecs').scrollIntoView({behavior:'smooth'})">🧠 Portfolio check-up</button>
+          <button class="chip" onclick="exportCSV()">📥 Export CSV</button>
+        </div>
+      </details>
+    </div>
     <div id="liveWrap">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
       <div><h1 style="font-size:28px;font-weight:800;letter-spacing:-.5px">Your Portfolio</h1><p style="font-size:14px;color:var(--muted);margin-top:4px"><span class="live-dot"></span> Live prices · Educational notes · Profit tracking</p><details class="quote-tip"><summary>How to read a quote</summary><p><b>Price</b> is the latest trade we could load. The <b>day’s % change</b> compares that price with the previous close — green means up, red means down. <b>As of</b> means we saved that price a little earlier and a newer trade hasn’t loaded yet. It isn’t a guessed number.</p></details></div>
