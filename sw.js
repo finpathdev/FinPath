@@ -1,9 +1,9 @@
-// FinPath Service Worker — cache finpath-v59
+// FinPath Service Worker — cache finpath-v60
 // Handles offline caching so lessons and the shell keep working with no signal.
 // Live prices, filings, and API responses are intentionally NOT cached — those
 // must always be fresh.
 
-const CACHE = 'finpath-v59';
+const CACHE = 'finpath-v60';
 const scope = new URL(self.registration.scope);
 const shellPage = new URL('index.html', scope);
 const SHELL = [
@@ -11,6 +11,7 @@ const SHELL = [
   './index.html',
   './manifest.json',
   './css/finpath.css',
+  './js/achievements.js',
   './data/life-assumptions.v1.json',
   './js/intel/life/engine.js',
   './js/intel/life/presets.js',

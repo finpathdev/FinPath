@@ -227,3 +227,49 @@ body:has(#page-home.active) #loginNudge { display: none !important; }
   border-color: var(--ink-accent);
   outline-offset: 2px;
 }
+
+/* Achievement journey */
+.ach-wrap { max-width: 1240px; margin: auto; padding: 0 5% 72px; }
+.ach-wrap .page-header { padding-inline: 0; }
+.ach-layout { display: grid; grid-template-columns: minmax(0,2.15fr) minmax(265px,1fr); gap: 16px; }
+.ach-board, .ach-detail { border: 1px solid var(--line); border-radius: 20px; background: var(--panel); box-shadow: var(--surface-shadow); min-width: 0; }
+.ach-board { position: relative; overflow: hidden; }
+.ach-map { height: clamp(325px,45vw,490px); overflow: auto; scrollbar-width: thin; touch-action: none; overscroll-behavior: contain; cursor: grab; }
+.ach-map.dragging, .ach-map.dragging button { cursor: grabbing; }
+.ach-map:focus-visible { outline-offset: -4px; }
+.ach-world { position: relative; min-width: 100%; min-height: 100%; user-select: none; background: repeating-radial-gradient(ellipse at 28% 68%, transparent 0 34px, var(--line) 35px, transparent 36px 58px); }
+.ach-world svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.ach-world path { fill: none; stroke: var(--line-strong); stroke-width: 3; stroke-dasharray: 7 8; stroke-linecap: round; }
+.ach-world path.earned { stroke: var(--ink-accent); stroke-dasharray: none; }
+.ach-node, .ach-extra { color: var(--text); font: inherit; cursor: pointer; }
+.ach-node { position: absolute; transform: translate(-50%,-31px); display: grid; justify-items: center; gap: 8px; border: 0; background: none; padding: 0; border-radius: 12px; white-space: nowrap; }
+.ach-icon { display: grid; place-items: center; width: 62px; height: 62px; border: 2px dashed var(--line-strong); border-radius: 50%; background: var(--bg2); font-size: 23px; }
+.ach-name { background: var(--panel-solid); border: 1px solid var(--line-strong); border-radius: 10px; padding: 6px 10px; font-size: 14px; font-weight: 700; }
+.ach-node[data-state="Earned"] .ach-icon, .ach-node[data-state="In progress"] .ach-icon { color: var(--ink-accent); border: 2px solid var(--ink-accent); }
+.ach-node[aria-pressed="true"] .ach-icon { outline: 2px solid var(--ink-accent); outline-offset: 4px; }
+.ach-hint { display: none; position: absolute; bottom: calc(100% + 14px); padding: 7px 10px; background: var(--panel-solid); border: 1px solid var(--line-strong); border-radius: 8px; font-size: 12px; z-index: 2; }
+.ach-node:focus-visible .ach-hint { display: block; }
+@media (hover: hover) { .ach-node:hover .ach-hint { display: block; } }
+.ach-controls { position: absolute; right: 12px; bottom: 14px; display: flex; gap: 6px; }
+.ach-controls button { width: 44px; height: 44px; color: var(--text); background: var(--panel-solid); border: 1px solid var(--line-strong); border-radius: 10px; font: 600 20px var(--font-display); cursor: pointer; }
+.ach-detail { padding: clamp(18px,3vw,30px); scroll-margin-top: 92px; }
+.ach-detail h2 { font: 700 clamp(23px,4vw,34px) var(--font-display); margin: 0 0 12px; }
+.ach-status { display: inline-block; padding: 4px 10px; border: 1px solid var(--line-strong); border-radius: 100px; color: var(--ink-accent); font-size: 13px; font-weight: 700; }
+.ach-requirement { margin: 18px 0 10px; }
+.ach-progress-text, .ach-count, .ach-legend { color: var(--muted); font-size: 14px; }
+.ach-detail progress { display: block; width: 100%; accent-color: var(--ink-accent); margin: 6px 0 18px; }
+.ach-action { min-height: 44px; }
+.ach-action[hidden] { display: none; }
+.ach-legend { border-top: 1px solid var(--line); margin-top: 24px; padding-top: 16px; }
+.ach-count { margin-bottom: 12px; }
+.ach-more { margin-top: 25px; }
+.ach-more summary { cursor: pointer; color: var(--ink-accent); font-weight: 700; }
+.ach-extras { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,170px),1fr)); gap: 8px; margin-top: 12px; }
+.ach-extra { display: flex; align-items: center; gap: 8px; text-align: left; min-height: 44px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 7px 9px; }
+.ach-extra[aria-pressed="true"] { border-color: var(--ink-accent); }
+.ach-extra .ach-icon { width: 26px; height: 26px; font-size: 13px; flex: none; border: 0; }
+.ach-extra .ach-name { padding: 0; border: 0; background: none; }
+@media (max-width: 760px) {
+  .ach-layout { grid-template-columns: minmax(0,1fr); }
+  .ach-map { height: 350px; }
+}

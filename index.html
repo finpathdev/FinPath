@@ -1711,6 +1711,7 @@ body.light .gs-item{background:#fff}
       <a href="#identity" data-nav="identity" role="button" tabindex="0" onclick="showPage('identity');return false;">Identity</a>
       <a href="#study" data-nav="study" role="button" tabindex="0" onclick="showPage('study');return false;">Study</a>
       <a href="#lessons" data-nav="lessons" role="button" tabindex="0" onclick="showPage('lessons');return false;">Lessons</a>
+  <a href="#achievements" data-nav="achievements" role="button" tabindex="0" onclick="showPage('achievements');return false;">Achievements</a>
       <a href="#ask" data-nav="ask" role="button" tabindex="0" onclick="showPage('ask');return false;">Ask</a>
       <a href="#gold" data-nav="gold" role="button" tabindex="0" onclick="showPage('gold');return false;">Moves</a>
       <a href="#portfolio" data-nav="portfolio" role="button" tabindex="0" onclick="showPage('portfolio');return false;">Portfolio</a>
@@ -1727,6 +1728,7 @@ body.light .gs-item{background:#fff}
   <a href="#identity" data-nav="identity" role="button" tabindex="0" onclick="showPage('identity');toggleMenu(false);return false;">Identity</a>
   <a href="#study" data-nav="study" role="button" tabindex="0" onclick="showPage('study');toggleMenu(false);return false;">Does FinPath work?</a>
   <a href="#lessons" data-nav="lessons" role="button" tabindex="0" onclick="showPage('lessons');toggleMenu(false);return false;">Lessons</a>
+  <a href="#achievements" data-nav="achievements" role="button" tabindex="0" onclick="showPage('achievements');toggleMenu(false);return false;">Achievements</a>
   <a href="#ask" data-nav="ask" role="button" tabindex="0" onclick="showPage('ask');toggleMenu(false);return false;">Ask</a>
   <a href="#gold" data-nav="gold" role="button" tabindex="0" onclick="showPage('gold');toggleMenu(false);return false;">Moves</a>
   <a href="#portfolio" data-nav="portfolio" role="button" tabindex="0" onclick="showPage('portfolio');toggleMenu(false);return false;">Portfolio</a>
@@ -2474,6 +2476,13 @@ body.light .gs-item{background:#fff}
 </div>
 
 <!-- IDENTITY -->
+<section id="page-achievements" class="page"><div class="ach-wrap">
+<header class="page-header"><h1>Achievements</h1><p id="ach-help">Drag to move. Scroll or pinch to zoom. Select a badge to see how to earn it.</p></header>
+<p class="ach-count"></p><div class="ach-layout"><div class="ach-board">
+<div class="ach-map" tabindex="0" role="region" aria-label="Interactive achievement map" aria-describedby="ach-help"><div class="ach-world"><svg viewBox="0 0 840 460" preserveAspectRatio="none" aria-hidden="true"></svg></div></div>
+<div class="ach-controls" role="group" aria-label="Map controls"><button type="button" data-ach-zoom="in" aria-label="Zoom in">+</button><button type="button" data-ach-zoom="out" aria-label="Zoom out">−</button><button type="button" data-ach-zoom="reset" aria-label="Reset map view">↺</button></div></div>
+<section class="ach-detail" aria-labelledby="ach-title" tabindex="-1"><div aria-live="polite"><h2 id="ach-title">Pick a badge</h2><p class="ach-status"></p><p class="ach-requirement"></p><p class="ach-progress-text"></p></div><progress max="1" value="0" aria-label="Badge progress"></progress><button type="button" hidden class="btn-primary ach-action"></button><p class="ach-legend">✓ Earned · ◔ In progress · 🔒 Locked</p></section>
+</div><details class="ach-more"><summary>More achievements</summary><div class="ach-extras"></div></details></div></section>
 <div id="page-identity" class="page">
   <div class="life-wrap">
     <div class="page-header" style="padding-left:0;padding-right:0">
@@ -2715,6 +2724,7 @@ body.light .gs-item{background:#fff}
     </div>
     <div style="margin-top:34px">
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div style="font-size:16px;font-weight:700;font-family:var(--font-display)">Achievements</div><span id="streakChip" style="font-size:12px;color:var(--gold);font-weight:700"></span></div>
+      <p style="margin-bottom:12px"><a href="#achievements" style="color:var(--ink-accent)">Explore the achievement map →</a></p>
       <div id="achvGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px"></div>
     </div>
     <div style="margin-top:34px" id="txnSection">
@@ -4303,7 +4313,7 @@ document.addEventListener('click', function(e){
 });
 document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ if(typeof hideTerm==='function') hideTerm(); const m = document.getElementById('mobileMenu'); if(m && m.classList.contains('open')) toggleMenu(false); } });
 
-const ROUTES=['home','portfolio','lessons','ask','gold','markets','legal','life','identity','study'];
+const ROUTES=['home','portfolio','lessons','ask','gold','markets','legal','life','identity','study','achievements'];
 function markNav(p){
   document.querySelectorAll('[data-nav]').forEach(function(el){
     if(el.getAttribute('data-nav') === p) el.setAttribute('aria-current', 'page');
@@ -4339,6 +4349,7 @@ function showPage(p,fromHash){
     if(typeof renderAsk==='function') renderAsk();
     if(typeof track==='function') track('ask_open');
   }
+  if(p==='achievements' && window.FPAchievements) FPAchievements.render();
   if(p==='life' && typeof renderLife==='function') renderLife();
   if(p==='identity' && typeof renderIdentity==='function') renderIdentity();
   if(p==='study' && window.FPStudy && typeof FPStudy.render==='function') FPStudy.render();
@@ -10090,4 +10101,5 @@ try{
   }
 }catch(e){}
 </script>
+<script src="js/achievements.js" defer></script>
 </body></html>
