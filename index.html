@@ -1639,6 +1639,19 @@ body:has(#paycheckModal.open) #loginNudge { display:none !important; }
   #paycheckModal .pay-actions button { min-height:44px; }
 }
 
+#navAuthBtn.nav-account {
+  background: var(--panel2);
+  color: var(--text);
+  border: 1px solid var(--line-strong);
+  font-weight: 700;
+  max-inline-size: min(13rem, 38vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#navAuthBtn.nav-account:hover {
+  border-color: var(--ink-accent);
+}
 </style>
 <link rel="stylesheet" href="css/finpath.css">
 </head><body>
@@ -6229,8 +6242,8 @@ function onUserLoggedIn(user){
     const email = (user && user.email) || '';
     const name = email.split('@')[0] || 'You';
     btn.textContent = name.charAt(0).toUpperCase() + name.slice(1);
-    btn.style.background = '#052e16';
-    btn.style.border = '1px solid #15803d';
+    btn.classList.add('nav-account');
+    btn.title = btn.textContent;
   }
   hideLoginNudge();
   if(typeof renderAsk==='function' && document.getElementById('page-ask') && document.getElementById('page-ask').classList.contains('active')) renderAsk();
@@ -6276,8 +6289,8 @@ function onUserSignedOut(){
   const btn = document.getElementById('navAuthBtn');
   if(btn){
     btn.textContent = 'Get Started Free';
-    btn.style.background = '';
-    btn.style.border = '';
+    btn.classList.remove('nav-account');
+    btn.removeAttribute('title');
   }
   document.getElementById('userMenu').style.display = 'none';
   if(typeof resetAskOnSignOut==='function') resetAskOnSignOut();
