@@ -217,8 +217,13 @@ export function buildMessages(question: string, history: HistoryTurn[], lesson: 
       content: 'Lesson title for topic context only: ' + lesson,
     })
   }
-  for (const turn of history) messages.push({ role: turn.role, content: turn.content })
-  messages.push({ role: 'user', content: question })
+  // The browser stores answer text only. Pass prior turns as reference data
+  // instead of replaying them as provider-generated assistant messages.
+  const content = history.length
+    ? 'Answer the current question. Use the earlier turns only as context.\n' +
+      JSON.stringify({ earlierTurns: history, currentQuestion: question })
+    : question
+  messages.push({ role: 'user', content })
   return messages
 }
 
